@@ -209,7 +209,7 @@ img {
 
 /* Typography */
 h1 {
-  font-size: clamp(42px, 8vw, 72px);
+  font-size: clamp(39px, 7.5vw, 69px);
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.04em;
@@ -243,7 +243,7 @@ h3 {
 }
 
 .eyebrow {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -294,17 +294,26 @@ h3 {
 
 /* VR Eye that follows cursor */
 .vr-eye {
-  position: absolute;
-  top: 15%;
-  right: 8%;
+  position: relative;
   z-index: 2;
-  transform: scale(0.8);
+  transform: scale(0.7);
   transition: transform 0.3s ease;
   pointer-events: none;
+  margin: 0 auto 20px auto;
+  display: flex;
+  justify-content: center;
 }
 
 .vr-eye:hover {
-  transform: scale(0.85);
+  transform: scale(0.75);
+}
+
+/* Hero centered layout */
+.hero-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .vr-headset {
@@ -423,15 +432,14 @@ h3 {
 /* Responsive VR eye */
 @media (max-width: 1024px) {
   .vr-eye {
-    top: 10%;
-    right: 5%;
-    transform: scale(0.6);
+    transform: scale(0.55);
   }
 }
 
 @media (max-width: 768px) {
   .vr-eye {
-    display: none;
+    transform: scale(0.5);
+    margin-bottom: 10px;
   }
 }
 
