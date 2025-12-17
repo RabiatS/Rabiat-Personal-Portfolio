@@ -1,36 +1,94 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cool Websites — Rabiat Sadiq</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <script>(function(){var s=localStorage.getItem('theme');var d=s?(s==='dark'):matchMedia('(prefers-color-scheme: dark)').matches;if(d){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}})();</script>
-  <link rel="stylesheet" href="assets/style.css"/><script src="assets/script.js" defer></script>
+
+  <!-- Prevent theme flash -->
+  <script>
+    (function(){
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="assets/style.css" />
+  <script src="assets/script.js" defer></script>
 </head>
-<body data-tilt-mode="off">
-<header class="header container">
-  <a class="brand" href="index.html">Rabiat Sadiq</a>
-  <nav class="nav" aria-label="Primary">
-    <a href="index.html">Home</a>
-    <a href="projects.html">Projects</a>
-    <a href="cool.html" aria-current="page">Cool</a>
-    <a href="contact.html">Contact</a>
-    <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
-  </nav>
-  <div class="header-controls"><button class="toggle" id="funToggle" title="Fun colors">🎨</button><button class="toggle" id="themeToggle">◐</button></div>
-</header>
-<main class="container">
-  <section class="hero"><h1>Cool Websites I Like</h1><p class="lead">A little corner for curiosity and joy.</p></section>
-  <div class="grid cards-3">
-    <article class="card"><h3><a href="https://example.com" target="_blank" rel="noopener">AI Image Playground</a></h3><p class="muted">Create realistic images from text.</p></article>
-    <article class="card"><h3>Invisible Cow</h3><p class="muted">Silly sound-based hide-and-seek.</p></article>
-    <article class="card"><h3>Virtual Study Rooms</h3><p class="muted">Study in cozy digital spaces.</p></article>
-    <article class="card"><h3>Music Taste Checker</h3><p class="muted">Analyze your Spotify vibes.</p></article>
-    <article class="card"><h3>Random Website Button</h3><p class="muted">Serendipity machine.</p></article>
-    <article class="card"><h3>Custom White Noise</h3><p class="muted">Blend ambient loops.</p></article>
-    <article class="card"><h3>Ripple Effect</h3><p class="muted">play Around with different ripple effects.</p></article>
-  </div>
-</main>
-<footer class="container footer">© <span id="year"></span> Rabiat Sadiq</footer>
+<body data-tilt-mode="desktop">
+  <header class="header">
+    <a class="brand" href="index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="cool.html" aria-current="page">Cool</a>
+      <a href="contact.html">Contact</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off">Tilt: Off</option>
+        <option value="desktop" selected>Tilt: Desktop</option>
+        <option value="all">Tilt: All</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main style="padding-top: var(--header-height);">
+    <section class="container" style="padding-top: 80px; padding-bottom: 40px;">
+      <div class="section-head">
+        <div>
+          <h1>Cool Websites I Like</h1>
+          <p class="lead" style="margin-top: 16px;">A little corner for curiosity and joy.</p>
+        </div>
+      </div>
+
+      <div class="grid cards-3">
+        <article class="card">
+          <h3><a href="https://example.com" target="_blank" rel="noopener">AI Image Playground</a></h3>
+          <p class="muted">Create realistic images from text.</p>
+        </article>
+        <article class="card">
+          <h3>Invisible Cow</h3>
+          <p class="muted">Silly sound-based hide-and-seek.</p>
+        </article>
+        <article class="card">
+          <h3>Virtual Study Rooms</h3>
+          <p class="muted">Study in cozy digital spaces.</p>
+        </article>
+        <article class="card">
+          <h3>Music Taste Checker</h3>
+          <p class="muted">Analyze your Spotify vibes.</p>
+        </article>
+        <article class="card">
+          <h3>Random Website Button</h3>
+          <p class="muted">Serendipity machine.</p>
+        </article>
+        <article class="card">
+          <h3>Custom White Noise</h3>
+          <p class="muted">Blend ambient loops.</p>
+        </article>
+        <article class="card">
+          <h3>Ripple Effect</h3>
+          <p class="muted">Play around with different ripple effects.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <div style="margin-top: 16px; display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;">
+      <a href="mailto:robbiahsadiq@gmail.com" style="color: var(--text-muted);">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener" style="color: var(--text-muted);">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" style="color: var(--text-muted);">LinkedIn</a>
+    </div>
+  </footer>
 </body>
 </html>
