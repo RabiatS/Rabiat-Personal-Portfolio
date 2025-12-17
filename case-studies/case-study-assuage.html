@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Case Study — Assuage: Health ML Distress Prediction</title>
+
+  <!-- Prevent theme flash -->
+  <script>
+    (function(){
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header container">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html">Home</a>
+      <a href="../projects.html">Projects</a>
+      <a href="case-study-assuage.html" aria-current="page">Case Study</a>
+      <a href="../contact.html">Contact</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off">Tilt: Off</option>
+        <option value="desktop" selected>Tilt: Desktop</option>
+        <option value="all">Tilt: Mobile & Desktop</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="cs-hero">
+      <p class="eyebrow">Apple NACME AIML Intensive • iOS + ML • Health</p>
+      <h1>Assuage: ML Distress Prediction</h1>
+      <p class="lead">
+        Built a logistic regression model to predict distress levels from HealthKit biometrics,
+        achieving 82% test accuracy. Implemented on-device inference in Swift using Core ML
+        for privacy-preserving health monitoring.
+      </p>
+      <div class="cs-metrics">
+        <div class="metric"><h3>Accuracy</h3><p>82% test accuracy</p></div>
+        <div class="metric"><h3>Deployment</h3><p>Core ML on-device</p></div>
+        <div class="metric"><h3>Platform</h3><p>iOS + HealthKit</p></div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>Problem</h2>
+      <p>
+        Early detection of distress or health issues can help individuals take proactive measures.
+        However, collecting and analyzing health data while maintaining privacy is challenging.
+        This project aimed to create a privacy-preserving solution that uses on-device machine learning
+        to predict distress levels from readily available HealthKit biometrics.
+      </p>
+    </section>
+
+    <section class="cs-section">
+      <h2>Approach</h2>
+      <ul>
+        <li><strong>Data Collection:</strong> Used HealthKit biometrics (heart rate, steps, sleep, etc.) as features</li>
+        <li><strong>Data Augmentation:</strong> Created pseudo-data to address limited training data availability</li>
+        <li><strong>Model Development:</strong> Trained logistic regression model using scikit-learn in Python</li>
+        <li><strong>Feature Engineering:</strong> Explored and engineered features from HealthKit data</li>
+        <li><strong>Model Evaluation:</strong> Achieved 82% test accuracy with proper train/test split</li>
+        <li><strong>iOS Integration:</strong> Converted model to Core ML format for on-device inference</li>
+        <li><strong>Privacy:</strong> All processing happens on-device—no data leaves the user's phone</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>Technical Implementation</h2>
+      <pre class="code"># Python: Model training
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+# Feature engineering from HealthKit data
+features = ['heart_rate', 'steps', 'sleep_hours', 'active_energy']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# Train model
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# Evaluate
+accuracy = accuracy_score(y_test, model.predict(X_test))
+# Result: 82% accuracy
+
+# Convert to Core ML
+import coremltools as ct
+coreml_model = ct.converters.sklearn.convert(model)
+coreml_model.save('DistressPredictor.mlmodel')
+
+// Swift: On-device inference
+import CoreML
+import HealthKit
+
+let model = try DistressPredictor(configuration: .init())
+let input = DistressPredictorInput(
+    heartRate: currentHeartRate,
+    steps: todaySteps,
+    sleepHours: lastNightSleep,
+    activeEnergy: todayActiveEnergy
+)
+let prediction = try model.prediction(from: input)
+let distressLevel = prediction.distressLevel</pre>
+    </section>
+
+    <section class="cs-section">
+      <h2>Results</h2>
+      <ul>
+        <li><strong>Model Performance:</strong> Achieved 82% test accuracy in predicting distress levels</li>
+        <li><strong>Privacy:</strong> Complete on-device processing ensures user data never leaves their device</li>
+        <li><strong>User Experience:</strong> Seamless integration with HealthKit for automatic data collection</li>
+        <li><strong>Deployment:</strong> Successfully converted model to Core ML for iOS deployment</li>
+        <li><strong>Scalability:</strong> Model can be updated and improved as more data becomes available</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>Technologies Used</h2>
+      <div class="badges" style="margin-top:12px">
+        <span class="tag">Swift</span>
+        <span class="tag">HealthKit</span>
+        <span class="tag">Core ML</span>
+        <span class="tag">Python</span>
+        <span class="tag">scikit-learn</span>
+        <span class="tag">EDA</span>
+        <span class="tag">Xcode</span>
+        <span class="tag">iOS</span>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>Impact</h2>
+      <p>
+        This project demonstrates how machine learning can be applied to health monitoring in a
+        privacy-preserving way. By using on-device inference, users can benefit from ML-powered
+        insights without compromising their privacy. The approach can be extended to other health
+        prediction tasks and integrated into health monitoring apps.
+      </p>
+      <p style="margin-top:16px">
+        <a class="btn secondary" href="https://github.com/RabiatS/final-project-aimleaders" target="_blank" rel="noopener">
+          GitHub Repository ↗
+        </a>
+      </p>
+    </section>
+
+    <section class="cs-next" style="margin-top:40px;display:flex;gap:16px">
+      <a class="btn" href="../projects.html">Back to Projects</a>
+      <a class="btn secondary" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    © <span id="year"></span> Rabiat Sadiq — Case study excerpt. Contact for details.
+  </footer>
+</body>
+</html>

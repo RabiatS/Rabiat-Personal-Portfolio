@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Case Study — Magic Mitts</title>
+
+  <!-- Prevent theme flash -->
+  <script>
+    (function(){
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/script.js" defer></script>
+</head>
+<body data-tilt-mode="desktop">
+<header class="header container">
+  <a class="brand" href="../index.html">Rabiat Sadiq</a>
+  <nav class="nav" aria-label="Primary">
+    <a href="../index.html">Home</a>
+    <a href="../projects.html">Projects</a>
+    <a href="case-study.html" aria-current="page">Case Study</a>
+    <a href="../contact.html">Contact</a>
+    <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+  </nav>
+  <div class="header-controls">
+    <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+    <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+      <option value="off">Tilt: Off</option>
+      <option value="desktop" selected>Tilt: Desktop</option>
+      <option value="all">Tilt: Mobile & Desktop</option>
+    </select>
+    <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+    <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+  </div>
+</header>
+
+<main class="container">
+  <section class="cs-hero">
+    <h1>Magic Mitts — Programmable Haptic VR Glove</h1>
+    <p class="lead">Goal: affordable, human-centered haptics for XR. I led interaction design, Unity integration, and embedded control.</p>
+    <div class="cs-metrics">
+      <div class="metric"><h3>↓ Latency</h3><p>~18% vs baseline</p></div>
+      <div class="metric"><h3>Comfort</h3><p>+24% SUS comfort score</p></div>
+      <div class="metric"><h3>Cost</h3><p>&lt; $50 BOM prototype</p></div>
+    </div>
+  </section>
+
+  <section class="cs-section">
+    <h2>Problem</h2>
+    <p>Haptics are either expensive or impractical. We needed a glove that is affordable, safe, and responsive with intuitive controls.</p>
+  </section>
+
+  <section class="cs-section">
+    <h2>Approach</h2>
+    <ul>
+      <li>Rapid prototyping (paper → Arduino → Unity)</li>
+      <li>Human-centered testing loops (n=8 usability sessions)</li>
+      <li>Data-driven iteration: measured latency, comfort, task completion</li>
+    </ul>
+  </section>
+
+  <section class="cs-section">
+    <h2>Technical Notes</h2>
+    <pre class="code">// Unity (C#) pseudo for force feedback trigger
+void OnGrab(GameObject obj) { 
+    float intensity = Mathf.Clamp01(obj.Mass / 3f);
+    Haptics.Emit(intensity); 
+}</pre>
+  </section>
+
+  <section class="cs-section">
+    <h2>Outcomes</h2>
+    <p>We demonstrated reliable grasp feedback with lower latency and improved comfort. The form factor supports future ML-based gesture detection.</p>
+  </section>
+</main>
+
+<footer class="container footer">© <span id="year"></span> Rabiat Sadiq — Case study excerpt. Contact for full report.</footer>
+</body></html>

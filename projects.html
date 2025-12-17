@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projects — Rabiat Sadiq</title>
+
+  <!-- Prevent theme flash -->
+  <script>
+    (function(){
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="assets/style.css" />
+  <script src="assets/script.js" defer></script>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header">
+    <a class="brand" href="index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="projects.html" aria-current="page">Projects</a>
+      <a href="cool.html">Cool</a>
+      <a href="contact.html">Contact</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off">Tilt: Off</option>
+        <option value="desktop" selected>Tilt: Desktop</option>
+        <option value="all">Tilt: All</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main style="padding-top: var(--header-height);">
+    <section class="container" style="padding-top: 80px; padding-bottom: 40px;">
+      <div class="section-head">
+        <div>
+          <h1>Projects</h1>
+          <p class="lead" style="margin-top: 16px;">
+            <strong id="projectCount" style="color: var(--primary);">Loading...</strong> projects across multiple disciplines
+          </p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;margin-bottom:32px;flex-wrap:wrap;align-items:center">
+        <input type="search" id="projectSearch" placeholder="Search projects..." 
+               style="flex:1;min-width:250px;padding:14px 20px;border:2px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font-size:15px;transition:all 0.2s ease;"
+               aria-label="Search projects"
+               >
+        <div class="filters" role="tablist" aria-label="Project filters" style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="pill is-active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="pill" data-filter="XR" role="tab">XR</button>
+          <button class="pill" data-filter="ML" role="tab">ML</button>
+          <button class="pill" data-filter="HCI" role="tab">HCI</button>
+          <button class="pill" data-filter="Research" role="tab">Research</button>
+          <button class="pill" data-filter="Data" role="tab">Data</button>
+          <button class="pill" data-filter="Hardware" role="tab">Hardware</button>
+          <button class="pill" data-filter="Web" role="tab">Web</button>
+          <button class="pill" data-filter="iOS" role="tab">iOS</button>
+          <button class="pill" data-filter="Early" role="tab">Early</button>
+          <button class="pill" data-filter="Industry" role="tab">Industry</button>
+        </div>
+      </div>
+
+      <div id="projectsContainer">
+        <div id="projectsLoading" style="text-align:center;padding:60px 20px;color:var(--text-muted)">
+          <div style="font-size:18px;margin-bottom:12px">Loading projects...</div>
+          <div style="font-size:14px;color:var(--text-light)">Fetching from projects.json</div>
+        </div>
+        <section class="grid cards-3" id="projectsGrid" style="display:none">
+          <!-- Projects loaded dynamically -->
+        </section>
+        <div id="noProjects" style="display:none;text-align:center;padding:60px 20px;color:var(--text-muted)">
+          <p style="font-size:18px;margin-bottom:8px">No projects found</p>
+          <p style="font-size:14px;color:var(--text-light)">Try adjusting your filters or search terms</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <div style="margin-top: 16px; display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;">
+      <a href="mailto:robbiahsadiq@gmail.com" style="color: var(--text-muted);">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener" style="color: var(--text-muted);">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" style="color: var(--text-muted);">LinkedIn</a>
+    </div>
+  </footer>
+</body>
+</html>

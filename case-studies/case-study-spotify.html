@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Case Study — Spotify vs AI Research Study</title>
+
+  <!-- Prevent theme flash -->
+  <script>
+    (function(){
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header container">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html">Home</a>
+      <a href="../projects.html">Projects</a>
+      <a href="case-study-spotify.html" aria-current="page">Case Study</a>
+      <a href="../contact.html">Contact</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off">Tilt: Off</option>
+        <option value="desktop" selected>Tilt: Desktop</option>
+        <option value="all">Tilt: Mobile & Desktop</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="cs-hero">
+      <p class="eyebrow">HCI Research • UX Design • User Research</p>
+      <h1>Spotify vs AI Research Study</h1>
+      <p class="lead">
+        A UX research and design project exploring how Spotify listeners perceive AI-generated music,
+        and how clearer labeling and controls can build trust in the listening experience without
+        diminishing enjoyment.
+      </p>
+      <div class="cs-metrics">
+        <div class="metric"><h3>Focus</h3><p>Trust • Transparency • UX</p></div>
+        <div class="metric"><h3>Methods</h3><p>Research • Design • Testing</p></div>
+        <div class="metric"><h3>Deployed</h3><p><a href="https://spotify-vs-ai-research-study.vercel.app/" target="_blank" rel="noopener" style="color:inherit">Live Study ↗</a></p></div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>Research Question</h2>
+      <p>
+        How might Spotify help listeners distinguish AI-generated music from human-created tracks
+        without hurting the listening experience? As AI-generated music becomes more prevalent,
+        platforms need transparent labeling strategies that build user trust while maintaining
+        engagement.
+      </p>
+    </section>
+
+    <section class="cs-section">
+      <h2>Approach</h2>
+      <ul>
+        <li><strong>User Research:</strong> Conducted interviews and surveys to understand listener perceptions of AI vs human music</li>
+        <li><strong>Design Exploration:</strong> Explored different labeling approaches (badges, metadata, controls)</li>
+        <li><strong>Prototype Development:</strong> Built interactive research study website using TypeScript and React</li>
+        <li><strong>Data Collection:</strong> Designed study flow to collect user preferences and trust metrics</li>
+        <li><strong>Analysis:</strong> Analyzed how different labeling strategies affect user perception and trust</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>Key Findings</h2>
+      <ul>
+        <li>Users value transparency but don't want AI labels to dominate the interface</li>
+        <li>Clear, unobtrusive labeling can build trust without reducing enjoyment</li>
+        <li>User controls (filtering, preferences) are important for user agency</li>
+        <li>Context matters—different labeling approaches work better in different parts of the app</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>Technical Implementation</h2>
+      <p>
+        Built a research study website deployed on Vercel. The site includes:
+      </p>
+      <ul>
+        <li>Interactive music comparison interface</li>
+        <li>Survey and data collection forms</li>
+        <li>Responsive design for multiple devices</li>
+        <li>Analytics integration for research data</li>
+      </ul>
+      <pre class="code">// TypeScript/React research study structure
+interface StudyParticipant {
+  preferences: MusicPreference[];
+  trustMetrics: TrustScore;
+  labelingFeedback: Feedback[];
+}
+
+function MusicComparison({ trackA, trackB }: Props) {
+  // Interactive comparison interface
+  // Collects user perceptions and preferences
+}</pre>
+    </section>
+
+    <section class="cs-section">
+      <h2>Technologies Used</h2>
+      <div class="badges" style="margin-top:12px">
+        <span class="tag">TypeScript</span>
+        <span class="tag">React</span>
+        <span class="tag">Web</span>
+        <span class="tag">Vercel</span>
+        <span class="tag">UX Research</span>
+        <span class="tag">HCI</span>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>Impact</h2>
+      <p>
+        This research contributes to understanding how music streaming platforms can transparently
+        communicate AI-generated content while maintaining user trust and engagement. The findings
+        inform design decisions for labeling strategies in music platforms.
+      </p>
+      <p style="margin-top:16px">
+        <a class="btn secondary" href="https://spotify-vs-ai-research-study.vercel.app/" target="_blank" rel="noopener">
+          View Live Study Site ↗
+        </a>
+        <a class="btn secondary" href="https://github.com/RabiatS/spotify-vs-ai-research-study" target="_blank" rel="noopener" style="margin-left:12px">
+          GitHub Repository ↗
+        </a>
+      </p>
+    </section>
+
+    <section class="cs-next" style="margin-top:40px;display:flex;gap:16px">
+      <a class="btn" href="../projects.html">Back to Projects</a>
+      <a class="btn secondary" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    © <span id="year"></span> Rabiat Sadiq — Case study excerpt. Contact for details.
+  </footer>
+</body>
+</html>

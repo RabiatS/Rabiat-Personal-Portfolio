@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Case Study — PlayStation Applied ML Internship</title>
+
+  <!-- Prevent theme flash -->
+  <script>
+    (function(){
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header container">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html">Home</a>
+      <a href="../projects.html">Projects</a>
+      <a href="case-study-ps.html" aria-current="page">Case Study</a>
+      <a href="../contact.html">Contact</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off">Tilt: Off</option>
+        <option value="desktop" selected>Tilt: Desktop</option>
+        <option value="all">Tilt: Mobile & Desktop</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="cs-hero">
+      <p class="eyebrow">PlayStation (SIE) • Applied AI Team • Summer 2025</p>
+      <h1>Gameplay Video Score Extraction Pipeline</h1>
+      <p class="lead">
+        Built an end-to-end ML pipeline to extract on-screen gameplay scores from long-form streaming videos
+        and align scores to timestamps for validation and downstream analytics. Reduced video processing time by 60%+.
+      </p>
+      <div class="cs-metrics">
+        <div class="metric"><h3>Performance</h3><p>60%+ faster processing</p></div>
+        <div class="metric"><h3>Scale</h3><p>Parallel cloud ingestion</p></div>
+        <div class="metric"><h3>Stack</h3><p>Ray • Databricks • MLflow</p></div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>Problem</h2>
+      <p>
+        The Applied AI team needed to extract gameplay scores from streaming videos for Quality of Experience (QoE) analysis.
+        Long-form videos required efficient processing, and manual extraction was not scalable. The challenge was building
+        a pipeline that could handle large video files, process them in parallel, and extract structured data reliably.
+      </p>
+    </section>
+
+    <section class="cs-section">
+      <h2>Approach</h2>
+      <ul>
+        <li><strong>Parallel Cloud Ingestion:</strong> Implemented multithreaded downloads from AWS S3 with Ray-based task parallelism for distributed computing</li>
+        <li><strong>Video Preprocessing:</strong> Automated clip splitting with FFmpeg, frame processing with OpenCV</li>
+        <li><strong>Scalable Processing:</strong> Ran jobs in Databricks using PySpark for distributed data processing</li>
+        <li><strong>Experiment Tracking:</strong> Used MLflow to track experiments, model versions, and artifacts</li>
+        <li><strong>Score Extraction:</strong> Applied computer vision techniques (OCR) to extract on-screen scores</li>
+        <li><strong>Timestamp Alignment:</strong> Aligned extracted scores to video timestamps for validation and analytics</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>Technical Implementation</h2>
+      <pre class="code"># Parallel download with Ray
+import ray
+@ray.remote
+def download_video(s3_path):
+    # Multithreaded S3 download
+    return download_from_s3(s3_path)
+
+# Process videos in parallel
+video_paths = ray.get([download_video.remote(path) for path in s3_paths])
+
+# FFmpeg clip splitting
+subprocess.run(['ffmpeg', '-i', video, '-ss', start, '-t', duration, output])
+
+# OpenCV frame processing
+cap = cv2.VideoCapture(video_path)
+ret, frame = cap.read()
+score_region = frame[y1:y2, x1:x2]
+score_text = pytesseract.image_to_string(score_region)
+
+# Databricks PySpark processing
+df = spark.read.format("video").load(path)
+results = df.select(extract_score_udf("frame").alias("score"))</pre>
+    </section>
+
+    <section class="cs-section">
+      <h2>Results</h2>
+      <ul>
+        <li><strong>Performance:</strong> Reduced download and processing time by 60%+ for large videos through parallel processing</li>
+        <li><strong>Scalability:</strong> Pipeline handles multiple videos concurrently using Ray and Databricks</li>
+        <li><strong>Reliability:</strong> Structured output with timestamp alignment enables downstream analytics</li>
+        <li><strong>Knowledge Transfer:</strong> Delivered documentation and knowledge transfer to new team members</li>
+        <li><strong>Collaboration:</strong> Worked cross-functionally with Data Engineering and Analytics teams using Jira and Confluence</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>Technologies Used</h2>
+      <div class="badges" style="margin-top:12px">
+        <span class="tag">Python</span>
+        <span class="tag">AWS S3</span>
+        <span class="tag">Ray</span>
+        <span class="tag">FFmpeg</span>
+        <span class="tag">OpenCV</span>
+        <span class="tag">OCR</span>
+        <span class="tag">Databricks</span>
+        <span class="tag">PySpark</span>
+        <span class="tag">MLflow</span>
+        <span class="tag">SQL</span>
+        <span class="tag">Snowflake</span>
+        <span class="tag">Jira</span>
+        <span class="tag">Confluence</span>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>Impact</h2>
+      <p>
+        This pipeline enabled the Applied AI team to enhance game streaming quality through real-time video context understanding
+        and data-driven optimization. The extracted score data supports Quality of Experience (QoE) analysis and helps improve
+        streaming services for millions of PlayStation users.
+      </p>
+    </section>
+
+    <section class="cs-next" style="margin-top:40px;display:flex;gap:16px">
+      <a class="btn" href="../projects.html">Back to Projects</a>
+      <a class="btn secondary" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    © <span id="year"></span> Rabiat Sadiq — Case study excerpt. Contact for details.
+  </footer>
+</body>
+</html>

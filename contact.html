@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact — Rabiat Sadiq</title>
+
+  <!-- Prevent theme flash -->
+  <script>
+    (function(){
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="assets/style.css" />
+  <script src="assets/script.js" defer></script>
+</head>
+<body data-tilt-mode="off" style="min-height:100vh;overflow-y:auto;">
+  <!-- Shared header -->
+  <header class="header">
+    <a class="brand" href="index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="cool.html">Cool</a>
+      <a href="contact.html" aria-current="page">Contact</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off" selected>Tilt: Off</option>
+        <option value="desktop">Tilt: Desktop</option>
+        <option value="all">Tilt: Mobile & Desktop</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top:120px;padding-bottom:80px;min-height:calc(100vh - 200px);">
+    <section style="text-align:center;margin-bottom:48px;">
+      <h1>Let's build something</h1>
+      <p class="lead" style="margin:16px auto 0;max-width:600px;">Reach out for collaborations, research, or rapid prototyping.</p>
+    </section>
+
+    <section class="card" style="max-width:720px;margin:0 auto">
+      <form id="contactForm" class="grid" style="grid-template-columns:1fr 1fr; gap:16px"
+            action="#" method="GET">
+        <div style="grid-column:1 / span 1">
+          <label for="name">Name</label>
+          <input id="name" name="name" required placeholder="Your name"
+                 style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)">
+        </div>
+        <div style="grid-column:2 / span 1">
+          <label for="email">Email</label>
+          <input id="email" name="_replyto" type="email" required placeholder="you@example.com"
+                 style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)">
+        </div>
+        <div style="grid-column:1 / -1">
+          <label for="subject">Subject</label>
+          <input id="subject" name="subject" required placeholder="Project idea / collaboration"
+                 style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)">
+        </div>
+        <div style="grid-column:1 / -1">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required rows="6" placeholder="Tell me a bit about your goals"
+                    style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)"></textarea>
+        </div>
+
+        <!-- Honeypot -->
+        <input type="text" name="_gotcha" style="display:none">
+
+        <div style="grid-column:1 / -1;display:flex;gap:12px;align-items:center">
+          <button class="btn" type="submit">Send</button>
+          <a class="btn secondary"
+             href="mailto:robbiahsadiq@gmail.com?subject=Portfolio%20Contact&body=Hi%20Rabiat%2C%0D%0A%0D%0A"
+             >Email instead</a>
+          <span id="formStatus" class="muted" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
+  </main>
+
+    <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <div style="margin-top: 16px; display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;">
+      <a href="mailto:robbiahsadiq@gmail.com" style="color: var(--text-muted);">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener" style="color: var(--text-muted);">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" style="color: var(--text-muted);">LinkedIn</a>
+    </div>
+  </footer>
+
+
+  <script>
+    // Mailto form handler
+    (function(){
+      const form = document.getElementById('contactForm');
+      const status = document.getElementById('formStatus');
+      if(!form) return;
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const subject = document.getElementById('subject').value;
+        const message = document.getElementById('message').value;
+        
+        const mailtoLink = `mailto:robbiahsadiq@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`From: ${name} (${email})\n\n${message}`)}`;
+        window.location.href = mailtoLink;
+        status.textContent = 'Opening email client...';
+      });
+    })();
+  </script>
+</body>
+</html>

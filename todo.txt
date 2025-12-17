@@ -1,0 +1,15 @@
+Add the image files
+
+Drop these into /assets/img/ (or change the filenames above). Quick prompts if you want to generate covers:
+
+google-aiy.jpg — “raspberry-pi-style DIY voice kit on desk, soft top-down light, clean background, product photo”
+
+hex-display.jpg — “macro photo of glowing 16-segment LED display, deep navy background, crisp”
+
+glovely-sound.jpg — “fabric glove with small sensors and wires, musical waveform overlay, studio shot”
+
+talky-talky.jpg — “minimalist web UI with colorful sound bars and microphone icon, clean light mode”
+
+smart-vr-gloves.jpg — “VR haptic glove prototype, coils and small PCB visible, dark studio”
+
+press-utsa.jpg — “newspaper headline collage, tasteful abstract, neutral colors”

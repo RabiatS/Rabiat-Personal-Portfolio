@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Case Study — Multimodal XR Cues for Pain Perception (CMU)</title>
+
+  <!-- Prevent theme flash -->
+  <script>
+    (function(){
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved==='dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header container">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html">Home</a>
+      <a href="../projects.html">Projects</a>
+      <a href="case-study-pain-xr.html" aria-current="page">Case Study</a>
+      <a href="../contact.html">Contact</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off">Tilt: Off</option>
+        <option value="desktop" selected>Tilt: Desktop</option>
+        <option value="all">Tilt: Mobile & Desktop</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="cs-hero">
+      <p class="eyebrow">CMU • Augmented Perception Lab</p>
+      <h1>Multimodal XR Cues for Pain Perception</h1>
+      <p class="lead">
+        Investigating how body-aligned visuals, audio, and ambient cues in XR modulate perceived pain
+        during controlled thermal stimulation. Deliverables include Unity prototypes, pilot study results,
+        and analysis for potential ML-assisted adaptation.
+      </p>
+      <div class="cs-metrics">
+        <div class="metric"><h3>Focus</h3><p>Perception • Comfort • Adaptation</p></div>
+        <div class="metric"><h3>Methods</h3><p>Pilot • Interviews • QST-aligned protocols</p></div>
+        <div class="metric"><h3>Stack</h3><p>Unity/XR • Telemetry • Python</p></div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>Research Questions</h2>
+      <ul>
+        <li>How do <strong>body-aligned visual cues</strong> (motion, color) shift reported pain vs. baseline and distraction VR?</li>
+        <li>Do <strong>additional sensory cues</strong> (audio/ambient) further attenuate or amplify perceived pain?</li>
+        <li>Can <strong>simple ML signals</strong> help predict high/low pain states for adaptive cue delivery?</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>Approach</h2>
+      <ul>
+        <li>Iterative XR scenes in Unity (baseline → distraction → augmentation), instrumented for timing & ratings (VAS/NRS).</li>
+        <li>Small <strong>pilot sessions</strong> with standardized thermal stimulation and structured tasks.</li>
+        <li>Lightweight telemetry for interaction events; optional physio proxies where appropriate.</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>Prototyping Notes</h2>
+<pre class="code">// Unity (C#) pseudo: body-aligned cue ramp
+void Update(){
+  float t = Mathf.PingPong(Time.time * rampSpeed, 1f);
+  var color = Color.Lerp(coolColor, warmColor, t);    // color ramp
+  armGlow.material.SetColor("_EmissionColor", color); // body-aligned emissive cue
+}</pre>
+      <p class="muted">Scenes progress from visual-only to multimodal (visual + audio/ambient). Comfort features include vignette-on-turn and adjustable locomotion.</p>
+    </section>
+
+    <section class="cs-section">
+      <h2>Analysis & Measures</h2>
+      <ul>
+        <li>Compare reported pain across conditions (baseline, distraction, augmentation).</li>
+        <li>Timing of cue exposure vs. rating changes.</li>
+        <li>Exploratory ML: simple classifiers distinguishing high/low states from session features.</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>Artifacts</h2>
+      <div class="media-grid">
+        <div class="media-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin:20px 0">
+          <figure style="margin:0;padding:16px;border:1px solid var(--ring);border-radius:14px;background:var(--card)">
+            <div style="aspect-ratio:16/9;background:linear-gradient(135deg,#0ea5e9,#6366f1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px">Prototype Image Placeholder</div>
+            <figcaption class="muted" style="margin-top:10px">Prototype v0: body-aligned glow and color ramp.</figcaption>
+          </figure>
+          <figure style="margin:0;padding:16px;border:1px solid var(--ring);border-radius:14px;background:var(--card)">
+            <div style="aspect-ratio:16/9;background:linear-gradient(135deg,#6366f1,#a78bfa);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px">Prototype Image Placeholder</div>
+            <figcaption class="muted" style="margin-top:10px">Prototype v1: ambient shift + in-VR rating UI.</figcaption>
+          </figure>
+        </div>
+      </div>
+      <p style="margin-top:10px">
+        <a class="btn secondary" href="HCI_Proposal_for_Independent_Study_Rabiat_XR.pdf" target="_blank" rel="noopener">
+          Proposal (PDF)
+        </a>
+      </p>
+    </section>
+
+    <section class="cs-next">
+      <a class="btn" href="../projects.html">Back to Projects</a>
+      <a class="btn secondary" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    © <span id="year"></span> — Case study in progress. Contact for details.
+  </footer>
+</body>
+</html>
