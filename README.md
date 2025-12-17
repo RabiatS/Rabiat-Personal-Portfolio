@@ -1,6 +1,6 @@
 # Rabiat Sadiq Portfolio Website
 
-A comprehensive, interactive portfolio website showcasing interdisciplinary work in Applied ML, XR, and Human-Computer Interaction.
+A comprehensive, interactive portfolio website showcasing my interdisciplinary work in Applied ML, XR, and Human-Computer Interaction.
 
 ## File Structure
 
