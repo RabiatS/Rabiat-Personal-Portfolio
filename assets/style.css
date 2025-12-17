@@ -296,10 +296,10 @@ h3 {
 .vr-eye {
   position: relative;
   z-index: 2;
-  transform: scale(0.7);
+  transform: scale(0.55);
   transition: transform 0.3s ease;
   pointer-events: none;
-  margin: 0 auto 20px auto;
+  margin: 0 auto 10px auto;
   display: flex;
   justify-content: center;
 }
@@ -447,8 +447,8 @@ h3 {
   position: relative;
   z-index: 1;
   text-align: center;
-  padding: 80px 24px;
-  max-width: 1100px;
+  padding: 40px 24px;
+  max-width: 1400px;
   width: 100%;
 }
 
@@ -472,7 +472,7 @@ h3 {
   gap: 32px;
   justify-content: center;
   flex-wrap: wrap;
-  margin: 32px 0;
+  margin: 20px 0;
 }
 
 .hero-stat {
@@ -498,7 +498,7 @@ h3 {
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
-  margin: 24px 0;
+  margin: 16px 0;
 }
 
 .tag {
@@ -525,7 +525,7 @@ h3 {
   gap: 16px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .scroll-cue {
@@ -538,7 +538,7 @@ h3 {
   border: 2px solid rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  margin-top: 48px;
+  margin-top: 20px;
   color: #ffffff;
   font-size: 24px;
   transition: all 0.3s ease;
