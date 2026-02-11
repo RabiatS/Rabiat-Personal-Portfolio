@@ -25,12 +25,40 @@
   if (!btn) return;
   
   const colorSchemes = [
+    // Original themes
     { name: 'default', primary: '#7c3aed', accent: '#ec4899', hero: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 50%, #f59e0b 100%)' },
-    { name: 'ocean', primary: '#0891b2', accent: '#06b6d4', hero: 'linear-gradient(135deg, #0c4a6e 0%, #0891b2 50%, #22d3ee 100%)' },
-    { name: 'sunset', primary: '#ea580c', accent: '#f59e0b', hero: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #fbbf24 100%)' },
-    { name: 'forest', primary: '#059669', accent: '#10b981', hero: 'linear-gradient(135deg, #064e3b 0%, #059669 50%, #34d399 100%)' },
-    { name: 'berry', primary: '#be185d', accent: '#db2777', hero: 'linear-gradient(135deg, #831843 0%, #be185d 50%, #f472b6 100%)' },
-    { name: 'neon', primary: '#8b5cf6', accent: '#06ffa5', hero: 'linear-gradient(135deg, #1e1b4b 0%, #8b5cf6 50%, #06ffa5 100%)' }
+    
+    // New themes from user request
+    { name: 'magenta', primary: '#9b4d7d', accent: '#d4a5c9', hero: 'linear-gradient(135deg, #7a3a5c 0%, #9b4d7d 50%, #d4a5c9 100%)' },
+    { name: 'bronze-copper', primary: '#b87333', accent: '#d4a574', hero: 'linear-gradient(135deg, #8b5a2b 0%, #b87333 50%, #d4a574 100%)' },
+    { name: 'periwinkle', primary: '#4169a1', accent: '#a8b5d9', hero: 'linear-gradient(135deg, #2d4a7a 0%, #4169a1 50%, #a8b5d9 100%)' },
+    { name: 'mint-seafoam', primary: '#3d9a8b', accent: '#98d9cd', hero: 'linear-gradient(135deg, #2a7267 0%, #3d9a8b 50%, #98d9cd 100%)' },
+    { name: 'wine-burgundy', primary: '#722f37', accent: '#c9a5a5', hero: 'linear-gradient(135deg, #4a1d22 0%, #722f37 50%, #c9a5a5 100%)' },
+    { name: 'turquoise', primary: '#40a4b8', accent: '#8fd4e0', hero: 'linear-gradient(135deg, #2d7a8a 0%, #40a4b8 50%, #8fd4e0 100%)' },
+    { name: 'mauve-lilac', primary: '#7b5d8e', accent: '#c9b3d4', hero: 'linear-gradient(135deg, #5a4268 0%, #7b5d8e 50%, #c9b3d4 100%)' },
+    { name: 'gold-mustard', primary: '#c9a227', accent: '#e8d590', hero: 'linear-gradient(135deg, #9a7b1c 0%, #c9a227 50%, #e8d590 100%)' },
+    { name: 'steel-blue', primary: '#4a6d8c', accent: '#a8c0d4', hero: 'linear-gradient(135deg, #345068 0%, #4a6d8c 50%, #a8c0d4 100%)' },
+    { name: 'celadon', primary: '#5b9a6f', accent: '#a8d4b4', hero: 'linear-gradient(135deg, #3d7050 0%, #5b9a6f 50%, #a8d4b4 100%)' },
+    { name: 'pastel-maroon', primary: '#6b4d3a', accent: '#d4a5a5', hero: 'linear-gradient(135deg, #4a342a 0%, #6b4d3a 50%, #d4a5a5 100%)' },
+    { name: 'ocean-blue', primary: '#4a7dc4', accent: '#a8c8e8', hero: 'linear-gradient(135deg, #2d5a9a 0%, #4a7dc4 50%, #a8c8e8 100%)' },
+    { name: 'forest-green', primary: '#3d6b4f', accent: '#6ba87d', hero: 'linear-gradient(135deg, #2a4a36 0%, #3d6b4f 50%, #6ba87d 100%)' },
+    { name: 'sunset-orange', primary: '#cc8844', accent: '#f5d4b3', hero: 'linear-gradient(135deg, #a66633 0%, #cc8844 50%, #f5d4b3 100%)' },
+    { name: 'lavender-purple', primary: '#7b68c4', accent: '#c4b3e8', hero: 'linear-gradient(135deg, #5a4a9a 0%, #7b68c4 50%, #c4b3e8 100%)' },
+    { name: 'coral-pink', primary: '#c94444', accent: '#e8a8a8', hero: 'linear-gradient(135deg, #a63333 0%, #c94444 50%, #e8a8a8 100%)' },
+    { name: 'midnight-navy', primary: '#2d4466', accent: '#7a99bb', hero: 'linear-gradient(135deg, #1a2a40 0%, #2d4466 50%, #7a99bb 100%)' },
+    { name: 'sage-mint', primary: '#5a9a6f', accent: '#b3d9c4', hero: 'linear-gradient(135deg, #3d7050 0%, #5a9a6f 50%, #b3d9c4 100%)' },
+    { name: 'rose-gold', primary: '#b8756d', accent: '#e8c8b3', hero: 'linear-gradient(135deg, #9a5a52 0%, #b8756d 50%, #e8c8b3 100%)' },
+    { name: 'slate-gray', primary: '#4a5568', accent: '#a0aec0', hero: 'linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #a0aec0 100%)' },
+    { name: 'teal-cyan', primary: '#2d8a8a', accent: '#7dd4d4', hero: 'linear-gradient(135deg, #1a6060 0%, #2d8a8a 50%, #7dd4d4 100%)' },
+    { name: 'plum-berry', primary: '#8b4a8b', accent: '#d4a5d4', hero: 'linear-gradient(135deg, #6b2d6b 0%, #8b4a8b 50%, #d4a5d4 100%)' },
+    { name: 'amber-honey', primary: '#cc9944', accent: '#f5e0b3', hero: 'linear-gradient(135deg, #a67a33 0%, #cc9944 50%, #f5e0b3 100%)' },
+    { name: 'sky-azure', primary: '#4a8acc', accent: '#b3d4f5', hero: 'linear-gradient(135deg, #336ba6 0%, #4a8acc 50%, #b3d4f5 100%)' },
+    { name: 'lime-green', primary: '#5a9a44', accent: '#a8d990', hero: 'linear-gradient(135deg, #3d7030 0%, #5a9a44 50%, #a8d990 100%)' },
+    { name: 'crimson-red', primary: '#b83030', accent: '#e8a0a0', hero: 'linear-gradient(135deg, #8b2020 0%, #b83030 50%, #e8a0a0 100%)' },
+    { name: 'indigo-violet', primary: '#6b5acd', accent: '#b3a8e8', hero: 'linear-gradient(135deg, #4a3da6 0%, #6b5acd 50%, #b3a8e8 100%)' },
+    { name: 'peach-apricot', primary: '#cc7744', accent: '#f5d0b3', hero: 'linear-gradient(135deg, #a65a33 0%, #cc7744 50%, #f5d0b3 100%)' },
+    { name: 'charcoal', primary: '#3d3d3d', accent: '#8a8a8a', hero: 'linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 50%, #8a8a8a 100%)' },
+    { name: 'emerald-jade', primary: '#3d9a6b', accent: '#7dd4a8', hero: 'linear-gradient(135deg, #2a7050 0%, #3d9a6b 50%, #7dd4a8 100%)' }
   ];
   
   let currentScheme = parseInt(localStorage.getItem('colorScheme') || '0');
@@ -309,6 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Embedded projects data (works without server)
   const EMBEDDED_PROJECTS = [
+    {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 — XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR","VR","Research","HCI","Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",caseStudy:null,status:"complete",images:[],year:"2025"},
     {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML","Data","Streaming","CV","Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps.",github:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:[],year:"2025"},
     {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves — 1st Place UTSA",category:"XR / Unity / Immersive",tags:["XR","Hardware","Unity","Research"],description:"Led team to build affordable haptic glove with flex sensors and EM braking. 18% latency reduction, 24% comfort improvement.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",caseStudy:"case-studies/case-study.html",status:"complete",images:["assets/mm.png"],year:"2024"},
     {id:"xr-pain-perception",title:"XR Pain Augmentation Research",subtitle:"CMU Augmented Perception Lab",category:"XR / Unity / Immersive",tags:["XR","Research","HCI","Perception"],description:"Multimodal XR prototypes to study pain perception; building adaptive interfaces with structured logging for ML personalization.",github:null,caseStudy:"case-studies/case-study-pain-xr.html",status:"complete",images:[],year:"2025"},
