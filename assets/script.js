@@ -72,6 +72,43 @@
     }
   };
   
+  const showPartyModePopup = () => {
+    // Remove existing popup if any
+    const existing = document.querySelector('.party-mode-popup');
+    if (existing) existing.remove();
+    
+    const popup = document.createElement('div');
+    popup.className = 'party-mode-popup';
+    popup.innerHTML = '🎉 Party Mode Activated! 🌈';
+    popup.style.cssText = `
+      position: fixed;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b, #ff006e);
+      background-size: 200% 200%;
+      animation: rainbowShift 1s ease infinite, partyFadeIn 0.5s ease forwards, partyFadeOut 0.5s ease 2.5s forwards;
+      color: white;
+      padding: 16px 32px;
+      border-radius: 50px;
+      font-size: 18px;
+      font-weight: 700;
+      white-space: nowrap;
+      z-index: 10001;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 60px rgba(255,0,110,0.5);
+      pointer-events: none;
+      opacity: 0;
+    `;
+    document.body.appendChild(popup);
+    
+    // Remove after animation completes
+    setTimeout(() => {
+      if (popup.parentNode) {
+        popup.remove();
+      }
+    }, 3000);
+  };
+  
   const initial = localStorage.getItem('theme') ||
     (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   
@@ -108,6 +145,19 @@
         setTimeout(() => {
           btn.style.transform = '';
         }, 600);
+        
+        // Show party mode popup
+        showPartyModePopup();
+        
+        // Add rainbow effects to VR headset for 3 seconds only
+        const vrEye = document.getElementById('vrEye');
+        if (vrEye) {
+          vrEye.classList.add('rainbow-vr-temp');
+          setTimeout(() => {
+            vrEye.classList.remove('rainbow-vr-temp');
+          }, 3000);
+        }
+        
         return;
       }
       
@@ -308,8 +358,10 @@ document.addEventListener('DOMContentLoaded', () => {
     g.addColorStop(1,'rgba(10,10,30,0.3)');
     ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
 
-    const offsetX = (cur.x - 0.5) * 25;
-    const offsetY = (cur.y - 0.5) * 20;
+    // Double the parallax movement in rainbow mode
+    const parallaxMultiplier = rainbowMode ? 4 : 1;
+    const offsetX = (cur.x - 0.5) * 25 * parallaxMultiplier;
+    const offsetY = (cur.y - 0.5) * 20 * parallaxMultiplier;
     const t = now * 0.001;
     const twinkleSpeed = rainbowMode ? 8 : 3; // Faster twinkling in rainbow mode
 
