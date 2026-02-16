@@ -22,11 +22,30 @@
   <header class="header">
     <a class="brand" href="index.html">Rabiat Sadiq</a>
     <nav class="nav" aria-label="Primary">
-      <a href="index.html">Home</a>
-      <a href="projects.html">Projects</a>
-      <a href="cool.html">Cool</a>
-      <a href="contact.html">Contact</a>
-      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="coursework.html" class="nav-pill">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" class="nav-pill nav-external">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-text">LinkedIn</span>
+      </a>
     </nav>
     <div class="header-controls">
       <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
@@ -68,7 +87,7 @@
           </div>
         </div>
         
-        <p class="eyebrow">Hey there! 👋</p>
+        <p class="eyebrow">Hey there! 👋🏾</p>
         <h1>
           I'm <span class="grad">Rabiat</span> — I Build<br>
           <span class="grad">XR × ML</span> Magic
@@ -80,20 +99,6 @@
           I learn quickly, adapt when things get hard, and build whatever is needed to get the job done. MHCI @ CMU.
         </p>
 
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <strong>32+</strong>
-            <span>Projects Built</span>
-          </div>
-          <div class="hero-stat">
-            <strong>CMU</strong>
-            <span>XR Researcher</span>
-          </div>
-          <div class="hero-stat">
-            <strong>Builder</strong>
-            <span>XR × ML × HCI</span>
-          </div>
-        </div>
 
         <div class="badges">
           <span class="tag">Applied ML</span>
@@ -142,15 +147,18 @@
           </div>
         </article>
 
-        <article class="card img-card" data-tags="ML Data Industry"
+        <article class="card img-card" data-tags="ML Data CV Audio"
                  style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
           <div class="card-body">
-            <h3><a href="case-studies/case-study-ps.html" style="color:inherit">PlayStation Internship</a></h3>
-            <p class="muted">End-to-end ML pipeline for gameplay score extraction. Parallel processing with Ray, FFmpeg, OpenCV, and Databricks. 60%+ faster processing.</p>
+            <h3><a href="projects.html#multimodal-pipeline" style="color:inherit">Multimodal Unstructured Data Pipeline</a></h3>
+            <p class="muted">Modular pipeline converting unstructured video, audio, and sensor data into structured, timestamped events. Production-ready processing with Ray, FFmpeg, and MLflow.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
               <span class="tag">ML</span>
               <span class="tag">Data</span>
-              <span class="tag">Industry</span>
+              <span class="tag">CV</span>
+            </div>
+            <div style="margin-top: 10px;">
+              <a href="https://github.com/RabiatS" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8;">GitHub ↗</a>
             </div>
           </div>
         </article>
@@ -363,6 +371,9 @@
             <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Deep Learning</span>
           </div>
         </article>
+        <article class="card">
+          <h3>Alief Early College Highschool</h3>
+        </article>
       </div>
     </section>
 
@@ -411,6 +422,7 @@
             <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Core ML</span>
             <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">HealthKit</span>
             <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">AWS</span>
+            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">GCP</span>
           </div>
         </div>
         <div class="card">
@@ -425,10 +437,21 @@
         <div class="card">
           <h3 style="font-size: 18px; margin-bottom: 16px;">Hardware / Embedded</h3>
           <div class="badges" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Arduino</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Raspberry Pi</span>
+            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Microcontroller</span>
+            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Sensor & Signal Processing</span>
             <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">ESP32</span>
             <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Sensors</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 16px;">Research Methods</h3>
+          <div class="badges" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">User-Centered Research</span>
+            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">UX Evaluation</span>
+            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">HCI Research</span>
+            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Experimental Design</span>
+            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Data Collection</span>
+            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Qualitative Analysis</span>
           </div>
         </div>
       </div>

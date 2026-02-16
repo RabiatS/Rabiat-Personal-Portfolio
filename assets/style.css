@@ -132,36 +132,110 @@ img {
 
 .nav {
   display: flex;
-  gap: 32px;
+  gap: 8px;
   align-items: center;
+  padding: 4px;
+  background: var(--bg-elevated);
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
-.nav a {
-  font-size: 15px;
+.nav-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-muted);
   position: relative;
-  padding: 8px 0;
+  padding: 8px 16px;
+  border-radius: 50px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.nav a:hover {
-  color: var(--text);
-}
-
-.nav a[aria-current="page"] {
-  color: var(--primary);
-  font-weight: 600;
-}
-
-.nav a[aria-current="page"]::after {
+.nav-pill::before {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-  border-radius: 2px;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 50px;
+  z-index: -1;
+}
+
+.nav-pill:hover {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.nav-pill:hover::before {
+  opacity: 1;
+}
+
+.nav-pill[aria-current="page"],
+.nav-pill.active {
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+}
+
+.nav-pill[aria-current="page"]::before,
+.nav-pill.active::before {
+  opacity: 1;
+}
+
+.nav-icon {
+  font-size: 16px;
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-pill:hover .nav-icon {
+  transform: scale(1.2) rotate(5deg);
+}
+
+.nav-text {
+  position: relative;
+  z-index: 1;
+}
+
+.nav-external .nav-icon::after {
+  content: '↗';
+  font-size: 10px;
+  margin-left: 2px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-external:hover .nav-icon::after {
+  opacity: 1;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .nav {
+    gap: 4px;
+    padding: 2px;
+  }
+  
+  .nav-pill {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .nav-text {
+    display: none;
+  }
+  
+  .nav-icon {
+    font-size: 18px;
+  }
 }
 
 .header-controls {
@@ -184,6 +258,26 @@ img {
 .toggle:hover, .tilt-select:hover {
   border-color: var(--border-strong);
   background: var(--bg-elevated);
+  transform: translateY(-1px);
+}
+
+#funToggle {
+  animation: paintSpin 1s ease-in-out;
+}
+
+@keyframes paintSpin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.15);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+#funToggle:hover {
   transform: translateY(-1px);
 }
 
@@ -906,6 +1000,174 @@ body:not(.on-hero) main .btn.secondary:hover {
 .on-hero .toggle:hover,
 .on-hero .tilt-select:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.on-hero .nav {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.on-hero .nav-pill {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.on-hero .nav-pill:hover {
+  color: white;
+}
+
+.on-hero .nav-pill[aria-current="page"],
+.on-hero .nav-pill.active {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  color: white;
+}
+
+/* RAINBOW MODE - Secret Hyper Mode 🌈 */
+@keyframes rainbowShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes rainbowPulse {
+  0%, 100% { filter: hue-rotate(0deg) saturate(1); }
+  25% { filter: hue-rotate(90deg) saturate(1.2); }
+  50% { filter: hue-rotate(180deg) saturate(1); }
+  75% { filter: hue-rotate(270deg) saturate(1.2); }
+}
+
+@keyframes rainbowText {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.rainbow-mode {
+  --primary: #ff006e;
+  --accent: #8338ec;
+  animation: rainbowPulse 3s ease-in-out infinite;
+}
+
+.rainbow-mode body {
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 25%, #3a86ff 50%, #06ffa5 75%, #ffbe0b 100%, #ff006e 100%);
+  background-size: 400% 400%;
+  animation: rainbowShift 5s ease infinite;
+}
+
+.rainbow-mode .brand,
+.rainbow-mode h1 .grad,
+.rainbow-mode h2,
+.rainbow-mode h3 {
+  background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b, #ff006e);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rainbowText 3s ease infinite;
+}
+
+.rainbow-mode .nav-pill {
+  background: linear-gradient(135deg, rgba(255,0,110,0.2), rgba(131,56,236,0.2), rgba(58,134,255,0.2));
+  background-size: 200% 200%;
+  animation: rainbowShift 2s ease infinite;
+  border-color: rgba(255,255,255,0.3);
+}
+
+.rainbow-mode .nav-pill:hover::before {
+  background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b);
+  background-size: 200% 200%;
+  animation: rainbowShift 1s ease infinite;
+}
+
+.rainbow-mode .nav-pill[aria-current="page"],
+.rainbow-mode .nav-pill.active {
+  background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b);
+  background-size: 200% 200%;
+  animation: rainbowShift 1s ease infinite;
+}
+
+.rainbow-mode .card {
+  border-color: rgba(255,255,255,0.2);
+  background: linear-gradient(135deg, rgba(255,0,110,0.1), rgba(131,56,236,0.1), rgba(58,134,255,0.1));
+  background-size: 200% 200%;
+  animation: rainbowShift 4s ease infinite;
+}
+
+.rainbow-mode .card:hover {
+  border-color: rgba(255,255,255,0.5);
+  box-shadow: 0 8px 24px rgba(255,0,110,0.3), 0 0 40px rgba(131,56,236,0.2);
+}
+
+.rainbow-mode .btn {
+  background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b);
+  background-size: 200% 200%;
+  animation: rainbowShift 2s ease infinite;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+
+.rainbow-mode .btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(255,0,110,0.5), 0 0 40px rgba(131,56,236,0.3);
+}
+
+.rainbow-mode .tag {
+  background: linear-gradient(135deg, rgba(255,0,110,0.3), rgba(131,56,236,0.3), rgba(58,134,255,0.3));
+  background-size: 200% 200%;
+  animation: rainbowShift 3s ease infinite;
+  border-color: rgba(255,255,255,0.4);
+}
+
+.rainbow-mode .hero--fullscreen {
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 20%, #3a86ff 40%, #06ffa5 60%, #ffbe0b 80%, #ff006e 100%);
+  background-size: 400% 400%;
+  animation: rainbowShift 8s ease infinite;
+}
+
+.rainbow-mode .toggle,
+.rainbow-mode .tilt-select {
+  background: linear-gradient(135deg, rgba(255,0,110,0.3), rgba(131,56,236,0.3));
+  background-size: 200% 200%;
+  animation: rainbowShift 2s ease infinite;
+  border-color: rgba(255,255,255,0.4);
+}
+
+.rainbow-mode .toggle:hover,
+.rainbow-mode .tilt-select:hover {
+  background: linear-gradient(135deg, rgba(255,0,110,0.5), rgba(131,56,236,0.5));
+  transform: scale(1.1);
+}
+
+.rainbow-mode #funToggle {
+  animation: paintSpin 1s ease-in-out, rainbowShift 2s ease infinite;
+}
+
+.rainbow-mode #themeToggle {
+  animation: rainbowShift 2s ease infinite;
+}
+
+.rainbow-mode .header {
+  background: linear-gradient(135deg, rgba(255,0,110,0.9), rgba(131,56,236,0.9), rgba(58,134,255,0.9));
+  background-size: 200% 200%;
+  animation: rainbowShift 3s ease infinite;
+  border-color: rgba(255,255,255,0.3);
+}
+
+.rainbow-mode .section-head h2 {
+  background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b, #ff006e);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rainbowText 3s ease infinite;
+}
+
+.rainbow-mode a {
+  transition: all 0.2s ease;
+}
+
+.rainbow-mode a:hover {
+  filter: hue-rotate(90deg) saturate(1.2);
 }
 
 /* Search input styling */

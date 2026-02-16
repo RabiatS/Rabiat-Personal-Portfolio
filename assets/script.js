@@ -1,20 +1,123 @@
-// THEME TOGGLE
+// THEME TOGGLE with SECRET RAINBOW MODE
 (function(){
   const btn = document.getElementById('themeToggle');
+  let hoverTimeout = null;
+  let secretTooltip = null;
+  let isRainbowMode = localStorage.getItem('rainbowMode') === 'true';
+  
   const setTheme = (mode) => {
+    if (mode === 'rainbow') {
+      document.documentElement.classList.add('rainbow-mode');
+      document.body.classList.add('rainbow-mode');
+      isRainbowMode = true;
+      localStorage.setItem('rainbowMode', 'true');
+      localStorage.setItem('theme', 'rainbow');
+      // Trigger rainbow nebula mode
+      window.dispatchEvent(new CustomEvent('rainbowMode', { detail: { enabled: true } }));
+      return;
+    }
+    
+    document.documentElement.classList.remove('rainbow-mode');
+    document.body.classList.remove('rainbow-mode');
+    isRainbowMode = false;
+    localStorage.setItem('rainbowMode', 'false');
+    
     const dark = mode === 'dark';
     document.documentElement.classList.toggle('dark', dark);
     document.body.classList.toggle('dark', dark);
     document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
     localStorage.setItem('theme', dark ? 'dark' : 'light');
+    window.dispatchEvent(new CustomEvent('rainbowMode', { detail: { enabled: false } }));
   };
+  
+  const createSecretTooltip = () => {
+    if (secretTooltip) return;
+    secretTooltip = document.createElement('div');
+    secretTooltip.className = 'secret-mode-tooltip';
+    secretTooltip.innerHTML = '🌈 Secret Mode';
+    secretTooltip.style.cssText = `
+      position: absolute;
+      top: -45px;
+      right: 0;
+      background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b, #ff006e);
+      background-size: 200% 200%;
+      animation: rainbowShift 2s linear infinite;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 10000;
+    `;
+    btn.style.position = 'relative';
+    btn.appendChild(secretTooltip);
+  };
+  
+  const showSecretTooltip = () => {
+    if (!secretTooltip) createSecretTooltip();
+    secretTooltip.style.opacity = '1';
+    secretTooltip.style.transform = 'translateY(0)';
+  };
+  
+  const hideSecretTooltip = () => {
+    if (secretTooltip) {
+      secretTooltip.style.opacity = '0';
+      secretTooltip.style.transform = 'translateY(10px)';
+    }
+  };
+  
   const initial = localStorage.getItem('theme') ||
     (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  setTheme(initial);
+  
+  if (initial === 'rainbow' || isRainbowMode) {
+    setTheme('rainbow');
+  } else {
+    setTheme(initial);
+  }
+  
   if (btn){
-    btn.addEventListener('click', ()=>{
-      const now = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-      setTheme(now);
+    // Long hover detection (3 seconds)
+    btn.addEventListener('mouseenter', () => {
+      hoverTimeout = setTimeout(() => {
+        showSecretTooltip();
+      }, 3000);
+    });
+    
+    btn.addEventListener('mouseleave', () => {
+      if (hoverTimeout) {
+        clearTimeout(hoverTimeout);
+        hoverTimeout = null;
+      }
+      hideSecretTooltip();
+    });
+    
+    btn.addEventListener('click', (e) => {
+      // If secret tooltip is visible, activate rainbow mode
+      if (secretTooltip && secretTooltip.style.opacity === '1') {
+        e.stopPropagation();
+        setTheme('rainbow');
+        hideSecretTooltip();
+        // Fun animation
+        btn.style.transform = 'scale(1.3) rotate(360deg)';
+        setTimeout(() => {
+          btn.style.transform = '';
+        }, 600);
+        return;
+      }
+      
+      // Normal toggle between light/dark
+      if (isRainbowMode) {
+        setTheme('dark');
+      } else {
+        const now = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+        setTheme(now);
+      }
     });
   }
 })();
@@ -112,6 +215,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // smoothed mouse (current follows target)
   let target = {x:0.5, y:0.5}, cur = {x:0.5, y:0.5};
   let lastShootingStar = 0;
+  let rainbowMode = localStorage.getItem('rainbowMode') === 'true';
+
+  // Rainbow color palette
+  const rainbowColors = [
+    {r:255, g:0, b:110},   // Pink
+    {r:131, g:56, b:236},  // Purple
+    {r:58, g:134, b:255},  // Blue
+    {r:6, g:255, b:165},   // Cyan
+    {r:255, g:190, b:11},  // Yellow
+    {r:255, g:0, b:110}    // Pink (loop)
+  ];
+
+  function getRainbowColor(t, offset = 0) {
+    const index = Math.floor((t + offset) * rainbowColors.length) % rainbowColors.length;
+    const nextIndex = (index + 1) % rainbowColors.length;
+    const blend = ((t + offset) * rainbowColors.length) % 1;
+    const c1 = rainbowColors[index];
+    const c2 = rainbowColors[nextIndex];
+    return {
+      r: Math.round(c1.r + (c2.r - c1.r) * blend),
+      g: Math.round(c1.g + (c2.g - c1.g) * blend),
+      b: Math.round(c1.b + (c2.b - c1.b) * blend)
+    };
+  }
 
   function resize(){
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -124,40 +251,48 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function seed(){
-    // More stars, larger and brighter
-    const count = Math.round((w*h)/(6000*dpr));
+    // More stars in rainbow mode, larger and brighter
+    const baseCount = rainbowMode ? 2000 : 6000;
+    const count = Math.round((w*h)/(baseCount*dpr));
     stars = Array.from({length: count}, () => ({
       x: Math.random()*w,
       y: Math.random()*h,
       z: Math.random()*0.5 + 0.5,
-      r: Math.random()*2.5 + 1.0,
+      r: rainbowMode ? Math.random()*3.5 + 1.5 : Math.random()*2.5 + 1.0,
       tw: Math.random()*0.5 + 0.5,
-      color: Math.random() > 0.7 ? 'warm' : 'cool'
+      color: rainbowMode ? Math.random() : (Math.random() > 0.7 ? 'warm' : 'cool'),
+      hue: Math.random() // For rainbow mode
     }));
   }
 
   // Spawn a shooting star
   function spawnShootingStar(){
     const angle = Math.PI * 0.15 + Math.random() * Math.PI * 0.2; // 15-35 degrees
-    const speed = 8 + Math.random() * 12;
+    const speed = rainbowMode ? (12 + Math.random() * 18) : (8 + Math.random() * 12);
     shootingStars.push({
       x: Math.random() * w * 0.8,
       y: -20,
       vx: Math.cos(angle) * speed,
       vy: Math.sin(angle) * speed,
       life: 1,
-      length: 80 + Math.random() * 120,
-      width: 2 + Math.random() * 2
+      length: rainbowMode ? (120 + Math.random() * 180) : (80 + Math.random() * 120),
+      width: rainbowMode ? (3 + Math.random() * 3) : (2 + Math.random() * 2),
+      hue: Math.random() // For rainbow mode
     });
   }
 
   function draw(){
     const now = performance.now();
     
-    // Randomly spawn shooting stars (every 3-8 seconds)
-    if (now - lastShootingStar > 3000 + Math.random() * 5000) {
-      if (Math.random() > 0.3) { // 70% chance when timer hits
+    // Spawn shooting stars more frequently in rainbow mode
+    const spawnInterval = rainbowMode ? (500 + Math.random() * 1000) : (3000 + Math.random() * 5000);
+    if (now - lastShootingStar > spawnInterval) {
+      if (rainbowMode || Math.random() > 0.3) {
         spawnShootingStar();
+        // Spawn multiple in rainbow mode
+        if (rainbowMode && Math.random() > 0.5) {
+          setTimeout(() => spawnShootingStar(), 100);
+        }
       }
       lastShootingStar = now;
     }
@@ -176,17 +311,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const offsetX = (cur.x - 0.5) * 25;
     const offsetY = (cur.y - 0.5) * 20;
     const t = now * 0.001;
+    const twinkleSpeed = rainbowMode ? 8 : 3; // Faster twinkling in rainbow mode
 
     // Draw stars
     for(const s of stars){
       const x = s.x + offsetX * (1.6 - s.z);
       const y = s.y + offsetY * (1.6 - s.z);
-      const twinkle = 0.7 + Math.sin(t*3 + s.x*0.003 + s.y*0.003)*0.3*s.tw;
+      const twinkle = 0.7 + Math.sin(t*twinkleSpeed + s.x*0.003 + s.y*0.003)*0.3*s.tw;
 
       // Draw star glow
-      const glowSize = s.r * s.z * 3;
+      const glowSize = s.r * s.z * (rainbowMode ? 4 : 3);
       const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, glowSize);
-      if (s.color === 'warm') {
+      
+      if (rainbowMode) {
+        const color = getRainbowColor(t * 0.5 + s.hue, s.x * 0.001);
+        glowGradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b},${0.6*twinkle})`);
+        glowGradient.addColorStop(0.5, `rgba(${color.r},${color.g},${color.b},${0.25*twinkle})`);
+      } else if (s.color === 'warm') {
         glowGradient.addColorStop(0, `rgba(255,200,150,${0.4*twinkle})`);
         glowGradient.addColorStop(0.5, `rgba(255,150,100,${0.15*twinkle})`);
       } else {
@@ -202,14 +343,24 @@ document.addEventListener('DOMContentLoaded', () => {
       // Draw star core
       ctx.beginPath();
       ctx.arc(x, y, s.r*s.z*0.8, 0, Math.PI*2);
-      ctx.fillStyle = s.color === 'warm' ? `rgba(255,240,220,${twinkle})` : `rgba(255,255,255,${twinkle})`;
+      if (rainbowMode) {
+        const color = getRainbowColor(t * 0.5 + s.hue, s.x * 0.001);
+        ctx.fillStyle = `rgba(${color.r},${color.g},${color.b},${twinkle})`;
+      } else {
+        ctx.fillStyle = s.color === 'warm' ? `rgba(255,240,220,${twinkle})` : `rgba(255,255,255,${twinkle})`;
+      }
       ctx.fill();
 
-      // Draw star rays for larger stars
-      if (s.r > 1.5) {
-        ctx.strokeStyle = `rgba(255,255,255,${0.3*twinkle})`;
-        ctx.lineWidth = 0.5;
-        const rayLen = s.r * s.z * 2;
+      // Draw star rays for larger stars (more rays in rainbow mode)
+      if (s.r > (rainbowMode ? 1.2 : 1.5)) {
+        if (rainbowMode) {
+          const color = getRainbowColor(t * 0.5 + s.hue, s.x * 0.001);
+          ctx.strokeStyle = `rgba(${color.r},${color.g},${color.b},${0.5*twinkle})`;
+        } else {
+          ctx.strokeStyle = `rgba(255,255,255,${0.3*twinkle})`;
+        }
+        ctx.lineWidth = rainbowMode ? 1 : 0.5;
+        const rayLen = s.r * s.z * (rainbowMode ? 3 : 2);
         ctx.beginPath();
         ctx.moveTo(x - rayLen, y);
         ctx.lineTo(x + rayLen, y);
@@ -218,6 +369,17 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.moveTo(x, y - rayLen);
         ctx.lineTo(x, y + rayLen);
         ctx.stroke();
+        // Extra diagonal rays in rainbow mode
+        if (rainbowMode) {
+          ctx.beginPath();
+          ctx.moveTo(x - rayLen*0.7, y - rayLen*0.7);
+          ctx.lineTo(x + rayLen*0.7, y + rayLen*0.7);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x + rayLen*0.7, y - rayLen*0.7);
+          ctx.lineTo(x - rayLen*0.7, y + rayLen*0.7);
+          ctx.stroke();
+        }
       }
     }
 
@@ -240,10 +402,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const tailY = ss.y - (ss.vy / Math.sqrt(ss.vx*ss.vx + ss.vy*ss.vy)) * ss.length;
       
       const gradient = ctx.createLinearGradient(tailX, tailY, ss.x, ss.y);
-      gradient.addColorStop(0, 'rgba(255,255,255,0)');
-      gradient.addColorStop(0.3, `rgba(200,220,255,${0.3 * ss.life})`);
-      gradient.addColorStop(0.7, `rgba(255,255,255,${0.8 * ss.life})`);
-      gradient.addColorStop(1, `rgba(255,255,255,${ss.life})`);
+      
+      if (rainbowMode) {
+        const color1 = getRainbowColor(t * 0.8 + ss.hue, 0);
+        const color2 = getRainbowColor(t * 0.8 + ss.hue, 0.3);
+        const color3 = getRainbowColor(t * 0.8 + ss.hue, 0.6);
+        gradient.addColorStop(0, `rgba(${color1.r},${color1.g},${color1.b},0)`);
+        gradient.addColorStop(0.3, `rgba(${color2.r},${color2.g},${color2.b},${0.5 * ss.life})`);
+        gradient.addColorStop(0.7, `rgba(${color3.r},${color3.g},${color3.b},${0.9 * ss.life})`);
+        gradient.addColorStop(1, `rgba(255,255,255,${ss.life})`);
+      } else {
+        gradient.addColorStop(0, 'rgba(255,255,255,0)');
+        gradient.addColorStop(0.3, `rgba(200,220,255,${0.3 * ss.life})`);
+        gradient.addColorStop(0.7, `rgba(255,255,255,${0.8 * ss.life})`);
+        gradient.addColorStop(1, `rgba(255,255,255,${ss.life})`);
+      }
 
       ctx.beginPath();
       ctx.moveTo(tailX, tailY);
@@ -255,8 +428,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Bright head
       ctx.beginPath();
-      ctx.arc(ss.x, ss.y, ss.width * 1.5 * ss.life, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,255,255,${ss.life})`;
+      ctx.arc(ss.x, ss.y, ss.width * (rainbowMode ? 2 : 1.5) * ss.life, 0, Math.PI * 2);
+      if (rainbowMode) {
+        const color = getRainbowColor(t * 0.8 + ss.hue, 0);
+        ctx.fillStyle = `rgba(${color.r},${color.g},${color.b},${ss.life})`;
+      } else {
+        ctx.fillStyle = `rgba(255,255,255,${ss.life})`;
+      }
       ctx.fill();
     }
 
@@ -280,6 +458,13 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('mousemove', setTargetFrom, {passive:true});
   canvas.addEventListener('pointermove', setTargetFrom, {passive:true});
   canvas.addEventListener('pointerleave', ()=>{ target.x=0.5; target.y=0.5; }, {passive:true});
+
+  // Listen for rainbow mode changes
+  window.addEventListener('rainbowMode', (e) => {
+    rainbowMode = e.detail.enabled;
+    seed(); // Reseed stars with new count
+    shootingStars = []; // Clear existing shooting stars
+  });
 
   window.addEventListener('resize', resize);
   window.addEventListener('orientationchange', resize);

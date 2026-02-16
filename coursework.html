@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Coursework — Rabiat Sadiq</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+  <!-- Prevent theme flash -->
+  <script>
+    (function(){
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="assets/style.css" />
+  <script src="assets/script.js" defer></script>
+  <style>
+    .semester-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+    }
+    .semester-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+    .semester-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+    .semester-icon {
+      font-size: 24px;
+    }
+    .semester-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .semester-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .course-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .course-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+    .course-item:hover {
+      background: var(--bg);
+      transform: translateX(4px);
+    }
+    .course-name {
+      flex: 1;
+      font-size: 15px;
+      color: var(--text);
+    }
+    .course-grade {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+    }
+    .course-category {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .skill-tag {
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text);
+      transition: all 0.2s ease;
+    }
+    .skill-tag:hover {
+      border-color: var(--primary);
+      background: var(--surface);
+    }
+    .year-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 48px 0 24px;
+    }
+    .year-divider h2 {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin: 0;
+    }
+    .year-divider::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+    .coursework-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 24px;
+    }
+    @media (max-width: 500px) {
+      .coursework-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header">
+    <a class="brand" href="index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="coursework.html" class="nav-pill" aria-current="page">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" class="nav-pill nav-external">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-text">LinkedIn</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off">Tilt: Off</option>
+        <option value="desktop" selected>Tilt: Desktop</option>
+        <option value="all">Tilt: All</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main style="padding-top: var(--header-height);">
+    <section class="container" style="padding-top: 80px; padding-bottom: 80px;">
+      <div class="section-head" style="margin-bottom: 48px;">
+        <div>
+          <h1>Coursework</h1>
+          <p class="lead" style="margin-top: 16px;">
+            My academic journey through Computer Engineering, AI/ML, XR and HCI
+          </p>
+        </div>
+      </div>
+
+      <!-- 2024-2025 -->
+      <div class="year-divider">
+        <h2>2024-2025</h2>
+      </div>
+
+      <div class="semester-card">
+        <div class="semester-header">
+          <span class="semester-icon">🌸</span>
+          <div>
+            <div class="semester-title">Spring 2026</div>
+            <div class="semester-subtitle">Carnegie Mellon University — MHCI</div>
+          </div>
+        </div>
+        <div class="course-list">
+          <div class="course-item">
+            <span class="course-name">Amazon Music</span>
+            <span class="course-category">Capstone</span>
+          </div>
+          <div class="course-item">
+            <span class="course-name">Multimodal Machine Learning</span>
+            <span class="course-category">ML</span>
+          </div>
+          <div class="course-item">
+            <span class="course-name">AI Augmented Designer</span>
+            <span class="course-category">AI</span>
+          </div>
+          <div class="course-item">
+            <span class="course-name">Xbox: Measuring Social</span>
+            <span class="course-category">Research</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <div class="coursework-grid">
+        <div class="semester-card">
+          <div class="semester-header">
+            <span class="semester-icon">🍂</span>
+            <div>
+              <div class="semester-title">Fall 2025</div>
+              <div class="semester-subtitle">Carnegie Mellon University — MHCI</div>
+            </div>
+          </div>
+          <div class="course-list">
+            <div class="course-item">
+              <span class="course-name">User Centered Research & Evaluation</span>
+              <span class="course-category">HCI</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Interactive Extended Reality (XR)</span>
+              <span class="course-category">XR</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Interaction Design Fundamentals</span>
+              <span class="course-category">Design</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Programming Interactive Experiences</span>
+              <span class="course-category">Dev</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Augmented Perception Lab (XR Research)</span>
+              <span class="course-category">Research</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="semester-card">
+          <div class="semester-header">
+            <span class="semester-icon">🌸</span>
+            <div>
+              <div class="semester-title">Spring 2024</div>
+              <div class="semester-subtitle">UTSA — Senior Year</div>
+            </div>
+          </div>
+          <div class="course-list">
+            <div class="course-item">
+              <span class="course-name">Senior Design II: Electromagnetic VR Gloves</span>
+              <span class="course-category">Capstone</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Introduction to Machine Learning</span>
+              <span class="course-category">ML</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Embedded Systems</span>
+              <span class="course-category">Hardware</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">VLSI Design</span>
+              <span class="course-category">Hardware</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summer 2024 - Apple -->
+      <div class="semester-card" style="border: 2px solid var(--primary); background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(236, 72, 153, 0.05));">
+        <div class="semester-header">
+          <span class="semester-icon">🍎</span>
+          <div>
+            <div class="semester-title">Summer 2024 — Apple AIML Intensive</div>
+            <div class="semester-subtitle">USC / Apple Scholar Program</div>
+          </div>
+        </div>
+        <div class="skills-grid">
+          <span class="skill-tag">Pandas</span>
+          <span class="skill-tag">Scikit-learn</span>
+          <span class="skill-tag">Linear Regression</span>
+          <span class="skill-tag">Polynomial Regression</span>
+          <span class="skill-tag">Neural Networks</span>
+          <span class="skill-tag">Deep Learning</span>
+          <span class="skill-tag">CNN</span>
+          <span class="skill-tag">RNN</span>
+          <span class="skill-tag">NLP</span>
+          <span class="skill-tag">Image Classification</span>
+          <span class="skill-tag">Video Classification</span>
+          <span class="skill-tag">Binary Classification</span>
+          <span class="skill-tag">Multi-class Classification</span>
+          <span class="skill-tag">Clustering</span>
+          <span class="skill-tag">K-Means</span>
+          <span class="skill-tag">Embeddings</span>
+          <span class="skill-tag">Decision Trees</span>
+          <span class="skill-tag">Random Forest</span>
+          <span class="skill-tag">KNN</span>
+          <span class="skill-tag">SVM</span>
+          <span class="skill-tag">Bayesian Methods</span>
+          <span class="skill-tag">XGBoost</span>
+          <span class="skill-tag">Activation Functions</span>
+          <span class="skill-tag">Loss Functions</span>
+          <span class="skill-tag">Regex</span>
+        </div>
+      </div>
+
+      <!-- 2023-2024 -->
+      <div class="year-divider">
+        <h2>2023-2024</h2>
+      </div>
+
+      <div class="coursework-grid">
+        <div class="semester-card">
+          <div class="semester-header">
+            <span class="semester-icon">🌸</span>
+            <div>
+              <div class="semester-title">Spring 2024</div>
+              <div class="semester-subtitle">UTSA — Senior Year</div>
+            </div>
+          </div>
+          <div class="course-list">
+            <div class="course-item">
+              <span class="course-name">Senior Design I</span>
+              <span class="course-category">Capstone</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Computer Organization / Architecture</span>
+              <span class="course-category">Systems</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Systems Programming</span>
+              <span class="course-category">Systems</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">ECE Lab II</span>
+              <span class="course-category">Lab</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Coding for Data</span>
+              <span class="course-category">Data</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="semester-card">
+          <div class="semester-header">
+            <span class="semester-icon">🍂</span>
+            <div>
+              <div class="semester-title">Fall 2023</div>
+              <div class="semester-subtitle">UTSA — Junior Year</div>
+            </div>
+          </div>
+          <div class="course-list">
+            <div class="course-item">
+              <span class="course-name">Electronic Devices</span>
+              <span class="course-category">EE</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">C++ and Data Structures</span>
+              <span class="course-category">CS</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Special Study: Robotics</span>
+              <span class="course-category">Research</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Linear Algebra</span>
+              <span class="course-category">Math</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Digital System Design</span>
+              <span class="course-category">Hardware</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="semester-card">
+          <div class="semester-header">
+            <span class="semester-icon">☀️</span>
+            <div>
+              <div class="semester-title">Summer 2023</div>
+              <div class="semester-subtitle">UTSA</div>
+            </div>
+          </div>
+          <div class="course-list">
+            <div class="course-item">
+              <span class="course-name">Application Programming</span>
+              <span class="course-category">CS</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Artificial Intelligence</span>
+              <span class="course-category">AI</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Probability & Stochastic Processes</span>
+              <span class="course-category">Math</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="semester-card">
+          <div class="semester-header">
+            <span class="semester-icon">🌸</span>
+            <div>
+              <div class="semester-title">Spring 2023</div>
+              <div class="semester-subtitle">UTSA — Sophomore Year</div>
+            </div>
+          </div>
+          <div class="course-list">
+            <div class="course-item">
+              <span class="course-name">ECE Lab I</span>
+              <span class="course-category">Lab</span>
+              <span class="course-grade">A</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Electronic Circuits I</span>
+              <span class="course-category">EE</span>
+              <span class="course-grade">A</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Math in Signals and Systems</span>
+              <span class="course-category">EE</span>
+              <span class="course-grade">B-</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Microcomputer Systems I</span>
+              <span class="course-category">Hardware</span>
+              <span class="course-grade">A</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Applied Engineering Analysis II</span>
+              <span class="course-category">Math</span>
+              <span class="course-grade">B</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2022-2023 -->
+      <div class="year-divider">
+        <h2>2022-2023</h2>
+      </div>
+
+      <div class="coursework-grid">
+        <div class="semester-card">
+          <div class="semester-header">
+            <span class="semester-icon">🍂</span>
+            <div>
+              <div class="semester-title">Fall 2022</div>
+              <div class="semester-subtitle">UTSA — Sophomore Year</div>
+            </div>
+          </div>
+          <div class="course-list">
+            <div class="course-item">
+              <span class="course-name">Data Structures</span>
+              <span class="course-category">CS</span>
+              <span class="course-grade">A</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Network Theory</span>
+              <span class="course-category">EE</span>
+              <span class="course-grade">B</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Applied Engineering Analysis I</span>
+              <span class="course-category">Math</span>
+              <span class="course-grade">B</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Physics for Scientists & Engineers II</span>
+              <span class="course-category">Physics</span>
+              <span class="course-grade">B</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Physics II Lab</span>
+              <span class="course-category">Lab</span>
+              <span class="course-grade">A-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="semester-card">
+          <div class="semester-header">
+            <span class="semester-icon">☀️</span>
+            <div>
+              <div class="semester-title">Summer 2022</div>
+              <div class="semester-subtitle">UTSA</div>
+            </div>
+          </div>
+          <div class="course-list">
+            <div class="course-item">
+              <span class="course-name">Computer Programming II</span>
+              <span class="course-category">CS</span>
+              <span class="course-grade">B</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Discrete Math Structures</span>
+              <span class="course-category">Math</span>
+              <span class="course-grade">B</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="semester-card">
+          <div class="semester-header">
+            <span class="semester-icon">🌸</span>
+            <div>
+              <div class="semester-title">Spring 2022</div>
+              <div class="semester-subtitle">UTSA — Freshman Year</div>
+            </div>
+          </div>
+          <div class="course-list">
+            <div class="course-item">
+              <span class="course-name">Computer Programming with Engineering Applications</span>
+              <span class="course-category">CS</span>
+              <span class="course-grade">A</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Logic Design Laboratory</span>
+              <span class="course-category">Lab</span>
+              <span class="course-grade">A+</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Logic Design</span>
+              <span class="course-category">Hardware</span>
+              <span class="course-grade">A</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Calculus II</span>
+              <span class="course-category">Math</span>
+              <span class="course-grade">A+</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Physics for Scientists & Engineers I</span>
+              <span class="course-category">Physics</span>
+              <span class="course-grade">A</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Physics I Lab</span>
+              <span class="course-category">Lab</span>
+              <span class="course-grade">A-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2021-2022 -->
+      <div class="year-divider">
+        <h2>2021-2022</h2>
+      </div>
+
+      <div class="coursework-grid">
+        <div class="semester-card">
+          <div class="semester-header">
+            <span class="semester-icon">🍂</span>
+            <div>
+              <div class="semester-title">Fall 2021</div>
+              <div class="semester-subtitle">UTSA — Freshman Year</div>
+            </div>
+          </div>
+          <div class="course-list">
+            <div class="course-item">
+              <span class="course-name">AIS: Engineering, Math, Sciences</span>
+              <span class="course-category">Intro</span>
+              <span class="course-grade">A+</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Programming I for Computer Scientists</span>
+              <span class="course-category">CS</span>
+              <span class="course-grade">A+</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Intro to Electrical & Computer Engineering</span>
+              <span class="course-category">ECE</span>
+              <span class="course-grade">A</span>
+            </div>
+            <div class="course-item">
+              <span class="course-name">Calculus I</span>
+              <span class="course-category">Math</span>
+              <span class="course-grade">A</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <div style="margin-top: 16px; display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;">
+      <a href="mailto:robbiahsadiq@gmail.com" style="color: var(--text-muted);">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener" style="color: var(--text-muted);">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" style="color: var(--text-muted);">LinkedIn</a>
+    </div>
+  </footer>
+</body>
+</html>
