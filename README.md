@@ -8,39 +8,48 @@ A comprehensive, interactive portfolio website showcasing my interdisciplinary w
 Personal webpage/
 ├── index.html              # Home page with hero, featured projects, timeline
 ├── projects.html           # Comprehensive projects page with filtering
-├── contact.html           # Contact form page
-├── cool.html              # Cool websites collection
+├── coursework.html         # Coursework showcase page
+├── contact.html            # Contact form page
+├── cool.html               # Cool websites collection
 │
-├── case-studies/          # Detailed case study pages
-│   ├── case-study.html           # Magic Mitts haptic VR glove
-│   ├── case-study-ps.html        # PlayStation internship
+├── case-studies/           # Detailed case study pages
+│   ├── case-study.html            # Magic Mitts haptic VR glove
+│   ├── case-study-ps.html         # PlayStation internship
 │   ├── case-study-spotify.html   # Spotify vs AI research
-│   ├── case-study-assuage.html   # Assuage health ML
-│   └── case-study-pain-xr.html   # XR pain perception (CMU)
+│   ├── case-study-assuage.html    # Assuage health ML
+│   └── case-study-pain-xr.html    # XR pain perception (CMU)
 │
-├── assets/                # Static assets
-│   ├── style.css          # Main stylesheet
-│   ├── script.js          # JavaScript functionality
-│   ├── projects.json      # Project data (easy to update!)
-│   ├── mm.png             # Magic Mitts image
+├── assets/                 # Static assets
+│   ├── style.css           # Main stylesheet
+│   ├── script.js           # JavaScript functionality
+│   ├── projects.json       # Project data (easy to update!)
+│   ├── favicon.svg         # Site favicon
+│   ├── mm.png              # Magic Mitts image
 │   ├── HCI_Proposal_for_Independent_Study_Rabiat_XR.pdf
-│   └── img/               # Image assets
-│       ├── projects/      # Project-specific images
-│       └── placeholders/  # Placeholder images
+│   ├── Rabiat_Sadiq_Resume.pdf    # Resume PDF
+│   └── img/                # Image assets
+│       ├── projects/       # Project-specific images
+│       └── placeholders/   # Placeholder images
 │
-└── files/                 # Documents and other files
+└── files/                  # Documents and other files
     └── Rabiat_Sadiq_Resume_DEC_2025.pdf
 ```
 
 ## Features
 
-- **Dynamic Project Loading**: Projects are loaded from `assets/projects.json`
-- **Interactive Filtering**: Filter projects by tags (XR, ML, HCI, Research, etc.)
+- **Dynamic Project Loading**: Projects are loaded from embedded JSON data (no server required)
+- **Interactive Filtering**: Filter projects by tags (XR, ML, HCI, Research, etc.) with real-time updates
 - **Search Functionality**: Real-time search across project titles and descriptions
-- **Case Studies**: Detailed case study pages for major projects
-- **Responsive Design**: Works on mobile and desktop
-- **Dark Mode**: Theme toggle with system preference detection
-- **Interactive Animations**: Galaxy hero animation, card tilt effects, smooth transitions
+- **Case Studies**: Detailed case study pages for major projects with rich content
+- **Responsive Design**: Fully responsive layout that works seamlessly on mobile and desktop
+- **Dark Mode**: Theme toggle with system preference detection and localStorage persistence
+- **Secret Rainbow Mode**: Hidden party mode activated by holding the theme toggle button
+- **Interactive Galaxy Canvas**: Animated nebula background with parallax effect and shooting stars
+- **VR Eye Animation**: Interactive VR headset with eyes that follow cursor movement
+- **Card Tilt Effects**: 3D tilt animations on project cards (configurable: off, desktop-only, or all devices)
+- **Color Scheme Switcher**: 20+ fun color schemes to customize the site's appearance
+- **Smooth Animations**: CSS transitions and JavaScript-powered animations throughout
+- **Accessibility**: ARIA labels, keyboard navigation, and reduced motion support
 
 ## Adding a New Project
 
