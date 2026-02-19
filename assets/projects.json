@@ -13,7 +13,7 @@
       "demo": null,
       "caseStudy": "case-studies/case-study-ps.html",
       "status": "complete",
-      "images": ["assets/img/projects/playstation/pipeline.jpg"],
+      "images": ["assets/img/projects/ps.png"],
       "videos": [],
       "year": "2025",
       "type": "Industry"
@@ -121,7 +121,7 @@
       "demo": null,
       "caseStudy": "case-studies/case-study.html",
       "status": "complete",
-      "images": ["assets/mm.png"],
+      "images": ["assets/img/mm.png"],
       "videos": [],
       "year": "2024",
       "type": "Research",

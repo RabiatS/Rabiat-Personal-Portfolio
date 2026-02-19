@@ -46,6 +46,774 @@
   --border-strong: #334155;
 }
 
+/* Plain mode - Minimalist NYT style white/black */
+.plain-mode {
+  --bg: #ffffff;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --text: #000000;
+  --text-muted: #333333;
+  --text-light: #666666;
+  --border: #000000;
+  --border-strong: #000000;
+  --primary: #000000;
+  --accent: #000000;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+}
+
+/* Featured Projects section - white background */
+.plain-mode #work {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.plain-mode #work .section-head h2,
+.plain-mode #work .section-head p,
+.plain-mode #work .section-head .link,
+.plain-mode #work h2,
+.plain-mode #work .section-head {
+  color: #000000 !important; /* Black text on white bg */
+}
+
+.plain-mode #work .card {
+  background: #ffffff;
+  color: #000000;
+  border-color: #000000;
+}
+
+.plain-mode #work .card h3,
+.plain-mode #work .card h3 a,
+.plain-mode #work .card .muted {
+  color: #000000 !important;
+}
+
+.plain-mode #work .card:hover {
+  background: #000000 !important; /* Black on hover */
+  color: #ffffff !important;
+  border-color: #000000;
+  box-shadow: none; /* Remove purple shadow */
+}
+
+.plain-mode #work .card:hover h3,
+.plain-mode #work .card:hover h3 a,
+.plain-mode #work .card:hover .muted {
+  color: #ffffff !important;
+}
+
+.plain-mode #work .img-card {
+  border-color: #000000;
+  background: transparent !important; /* No gradient colors */
+}
+
+.plain-mode #work .img-card::before {
+  display: none !important; /* Hide any background images/gradients */
+}
+
+.plain-mode #work .img-card .card-body {
+  color: #000000 !important;
+}
+
+.plain-mode #work .img-card .card-body h3,
+.plain-mode #work .img-card .card-body h3 a {
+  color: #000000 !important;
+}
+
+.plain-mode #work .img-card:hover {
+  border-color: #000000;
+}
+
+.plain-mode #work .img-card:hover .card-body {
+  background: #000000 !important; /* Black on hover */
+  color: #ffffff !important;
+}
+
+/* Ensure img-card itself doesn't turn white */
+.plain-mode #work .img-card:hover {
+  background: transparent !important; /* Keep transparent, card-body handles the color */
+}
+
+.plain-mode #work .img-card:hover .card-body h3,
+.plain-mode #work .img-card:hover .card-body h3 a {
+  color: #ffffff !important;
+}
+
+.plain-mode #work .img-card:hover .card-body .muted {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Experience section - keep white */
+.plain-mode #experience {
+  background: #ffffff !important;
+}
+
+/* Skills section - black background full width */
+.plain-mode #skills::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  right: 50%;
+  bottom: 0;
+  width: 100vw;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background: #000000;
+  z-index: -1;
+}
+
+.plain-mode #skills {
+  background: transparent !important;
+  color: #ffffff !important;
+  position: relative;
+}
+
+.plain-mode #skills .section-head h2,
+.plain-mode #skills .section-head p {
+  color: #ffffff !important;
+}
+
+.plain-mode #skills .card {
+  background: #ffffff;
+  color: #000000 !important;
+  border-color: #000000;
+}
+
+.plain-mode #skills .card h3,
+.plain-mode #skills .card h3 a,
+.plain-mode #skills .card p,
+.plain-mode #skills .card .muted {
+  color: #000000 !important;
+}
+
+.plain-mode #skills .card:hover {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+}
+
+.plain-mode #skills .card:hover h3,
+.plain-mode #skills .card:hover h3 a,
+.plain-mode #skills .card:hover p,
+.plain-mode #skills .card:hover .muted {
+  color: #ffffff !important;
+}
+
+/* Awards section - white background */
+.plain-mode #awards {
+  background: #ffffff !important;
+}
+
+/* Education section - black background full width */
+.plain-mode #education::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  right: 50%;
+  bottom: 0;
+  width: 100vw;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background: #000000;
+  z-index: -1;
+}
+
+.plain-mode #education {
+  background: transparent !important;
+  color: #ffffff !important;
+  position: relative;
+}
+
+.plain-mode #education .section-head h2,
+.plain-mode #education .section-head p {
+  color: #ffffff !important;
+}
+
+.plain-mode #education .card {
+  background: #ffffff;
+  color: #000000 !important;
+  border-color: #000000;
+}
+
+.plain-mode #education .card h3,
+.plain-mode #education .card h3 a,
+.plain-mode #education .card p,
+.plain-mode #education .card .muted,
+.plain-mode #education .card .eyebrow {
+  color: #000000 !important;
+}
+
+.plain-mode #education .card:hover {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+}
+
+.plain-mode #education .card:hover h3,
+.plain-mode #education .card:hover h3 a,
+.plain-mode #education .card:hover p,
+.plain-mode #education .card:hover .muted,
+.plain-mode #education .card:hover .eyebrow {
+  color: #ffffff !important;
+}
+
+/* Hide dynamic elements */
+.plain-mode #nebula {
+  display: none !important;
+}
+
+.plain-mode #vrEye {
+  visibility: hidden !important;
+  pointer-events: none !important;
+  /* Keep space - don't use display: none */
+}
+
+/* Typography - Serif for headings, clean sans for body */
+.plain-mode h1,
+.plain-mode h2,
+.plain-mode h3,
+.plain-mode h4,
+.plain-mode h5,
+.plain-mode h6 {
+  font-family: 'Georgia', 'Times New Roman', 'Times', serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #000000 !important; /* Default black */
+}
+
+/* Override for black background sections */
+.plain-mode #skills h2,
+.plain-mode #skills h3,
+.plain-mode #education h2,
+.plain-mode #education h3 {
+  color: #ffffff !important;
+}
+
+.plain-mode h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 300;
+  line-height: 1.1 !important; /* Tight line height */
+  letter-spacing: -0.02em;
+  transform: scaleY(1.4); /* Stretch letters vertically - make them taller/skinnier */
+  display: inline-block;
+}
+
+
+.plain-mode h3 {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  font-weight: 400;
+}
+
+.plain-mode body,
+.plain-mode p,
+.plain-mode .lead,
+.plain-mode .muted,
+.plain-mode .eyebrow {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  color: #000000 !important;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.plain-mode .lead {
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  line-height: 1.7;
+  max-width: 65ch;
+  color: #333333 !important;
+}
+
+.plain-mode .muted {
+  color: #666666 !important;
+}
+
+/* Remove emojis or make them monochrome */
+.plain-mode .nav-icon,
+.plain-mode .eyebrow {
+  display: none;
+}
+
+.plain-mode .nav-text::before {
+  content: '';
+}
+
+/* Hero section - clean and spacious */
+.plain-mode .hero--fullscreen {
+  background: #ffffff !important;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+}
+
+.plain-mode .hero-inner {
+  max-width: 900px;
+  text-align: left;
+}
+
+.plain-mode .hero-centered {
+  text-align: center;
+}
+
+.plain-mode .hero--fullscreen h1 {
+  line-height: 1.1 !important; /* Tight line height */
+  font-size: clamp(2.5rem, 5vw, 4rem) !important;
+  font-weight: 300 !important;
+  color: #000000 !important;
+  text-shadow: none !important;
+  transform: scaleY(1.4) !important; /* Stretch letters vertically - make them taller/skinnier */
+  display: inline-block;
+}
+
+.plain-mode .eyebrow {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+  color: #666666 !important;
+}
+
+/* Cards - minimal borders, no shadows */
+.plain-mode .card {
+  box-shadow: none !important;
+  border: 1px solid #000000;
+  background: #ffffff;
+  padding: 32px;
+  transition: none;
+}
+
+.plain-mode .card:hover {
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3) !important; /* Subtle purple shadow */
+  border-color: #000000;
+  transform: translateY(-2px);
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+.plain-mode .card:hover * {
+  color: #ffffff !important;
+}
+
+.plain-mode .card:hover h3,
+.plain-mode .card:hover h3 a {
+  color: #ffffff !important;
+}
+
+.plain-mode .card:hover .muted {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.plain-mode .card:hover .tag {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+}
+
+.plain-mode .card::before {
+  display: none !important;
+}
+
+.plain-mode .img-card {
+  border: 1px solid #000000;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+/* Create placeholder for gradient cards in plain mode */
+.plain-mode .img-card[style*="background:"]:not([style*="--img:"])::before {
+  content: '';
+  display: block;
+  aspect-ratio: 16 / 10;
+  background: inherit;
+  position: relative;
+  z-index: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  border-bottom: 1px solid #000000;
+}
+
+.plain-mode .img-card[style*="background:"]:not([style*="--img:"]) .card-body {
+  position: relative !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-top: 1px solid #000000;
+}
+
+.plain-mode .img-card:hover {
+  background: #000000 !important;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3) !important; /* Subtle purple shadow */
+  transform: translateY(-2px);
+}
+
+.plain-mode .img-card:hover .card-body {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border-top-color: rgba(255, 255, 255, 0.2);
+}
+
+.plain-mode .img-card:hover .card-body h3,
+.plain-mode .img-card:hover .card-body h3 a {
+  color: #ffffff !important;
+}
+
+.plain-mode .img-card:hover .card-body .muted {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.plain-mode .img-card:hover .card-body .tag {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+}
+
+.plain-mode .img-card::before {
+  border-bottom: 1px solid #000000;
+}
+
+.plain-mode .img-card .card-body {
+  position: relative !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  padding: 24px;
+  border-top: 1px solid #000000;
+  transition: all 0.3s ease;
+}
+
+.plain-mode .img-card .card-body h3 {
+  color: #000000 !important;
+}
+
+.plain-mode .img-card .card-body .muted {
+  color: #666666 !important;
+}
+
+.plain-mode .image-placeholder {
+  border-bottom: 1px solid #000000;
+}
+
+/* Buttons - minimal style */
+.plain-mode .btn {
+  background: #000000;
+  color: #ffffff !important;
+  border: 1px solid #000000;
+  padding: 12px 24px;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: background 0.2s ease;
+}
+
+.plain-mode .btn:hover {
+  background: #333333;
+  border-color: #333333;
+  transform: none;
+}
+
+.plain-mode .btn.secondary {
+  background: transparent;
+  color: #000000 !important;
+  border: 1px solid #000000;
+}
+
+.plain-mode .btn.secondary:hover {
+  background: #000000;
+  color: #ffffff !important;
+}
+
+/* Tags/Badges */
+.plain-mode .tag {
+  background: transparent !important;
+  border: 1px solid #000000 !important;
+  color: #000000 !important;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.plain-mode .img-card .card-body .tag {
+  background: transparent !important;
+  border: 1px solid #000000 !important;
+  color: #000000 !important;
+}
+
+/* Header - clean and minimal */
+.plain-mode .header {
+  border-bottom: 1px solid #000000;
+  background: #ffffff !important;
+  padding: 24px 0;
+}
+
+.plain-mode .brand {
+  color: #000000 !important;
+  font-family: 'Georgia', serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.plain-mode .nav-pill {
+  color: #000000 !important;
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+}
+
+.plain-mode .nav-pill:hover {
+  background: #f5f5f5;
+  border: none;
+}
+
+/* Active page - dark bubble with white text */
+.plain-mode .nav-pill[aria-current="page"],
+.plain-mode .nav-pill.active {
+  background: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3); /* Subtle purple shadow */
+}
+
+.plain-mode .nav-text {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.plain-mode .toggle {
+  color: #000000 !important;
+  border: 1px solid #000000;
+  background: transparent;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.plain-mode .toggle:hover {
+  background: transparent;
+  color: #000000 !important;
+  opacity: 0.5;
+}
+
+/* Footer */
+.plain-mode .footer {
+  border-top: 1px solid #000000;
+  background: #ffffff !important;
+  color: #000000 !important;
+  padding: 48px 0;
+  margin-top: 80px;
+  text-align: right !important;
+}
+
+.plain-mode .footer .container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.plain-mode .footer p {
+  margin: 0;
+  text-align: right;
+}
+
+.plain-mode .footer > div {
+  display: flex;
+  gap: 24px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 0 !important;
+}
+
+.plain-mode .footer a {
+  color: #000000 !important;
+  text-decoration: underline;
+}
+
+.plain-mode .footer a:hover {
+  color: #666666 !important;
+}
+
+/* Grid and spacing - more generous whitespace */
+.plain-mode .container {
+  max-width: 1200px;
+  padding: 80px 40px;
+}
+
+.plain-mode .grid {
+  gap: 48px;
+}
+
+.plain-mode .cards-3 {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 48px;
+}
+
+.plain-mode .section-head {
+  margin-bottom: 48px;
+}
+
+.plain-mode .section-head h2 {
+  margin-bottom: 16px;
+}
+
+/* Remove gradients */
+.plain-mode .grad {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #000000 !important;
+  color: #000000 !important;
+}
+
+/* Timeline */
+.plain-mode .timeline {
+  padding-left: 0;
+}
+
+.plain-mode .timeline::before {
+  left: 24px;
+  width: 1px;
+  background: #000000;
+}
+
+.plain-mode .t-item {
+  padding-left: 64px;
+  margin-bottom: 48px;
+}
+
+.plain-mode .t-dot {
+  left: 16px;
+  top: 8px;
+  width: 16px;
+  height: 16px;
+  background: #000000 !important;
+  box-shadow: 0 0 0 3px #ffffff, 0 0 0 4px #000000;
+  border: none;
+}
+
+.plain-mode .t-card {
+  background: #ffffff;
+  border: 1px solid #000000;
+  box-shadow: none;
+  padding: 32px;
+}
+
+.plain-mode .t-card:hover {
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3); /* Subtle purple shadow */
+  border-color: #000000;
+  background: #000000 !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+}
+
+.plain-mode .t-card:hover h3,
+.plain-mode .t-card:hover p,
+.plain-mode .t-card:hover .muted {
+  color: #ffffff !important;
+}
+
+.plain-mode .t-card:hover .tag {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+}
+
+.plain-mode .t-card h3 {
+  margin-bottom: 8px;
+  color: #000000 !important;
+}
+
+/* CTA Row */
+.plain-mode .cta-row {
+  gap: 16px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+/* Badges container */
+.plain-mode .badges {
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* Plain mode popup */
+.plain-mode-popup-content {
+  text-align: center;
+}
+
+.plain-mode-popup-content p {
+  margin: 0;
+  color: #000000;
+}
+
+.plain-mode-btn {
+  transition: all 0.2s ease;
+}
+
+.plain-mode-btn:hover {
+  opacity: 0.8;
+}
+
+/* Exit plain mode button */
+.exit-plain-mode-btn {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid #000000 !important;
+  padding: 10px 20px !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  cursor: pointer !important;
+  z-index: 10001 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  transition: all 0.2s ease !important;
+}
+
+.exit-plain-mode-btn:hover {
+  background: #333333 !important;
+  border-color: #333333 !important;
+}
+
+/* Ensure all text is visible in plain mode */
+.plain-mode * {
+  color: inherit;
+}
+
+.plain-mode a {
+  color: #000000 !important;
+  text-decoration: underline;
+}
+
+.plain-mode a:hover {
+  color: #666666 !important;
+}
+
+/* Remove any background images/gradients in plain mode */
+.plain-mode .hero--fullscreen::before,
+.plain-mode .hero--fullscreen::after {
+  display: none !important;
+}
+
+/* Ensure featured projects section is readable */
+
+/* Scroll cue */
+.plain-mode .scroll-cue {
+  color: #000000 !important;
+  border: 1px solid #000000;
+}
+
+.plain-mode .scroll-cue:hover {
+  background: #000000;
+  color: #ffffff !important;
+}
+
 /* Reset & Base */
 * {
   box-sizing: border-box;
@@ -712,9 +1480,17 @@ body:not(.on-hero) main .btn.secondary:hover {
   box-shadow: var(--shadow-sm);
   position: relative;
   overflow: hidden;
+  will-change: transform;
 }
 
-.card::before {
+.card:not(.img-card):hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg), 0 4px 20px rgba(139, 92, 246, 0.2); /* Add subtle purple shadow */
+  border-color: var(--primary);
+  border-radius: var(--radius); /* Maintain border-radius on hover */
+}
+
+.card:not(.img-card)::before {
   content: '';
   position: absolute;
   top: 0;
@@ -726,14 +1502,25 @@ body:not(.on-hero) main .btn.secondary:hover {
   transition: transform 0.3s ease;
 }
 
-.card:hover::before {
+.card:not(.img-card):hover::before {
   transform: scaleX(1);
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--primary);
+
+/* img-card text always white */
+.img-card .card-body h3,
+.img-card .card-body h3 a {
+  color: #ffffff !important;
+}
+
+.img-card .card-body .muted {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.img-card .card-body .tag {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
 }
 
 .img-card {
@@ -742,8 +1529,16 @@ body:not(.on-hero) main .btn.secondary:hover {
   position: relative;
   background: var(--surface);
   min-height: 300px;
+  border-radius: var(--radius);
+  will-change: transform;
+  isolation: isolate;
 }
 
+.img-card:hover {
+  border-radius: var(--radius); /* Maintain border-radius on hover */
+}
+
+/* Image/gradient fills the card via ::before */
 .img-card::before {
   content: '';
   display: block;
@@ -752,40 +1547,39 @@ body:not(.on-hero) main .btn.secondary:hover {
   background-size: cover;
   background-position: center;
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  z-index: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  will-change: transform;
+}
+
+/* For gradient-only cards (no --img), ::before inherits the background */
+.img-card[style*="background:"]:not([style*="--img:"])::before {
+  background: inherit;
 }
 
 .img-card:hover::before {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
-/* Icon overlay for gradient cards */
-.img-card > div[style*="position:absolute"] {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
+/* Card body — absolute at bottom with smooth dark gradient fade */
 .img-card .card-body {
-  position: absolute;
+  position: absolute !important;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 70%, transparent 100%);
-  color: #ffffff;
+  padding: 20px !important;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.85) 40%,
+    rgba(0, 0, 0, 0.4) 75%,
+    transparent 100%
+  ) !important;
+  color: #ffffff !important;
+  z-index: 2;
 }
 
 .img-card .card-body h3 {
-  color: #ffffff;
+  color: #ffffff !important;
   margin-bottom: 8px;
   font-size: 18px;
   line-height: 1.3;
@@ -793,14 +1587,18 @@ body:not(.on-hero) main .btn.secondary:hover {
   overflow-wrap: break-word;
 }
 
+.img-card .card-body h3 a {
+  color: #ffffff !important;
+}
+
 .img-card .card-body .muted {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .img-card .card-body .tag {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.3);
-  color: #ffffff;
+  color: #ffffff !important;
   padding: 4px 10px;
   font-size: 11px;
 }
@@ -973,10 +1771,28 @@ body:not(.on-hero) main .btn.secondary:hover {
 /* Footer */
 .footer {
   padding: 64px 0;
-  text-align: center;
+  text-align: right;
   color: var(--text-muted);
   border-top: 1px solid var(--border);
   margin-top: 80px;
+}
+
+.footer .footer-tagline {
+  margin-top: 8px;
+  font-style: italic;
+  color: var(--text-light);
+}
+
+.footer .footer-links {
+  margin-top: 16px;
+  display: flex;
+  gap: 24px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.footer .footer-links a {
+  color: var(--text-muted);
 }
 
 /* Hero on dark background */
@@ -988,6 +1804,41 @@ body:not(.on-hero) main .btn.secondary:hover {
 .on-hero .brand,
 .on-hero .nav a {
   color: #ffffff;
+}
+
+/* Nav bar on non-hero pages (projects, work, cool, etc.) */
+body:not(.on-hero) .header .brand,
+body:not(.on-hero) .header .nav a {
+  color: var(--text) !important;
+}
+
+body:not(.on-hero) .header {
+  background: rgba(250, 251, 252, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+.dark body:not(.on-hero) .header {
+  background: rgba(10, 14, 26, 0.95);
+}
+
+body:not(.on-hero) .header .nav-pill {
+  color: var(--text) !important;
+}
+
+body:not(.on-hero) .header .nav-pill[aria-current="page"],
+body:not(.on-hero) .header .nav-pill.active {
+  color: var(--text) !important;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+body:not(.on-hero) .header .nav-pill:hover {
+  color: var(--text) !important;
+  background: var(--bg-elevated);
+}
+
+body:not(.on-hero) .header .brand {
+  color: var(--text) !important;
 }
 
 .on-hero .toggle,

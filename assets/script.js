@@ -6,6 +6,13 @@
   let isRainbowMode = localStorage.getItem('rainbowMode') === 'true';
   
   const setTheme = (mode) => {
+    // Check if plain mode is active - disable dark mode toggle
+    const isPlainMode = document.documentElement.classList.contains('plain-mode');
+    if (isPlainMode && mode !== 'rainbow') {
+      // Don't allow dark mode changes in plain mode
+      return;
+    }
+    
     if (mode === 'rainbow') {
       document.documentElement.classList.add('rainbow-mode');
       document.body.classList.add('rainbow-mode');
@@ -135,6 +142,34 @@
     });
     
     btn.addEventListener('click', (e) => {
+      // Check if plain mode is active - disable theme toggle
+      const isPlainMode = document.documentElement.classList.contains('plain-mode');
+      if (isPlainMode) {
+        // Show message that dark mode is disabled in plain mode
+        const tooltip = document.createElement('div');
+        tooltip.textContent = 'Dark mode disabled in Minimalist Mode';
+        tooltip.style.cssText = `
+          position: fixed;
+          top: 100px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #000000;
+          color: #ffffff;
+          padding: 12px 24px;
+          border-radius: 4px;
+          font-size: 13px;
+          z-index: 10003;
+          pointer-events: none;
+        `;
+        document.body.appendChild(tooltip);
+        setTimeout(() => {
+          tooltip.style.opacity = '0';
+          tooltip.style.transition = 'opacity 0.3s ease';
+          setTimeout(() => tooltip.remove(), 300);
+        }, 2000);
+        return;
+      }
+      
       // If secret tooltip is visible, activate rainbow mode
       if (secretTooltip && secretTooltip.style.opacity === '1') {
         e.stopPropagation();
@@ -215,8 +250,68 @@
   ];
   
   let currentScheme = parseInt(localStorage.getItem('colorScheme') || '0');
+  let isPlainMode = localStorage.getItem('plainMode') === 'true';
+  let hoverTimeout = null;
+  let plainModePopup = null;
+  let hoverStartTime = null;
   
   function applyScheme(index) {
+    // Remove plain mode if active
+    if (isPlainMode) {
+      document.documentElement.classList.remove('plain-mode');
+      isPlainMode = false;
+      localStorage.setItem('plainMode', 'false');
+      
+      // Re-enable nebula canvas
+      const nebula = document.getElementById('nebula');
+      if (nebula) {
+        nebula.style.display = '';
+      }
+      
+      // Re-enable VR eye (combine both restorations)
+      const vrEye = document.getElementById('vrEye');
+      if (vrEye) {
+        vrEye.style.display = '';
+        vrEye.style.visibility = '';
+        vrEye.style.pointerEvents = '';
+      }
+      
+      // Remove cursor trail
+      removeCursorTrail();
+      
+      // Remove exit button
+      const exitBtn = document.getElementById('exitPlainMode');
+      if (exitBtn) exitBtn.remove();
+      
+      // Restore eyebrow emoji (reload page or restore from original)
+      const eyebrow = document.querySelector('.eyebrow');
+      if (eyebrow && !eyebrow.textContent.includes('👋')) {
+        eyebrow.textContent = 'Hey there! 👋🏾';
+      }
+      
+      // Force cleanup of ::before pseudo-elements by triggering reflow
+      const sectionsWithBefore = document.querySelectorAll('#skills, #education');
+      sectionsWithBefore.forEach(section => {
+        // Force browser to recalculate styles
+        void section.offsetHeight;
+      });
+      
+      // Restore dark mode if it was active before plain mode
+      const themeBeforePlain = localStorage.getItem('themeBeforePlain');
+      if (themeBeforePlain === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.body.classList.add('dark');
+        document.documentElement.style.colorScheme = 'dark';
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.body.classList.remove('dark');
+        document.documentElement.style.colorScheme = 'light';
+        localStorage.setItem('theme', 'light');
+      }
+      localStorage.removeItem('themeBeforePlain');
+    }
+    
     const scheme = colorSchemes[index];
     const root = document.documentElement;
     root.style.setProperty('--primary', scheme.primary);
@@ -232,18 +327,362 @@
     localStorage.setItem('colorScheme', index.toString());
   }
   
-  // Apply saved scheme on load
-  applyScheme(currentScheme);
-  
-  btn.addEventListener('click', () => {
-    currentScheme = (currentScheme + 1) % colorSchemes.length;
-    applyScheme(currentScheme);
+  function createPlainModePopup() {
+    if (plainModePopup) return;
     
-    // Fun animation on button
-    btn.style.transform = 'scale(1.2) rotate(180deg)';
-    setTimeout(() => {
-      btn.style.transform = '';
-    }, 300);
+    plainModePopup = document.createElement('div');
+    plainModePopup.className = 'plain-mode-popup';
+    plainModePopup.innerHTML = `
+      <div class="plain-mode-popup-content">
+        <p style="margin-bottom: 12px; font-size: 14px; font-weight: 600;">Minimalist Mode</p>
+        <button id="activatePlainMode" class="plain-mode-btn" style="
+          background: #000;
+          color: #fff;
+          border: 1px solid #000;
+          padding: 8px 16px;
+          cursor: pointer;
+          font-size: 13px;
+          width: 100%;
+        ">Activate</button>
+        <button id="cancelPlainMode" class="plain-mode-btn" style="
+          background: transparent;
+          color: #000;
+          border: 1px solid #000;
+          padding: 8px 16px;
+          cursor: pointer;
+          font-size: 13px;
+          width: 100%;
+          margin-top: 8px;
+        ">Cancel</button>
+      </div>
+    `;
+    plainModePopup.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #ffffff;
+      border: 2px solid #000000;
+      padding: 24px;
+      z-index: 10002;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      min-width: 200px;
+    `;
+    document.body.appendChild(plainModePopup);
+    
+    document.getElementById('activatePlainMode').addEventListener('click', () => {
+      applyPlainMode();
+      removePlainModePopup();
+    });
+    
+    document.getElementById('cancelPlainMode').addEventListener('click', () => {
+      removePlainModePopup();
+      hoverStartTime = null;
+    });
+  }
+  
+  function removePlainModePopup() {
+    if (plainModePopup) {
+      plainModePopup.remove();
+      plainModePopup = null;
+    }
+  }
+  
+  function applyPlainMode() {
+    // Remove any color scheme and dark mode completely
+    document.documentElement.classList.add('plain-mode');
+    document.documentElement.classList.remove('dark');
+    document.body.classList.remove('dark');
+    document.documentElement.style.colorScheme = 'light';
+    
+    // Clear dark mode from localStorage temporarily (we'll restore it when exiting)
+    const wasDark = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+    if (wasDark) {
+      localStorage.setItem('themeBeforePlain', 'dark');
+    } else {
+      localStorage.removeItem('themeBeforePlain');
+    }
+    localStorage.setItem('theme', 'light');
+    
+    isPlainMode = true;
+    localStorage.setItem('plainMode', 'true');
+    
+    // Set plain mode colors
+    const root = document.documentElement;
+    root.style.setProperty('--primary', '#000000');
+    root.style.setProperty('--accent', '#000000');
+    
+    // Update hero to solid white
+    const hero = document.querySelector('.hero--fullscreen');
+    if (hero) {
+      hero.style.background = '#ffffff';
+      hero.style.backgroundSize = '100% 100%';
+    }
+    
+    // Hide nebula canvas
+    const nebula = document.getElementById('nebula');
+    if (nebula) {
+      nebula.style.display = 'none';
+    }
+    
+    // Hide VR eye but keep space
+    const vrEye = document.getElementById('vrEye');
+    if (vrEye) {
+      vrEye.style.visibility = 'hidden';
+      vrEye.style.pointerEvents = 'none';
+    }
+    
+    // Remove emojis from eyebrow
+    const eyebrow = document.querySelector('.eyebrow');
+    if (eyebrow) {
+      eyebrow.textContent = eyebrow.textContent.replace(/[👋🏾👋]/g, '').trim();
+      if (!eyebrow.textContent) {
+        eyebrow.textContent = 'Hello';
+      }
+    }
+    
+    // Initialize cursor trail
+    initCursorTrail();
+    
+    // Add exit button to header
+    createExitButton();
+    
+    removePlainModePopup();
+  }
+  
+  function createExitButton() {
+    // Remove existing exit button if any
+    const existing = document.getElementById('exitPlainMode');
+    if (existing) existing.remove();
+    
+    const exitBtn = document.createElement('button');
+    exitBtn.id = 'exitPlainMode';
+    exitBtn.textContent = 'Exit Minimalist Mode';
+    exitBtn.className = 'exit-plain-mode-btn';
+    exitBtn.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #000000;
+      color: #ffffff;
+      border: 1px solid #000000;
+      padding: 10px 20px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      z-index: 10001;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      transition: all 0.2s ease;
+    `;
+    
+    exitBtn.addEventListener('mouseenter', () => {
+      exitBtn.style.background = '#333333';
+    });
+    
+    exitBtn.addEventListener('mouseleave', () => {
+      exitBtn.style.background = '#000000';
+    });
+    
+    exitBtn.addEventListener('click', () => {
+      currentScheme = 0;
+      applyScheme(currentScheme);
+      exitBtn.remove();
+    });
+    
+    document.body.appendChild(exitBtn);
+  }
+  
+  // Cursor trail effect for plain mode
+  let trailParticles = [];
+  let trailMouseMoveHandler = null;
+  
+  function initCursorTrail() {
+    if (trailMouseMoveHandler) return; // Already initialized
+    
+    trailMouseMoveHandler = (e) => {
+      if (!isPlainMode) {
+        removeCursorTrail();
+        return;
+      }
+      
+      const x = e.clientX;
+      const y = e.clientY;
+      
+      // Create trail particle
+      const particle = document.createElement('div');
+      particle.className = 'cursor-trail-particle';
+      particle.style.cssText = `
+        position: fixed;
+        left: ${x}px;
+        top: ${y}px;
+        width: 3px;
+        height: 3px;
+        background: #000000;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.4;
+        transition: opacity 0.5s ease;
+      `;
+      document.body.appendChild(particle);
+      trailParticles.push(particle);
+      
+      // Fade out and remove after delay
+      setTimeout(() => {
+        particle.style.opacity = '0';
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.remove();
+          }
+          const index = trailParticles.indexOf(particle);
+          if (index > -1) trailParticles.splice(index, 1);
+        }, 500);
+      }, 200);
+      
+      // Keep only last 8 particles
+      if (trailParticles.length > 8) {
+        const old = trailParticles.shift();
+        if (old && old.parentNode) {
+          old.style.opacity = '0';
+          setTimeout(() => old.remove(), 100);
+        }
+      }
+    };
+    
+    document.addEventListener('mousemove', trailMouseMoveHandler, { passive: true });
+  }
+  
+  function removeCursorTrail() {
+    if (trailMouseMoveHandler) {
+      document.removeEventListener('mousemove', trailMouseMoveHandler);
+      trailMouseMoveHandler = null;
+    }
+    
+    // Remove all trail particles
+    trailParticles.forEach(particle => {
+      if (particle && particle.parentNode) {
+        particle.style.opacity = '0';
+        setTimeout(() => particle.remove(), 100);
+      }
+    });
+    trailParticles = [];
+    
+    // Also remove any remaining particles by class
+    document.querySelectorAll('.cursor-trail-particle').forEach(el => el.remove());
+  }
+  
+  // Apply saved state on load
+  if (isPlainMode) {
+    // Apply plain mode (this will create exit button)
+    document.documentElement.classList.add('plain-mode');
+    document.documentElement.classList.remove('dark');
+    document.body.classList.remove('dark');
+    document.documentElement.style.colorScheme = 'light';
+    
+    // Set plain mode colors
+    const root = document.documentElement;
+    root.style.setProperty('--primary', '#000000');
+    root.style.setProperty('--accent', '#000000');
+    
+    // Update hero to solid white
+    const hero = document.querySelector('.hero--fullscreen');
+    if (hero) {
+      hero.style.background = '#ffffff';
+      hero.style.backgroundSize = '100% 100%';
+    }
+    
+    // Hide nebula canvas
+    const nebula = document.getElementById('nebula');
+    if (nebula) {
+      nebula.style.display = 'none';
+    }
+    
+    // Hide VR eye but keep space
+    const vrEye = document.getElementById('vrEye');
+    if (vrEye) {
+      vrEye.style.visibility = 'hidden';
+      vrEye.style.pointerEvents = 'none';
+    }
+    
+    // Remove emojis from eyebrow
+    const eyebrow = document.querySelector('.eyebrow');
+    if (eyebrow) {
+      eyebrow.textContent = eyebrow.textContent.replace(/[👋🏾👋]/g, '').trim();
+      if (!eyebrow.textContent) {
+        eyebrow.textContent = 'Hello';
+      }
+    }
+    
+    // Initialize cursor trail
+    initCursorTrail();
+    
+    // Add exit button
+    createExitButton();
+  } else {
+    applyScheme(currentScheme);
+  }
+  
+  // Click handler for color scheme cycling or exiting plain mode
+  btn.addEventListener('click', () => {
+    // Check actual state, not just variable
+    const actuallyInPlainMode = document.documentElement.classList.contains('plain-mode');
+    
+    if (actuallyInPlainMode) {
+      // Exit plain mode - go back to first color scheme
+      currentScheme = 0;
+      isPlainMode = false;
+      localStorage.setItem('plainMode', 'false');
+      applyScheme(currentScheme);
+      
+      // Remove exit button if it exists
+      const exitBtn = document.getElementById('exitPlainMode');
+      if (exitBtn) exitBtn.remove();
+      
+      // Fun animation on button
+      btn.style.transform = 'scale(1.2) rotate(180deg)';
+      setTimeout(() => {
+        btn.style.transform = '';
+      }, 300);
+    } else {
+      currentScheme = (currentScheme + 1) % colorSchemes.length;
+      applyScheme(currentScheme);
+      
+      // Fun animation on button
+      btn.style.transform = 'scale(1.2) rotate(180deg)';
+      setTimeout(() => {
+        btn.style.transform = '';
+      }, 300);
+    }
+  });
+  
+  // Hover handler for plain mode unlock
+  btn.addEventListener('mouseenter', () => {
+    const actuallyInPlainMode = document.documentElement.classList.contains('plain-mode');
+    if (actuallyInPlainMode || plainModePopup) return;
+    hoverStartTime = Date.now();
+    
+    hoverTimeout = setTimeout(() => {
+      createPlainModePopup();
+    }, 5000);
+  });
+  
+  btn.addEventListener('mouseleave', () => {
+    // Only clear timeout if popup hasn't been shown yet
+    if (hoverTimeout && !plainModePopup) {
+      clearTimeout(hoverTimeout);
+      hoverTimeout = null;
+    }
+    hoverStartTime = null;
+    // Don't remove popup on mouse leave - let user click buttons
+  });
+  
+  // Close popup when clicking outside
+  document.addEventListener('click', (e) => {
+    if (plainModePopup && !plainModePopup.contains(e.target) && e.target !== btn) {
+      removePlainModePopup();
+      hoverStartTime = null;
+    }
   });
 })();
 
@@ -575,8 +1014,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Embedded projects data (works without server)
   const EMBEDDED_PROJECTS = [
     {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 — XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR","VR","Research","HCI","Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",caseStudy:null,status:"complete",images:[],year:"2025"},
-    {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML","Data","Streaming","CV","Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps.",github:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:[],year:"2025"},
-    {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves — 1st Place UTSA",category:"XR / Unity / Immersive",tags:["XR","Hardware","Unity","Research"],description:"Led team to build affordable haptic glove with flex sensors and EM braking. 18% latency reduction, 24% comfort improvement.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",caseStudy:"case-studies/case-study.html",status:"complete",images:["assets/mm.png"],year:"2024"},
+    {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML","Data","Streaming","CV","Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps.",github:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:["img/ps.PNG"],year:"2025"},
+    {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves — 1st Place UTSA",category:"XR / Unity / Immersive",tags:["XR","Hardware","Unity","Research"],description:"Led team to build affordable haptic glove with flex sensors and EM braking. 18% latency reduction, 24% comfort improvement.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",caseStudy:"case-studies/case-study.html",status:"complete",images:["img/mm.png"],year:"2024"},
     {id:"xr-pain-perception",title:"XR Pain Augmentation Research",subtitle:"CMU Augmented Perception Lab",category:"XR / Unity / Immersive",tags:["XR","Research","HCI","Perception"],description:"Multimodal XR prototypes to study pain perception; building adaptive interfaces with structured logging for ML personalization.",github:null,caseStudy:"case-studies/case-study-pain-xr.html",status:"complete",images:[],year:"2025"},
     {id:"assuage",title:"Assuage",subtitle:"ML Distress Prediction",category:"Applied ML / CV / Video",tags:["ML","Research","HCI"],description:"Logistic regression to predict distress level from HealthKit biometrics; 82% test accuracy with on-device CoreML inference.",github:"https://github.com/RabiatS/final-project-aimleaders",caseStudy:"case-study-assuage.html",status:"complete",images:[],year:"2024"},
     {id:"spotify-research",title:"Spotify vs AI Research Study",subtitle:"UX Research & Design",category:"Research / HCI",tags:["HCI","Research"],description:"UX research exploring how Spotify listeners perceive AI-generated music, and how clearer labeling can build trust.",github:"https://github.com/RabiatS/spotify-vs-ai-research-study",demo:"https://spotify-vs-ai-research-study.vercel.app/",caseStudy:"case-studies/case-study-spotify.html",status:"complete",images:[],year:"2024"},
@@ -609,13 +1048,18 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadProjects(){
     if (!getElements()) return; // Exit if not on projects page
     
-    // Use embedded projects directly - no fetch needed
-    allProjects = EMBEDDED_PROJECTS;
-    filteredProjects = allProjects;
-    renderProjects();
-    if (projectCountEl) projectCountEl.textContent = allProjects.length;
-    if (loadingEl) loadingEl.style.display = 'none';
-    if (grid) grid.style.display = 'grid';
+    try {
+      // Use embedded projects directly - no fetch needed
+      allProjects = EMBEDDED_PROJECTS;
+      filteredProjects = allProjects;
+      renderProjects();
+      if (projectCountEl) projectCountEl.textContent = allProjects.length;
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (grid) grid.style.display = 'grid';
+    } catch (error) {
+      console.error('Error loading projects:', error);
+      if (loadingEl) loadingEl.textContent = 'Error loading projects';
+    }
   }
 
   // Render project cards
@@ -638,32 +1082,25 @@ document.addEventListener('DOMContentLoaded', () => {
       card.setAttribute('data-tags', project.tags.join(' '));
       card.setAttribute('id', project.id);
       
-      // Determine image/background - use gradient with icon for missing images
-      let imgStyle = '';
-      if (project.images && project.images.length > 0 && project.images[0]) {
-        imgStyle = `--img:url('${project.images[0]}')`;
+      const hasImage = project.images && project.images.length > 0 && project.images[0];
+
+      // Category gradients for cards without real images
+      const categoryStyles = {
+        'Applied ML / CV / Video': { gradient: 'linear-gradient(135deg,#6366f1,#8b5cf6)', icon: '🤖' },
+        'XR / Unity / Immersive':  { gradient: 'linear-gradient(135deg,#06b6d4,#3b82f6)', icon: '🥽' },
+        'Research / HCI':          { gradient: 'linear-gradient(135deg,#3b82f6,#6366f1)', icon: '🔬' },
+        'Early Work / Learning':   { gradient: 'linear-gradient(135deg,#64748b,#475569)', icon: '📚' },
+        'Software':                { gradient: 'linear-gradient(135deg,#10b981,#3b82f6)', icon: '💻' },
+        'Hardware / Embedded':     { gradient: 'linear-gradient(135deg,#10b981,#14b8a6)', icon: '⚡' },
+      };
+      const catStyle = categoryStyles[project.category] || { gradient: 'linear-gradient(135deg,#6366f1,#8b5cf6)', icon: '💻' };
+
+      // Set background on the card itself — image or gradient fills the whole card via ::before
+      if (hasImage) {
+        card.style.cssText += `--img:url('${project.images[0]}')`;
       } else {
-        // Use gradient based on category with emoji/icon overlay
-        const categoryStyles = {
-          'Applied ML / CV / Video': { gradient: 'linear-gradient(135deg,#6366f1,#8b5cf6)', icon: '🤖' },
-          'XR / Unity / Immersive': { gradient: 'linear-gradient(135deg,#06b6d4,#3b82f6)', icon: '🥽' },
-          'Research / HCI': { gradient: 'linear-gradient(135deg,#3b82f6,#6366f1)', icon: '🔬' },
-          'Early Work / Learning': { gradient: 'linear-gradient(135deg,#8b5cf6,#ec4899)', icon: '📚' },
-          'Software': { gradient: 'linear-gradient(135deg,#10b981,#3b82f6)', icon: '💻' },
-          'Hardware / Embedded': { gradient: 'linear-gradient(135deg,#10b981,#14b8a6)', icon: '⚡' },
-          'Early Work / Learning': { gradient: 'linear-gradient(135deg,#64748b,#475569)', icon: '📚' }
-        };
-        const style = categoryStyles[project.category] || { gradient: 'linear-gradient(135deg,#6366f1,#8b5cf6)', icon: '💻' };
-        imgStyle = `background:${style.gradient}`;
-        
-        // Add icon overlay - insert before cardBody
-        const iconOverlay = document.createElement('div');
-        iconOverlay.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:64px;opacity:0.25;pointer-events:none;z-index:1;';
-        iconOverlay.textContent = style.icon;
-        // Will append after cardBody is created
-        card._iconOverlay = iconOverlay;
+        card.style.background = catStyle.gradient;
       }
-      card.style.cssText += imgStyle;
 
       const cardBody = document.createElement('div');
       cardBody.className = 'card-body';
@@ -720,8 +1157,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const badge = document.createElement('span');
         badge.className = 'tag';
         badge.textContent = tag;
-        // Style tags for gradient cards (white text)
-        if (!project.images || project.images.length === 0) {
+        // Style tags - only use white text for cards WITH images (overlay on image)
+        if (hasImage) {
           badge.style.background = 'rgba(255,255,255,0.2)';
           badge.style.borderColor = 'rgba(255,255,255,0.3)';
           badge.style.color = '#ffffff';
@@ -736,7 +1173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         templateBadge.style.background = 'rgba(251,191,36,0.3)';
         templateBadge.style.borderColor = 'rgba(251,191,36,0.5)';
         templateBadge.textContent = 'Template';
-        if (!project.images || project.images.length === 0) {
+        if (hasImage) {
           templateBadge.style.color = '#ffffff';
         }
         badges.appendChild(templateBadge);
@@ -784,11 +1221,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // Append cardBody to card
       card.appendChild(cardBody);
       
-      // Add icon overlay if it exists (for gradient cards without images)
-      if (card._iconOverlay) {
-        card.appendChild(card._iconOverlay);
-        delete card._iconOverlay;
-      }
       grid.appendChild(card);
     });
 
@@ -957,3 +1389,37 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('fun', document.body.classList.contains('fun') ? '1' : '0');
   });
 })();
+
+// Global reset function - can be called from console: resetPlainMode()
+window.resetPlainMode = function() {
+  localStorage.setItem('plainMode', 'false');
+  document.documentElement.classList.remove('plain-mode');
+  document.body.classList.remove('dark');
+  document.documentElement.classList.remove('dark');
+  document.documentElement.style.colorScheme = 'light';
+  
+  // Re-enable nebula
+  const nebula = document.getElementById('nebula');
+  if (nebula) nebula.style.display = '';
+  
+  // Re-enable VR eye
+  const vrEye = document.getElementById('vrEye');
+  if (vrEye) {
+    vrEye.style.display = '';
+    vrEye.style.visibility = '';
+    vrEye.style.pointerEvents = '';
+  }
+  
+  // Remove exit button
+  const exitBtn = document.getElementById('exitPlainMode');
+  if (exitBtn) exitBtn.remove();
+  
+  // Restore eyebrow
+  const eyebrow = document.querySelector('.eyebrow');
+  if (eyebrow && !eyebrow.textContent.includes('👋')) {
+    eyebrow.textContent = 'Hey there! 👋🏾';
+  }
+  
+  // Reload page to apply color scheme
+  location.reload();
+};
