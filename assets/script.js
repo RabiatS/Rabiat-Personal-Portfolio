@@ -1013,6 +1013,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Embedded projects data (works without server)
   const EMBEDDED_PROJECTS = [
+    {id:"cmu-mhci-sticky-counter",title:"CMU MHCI Sticky Note Counter",subtitle:"Interactive Physics Observatory",category:"Web / Full-Stack / Product",tags:["Web","HCI","Research","Personal"],description:"A live-updating observatory estimating the total sticky notes used by every CMU MHCI cohort since 2012. Physics-based animations, year-by-year breakdowns, and a real-time counter.",github:null,demo:"sticky-counter.html",caseStudy:null,status:"complete",images:[],year:"2026"},
     {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 — XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR","VR","Research","HCI","Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",caseStudy:null,status:"complete",images:[],year:"2025"},
     {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML","Data","Streaming","CV","Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps.",github:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:["img/ps.PNG"],year:"2025"},
     {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves — 1st Place UTSA",category:"XR / Unity / Immersive",tags:["XR","Hardware","Unity","Research"],description:"Led team to build affordable haptic glove with flex sensors and EM braking. 18% latency reduction, 24% comfort improvement.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",caseStudy:"case-studies/case-study.html",status:"complete",images:["img/mm.png"],year:"2024"},
@@ -1092,14 +1093,14 @@ document.addEventListener('DOMContentLoaded', () => {
         'Early Work / Learning':   { gradient: 'linear-gradient(135deg,#64748b,#475569)', icon: '📚' },
         'Software':                { gradient: 'linear-gradient(135deg,#10b981,#3b82f6)', icon: '💻' },
         'Hardware / Embedded':     { gradient: 'linear-gradient(135deg,#10b981,#14b8a6)', icon: '⚡' },
+        'Web / Full-Stack / Product': { gradient: 'linear-gradient(135deg,#C41230,#f5a623)', icon: '🌐' },
       };
       const catStyle = categoryStyles[project.category] || { gradient: 'linear-gradient(135deg,#6366f1,#8b5cf6)', icon: '💻' };
 
-      // Set background on the card itself — image or gradient fills the whole card via ::before
       if (hasImage) {
         card.style.cssText += `--img:url('${project.images[0]}')`;
       } else {
-        card.style.background = catStyle.gradient;
+        card.style.cssText += `--grad:${catStyle.gradient}`;
       }
 
       const cardBody = document.createElement('div');
@@ -1118,6 +1119,16 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (project.github) {
         const link = document.createElement('a');
         link.href = project.github;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = project.title;
+        link.style.color = 'inherit';
+        link.style.textDecoration = 'none';
+        link.innerHTML += ' ↗';
+        title.appendChild(link);
+      } else if (project.demo) {
+        const link = document.createElement('a');
+        link.href = project.demo;
         link.target = '_blank';
         link.rel = 'noopener';
         link.textContent = project.title;
@@ -1206,10 +1217,11 @@ document.addEventListener('DOMContentLoaded', () => {
           demoLink.href = project.demo;
           demoLink.target = '_blank';
           demoLink.rel = 'noopener';
-          demoLink.textContent = 'Demo';
+          demoLink.textContent = '▶ Launch';
           demoLink.style.fontSize = '13px';
           demoLink.style.color = 'inherit';
-          demoLink.style.opacity = '0.8';
+          demoLink.style.opacity = '0.9';
+          demoLink.style.fontWeight = '600';
           links.appendChild(demoLink);
         }
         

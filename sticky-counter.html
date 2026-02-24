@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMU MHCI Sticky Note Counter</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cmu-red: #C41230;
+    --yellow: #FFEC6E;
+    --yellow-dark: #E8D45A;
+    --yellow-shadow: #c9b840;
+    --bg: #F5F3EE;
+    --text: #1a1a1a;
+    --gray: #888;
+  }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  #cursor {
+    position: fixed;
+    width: 20px; height: 20px;
+    background: var(--cmu-red);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+    mix-blend-mode: multiply;
+  }
+  #cursor.big { transform: translate(-50%, -50%) scale(2.5); }
+
+  /* HEADER */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    background: rgba(245,243,238,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 2px solid var(--cmu-red);
+  }
+
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .logo-cmu {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    color: var(--cmu-red);
+    letter-spacing: -0.5px;
+  }
+  .logo-sub {
+    font-size: 0.7rem;
+    color: var(--gray);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  nav button {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: 2px solid var(--cmu-red);
+    background: transparent;
+    color: var(--cmu-red);
+    cursor: none;
+    transition: all 0.2s;
+  }
+  nav button:hover { background: var(--cmu-red); color: white; }
+
+  /* MAIN PAGE */
+  #main-page {
+    min-height: 100vh;
+    padding-top: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .counter-section {
+    text-align: center;
+    padding: 60px 20px 20px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .counter-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 12px;
+  }
+
+  #counter-display {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -2px;
+    transition: color 0.1s;
+  }
+
+  .counter-sub {
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-top: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  .rate-badge {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 6px 16px;
+    background: var(--cmu-red);
+    color: white;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* STICKY STACK */
+  .stack-container {
+    position: relative;
+    width: 100px;
+    height: 120px;
+    margin: 40px auto 20px;
+    z-index: 10;
+  }
+
+  .stack-sticky {
+    position: absolute;
+    width: 82px;
+    height: 82px;
+    background: var(--yellow);
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.16), 0 1px 3px rgba(0,0,0,0.1);
+    left: 10px;
+    transition: top 0.1s;
+    overflow: hidden;
+  }
+
+  /* Binding strip at top */
+  .stack-sticky::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 9px;
+    background: rgba(0,0,0,0.09);
+  }
+
+  /* Folded corner */
+  .stack-sticky::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 16px; height: 16px;
+    background: linear-gradient(225deg, var(--bg) 50%, var(--yellow-shadow) 50%);
+    box-shadow: -1px -1px 3px rgba(0,0,0,0.1);
+  }
+
+  /* Peeling animation */
+  @keyframes peel-off {
+    0%   { transform: rotate(0deg) translateY(0); opacity: 1; }
+    20%  { transform: rotate(8deg) translateY(-10px); }
+    60%  { transform: rotate(15deg) translateY(30px) translateX(20px); }
+    100% { transform: rotate(12deg) translateY(120px) translateX(10px); opacity: 0; }
+  }
+
+  .peeling {
+    animation: peel-off 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important;
+    pointer-events: none;
+    z-index: 20 !important;
+  }
+
+  /* PHYSICS CANVAS */
+  #physics-canvas {
+    position: fixed;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 45%;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* Floor pile (CSS fallback display) */
+  #floor-pile {
+    position: fixed;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 40%;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* PREVIOUS YEARS PAGE */
+  #prev-page {
+    display: none;
+    min-height: 100vh;
+    padding-top: 80px;
+    position: relative;
+  }
+
+  .prev-header {
+    padding: 40px 40px 20px;
+    border-bottom: 1px solid rgba(196,18,48,0.2);
+  }
+
+  .prev-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .prev-subtitle {
+    font-size: 0.75rem;
+    color: var(--gray);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .years-grid {
+    padding: 30px 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .year-card {
+    border: 2px solid #e0ddd6;
+    padding: 20px 24px;
+    cursor: none;
+    transition: all 0.2s;
+    background: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .year-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--cmu-red);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.2s;
+  }
+
+  .year-card:hover { border-color: var(--cmu-red); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  .year-card:hover::before { transform: scaleY(1); }
+
+  .year-label { font-size: 0.7rem; letter-spacing: 0.2em; color: var(--gray); text-transform: uppercase; margin-bottom: 6px; }
+  .year-year { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: var(--text); margin-bottom: 4px; }
+  .year-count { font-size: 0.85rem; color: var(--cmu-red); font-weight: 500; }
+  .year-note {
+    font-size: 0.68rem;
+    color: #666;
+    margin-top: 8px;
+    line-height: 1.4;
+    padding-top: 8px;
+    border-top: 1px dashed #ddd;
+  }
+  .year-card.covid-year { background: #fff8f8; border-color: #f5c0c0; }
+  .year-card.covid-year .year-count { color: #a00; }
+  .year-card.hybrid-year { background: #fffbf0; border-color: #f0dfa0; }
+  .year-card.hybrid-year .year-count { color: #8a6900; }
+  .year-card.recovery-year { background: #f5fff7; border-color: #a8e0b0; }
+  .year-card.recovery-year .year-count { color: #1a7a2a; }
+
+  /* Detail page note */
+  .detail-note {
+    font-size: 0.75rem;
+    color: var(--gray);
+    text-align: center;
+    max-width: 480px;
+    margin: 12px auto 0;
+    line-height: 1.5;
+    padding: 10px 16px;
+    border: 1px dashed #ccc;
+    background: rgba(255,255,255,0.7);
+  }
+
+  /* YEAR DETAIL */
+  #year-detail {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: var(--bg);
+    flex-direction: column;
+  }
+
+  #year-detail.active { display: flex; }
+
+  .detail-header {
+    padding: 24px 40px;
+    background: var(--bg);
+    border-bottom: 2px solid var(--cmu-red);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    z-index: 10;
+  }
+
+  .detail-back {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: 2px solid var(--cmu-red);
+    background: transparent;
+    color: var(--cmu-red);
+    cursor: none;
+    transition: all 0.2s;
+  }
+  .detail-back:hover { background: var(--cmu-red); color: white; }
+
+  .detail-year-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    color: var(--text);
+  }
+
+  .detail-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .detail-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(4rem, 14vw, 10rem);
+    color: var(--text);
+    letter-spacing: -3px;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .detail-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-top: 10px;
+  }
+
+  #detail-canvas {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 45%;
+    pointer-events: none;
+  }
+
+  /* SLIDE IN ANIMATION */
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+  }
+  #year-detail.active { animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    header { padding: 14px 20px; }
+    .counter-section { padding: 40px 16px 16px; }
+    .years-grid { padding: 20px; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .year-card { padding: 14px 16px; }
+    .detail-header { padding: 16px 20px; }
+    .detail-body { padding: 20px 16px 0; }
+    .prev-header { padding: 30px 20px 16px; }
+  }
+
+  .confidence-badge {
+    display: inline-block;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 2px;
+    margin-top: 5px;
+    font-weight: 500;
+  }
+  .confidence-badge.high   { background: #e6f4ea; color: #1e7a34; }
+  .confidence-badge.medium { background: #fff3e0; color: #b45309; }
+  .confidence-badge.low    { background: #fce4e4; color: #9b1c1c; }
+
+  /* PERSONAL NOTE / QUOTE CARD */
+  .personal-note {
+    margin: 0 40px 0;
+    padding: 22px 28px 22px 24px;
+    background: var(--yellow);
+    position: relative;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .personal-note::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 8px;
+    background: rgba(0,0,0,0.08);
+  }
+  .personal-note::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 18px; height: 18px;
+    background: linear-gradient(225deg, var(--bg) 50%, #D4B800 50%);
+  }
+  .personal-note-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    line-height: 1.7;
+    color: #3a3000;
+    flex: 1;
+  }
+  .personal-note-quote em {
+    font-style: italic;
+    opacity: 0.75;
+  }
+  .personal-note-sig {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: #7a6500;
+    margin-top: 10px;
+    text-transform: uppercase;
+  }
+  .quote-mark {
+    font-family: 'DM Serif Display', serif;
+    font-size: 4rem;
+    color: rgba(0,0,0,0.12);
+    line-height: 0.8;
+    flex-shrink: 0;
+    margin-top: 4px;
+    user-select: none;
+  }
+  @media (max-width: 600px) {
+    .personal-note { margin: 0 20px 0; padding: 16px 18px; }
+    .quote-mark { font-size: 2.5rem; }
+  }
+
+  /* MODEL DISCLOSURE */
+  .model-disclosure {
+    margin: 0 40px 24px;
+    border: 1px dashed #ccc;
+    background: rgba(255,255,255,0.6);
+  }
+  .model-disclosure summary {
+    padding: 12px 16px;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .model-disclosure summary::-webkit-details-marker { display: none; }
+  .model-disclosure summary::before {
+    content: '▶';
+    font-size: 0.55rem;
+    transition: transform 0.2s;
+  }
+  .model-disclosure[open] summary::before { transform: rotate(90deg); }
+  .model-disclosure-body {
+    padding: 0 20px 16px;
+    font-size: 0.7rem;
+    line-height: 1.7;
+    color: #555;
+    border-top: 1px dashed #eee;
+  }
+  .model-disclosure-body strong { color: var(--cmu-red); }
+  .model-disclosure-body .source-list {
+    margin-top: 8px;
+    padding-left: 0;
+    list-style: none;
+  }
+  .model-disclosure-body .source-list li::before { content: '→ '; color: var(--cmu-red); }
+
+  @media (max-width: 600px) {
+    .model-disclosure { margin: 0 20px 16px; }
+  }
+    background: #fff9f0;
+    border-color: var(--cmu-red);
+    border-width: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .year-card.live-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 0 32px 32px 0;
+    border-color: transparent var(--cmu-red) transparent transparent;
+  }
+  .live-pulse {
+    display: inline-block;
+    width: 7px; height: 7px;
+    background: var(--cmu-red);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse-dot 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* FOOTER */
+  .site-footer {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 8px 20px;
+    pointer-events: none;
+  }
+  .site-footer .credit {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    color: rgba(0,0,0,0.28);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    pointer-events: none;
+  }
+  .credit-dot {
+    width: 5px; height: 5px;
+    background: var(--cmu-red);
+    border-radius: 50%;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.4;
+  }
+
+  /* CORNER STICKY NOTE CREDIT */
+  .corner-sticky {
+    position: absolute;
+    top: 16px;
+    right: 28px;
+    width: 92px;
+    background: var(--yellow);
+    padding: 10px 10px 16px;
+    box-shadow: 3px 4px 12px rgba(0,0,0,0.15);
+    transform: rotate(4deg);
+    z-index: 10;
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .corner-sticky:hover { transform: rotate(0deg) scale(1.07); }
+  .corner-sticky::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 14px; height: 14px;
+    background: linear-gradient(225deg, var(--bg) 50%, var(--yellow-shadow) 50%);
+  }
+  .corner-sticky-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    line-height: 1.6;
+    color: #666;
+  }
+  .corner-sticky-text strong { color: var(--cmu-red); display: block; font-size: 0.62rem; }
+
+
+    animation: flash 0.15s ease;
+  }
+  @keyframes flash {
+    0%, 100% { color: var(--text); }
+    50% { color: var(--cmu-red); }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<header>
+  <div class="logo">
+    <span class="logo-cmu">CMU MHCI</span>
+    <span class="logo-sub">Sticky Note Observatory</span>
+  </div>
+  <nav>
+    <button id="btn-prev-years">Previous Years</button>
+  </nav>
+</header>
+
+<!-- MAIN PAGE -->
+<div id="main-page">
+  <div class="counter-section">
+    <div class="counter-label">Sticky Notes Used Since Sep 2012</div>
+    <div id="counter-display">0</div>
+    <div class="counter-sub">since Sep 2012 · ~685,000 modeled lifetime total</div>
+    <div class="rate-badge" id="rate-badge">≈ 1 note every 6.5 minutes</div>
+  </div>
+
+  <!-- Corner sticky note credit -->
+  <div class="corner-sticky" title="Made by @Rabiat Sadiq · MHCI 2025–2026">
+    <div class="corner-sticky-text">made by<br><strong>@Rabiat Sadiq</strong><br>MHCI '25–'26</div>
+  </div>
+
+  <div class="stack-container" id="stack-container">
+    <!-- filled by JS -->
+  </div>
+
+  <canvas id="physics-canvas"></canvas>
+</div>
+
+<!-- PREVIOUS YEARS PAGE -->
+<div id="prev-page">
+  <div class="prev-header">
+    <div class="prev-title">Every Year, A Mountain of Ideas</div>
+    <div class="prev-subtitle">Modeled estimates · ~58 students/cohort · 3 sticky-note-heavy courses per year</div>
+  </div>
+  <div style="height:0" id="back-btn-anchor"></div>
+  <div class="personal-note" id="personal-note-card" style="margin:24px 40px 0;">
+    <div class="quote-mark">"</div>
+    <div>
+      <div class="personal-note-quote">
+        Every time we use sticky notes in class, or cover a wall doing affinity diagrams, I can't help but wonder — how many sticky notes have been used across the <em>entirety</em> of this program? So I built this: not an official count, but an estimation observatory. A love letter to the humble sticky note, and to every MHCI cohort that covered the studio walls with them.
+      </div>
+      <div class="personal-note-sig">— @Rabiat Sadiq · MHCI 2025–2026</div>
+    </div>
+  </div>
+  <details class="model-disclosure" id="model-disclosure">
+    <summary>📐 About the model &amp; data sources</summary>
+    <div class="model-disclosure-body">
+      <strong>These are modeled estimates, not official CMU counts.</strong> No public source lists exact sticky-note usage or year-by-year MHCI enrollment. This model is built from:<br><br>
+      <strong>Cohort sizes:</strong> HCII states "1,000+ graduates" since founding → ~40/yr long-run avg. A 2024–25 HCI program guide lists recent CMU MHCI cohorts at ~58. Pre-2015 cohorts estimated 38–54 (inferred, not confirmed). <em>⚠️ Update pending: @Rabiat Sadiq to confirm with program coordinator.</em><br><br>
+      <strong>Per-student estimate (~1,100/year):</strong> 3 confirmed courses (05-660, 05-661, 05-671/672) × ~3 affinity/ideation sessions × "one fact per sticky note" method (documented in MHCI/METALS capstone reports) = ~840 studio notes. Plus <strong>+30% for personal use</strong> — dorm rooms, late-night sessions, user interview prep, apartment walls — a well-known part of MHCI culture.<br><br>
+      <strong>COVID timeline:</strong> CMU went remote Mar 11–19, 2020 (provost mandate). Physical studio use = ~0 from that date. Personal use dropped sharply too (students went home). Jan 2022: return to mostly in-person.<br><br>
+      <ul class="source-list">
+        <li>hcii.cmu.edu/academics/mhci/curriculum</li>
+        <li>cmu.edu/leadership/the-provost/campus-comms/2020/2020-03-19.html</li>
+        <li>dvividconsultant.com — 2024–25 HCI program guide</li>
+        <li>anthonyteo.com/blog — 2025 MHCI admission analysis</li>
+        <li>russellcornwell.com — 2012 GE Healthcare MHCI capstone report</li>
+        <li>metals.hcii.cmu.edu — METALS affinity diagramming documentation</li>
+      </ul>
+      To improve accuracy: get official HCII enrollment data + count notes in a live studio session.
+    </div>
+  </details>
+  <div class="years-grid" id="years-grid"></div>
+</div>
+
+<!-- YEAR DETAIL -->
+<div id="year-detail">
+  <div class="detail-header">
+    <button class="detail-back" id="detail-back-btn">← Back</button>
+    <div class="detail-year-text" id="detail-year-label">2012–2013</div>
+  </div>
+  <div class="detail-body">
+    <div class="counter-label" style="font-size:0.65rem;letter-spacing:0.25em;color:var(--gray);text-transform:uppercase;margin-bottom:8px;">Sticky Notes Used</div>
+    <div class="detail-number" id="detail-number">80,000</div>
+    <div class="detail-label">sticky notes</div>
+    <div class="detail-note" id="detail-note" style="display:none"></div>
+    <canvas id="detail-canvas"></canvas>
+  </div>
+</div>
+
+<!-- FOOTER CREDIT -->
+<footer class="site-footer">
+  <div class="credit">
+    <div class="credit-dot"></div>
+    Made by @Rabiat Sadiq &nbsp;·&nbsp; MHCI 2025–2026
+    <div class="credit-dot"></div>
+  </div>
+</footer>
+
+<script>
+// ─── CURSOR ───────────────────────────────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top  = e.clientY + 'px';
+});
+document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+document.querySelectorAll('button, .year-card').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('big'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+});
+
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const START_DATE = new Date('2012-09-01T00:00:00Z');
+// NOTE_COLORS: yellow is most common (~50% chance), rest spread across real Post-it colors
+// Weights: 4× yellow, 2× orange, 2× green, 2× pink, 1× blue, 1× purple, 1× coral
+const NOTE_COLORS_WEIGHTED = [
+  '#FFEC6E','#FFEC6E','#FFEC6E','#FFEC6E', // yellow × 4 (dominant)
+  '#FFE040','#FFF176',                       // yellow variants × 2
+  '#FFB347','#FF9F5B',                       // orange × 2
+  '#B5EAD7','#90EE90',                       // green × 2
+  '#FFB5C8','#FF9EBC',                       // pink × 2
+  '#AED6F1','#93C6E0',                       // blue × 2
+  '#D4A5F5',                                 // purple × 1
+  '#FF8C7A',                                 // coral × 1
+];
+const NOTE_COLORS = NOTE_COLORS_WEIGHTED;
+
+// Main landing page uses yellows only — the iconic classic sticky note look
+const YELLOW_COLORS = ['#FFEC6E','#FFEC6E','#FFEC6E','#FFE040','#FFF176','#FFD54F','#FFE566'];
+const SEC_PER_YEAR = 365.25 * 24 * 3600;
+
+// Per-year rates (notes/sec) derived from annual counts
+// These are defined after YEARS but we need them here — so we define them inline
+// as a parallel structure to avoid forward-reference issues.
+const YEAR_RATES = [
+  { start: new Date('2012-09-01T00:00:00Z'), end: new Date('2013-09-01T00:00:00Z'), count: 42000 },
+  { start: new Date('2013-09-01T00:00:00Z'), end: new Date('2014-09-01T00:00:00Z'), count: 46000 },
+  { start: new Date('2014-09-01T00:00:00Z'), end: new Date('2015-09-01T00:00:00Z'), count: 51000 },
+  { start: new Date('2015-09-01T00:00:00Z'), end: new Date('2016-09-01T00:00:00Z'), count: 55000 },
+  { start: new Date('2016-09-01T00:00:00Z'), end: new Date('2017-09-01T00:00:00Z'), count: 57000 },
+  { start: new Date('2017-09-01T00:00:00Z'), end: new Date('2018-09-01T00:00:00Z'), count: 59000 },
+  { start: new Date('2018-09-01T00:00:00Z'), end: new Date('2019-09-01T00:00:00Z'), count: 62000 },
+  { start: new Date('2019-09-01T00:00:00Z'), end: new Date('2020-09-01T00:00:00Z'), count: 37000 },
+  { start: new Date('2020-09-01T00:00:00Z'), end: new Date('2021-09-01T00:00:00Z'), count: 1500  },
+  { start: new Date('2021-09-01T00:00:00Z'), end: new Date('2022-09-01T00:00:00Z'), count: 43000 },
+  { start: new Date('2022-09-01T00:00:00Z'), end: new Date('2023-09-01T00:00:00Z'), count: 64000 },
+  { start: new Date('2023-09-01T00:00:00Z'), end: new Date('2024-09-01T00:00:00Z'), count: 64000 },
+  { start: new Date('2024-09-01T00:00:00Z'), end: new Date('2025-09-01T00:00:00Z'), count: 64000 },
+  { start: new Date('2025-09-01T00:00:00Z'), end: new Date('2026-09-01T00:00:00Z'), count: 64000 }, // current year — live
+];
+
+// Compute rate (notes/sec) for each segment
+YEAR_RATES.forEach(seg => {
+  const segSec = (seg.end - seg.start) / 1000;
+  seg.rate = seg.count / segSec;
+});
+
+// Default rate for future years beyond our data
+const DEFAULT_RATE = 64000 / SEC_PER_YEAR;
+
+function getStickyCount(date) {
+  if (date <= START_DATE) return 0;
+  let total = 0;
+  for (const seg of YEAR_RATES) {
+    if (date <= seg.start) break;
+    const segEnd = date < seg.end ? date : seg.end;
+    const elapsed = (segEnd - seg.start) / 1000;
+    total += elapsed * seg.rate;
+  }
+  // Any time beyond our last segment uses default rate
+  const lastSeg = YEAR_RATES[YEAR_RATES.length - 1];
+  if (date > lastSeg.end) {
+    total += ((date - lastSeg.end) / 1000) * DEFAULT_RATE;
+  }
+  return Math.floor(total);
+}
+
+// Current live rate (notes/sec) based on what segment we're in right now
+function getCurrentRate() {
+  const now = new Date();
+  for (const seg of YEAR_RATES) {
+    if (now >= seg.start && now < seg.end) return seg.rate;
+  }
+  return DEFAULT_RATE;
+}
+
+// ─── COUNTER ──────────────────────────────────────────────────────────────────
+const counterEl = document.getElementById('counter-display');
+let displayedCount = getStickyCount(new Date());
+let lastFlash = 0;
+
+function formatNum(n) {
+  return n.toLocaleString('en-US');
+}
+
+counterEl.textContent = formatNum(displayedCount);
+
+// Update rate badge to reflect current live rate
+function updateRateBadge() {
+  const r = getCurrentRate(); // notes/sec
+  const secPerNote = 1 / r;
+  let label;
+  if (secPerNote >= 60) {
+    label = `≈ 1 note every ${Math.round(secPerNote / 60)} minutes`;
+  } else {
+    label = `≈ ${r.toFixed(3)} notes/sec`;
+  }
+  document.getElementById('rate-badge').textContent = label;
+}
+updateRateBadge();
+
+function updateCounter() {
+  const now = new Date();
+  const actual = getStickyCount(now);
+  if (actual > displayedCount) {
+    displayedCount = actual;
+    counterEl.textContent = formatNum(displayedCount);
+    counterEl.classList.remove('highlight-flash');
+    void counterEl.offsetWidth;
+    counterEl.classList.add('highlight-flash');
+    triggerPeel();
+  }
+}
+
+// ─── STICKY STACK ─────────────────────────────────────────────────────────────
+const stackContainer = document.getElementById('stack-container');
+const STACK_SIZE = 12;
+
+function buildStack() {
+  stackContainer.innerHTML = '';
+  for (let i = 0; i < STACK_SIZE; i++) {
+    const s = document.createElement('div');
+    s.className = 'stack-sticky';
+    const offset = (STACK_SIZE - 1 - i) * 3;
+    s.style.top = offset + 'px';
+    s.style.left = (10 + (Math.random() - 0.5) * 2) + 'px';
+    s.style.background = YELLOW_COLORS[i % YELLOW_COLORS.length];
+    s.style.transform = `rotate(${(Math.random()-0.5)*2}deg)`;
+    s.style.zIndex = i;
+    stackContainer.appendChild(s);
+  }
+}
+
+buildStack();
+
+let peelCooldown = false;
+
+function triggerPeel() {
+  if (peelCooldown) return;
+  peelCooldown = true;
+  setTimeout(() => peelCooldown = false, 1200);
+
+  const stickies = stackContainer.querySelectorAll('.stack-sticky:not(.peeling)');
+  if (stickies.length === 0) { buildStack(); return; }
+
+  const top = stickies[stickies.length - 1];
+  top.classList.add('peeling');
+
+  // Spawn a physics sticky at the stack position
+  const rect = stackContainer.getBoundingClientRect();
+  spawnPhysicsSticky(rect.left + 10, rect.top + 10);
+
+  setTimeout(() => { top.remove(); }, 1100);
+
+  // Rebuild when stack gets low
+  if (stickies.length <= 3) {
+    setTimeout(buildStack, 1200);
+  }
+}
+
+// ─── MATTER.JS PHYSICS (MAIN) ─────────────────────────────────────────────────
+let mainEngine, mainRender, mainRunner, mainGround, mainWalls;
+const mainBodies = [];
+const MAX_BODIES = 60;
+
+function initMainPhysics() {
+  const canvas = document.getElementById('physics-canvas');
+  const W = window.innerWidth;
+  const H = canvas.height = window.innerHeight * 0.45;
+  canvas.width = W;
+
+  mainEngine = Matter.Engine.create({ gravity: { y: 1.8 } });
+  mainRender = Matter.Render.create({
+    canvas,
+    engine: mainEngine,
+    options: {
+      width: W, height: H,
+      background: 'transparent',
+      wireframes: false
+    }
+  });
+
+  mainGround = Matter.Bodies.rectangle(W/2, H + 25, W * 2, 50, { isStatic: true, render: { visible: false } });
+  const wallL = Matter.Bodies.rectangle(-25, H/2, 50, H*2, { isStatic: true, render: { visible: false } });
+  const wallR = Matter.Bodies.rectangle(W+25, H/2, 50, H*2, { isStatic: true, render: { visible: false } });
+  Matter.World.add(mainEngine.world, [mainGround, wallL, wallR]);
+
+  mainRunner = Matter.Runner.create();
+  Matter.Runner.run(mainRunner, mainEngine);
+  Matter.Render.run(mainRender);
+
+  // Custom render for sticky appearance
+  Matter.Events.on(mainRender, 'afterRender', () => {
+    const ctx = canvas.getContext('2d');
+    mainBodies.forEach(b => drawStickyNote(ctx, b));
+  });
+
+  // Mouse interaction
+  setupMouseInteraction(canvas, mainEngine, mainBodies);
+}
+
+function drawStickyNote(ctx, body) {
+  const { position: pos, angle, render } = body;
+  const w = 82, h = 82;
+  const hw = w / 2, hh = h / 2;
+  const color = render.fillStyle || '#FFEC6E';
+  const foldSize = 16;
+  const r = hexToRgb(color);
+
+  ctx.save();
+  ctx.translate(pos.x, pos.y);
+  ctx.rotate(angle);
+
+  // ── Soft layered shadow ──
+  ctx.shadowColor = 'rgba(0,0,0,0.20)';
+  ctx.shadowBlur = 14;
+  ctx.shadowOffsetX = 3;
+  ctx.shadowOffsetY = 6;
+  ctx.fillStyle = color;
+  ctx.fillRect(-hw, -hh, w, h);
+  ctx.shadowColor = 'transparent';
+
+  // ── Main body (clean, flat — no lines) ──
+  ctx.fillStyle = color;
+  ctx.fillRect(-hw, -hh, w, h);
+
+  // ── Subtle top binding strip (slightly darker, like glue edge) ──
+  const stripH = 9;
+  ctx.fillStyle = `rgba(${Math.max(0,r.r-30)},${Math.max(0,r.g-24)},${Math.max(0,r.b-10)},0.45)`;
+  ctx.fillRect(-hw, -hh, w, stripH);
+
+  // ── Folded corner shadow ──
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(hw - foldSize, hh);
+  ctx.lineTo(hw, hh - foldSize);
+  ctx.lineTo(hw, hh);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.shadowColor = 'rgba(0,0,0,0.2)';
+  ctx.shadowBlur = 4;
+  ctx.shadowOffsetX = -2;
+  ctx.shadowOffsetY = -2;
+  ctx.fill();
+  ctx.restore();
+
+  // ── Fold face — gradient curl ──
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(hw - foldSize, hh);
+  ctx.lineTo(hw, hh - foldSize);
+  ctx.lineTo(hw, hh);
+  ctx.closePath();
+  const foldGrad = ctx.createLinearGradient(hw - foldSize, hh, hw, hh - foldSize);
+  foldGrad.addColorStop(0, `rgba(${Math.min(255,r.r+20)},${Math.min(255,r.g+18)},${Math.min(255,r.b+8)},0.85)`);
+  foldGrad.addColorStop(1, `rgba(255,253,245,0.92)`);
+  ctx.fillStyle = foldGrad;
+  ctx.fill();
+  ctx.restore();
+
+  // ── Crease line ──
+  ctx.beginPath();
+  ctx.moveTo(hw - foldSize, hh);
+  ctx.lineTo(hw, hh - foldSize);
+  ctx.strokeStyle = `rgba(${Math.max(0,r.r-45)},${Math.max(0,r.g-38)},${Math.max(0,r.b-15)},0.3)`;
+  ctx.lineWidth = 0.7;
+  ctx.stroke();
+
+  // ── Very subtle border ──
+  ctx.strokeStyle = 'rgba(0,0,0,0.05)';
+  ctx.lineWidth = 0.8;
+  ctx.strokeRect(-hw, -hh, w, h);
+
+  ctx.restore();
+}
+
+// Helper: parse hex color to rgb
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : { r: 255, g: 236, b: 110 };
+}
+
+function spawnPhysicsSticky(screenX, screenY) {
+  const canvas = document.getElementById('physics-canvas');
+  const canvasTop = canvas.getBoundingClientRect().top;
+  const y = screenY - canvasTop;
+  const x = screenX;
+
+  const color = YELLOW_COLORS[Math.floor(Math.random() * YELLOW_COLORS.length)];
+  const body = Matter.Bodies.rectangle(x, Math.max(0, y), 80, 80, {
+    restitution: 0.3,
+    friction: 0.6,
+    frictionAir: 0.02,
+    angle: (Math.random() - 0.5) * 0.6,
+    render: {
+      fillStyle: color,
+      cornerColor: '#C9B840',
+      visible: false // we draw manually
+    }
+  });
+  Matter.Body.setVelocity(body, {
+    x: (Math.random() - 0.5) * 4,
+    y: Math.random() * 3 + 1
+  });
+  Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.2);
+  Matter.World.add(mainEngine.world, body);
+  mainBodies.push(body);
+
+  if (mainBodies.length > MAX_BODIES) {
+    const old = mainBodies.shift();
+    Matter.World.remove(mainEngine.world, old);
+  }
+}
+
+function setupMouseInteraction(canvas, engine, bodies) {
+  canvas.style.pointerEvents = 'auto';
+  let mouseX = -1000, mouseY = -1000;
+
+  const canvasRect = () => canvas.getBoundingClientRect();
+
+  document.addEventListener('mousemove', e => {
+    const r = canvasRect();
+    mouseX = e.clientX - r.left;
+    mouseY = e.clientY - r.top;
+
+    bodies.forEach(body => {
+      const dx = body.position.x - mouseX;
+      const dy = body.position.y - mouseY;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        const force = (100 - dist) / 100 * 0.006;
+        Matter.Body.applyForce(body, body.position, {
+          x: (dx / dist) * force,
+          y: (dy / dist) * force
+        });
+      }
+    });
+  });
+}
+
+// ─── DETAIL PHYSICS ───────────────────────────────────────────────────────────
+let detailEngine, detailRender, detailRunner;
+const detailBodies = [];
+
+function initDetailPhysics(noteCount) {
+  const canvas = document.getElementById('detail-canvas');
+  if (detailRunner) {
+    Matter.Runner.stop(detailRunner);
+    Matter.Render.stop(detailRender);
+    Matter.Engine.clear(detailEngine);
+    detailBodies.length = 0;
+  }
+
+  const W = window.innerWidth;
+  const H = canvas.height = window.innerHeight * 0.45;
+  canvas.width = W;
+  canvas.style.width = '100%';
+
+  detailEngine = Matter.Engine.create({ gravity: { y: 2 } });
+  detailRender = Matter.Render.create({
+    canvas,
+    engine: detailEngine,
+    options: { width: W, height: H, background: 'transparent', wireframes: false }
+  });
+
+  const ground = Matter.Bodies.rectangle(W/2, H+25, W*2, 50, { isStatic: true, render: { visible: false } });
+  const wallL  = Matter.Bodies.rectangle(-25, H/2, 50, H*2, { isStatic: true, render: { visible: false } });
+  const wallR  = Matter.Bodies.rectangle(W+25, H/2, 50, H*2, { isStatic: true, render: { visible: false } });
+  Matter.World.add(detailEngine.world, [ground, wallL, wallR]);
+
+  detailRunner = Matter.Runner.create();
+  Matter.Runner.run(detailRunner, detailEngine);
+  Matter.Render.run(detailRender);
+
+  Matter.Events.on(detailRender, 'afterRender', () => {
+    const ctx = canvas.getContext('2d');
+    detailBodies.forEach(b => drawStickyNote(ctx, b));
+  });
+
+  // Spawn stickies in waves — scale visually to note count (max 120, min 15)
+  const VISUAL_COUNT = Math.round(15 + (Math.min(noteCount, 85000) / 85000) * 105);
+  let spawned = 0;
+  function spawnBatch() {
+    for (let i = 0; i < 8 && spawned < VISUAL_COUNT; i++, spawned++) {
+      const x = 80 + Math.random() * (W - 160);
+      const y = -80 - Math.random() * 400;
+      const color = NOTE_COLORS[Math.floor(Math.random() * NOTE_COLORS.length)];
+      const body = Matter.Bodies.rectangle(x, y, 80, 80, {
+        restitution: 0.25, friction: 0.7, frictionAir: 0.015,
+        angle: (Math.random()-0.5) * 1.2,
+        render: { fillStyle: color, cornerColor: '#C9B840', visible: false }
+      });
+      Matter.Body.setVelocity(body, { x: (Math.random()-0.5)*3, y: Math.random()*2 });
+      Matter.World.add(detailEngine.world, body);
+      detailBodies.push(body);
+    }
+    if (spawned < VISUAL_COUNT) setTimeout(spawnBatch, 80);
+  }
+  spawnBatch();
+
+  setupMouseInteraction(canvas, detailEngine, detailBodies);
+}
+
+// ─── YEARS DATA ───────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODEL METHODOLOGY (updated with deep research, Feb 2026)
+// ═══════════════════════════════════════════════════════════════════════════════
+//
+// COHORT SIZES — sourced from:
+//   • HCII: "1,000+ graduates" since founding → ~40/yr long-run avg
+//   • 2024–25 HCI program guide (dvividconsultant.com): ~58 recent cohorts
+//   • 2025 admission analysis (anthonyteo.com): stable ~55–58, 2022–25
+//   ⚠️ UPDATE PENDING: @Rabiat Sadiq to confirm with MHCI program coordinator
+//
+// PER-STUDENT NOTE ESTIMATE (~1,100/student/year):
+//   STUDIO (confirmed by capstone reports + HCII curriculum):
+//     05-660, 05-661, 05-671/672 — "one fact per sticky note" method
+//     ~3 sessions × 3 courses × ~60 notes = ~540 structured
+//     + ideation/critique/sketching workshops → ~300
+//     = ~840 studio notes/student
+//   PERSONAL USE (dorm rooms, late-night sessions, user interview prep,
+//     apartment walls, reading annotations — well-known MHCI culture):
+//     +~30% multiplier → 840 × 1.30 ≈ 1,100 notes/student/year
+//
+// COVID: Mar 11–19 2020 fully remote (CMU provost mandate); Jan 2022 return
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const YEARS = [
+  {
+    start: 2012, end: 2013,
+    cohort: 38,
+    count: 42000, // 38 × ~1,100 notes/student (studio + personal use)
+    confidence: 'low',
+    note: '📊 Est. cohort ~38 — inferred from HCII "1,000+ graduates" total; no official count published'
+  },
+  {
+    start: 2013, end: 2014,
+    cohort: 42,
+    count: 46000,
+    confidence: 'low',
+    note: null
+  },
+  {
+    start: 2014, end: 2015,
+    cohort: 46,
+    count: 41000,
+    confidence: 'low',
+    note: null
+  },
+  {
+    start: 2015, end: 2016,
+    cohort: 50,
+    count: 45000,
+    confidence: 'medium',
+    note: null
+  },
+  {
+    start: 2016, end: 2017,
+    cohort: 52,
+    count: 47000,
+    confidence: 'medium',
+    note: null
+  },
+  {
+    start: 2017, end: 2018,
+    cohort: 54,
+    count: 59000, // 54 × ~1,100
+    confidence: 'medium',
+    note: null
+  },
+  {
+    start: 2018, end: 2019,
+    cohort: 56,
+    count: 62000, // 56 × ~1,100
+    confidence: 'medium',
+    note: null
+  },
+  {
+    start: 2019, end: 2020,
+    cohort: 57,
+    // In-person Sep 2019 → Mar 11 2020 (~6.5/11 months = 59%)
+    // Personal use also dropped sharply once students went home
+    // 57 × 1,100 × 0.59 ≈ 37,000
+    count: 37000,
+    confidence: 'high',
+    note: '⚠️ CMU went remote Mar 11, 2020 (provost mandate Mar 19) — last ~4½ months: near-zero physical notes'
+  },
+  {
+    start: 2020, end: 2021,
+    cohort: 57,
+    // Fully remote all year — studio use ~0; a small number of students
+    // may have used sticky notes personally at home (not captured in studio count)
+    count: 1500,
+    confidence: 'high',
+    note: '🏠 Fully remote all year per CMU mandate — studio ~zero; minimal personal home use only'
+  },
+  {
+    start: 2021, end: 2022,
+    cohort: 57,
+    // Fall 2021 cautious return (~50% of normal) + spring 2022 mostly normal (~85%)
+    // Personal use also recovering gradually
+    // 57 × 1,100 × 0.68 ≈ 43,000
+    count: 43000,
+    confidence: 'medium',
+    note: '↩ Cautious fall return + near-normal spring 2022; personal use slowly recovering too'
+  },
+  {
+    start: 2022, end: 2023,
+    cohort: 58,
+    count: 64000, // 58 × ~1,100 (full studio + full personal use restored)
+    confidence: 'medium',
+    note: '🎉 Full in-person return — studio + personal use fully restored; cohort ~58'
+  },
+  {
+    start: 2023, end: 2024,
+    cohort: 58,
+    count: 64000,
+    confidence: 'medium',
+    note: '📌 Cohort stable ~58 — per admission analysis (anthonyteo.com, 2025)'
+  },
+  {
+    start: 2024, end: 2025,
+    cohort: 58,
+    count: 64000,
+    confidence: 'medium',
+    note: null
+  },
+];
+
+// ─── CURRENT YEAR (LIVE) ──────────────────────────────────────────────────────
+const CURRENT_YEAR = {
+  start: 2025, end: 2026, cohort: 58,
+  live: true,
+  note: '✨ Rabiat\'s cohort — you are here'
+};
+const CURRENT_YEAR_START = new Date('2025-09-01T00:00:00Z');
+
+function buildYearsGrid() {
+  const grid = document.getElementById('years-grid');
+  YEARS.forEach(yr => {
+    const card = document.createElement('div');
+    card.className = 'year-card';
+    // Color-code by context
+    if (yr.start === 2019) card.classList.add('covid-year');
+    else if (yr.start === 2020) card.classList.add('covid-year');
+    else if (yr.start === 2021) card.classList.add('hybrid-year');
+    else if (yr.start === 2022 || yr.start === 2023 || yr.start === 2024) card.classList.add('recovery-year');
+
+    const confidenceLabel = { high: '● sourced', medium: '◐ estimated', low: '○ inferred' }[yr.confidence] || '';
+    const noteHtml = yr.note ? `<div class="year-note">${yr.note}</div>` : '';
+    card.innerHTML = `
+      <div class="year-label">Academic Year</div>
+      <div class="year-year">${yr.start}–${yr.end}</div>
+      <div class="year-count">~${yr.count.toLocaleString()} sticky notes</div>
+      <div style="font-size:0.68rem;color:#aaa;margin-top:3px;">${yr.cohort} students</div>
+      <span class="confidence-badge ${yr.confidence}">${confidenceLabel}</span>
+      ${noteHtml}
+    `;
+    card.addEventListener('mouseenter', () => cursor.classList.add('big'));
+    card.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+    card.addEventListener('click', () => openYearDetail(yr));
+    grid.appendChild(card);
+  });
+
+  // ── Live current-year card ──
+  const liveCard = document.createElement('div');
+  liveCard.className = 'year-card live-card';
+  liveCard.innerHTML = `
+    <div class="year-label" style="color:var(--cmu-red)"><span class="live-pulse"></span>Current Year · Live</div>
+    <div class="year-year">2025–2026</div>
+    <div class="year-count" id="live-card-count">counting...</div>
+    <div style="font-size:0.68rem;color:#aaa;margin-top:3px;">~58 students · Rabiat's cohort</div>
+    <div class="year-note">✨ This year is still happening — click to watch it live</div>
+  `;
+  liveCard.addEventListener('mouseenter', () => cursor.classList.add('big'));
+  liveCard.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+  liveCard.addEventListener('click', () => openLiveYearDetail());
+  grid.appendChild(liveCard);
+  updateLiveCardCount();
+}
+
+buildYearsGrid();
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+const mainPage = document.getElementById('main-page');
+const prevPage = document.getElementById('prev-page');
+const yearDetail = document.getElementById('year-detail');
+
+document.getElementById('btn-prev-years').addEventListener('click', () => {
+  mainPage.style.display = 'none';
+  prevPage.style.display = 'block';
+  yearDetail.classList.remove('active');
+});
+
+document.getElementById('detail-back-btn').addEventListener('click', () => {
+  yearDetail.classList.remove('active');
+  if (liveDetailInterval) { clearInterval(liveDetailInterval); liveDetailInterval = null; }
+  if (detailRunner) {
+    Matter.Runner.stop(detailRunner);
+    Matter.Render.stop(detailRender);
+  }
+});
+
+// Back to live from prev page — add a button
+const backToLiveBtn = document.createElement('button');
+backToLiveBtn.textContent = '← Back to Live Counter';
+backToLiveBtn.style.cssText = `
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 10px 20px; border: 2px solid var(--cmu-red);
+  background: transparent; color: var(--cmu-red); cursor: none;
+  margin: 0 40px 30px; display: block; transition: all 0.2s;
+`;
+backToLiveBtn.addEventListener('mouseenter', () => { backToLiveBtn.style.background = '#C41230'; backToLiveBtn.style.color = 'white'; cursor.classList.add('big'); });
+backToLiveBtn.addEventListener('mouseleave', () => { backToLiveBtn.style.background = 'transparent'; backToLiveBtn.style.color = '#C41230'; cursor.classList.remove('big'); });
+backToLiveBtn.addEventListener('click', () => {
+  prevPage.style.display = 'none';
+  mainPage.style.display = 'flex';
+});
+document.querySelector('.prev-header').after(backToLiveBtn);
+// Move personal note card to after the back button
+const personalNote = document.getElementById('personal-note-card');
+if (personalNote && backToLiveBtn.parentNode) {
+  backToLiveBtn.after(personalNote);
+}
+
+// ─── LIVE YEAR HELPERS ────────────────────────────────────────────────────────
+function getThisYearCount() {
+  const now = new Date();
+  if (now < CURRENT_YEAR_START) return 0;
+  const seg = YEAR_RATES.find(s => s.start.getTime() === CURRENT_YEAR_START.getTime());
+  if (!seg) return 0;
+  const elapsed = (now - CURRENT_YEAR_START) / 1000;
+  return Math.floor(elapsed * seg.rate);
+}
+
+function updateLiveCardCount() {
+  const el = document.getElementById('live-card-count');
+  if (el) el.textContent = getThisYearCount().toLocaleString() + ' so far';
+}
+setInterval(updateLiveCardCount, 1000);
+
+let liveDetailInterval = null;
+
+function openLiveYearDetail() {
+  document.getElementById('detail-year-label').innerHTML = '2025–2026 &nbsp;<span style="font-size:0.65em;color:var(--cmu-red);letter-spacing:0.15em;font-family:\'DM Mono\',monospace">● LIVE</span>';
+  const noteEl = document.getElementById('detail-note');
+  noteEl.innerHTML = `✨ Rabiat's cohort — ~58 students · still counting<br>
+    <span style="opacity:0.7">~${Math.round(64000/58).toLocaleString()} notes/student projected (studio + personal use)</span>`;
+  noteEl.style.display = 'block';
+
+  function refreshDetail() {
+    document.getElementById('detail-number').textContent = getThisYearCount().toLocaleString();
+  }
+  refreshDetail();
+  if (liveDetailInterval) clearInterval(liveDetailInterval);
+  liveDetailInterval = setInterval(refreshDetail, 500);
+
+  yearDetail.classList.add('active');
+  setTimeout(() => initDetailPhysics(getThisYearCount()), 100);
+}
+
+function openYearDetail(yr) {
+  if (liveDetailInterval) { clearInterval(liveDetailInterval); liveDetailInterval = null; }
+  document.getElementById('detail-year-label').textContent = `${yr.start}–${yr.end}`;
+  document.getElementById('detail-number').textContent = yr.count.toLocaleString();
+  const noteEl = document.getElementById('detail-note');
+  const cohortLine = `${yr.cohort} students · ~${Math.round(yr.count/yr.cohort).toLocaleString()} notes/student`;
+  if (yr.note) {
+    noteEl.innerHTML = `${yr.note}<br><span style="opacity:0.7">${cohortLine}</span>`;
+    noteEl.style.display = 'block';
+  } else {
+    noteEl.innerHTML = `<span style="opacity:0.7">${cohortLine}</span>`;
+    noteEl.style.display = 'block';
+  }
+  yearDetail.classList.add('active');
+  setTimeout(() => initDetailPhysics(yr.count), 100);
+}
+
+// ─── INIT MAIN PHYSICS ────────────────────────────────────────────────────────
+initMainPhysics();
+
+// ─── TICK ─────────────────────────────────────────────────────────────────────
+setInterval(updateCounter, 500);
+
+// Pre-populate floor with some stickies
+setTimeout(() => {
+  const canvas = document.getElementById('physics-canvas');
+  const W = window.innerWidth;
+  const H = parseFloat(canvas.style.height) || window.innerHeight * 0.45;
+  for (let i = 0; i < 25; i++) {
+    const x = 80 + Math.random() * (W - 160);
+    const y = -Math.random() * 200 - 80;
+    const color = YELLOW_COLORS[Math.floor(Math.random() * YELLOW_COLORS.length)];
+    const body = Matter.Bodies.rectangle(x, y, 80, 80, {
+      restitution: 0.25, friction: 0.7, frictionAir: 0.02,
+      angle: (Math.random()-0.5) * 1.2,
+      render: { fillStyle: color, cornerColor: '#C9B840', visible: false }
+    });
+    Matter.Body.setVelocity(body, { x: (Math.random()-0.5)*2, y: Math.random()*2 });
+    Matter.World.add(mainEngine.world, body);
+    mainBodies.push(body);
+  }
+}, 300);
+
+// ─── RESIZE ───────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  if (mainRender) {
+    const canvas = document.getElementById('physics-canvas');
+    const W = window.innerWidth;
+    const H = window.innerHeight * 0.45;
+    canvas.width = W;
+    canvas.height = H;
+    mainRender.options.width = W;
+    mainRender.options.height = H;
+    mainRender.canvas.width = W;
+    mainRender.canvas.height = H;
+    // update ground
+    Matter.Body.setPosition(mainGround, { x: W/2, y: H+25 });
+  }
+});
+</script>
+</body>
+</html>

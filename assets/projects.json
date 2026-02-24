@@ -1,6 +1,24 @@
 {
   "projects": [
     {
+      "id": "cmu-mhci-sticky-counter",
+      "title": "CMU MHCI Sticky Note Counter",
+      "subtitle": "Interactive Physics Observatory",
+      "category": "Web / Full-Stack / Product",
+      "tags": ["Web", "HCI", "Research", "Personal"],
+      "description": "A live-updating observatory estimating the total sticky notes used by every CMU MHCI cohort since 2012, complete with physics-based animations, year-by-year breakdowns, and a real-time counter.",
+      "longDescription": "Built with Matter.js for physics simulation, custom canvas rendering for sticky note visuals, and a modeled rate engine that accounts for COVID disruptions, cohort growth, and personal vs. studio use. Features peeling animations, a physics floor pile, and per-year detail views. A love letter to the humble sticky note and MHCI studio culture.",
+      "technologies": ["HTML", "CSS", "JavaScript", "Matter.js", "Canvas API"],
+      "github": null,
+      "demo": "sticky-counter.html",
+      "caseStudy": null,
+      "status": "complete",
+      "images": [],
+      "videos": [],
+      "year": "2026",
+      "type": "Personal"
+    },
+    {
       "id": "playstation-internship",
       "title": "Gameplay Video Score Extraction Pipeline",
       "subtitle": "Applied ML Intern — PlayStation (SIE)",
