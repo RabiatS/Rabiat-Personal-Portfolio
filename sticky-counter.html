@@ -147,6 +147,12 @@
     height: 120px;
     margin: 40px auto 20px;
     z-index: 10;
+    cursor: none;
+  }
+
+  .stack-container:hover .stack-sticky:last-child {
+    transform: rotate(-8deg) translateY(-6px) !important;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
   }
 
   .stack-sticky {
@@ -721,7 +727,7 @@ document.addEventListener('mousemove', e => {
 });
 document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
 document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
-document.querySelectorAll('button, .year-card').forEach(el => {
+document.querySelectorAll('button, .year-card, #stack-container').forEach(el => {
   el.addEventListener('mouseenter', () => cursor.classList.add('big'));
   el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
 });
@@ -841,6 +847,9 @@ function updateCounter() {
 
 // ─── STICKY STACK ─────────────────────────────────────────────────────────────
 const stackContainer = document.getElementById('stack-container');
+
+// Click the stack to drop a sticky
+stackContainer.addEventListener('click', () => triggerPeel());
 const STACK_SIZE = 12;
 
 function buildStack() {
