@@ -1230,21 +1230,8 @@
 <script>
 // ── Auth & Session ─────────────────────────────────────────
 // The PIN shows 4 dots but is actually 5 digits — security through misdirection
-// PIN is stored as a hash for security (not visible in plain text)
-// Simple hash function for PIN verification (obscures the PIN from source code viewers)
-function simpleHash(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash | 0; // Convert to 32bit integer
-  }
-  return Math.abs(hash).toString(16);
-}
-// Hash of the owner PIN (replace this hash if you change your PIN)
-// To generate a new hash: open browser console and run: simpleHash('YOUR_NEW_PIN')
-const OWNER_PIN_HASH = 'c0a5'; // Owner PIN hash — change this value if you change your PIN
-const OWNER_KEY    = 'rabiat';  // localStorage namespace for owner
+const OWNER_PIN = '51275';   // Your 5-digit PIN
+const OWNER_KEY = 'rabiat';  // localStorage namespace for owner
 
 // Extra easter egg codes for friends (shareable)
 const EGG_CODES = {
@@ -1435,8 +1422,7 @@ function authKeyPress(key) {
   // Check after 5 digits (the real length)
   if (pinBuffer.length >= 5) {
     const entered = pinBuffer.slice(0, 5);
-    // Compare hash of entered PIN with stored hash
-    if (simpleHash(entered) === OWNER_PIN_HASH) {
+    if (entered === OWNER_PIN) {
       authSuccess('owner');
     } else if (pinBuffer.length >= 5) {
       playSound('error');
