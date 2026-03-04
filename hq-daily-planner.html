@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RABIAT HQ://DAILY_PLANNER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  html { font-size: 130%; }
+
+  body {
+    background: #080B0F;
+    color: #C9D1D9;
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Scanline CRT effect */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Boot sequence */
+  #boot-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #080B0F;
+    z-index: 1000;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .boot-line {
+    font-size: 20px;
+    font-family: 'VT323', monospace;
+    line-height: 1.7;
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+
+  .boot-line.visible { opacity: 1; }
+  .boot-line.cyan { color: #00F5D4; }
+  .boot-line.magenta { color: #F72585; }
+  .boot-line.yellow { color: #FFE033; }
+  .boot-line.muted { color: #4A5568; }
+
+  #app {
+    display: none;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* Top bar */
+  #topbar {
+    background: #0D1117;
+    border-bottom: 1px solid #1E2530;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  .app-title {
+    color: #00F5D4;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    font-family: 'Orbitron', monospace;
+  }
+
+  @keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
+  .cursor {
+    color: #00F5D4;
+    animation: blink 1s infinite;
+    font-size: 16px;
+  }
+
+  .topbar-info {
+    color: #4A5568;
+    font-size: 11px;
+    margin-left: 8px;
+  }
+
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: 1px solid #1E2530;
+    color: #4A5568;
+    padding: 4px 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.15s;
+  }
+
+  .tab-btn:hover, .tab-btn.active {
+    border-color: #00F5D4;
+    color: #00F5D4;
+    background: rgba(0,245,212,0.05);
+  }
+
+  .date-display {
+    color: #4A5568;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  /* Main layout */
+  #main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  #sidebar {
+    width: 220px;
+    background: #0D1117;
+    border-right: 1px solid #1E2530;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    padding: 12px 14px 8px;
+    font-size: 10px;
+    color: #4A5568;
+    letter-spacing: 2px;
+    border-bottom: 1px solid #1E2530;
+    font-family: 'Orbitron', monospace;
+  }
+
+  .mission-item {
+    padding: 10px 14px;
+    border-bottom: 1px solid #1E2530;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .mission-item:hover { background: rgba(255,255,255,0.02); }
+
+  .mission-delete-btn {
+    background: none;
+    border: none;
+    color: #3A3A4A;
+    cursor: pointer;
+    font-size: 10px;
+    padding: 0 2px;
+    line-height: 1;
+    transition: color 0.15s;
+    flex-shrink: 0;
+  }
+  .mission-delete-btn:hover { color: #F72585; }
+
+  .mission-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+
+  .mission-sigil {
+    font-size: 13px;
+  }
+
+  .mission-name {
+    font-size: 11px;
+    letter-spacing: 1px;
+    flex: 1;
+  }
+
+  .mission-count {
+    font-size: 10px;
+    color: #4A5568;
+  }
+
+  .mission-bar {
+    font-size: 10px;
+    color: #3A3A4A;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 12px 14px;
+    border-top: 1px solid #1E2530;
+  }
+
+  .btn-new-mission {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #1E2530;
+    color: #4A5568;
+    padding: 7px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.15s;
+  }
+
+  .btn-new-mission:hover {
+    border-color: #FFE033;
+    color: #FFE033;
+    background: rgba(255,224,51,0.04);
+  }
+
+  /* Board */
+  #board-view {
+    flex: 1;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding: 16px;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .column {
+    width: 240px;
+    min-width: 240px;
+    background: #0D1117;
+    border: 1px solid #1E2530;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 120px);
+  }
+
+  .col-header {
+    padding: 10px 12px;
+    border-bottom: 1px solid #1E2530;
+    font-size: 10px;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Orbitron', monospace;
+  }
+
+  .col-title-today { color: #00F5D4; }
+  .col-title-inprogress { color: #FFE033; }
+  .col-title-blocked { color: #F72585; }
+  .col-title-done { color: #4A5568; }
+
+  .col-count {
+    font-size: 10px;
+    color: #4A5568;
+  }
+
+  .col-tasks {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 60px;
+  }
+
+  /* Task card */
+  .task-card {
+    background: #080B0F;
+    border: 1px solid #1E2530;
+    padding: 8px 10px;
+    transition: border-color 0.15s;
+  }
+
+  .task-card:hover { border-color: #3A3A4A; }
+
+  .task-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .task-check {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-size: 13px;
+    line-height: 1;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .task-name {
+    flex: 1;
+    font-size: 11px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .task-name.done-text {
+    color: #4A5568;
+    text-decoration: line-through;
+  }
+
+  .task-delete {
+    background: none;
+    border: none;
+    color: #3A3A4A;
+    cursor: pointer;
+    font-size: 11px;
+    padding: 0;
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+
+  .task-delete:hover { color: #F72585; }
+
+  .task-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .task-mission-tag {
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 1px 5px;
+    border: 1px solid;
+    opacity: 0.7;
+  }
+
+  .task-arrows {
+    display: flex;
+    gap: 4px;
+  }
+
+  .arrow-btn {
+    background: none;
+    border: 1px solid #1E2530;
+    color: #4A5568;
+    font-size: 10px;
+    cursor: pointer;
+    padding: 1px 5px;
+    font-family: 'Share Tech Mono', monospace;
+    transition: all 0.1s;
+    line-height: 1.4;
+  }
+
+  .arrow-btn:hover {
+    border-color: #00F5D4;
+    color: #00F5D4;
+  }
+
+  .arrow-btn:disabled {
+    opacity: 0.2;
+    cursor: default;
+  }
+
+  .arrow-btn:disabled:hover {
+    border-color: #1E2530;
+    color: #4A5568;
+  }
+
+  /* Urgent tag */
+  .urgent-tag {
+    font-size: 9px;
+    color: #FF3131;
+    border: 1px solid #FF313166;
+    padding: 1px 5px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 6px #FF313188;
+    animation: urgentPulse 1.8s infinite;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  @keyframes urgentPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .task-card.is-urgent {
+    border-color: #FF313144;
+    box-shadow: inset 2px 0 0 #FF3131;
+  }
+
+  /* Drag and drop */
+  .task-card[draggable="true"] { cursor: grab; }
+  .task-card[draggable="true"]:active { cursor: grabbing; }
+  .task-card.dragging { opacity: 0.35; border-style: dashed; }
+  .col-tasks.drag-over { background: rgba(0,245,212,0.03); }
+
+  .drop-line {
+    height: 2px;
+    background: #00F5D4;
+    box-shadow: 0 0 8px #00F5D4;
+    margin: 2px 0;
+    pointer-events: none;
+    animation: dropLinePulse 0.6s ease infinite alternate;
+  }
+
+  @keyframes dropLinePulse {
+    from { opacity: 0.6; }
+    to   { opacity: 1; }
+  }
+
+  /* Add task button */
+  .col-add {
+    padding: 8px;
+    border-top: 1px solid #1E2530;
+  }
+
+  .btn-add-task {
+    width: 100%;
+    background: transparent;
+    border: 1px dashed #1E2530;
+    color: #4A5568;
+    padding: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.15s;
+  }
+
+  .btn-add-task:hover {
+    border-color: #00F5D4;
+    color: #00F5D4;
+    background: rgba(0,245,212,0.03);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(8,11,15,0.85);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-box {
+    background: #0D1117;
+    border: 1px solid #1E2530;
+    padding: 24px;
+    width: 420px;
+    max-width: 95vw;
+  }
+
+  .modal-title {
+    color: #00F5D4;
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    font-family: 'Orbitron', monospace;
+  }
+
+  .modal-label {
+    font-size: 10px;
+    color: #4A5568;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .modal-input {
+    width: 100%;
+    background: #080B0F;
+    border: 1px solid #1E2530;
+    color: #C9D1D9;
+    padding: 8px 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 14px;
+    transition: border-color 0.15s;
+  }
+
+  .modal-input:focus { border-color: #00F5D4; }
+
+  .modal-select {
+    width: 100%;
+    background: #080B0F;
+    border: 1px solid #1E2530;
+    color: #C9D1D9;
+    padding: 8px 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 14px;
+    cursor: pointer;
+    appearance: none;
+  }
+
+  .color-options {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .color-opt {
+    flex: 1;
+    height: 34px;
+    border: 2px solid #1E2530;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .color-opt.selected { border-width: 2px; }
+
+  .color-hex-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .color-hex-presets {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .hex-preset {
+    width: 22px;
+    height: 22px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.1s, border-color 0.1s;
+    flex-shrink: 0;
+  }
+
+  .hex-preset:hover { transform: scale(1.2); border-color: #C9D1D9; }
+  .hex-preset.selected { border-color: #fff; transform: scale(1.15); }
+
+  .hex-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+  }
+
+  .hex-swatch {
+    width: 22px;
+    height: 22px;
+    border: 1px solid #3A3A4A;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+
+  .hex-text-input {
+    width: 90px;
+    background: #080B0F;
+    border: 1px solid #1E2530;
+    color: #C9D1D9;
+    padding: 3px 7px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    outline: none;
+    letter-spacing: 1px;
+  }
+
+  .hex-text-input:focus { border-color: #00F5D4; }
+
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .btn-cancel {
+    background: transparent;
+    border: 1px solid #1E2530;
+    color: #4A5568;
+    padding: 6px 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.15s;
+  }
+
+  .btn-cancel:hover { border-color: #F72585; color: #F72585; }
+
+  .btn-confirm {
+    background: transparent;
+    border: 1px solid #00F5D4;
+    color: #00F5D4;
+    padding: 6px 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.15s;
+  }
+
+  .btn-confirm:hover { background: rgba(0,245,212,0.08); }
+
+  /* Overview */
+  #overview-view {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: none;
+  }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .overview-mission-card {
+    background: #0D1117;
+    border: 1px solid #1E2530;
+    padding: 14px;
+  }
+
+  .omc-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .omc-name {
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  .omc-stats {
+    font-size: 10px;
+    color: #4A5568;
+    margin-bottom: 8px;
+  }
+
+  .stats-panel {
+    background: #0D1117;
+    border: 1px solid #1E2530;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .stats-header {
+    font-size: 10px;
+    color: #4A5568;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #1E2530;
+    padding-bottom: 8px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .stat-item { text-align: center; }
+
+  .stat-num {
+    font-size: 28px;
+    font-weight: bold;
+    display: block;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    color: #4A5568;
+    letter-spacing: 1px;
+  }
+
+  /* ── Auth Screen ── */
+  #auth-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #080B0F;
+    z-index: 900;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .auth-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    color: #00F5D4;
+    letter-spacing: 4px;
+    margin-bottom: 6px;
+    text-shadow: 0 0 20px #00F5D488;
+  }
+
+  .auth-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: #3A3A4A;
+    letter-spacing: 3px;
+    margin-bottom: 48px;
+  }
+
+  .auth-box {
+    background: #0D1117;
+    border: 1px solid #1E2530;
+    padding: 36px 40px;
+    width: 360px;
+    max-width: 90vw;
+    position: relative;
+  }
+
+  .auth-box::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 20px; right: 20px; height: 2px;
+    background: #00F5D4;
+    box-shadow: 0 0 12px #00F5D4;
+  }
+
+  .auth-agent-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: #4A5568;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .auth-agent-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    color: #00F5D4;
+    letter-spacing: 3px;
+    margin-bottom: 28px;
+    text-shadow: 0 0 10px #00F5D466;
+  }
+
+  .auth-pin-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: #4A5568;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+  }
+
+  .auth-dots {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+    justify-content: center;
+  }
+
+  .auth-dot {
+    width: 18px; height: 18px;
+    border: 2px solid #1E2530;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    color: #00F5D4;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .auth-dot.filled {
+    border-color: #00F5D4;
+    box-shadow: 0 0 8px #00F5D466;
+  }
+
+  .auth-dot.error {
+    border-color: #F72585;
+    box-shadow: 0 0 8px #F7258566;
+  }
+
+  .auth-hint {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: #3A3A4A;
+    text-align: center;
+    margin-bottom: 24px;
+    min-height: 16px;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+
+  .auth-hint.err { color: #F72585; }
+  .auth-hint.ok  { color: #00F5D4; }
+
+  .auth-divider {
+    border: none;
+    border-top: 1px solid #1E2530;
+    margin: 24px 0 20px;
+  }
+
+  .auth-guest-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: #4A5568;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .auth-guest-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .auth-guest-input {
+    flex: 1;
+    background: #080B0F;
+    border: 1px solid #1E2530;
+    color: #C9D1D9;
+    padding: 8px 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    letter-spacing: 1px;
+    transition: border-color 0.15s;
+  }
+
+  .auth-guest-input:focus { border-color: #FFE033; }
+
+  .auth-guest-btn {
+    background: transparent;
+    border: 1px solid #FFE033;
+    color: #FFE033;
+    padding: 8px 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+
+  .auth-guest-btn:hover { background: rgba(255,224,51,0.08); }
+
+  .auth-footer {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: #2A2A3A;
+    text-align: center;
+    margin-top: 32px;
+    letter-spacing: 1px;
+  }
+
+  /* topbar session badge */
+  .session-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border: 1px solid;
+    letter-spacing: 1px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* ── Mobile numpad for PIN ── */
+  .auth-numpad {
+    display: none;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .num-btn {
+    background: #0D1117;
+    border: 1px solid #1E2530;
+    color: #C9D1D9;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 20px;
+    padding: 14px 0;
+    cursor: pointer;
+    transition: all 0.1s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .num-btn:active {
+    background: rgba(0,245,212,0.1);
+    border-color: #00F5D4;
+    color: #00F5D4;
+  }
+
+  .num-btn.del-btn { color: #F72585; border-color: #F7258544; }
+  .num-btn.del-btn:active { background: rgba(247,37,133,0.1); }
+  .num-btn.empty-btn { visibility: hidden; }
+
+  /* ── Mobile column tabs ── */
+  #mobile-col-tabs {
+    display: none;
+    background: #0D1117;
+    border-bottom: 1px solid #1E2530;
+    flex-shrink: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mob-tabs-inner {
+    display: flex;
+    min-width: max-content;
+  }
+
+  .mob-col-tab {
+    padding: 10px 18px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #4A5568;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .mob-col-tab.active {
+    color: #00F5D4;
+    border-bottom-color: #00F5D4;
+  }
+
+  /* ── FAB (floating add button) ── */
+  #fab {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    background: #00F5D4;
+    color: #080B0F;
+    font-size: 28px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    z-index: 400;
+    box-shadow: 0 0 20px #00F5D466;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    font-family: 'Share Tech Mono', monospace;
+    line-height: 1;
+  }
+
+  /* ── Hamburger ── */
+  #mob-hamburger {
+    display: none;
+    background: none;
+    border: 1px solid #1E2530;
+    color: #4A5568;
+    font-size: 16px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── Mobile sidebar overlay ── */
+  #mob-sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(8,11,15,0.75);
+    z-index: 700;
+  }
+
+  #mob-sidebar-overlay.open { display: block; }
+
+  #sidebar.mob-open {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 800;
+    width: 280px;
+    transform: translateX(0);
+  }
+
+  /* ── Responsive breakpoints ── */
+  @media (max-width: 768px) {
+    html { font-size: 100%; }
+
+    /* Topbar: hide non-essentials, show hamburger */
+    .topbar-info { display: none; }
+    .date-display { display: none; }
+    .session-badge { display: none; }
+    #btn-board, #btn-overview { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
+    #btn-logout { font-size: 10px; padding: 4px 6px; }
+    .app-title { font-size: 11px; letter-spacing: 1px; }
+    .cursor { font-size: 12px; }
+    #mob-hamburger { display: block; }
+
+    /* Hide desktop sidebar, show mobile tab bar and FAB */
+    #sidebar { display: none; }
+    #mobile-col-tabs { display: block; }
+    #fab { display: flex; }
+
+    /* Board: single column, full width */
+    #board-view {
+      padding: 10px;
+      overflow-x: visible;
+      flex-direction: column;
+    }
+
+    .column {
+      width: 100%;
+      min-width: unset;
+      max-height: unset;
+      display: none;
+    }
+
+    .column.mob-active { display: flex; }
+
+    /* Bigger tap targets for task actions */
+    .task-check { font-size: 20px; padding: 4px; }
+    .task-delete { font-size: 16px; padding: 4px 6px; }
+    .arrow-btn { padding: 6px 10px; font-size: 14px; }
+    .task-name { font-size: 13px; }
+    .task-card { padding: 12px; }
+    .btn-add-task { padding: 12px; font-size: 12px; }
+
+    /* Auth numpad visible on mobile */
+    .auth-numpad { display: grid; }
+    .auth-box { padding: 24px 20px; }
+    .auth-logo { font-size: 16px; letter-spacing: 2px; }
+    .auth-sub { font-size: 10px; margin-bottom: 24px; }
+
+    /* Modal full-width on mobile */
+    .modal-box { width: 95vw; padding: 20px 16px; }
+
+    /* Overview stats 2-col on small screen */
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .overview-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 400px) {
+    .app-title { font-size: 10px; }
+    #btn-board, #btn-overview, #btn-logout { font-size: 9px; padding: 3px 5px; }
+  }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: #080B0F; }
+  ::-webkit-scrollbar-thumb { background: #1E2530; }
+  ::-webkit-scrollbar-thumb:hover { background: #3A3A4A; }
+</style>
+</head>
+<body>
+
+<div id="boot-screen"></div>
+
+<!-- Auth Screen -->
+<div id="auth-screen">
+  <div class="auth-logo">RABIAT HQ://</div>
+  <div class="auth-sub">SECURE MISSION TERMINAL v2.4.1</div>
+
+  <div class="auth-box">
+    <div class="auth-agent-label">AGENT IDENTIFICATION</div>
+    <div class="auth-agent-name" id="auth-agent-name">RABIAT</div>
+
+    <div class="auth-pin-label">ENTER PIN ── 4-DIGIT ACCESS CODE</div>
+    <div class="auth-dots" id="auth-dots">
+      <div class="auth-dot" id="dot-0">○</div>
+      <div class="auth-dot" id="dot-1">○</div>
+      <div class="auth-dot" id="dot-2">○</div>
+      <div class="auth-dot" id="dot-3">○</div>
+    </div>
+
+    <div class="auth-hint" id="auth-hint">// AWAITING INPUT</div>
+
+    <!-- Mobile numpad -->
+    <div class="auth-numpad" id="auth-numpad">
+      <button class="num-btn" onclick="authKeyPress('1')">1</button>
+      <button class="num-btn" onclick="authKeyPress('2')">2</button>
+      <button class="num-btn" onclick="authKeyPress('3')">3</button>
+      <button class="num-btn" onclick="authKeyPress('4')">4</button>
+      <button class="num-btn" onclick="authKeyPress('5')">5</button>
+      <button class="num-btn" onclick="authKeyPress('6')">6</button>
+      <button class="num-btn" onclick="authKeyPress('7')">7</button>
+      <button class="num-btn" onclick="authKeyPress('8')">8</button>
+      <button class="num-btn" onclick="authKeyPress('9')">9</button>
+      <button class="num-btn empty-btn"></button>
+      <button class="num-btn" onclick="authKeyPress('0')">0</button>
+      <button class="num-btn del-btn" onclick="authBackspace()">⌫</button>
+    </div>
+
+    <hr class="auth-divider">
+
+    <span class="auth-guest-label">// GUEST ACCESS — ENTER YOUR NAME</span>
+    <div class="auth-guest-row">
+      <input class="auth-guest-input" id="guest-name-input" type="text"
+        placeholder="CODENAME..." maxlength="20"
+        onkeydown="if(event.key==='Enter')enterGuest()" />
+      <button class="auth-guest-btn" onclick="enterGuest()">[ ENTER HQ ]</button>
+    </div>
+  </div>
+
+  <div class="auth-footer">> UNAUTHORISED ACCESS IS MONITORED AND LOGGED</div>
+</div>
+
+<div id="app">
+  <div id="topbar">
+    <button id="mob-hamburger" onclick="toggleMobileSidebar()">☰</button>
+    <span class="app-title">RABIAT HQ://DAILY_PLANNER</span>
+    <span class="cursor">▮</span>
+    <span class="topbar-info" id="task-count-display">// 0 TASKS LOADED</span>
+    <div class="topbar-right">
+      <span class="date-display" id="date-display"></span>
+      <span class="session-badge" id="session-badge"></span>
+      <button class="tab-btn active" id="btn-board" onclick="switchTab('board')">[ BOARD ]</button>
+      <button class="tab-btn" id="btn-overview" onclick="switchTab('overview')">[ OVERVIEW ]</button>
+      <button class="tab-btn" id="btn-logout" onclick="logout()" style="border-color:#F7258544;color:#F7258566">[ OUT ]</button>
+    </div>
+  </div>
+
+  <!-- Mobile column tab bar -->
+  <div id="mobile-col-tabs">
+    <div class="mob-tabs-inner">
+      <button class="mob-col-tab active" data-col="today" onclick="switchMobileCol('today')">01 TODAY</button>
+      <button class="mob-col-tab" data-col="inprogress" onclick="switchMobileCol('inprogress')">02 IN PROGRESS</button>
+      <button class="mob-col-tab" data-col="blocked" onclick="switchMobileCol('blocked')">03 BLOCKED</button>
+      <button class="mob-col-tab" data-col="done" onclick="switchMobileCol('done')">04 DONE</button>
+    </div>
+  </div>
+
+  <!-- Sidebar overlay for mobile -->
+  <div id="mob-sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+  <!-- Floating Add Button -->
+  <button id="fab" onclick="fabAdd()">+</button>
+
+  <div id="main-layout">
+    <div id="sidebar">
+      <div class="sidebar-header">// MISSIONS</div>
+      <div id="mission-list"></div>
+      <div class="sidebar-footer">
+        <button class="btn-new-mission" onclick="openNewMissionModal()">[ + NEW MISSION ]</button>
+      </div>
+    </div>
+
+    <div id="board-view">
+      <div class="column" id="col-today">
+        <div class="col-header">
+          <span class="col-title-today">01 :: TODAY</span>
+          <span class="col-count" id="count-today">0</span>
+        </div>
+        <div class="col-tasks" id="tasks-today"></div>
+        <div class="col-add"><button class="btn-add-task" onclick="openAddTaskModal('today')">[ + ADD TASK ]</button></div>
+      </div>
+      <div class="column" id="col-inprogress">
+        <div class="col-header">
+          <span class="col-title-inprogress">02 :: IN PROGRESS</span>
+          <span class="col-count" id="count-inprogress">0</span>
+        </div>
+        <div class="col-tasks" id="tasks-inprogress"></div>
+        <div class="col-add"><button class="btn-add-task" onclick="openAddTaskModal('inprogress')">[ + ADD TASK ]</button></div>
+      </div>
+      <div class="column" id="col-blocked">
+        <div class="col-header">
+          <span class="col-title-blocked">03 :: BLOCKED</span>
+          <span class="col-count" id="count-blocked">0</span>
+        </div>
+        <div class="col-tasks" id="tasks-blocked"></div>
+        <div class="col-add"><button class="btn-add-task" onclick="openAddTaskModal('blocked')">[ + ADD TASK ]</button></div>
+      </div>
+      <div class="column" id="col-done">
+        <div class="col-header">
+          <span class="col-title-done">04 :: DONE</span>
+          <span class="col-count" id="count-done">0</span>
+        </div>
+        <div class="col-tasks" id="tasks-done"></div>
+        <div class="col-add" style="display:flex;gap:6px">
+          <button class="btn-add-task" onclick="openAddTaskModal('done')">[ + ADD TASK ]</button>
+          <button class="btn-add-task" onclick="clearDone()" style="border-color:#F7258544;color:#F72585;flex-shrink:0;width:auto;padding:6px 10px" title="Clear all done tasks">[ ✕ CLEAR ]</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="overview-view"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" style="display:none" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modal-box">
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">[ CANCEL ]</button>
+      <button class="btn-confirm" id="modal-confirm">[ CONFIRM ]</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Auth & Session ─────────────────────────────────────────
+// The PIN shows 4 dots but is actually 5 digits — security through misdirection
+// PIN is stored as a hash for security (not visible in plain text)
+// Simple hash function for PIN verification (obscures the PIN from source code viewers)
+function simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash | 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash).toString(16);
+}
+// Hash of the owner PIN (replace this hash if you change your PIN)
+// To generate a new hash: open browser console and run: simpleHash('YOUR_NEW_PIN')
+const OWNER_PIN_HASH = 'c0a5'; // Owner PIN hash — change this value if you change your PIN
+const OWNER_KEY    = 'rabiat';  // localStorage namespace for owner
+
+// Extra easter egg codes for friends (shareable)
+const EGG_CODES = {
+  'SHADOW' : { msg: ['> SHADOW PROTOCOL ENGAGED...','> WELCOME BACK, GHOST.','> YOUR COVER REMAINS INTACT.'], color: '#BF5AF2' },
+  'NEON99' : { msg: ['> NEON OVERRIDE ACTIVE.','> GRID AESTHETICS: MAXIMUM.','> YOU HAVE GOOD TASTE.'], color: '#FF61D8' },
+  'BREACH' : { msg: ['> ⚠ FIREWALL BYPASSED','> NICE TRY, HACKER.','> ...JUST KIDDING. YOU\'RE IN.'], color: '#FF3131' },
+};
+
+let currentSession = null; // { key, name, isOwner }
+let pinBuffer = '';
+
+function storageKey(suffix) {
+  return `hq_${currentSession.key}_${suffix}`;
+}
+
+// ── State ──────────────────────────────────────────────────
+const COLUMNS = ['today','inprogress','blocked','done'];
+const SIGILS = ['▲','◈','⬡','◆','░','◐','⊕','⬟'];
+const COLORS = ['#00F5D4','#F72585','#FFE033'];
+const COLOR_NAMES = ['CYAN','MAGENTA','YELLOW'];
+
+const DEFAULT_MISSIONS = [
+  { id: 'm1', name: 'WORK', color: '#00F5D4', sigil: '▲' },
+  { id: 'm2', name: 'PERSONAL', color: '#F72585', sigil: '◈' },
+  { id: 'm3', name: 'HEALTH', color: '#FFE033', sigil: '⬡' },
+];
+const DEFAULT_TASKS = [];
+
+function loadState() {
+  try {
+    const m = localStorage.getItem(storageKey('missions'));
+    const t = localStorage.getItem(storageKey('tasks'));
+    const c = localStorage.getItem(storageKey('counter'));
+
+    let parsedMissions = DEFAULT_MISSIONS;
+    let parsedTasks    = DEFAULT_TASKS;
+    let parsedCounter  = 100;
+
+    if (m) {
+      const parsed = JSON.parse(m);
+      if (Array.isArray(parsed))
+        parsedMissions = parsed.filter(x => x && x.id && x.name && x.color);
+    }
+    if (t) {
+      const parsed = JSON.parse(t);
+      if (Array.isArray(parsed)) {
+        parsedTasks = parsed
+          .filter(x => x && x.id && x.name && COLUMNS.includes(x.col))
+          .map((x, i) => ({
+            ...x,
+            order:  typeof x.order === 'number' ? x.order : i,
+            urgent: !!x.urgent,
+            done:   !!x.done,
+          }));
+      }
+    }
+    if (c) {
+      const n = parseInt(c, 10);
+      if (!isNaN(n)) parsedCounter = n;
+    }
+
+    return { missions: parsedMissions, tasks: parsedTasks, counter: parsedCounter };
+  } catch(err) {
+    console.error('[loadState] Corrupt data, using defaults:', err);
+    return { missions: DEFAULT_MISSIONS, tasks: DEFAULT_TASKS, counter: 100 };
+  }
+}
+
+function saveState() {
+  try {
+    if (!currentSession) return;
+    localStorage.setItem(storageKey('missions'), JSON.stringify(missions));
+    localStorage.setItem(storageKey('tasks'),    JSON.stringify(tasks));
+    localStorage.setItem(storageKey('counter'),  String(idCounter));
+  } catch(err) {
+    console.error('[saveState] Failed:', err);
+    // Storage full — attempt to slim down by dropping done tasks
+    try {
+      localStorage.setItem(storageKey('tasks'), JSON.stringify(tasks.filter(t => t.col !== 'done')));
+    } catch(e2) {
+      console.error('[saveState] Storage full, cannot save at all:', e2);
+    }
+  }
+}
+
+let missions   = [];
+let tasks      = [];
+let idCounter  = 100;
+const uid = () => 'id_' + (++idCounter);
+
+function initSession() {
+  const _s = loadState();
+  missions  = _s.missions;
+  tasks     = _s.tasks;
+  idCounter = _s.counter;
+}
+
+// ── Boot sequence ──────────────────────────────────────────
+const bootLines = [
+  { text: '> INITIALIZING HQ SYSTEM v2.4.1...', cls: 'cyan' },
+  { text: '> LOADING KERNEL MODULES...', cls: 'muted' },
+  { text: '> MEMORY CHECK: [||||||||||||||||||||] OK', cls: 'muted' },
+  { text: '> ESTABLISHING SECURE UPLINK...', cls: 'muted' },
+  { text: '> MISSION DATABASE: CONNECTED', cls: 'cyan' },
+  { text: '> TASK SCHEDULER: ONLINE', cls: 'yellow' },
+  { text: '> THREAT MATRIX: NOMINAL', cls: 'muted' },
+  { text: '> DISPLAY DRIVER: CRT-SCANLINE-v1.0', cls: 'muted' },
+  { text: '> WARNING: HIGH PRIORITY TASKS DETECTED', cls: 'magenta' },
+  { text: '> LOADING OPERATOR INTERFACE...', cls: 'cyan' },
+  { text: '', cls: '' },
+  { text: '> SYSTEM READY. WELCOME, OPERATOR.', cls: 'cyan' },
+];
+
+function runBoot() {
+  const screen = document.getElementById('boot-screen');
+  let i = 0;
+  function showNext() {
+    if (i >= bootLines.length) {
+      setTimeout(() => {
+        screen.style.transition = 'opacity 0.5s';
+        screen.style.opacity = '0';
+        setTimeout(() => {
+          screen.style.display = 'none';
+          showAuthScreen();
+        }, 500);
+      }, 400);
+      return;
+    }
+    const line = document.createElement('div');
+    line.className = 'boot-line ' + bootLines[i].cls;
+    line.textContent = bootLines[i].text || '\u00A0';
+    screen.appendChild(line);
+    requestAnimationFrame(() => { line.classList.add('visible'); });
+    i++;
+    setTimeout(showNext, i < 10 ? 130 : 200);
+  }
+  showNext();
+}
+
+// ── Auth Logic ─────────────────────────────────────────────
+function showAuthScreen() {
+  const auth = document.getElementById('auth-screen');
+  auth.style.display = 'flex';
+  pinBuffer = '';
+  updateDots();
+  setHint('// AWAITING INPUT', '');
+  // Focus capture for PIN
+  auth.setAttribute('tabindex','0');
+  auth.focus();
+}
+
+function updateDots() {
+  const len = pinBuffer.length;
+  // Show 4 dots regardless — the 5th digit is invisible
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('dot-' + i);
+    dot.classList.toggle('filled', i < len);
+    dot.classList.remove('error');
+    dot.textContent = i < len ? '◉' : '○';
+  }
+}
+
+function setHint(msg, cls) {
+  const h = document.getElementById('auth-hint');
+  h.textContent = msg;
+  h.className = 'auth-hint ' + cls;
+}
+
+function authKeyPress(key) {
+  // Check easter egg codes typed in pin field (letters)
+  if (/^[A-Z0-9]$/i.test(key) && !/^\d$/.test(key)) {
+    // Accumulate for egg codes
+    if (!window._eggBuffer) window._eggBuffer = '';
+    window._eggBuffer += key.toUpperCase();
+    if (window._eggBuffer.length > 8) window._eggBuffer = window._eggBuffer.slice(-8);
+    const match = Object.keys(EGG_CODES).find(k => window._eggBuffer.endsWith(k));
+    if (match) { window._eggBuffer = ''; triggerFriendEgg(EGG_CODES[match]); }
+    return;
+  }
+
+  if (!/^\d$/.test(key)) return;
+  if (pinBuffer.length >= 8) return; // allow up to 8 just in case
+
+  pinBuffer += key;
+  updateDots();
+  setHint('// RECEIVING...', '');
+
+  // Check after 5 digits (the real length)
+  if (pinBuffer.length >= 5) {
+    const entered = pinBuffer.slice(0, 5);
+    // Compare hash of entered PIN with stored hash
+    if (simpleHash(entered) === OWNER_PIN_HASH) {
+      authSuccess('owner');
+    } else if (pinBuffer.length >= 5) {
+      playSound('error');
+      authFail();
+    }
+  } else {
+    playSound('pin');
+  }
+}
+
+function authFail() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('dot-' + i);
+    dot.classList.add('error');
+    dot.textContent = '✕';
+  }
+  setHint('// ACCESS DENIED — INCORRECT CODE', 'err');
+  setTimeout(() => {
+    pinBuffer = '';
+    updateDots();
+    setHint('// AWAITING INPUT', '');
+  }, 1400);
+}
+
+function authSuccess(type) {
+  setHint('// ACCESS GRANTED — LOADING...', 'ok');
+  playSound('login');
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('dot-' + i);
+    dot.style.borderColor = '#00F5D4';
+    dot.style.boxShadow = '0 0 12px #00F5D4';
+    dot.textContent = '◉';
+  }
+  setTimeout(() => launchApp({ key: OWNER_KEY, name: 'RABIAT', isOwner: true }), 900);
+}
+
+function enterGuest() {
+  const raw = document.getElementById('guest-name-input').value.trim().toUpperCase();
+  if (!raw) return;
+  const safe = raw.replace(/[^A-Z0-9_]/g,'').slice(0,16) || 'GHOST';
+  const key = 'guest_' + safe.toLowerCase();
+  launchApp({ key, name: safe, isOwner: false });
+}
+
+function launchApp(session) {
+  currentSession = session;
+  initSession();
+
+  const auth = document.getElementById('auth-screen');
+  auth.style.transition = 'opacity 0.4s';
+  auth.style.opacity = '0';
+  setTimeout(() => {
+    auth.style.display = 'none';
+    // Update topbar for session
+    const badge = document.getElementById('session-badge');
+    if (session.isOwner) {
+      badge.textContent = '▲ AGENT RABIAT';
+      badge.style.color = '#00F5D4';
+      badge.style.borderColor = '#00F5D4';
+      badge.style.textShadow = '0 0 8px #00F5D466';
+      document.getElementById('btn-logout').style.color = '#F7258588';
+    } else {
+      badge.textContent = '◈ GUEST: ' + session.name;
+      badge.style.color = '#FFE033';
+      badge.style.borderColor = '#FFE033';
+      document.getElementById('btn-logout').style.color = '#F7258588';
+
+      // Personalise title for guest
+      document.querySelector('.app-title').textContent = session.name + ' HQ://';
+    }
+    const app = document.getElementById('app');
+    app.style.display = 'flex';
+    render();
+  }, 450);
+}
+
+function logout() {
+  currentSession = null;
+  pinBuffer = '';
+  missions = []; tasks = []; idCounter = 100;
+  // Reset guest input
+  document.getElementById('guest-name-input').value = '';
+  // Reset title
+  document.querySelector('.app-title').textContent = 'RABIAT HQ://DAILY_PLANNER';
+  const app = document.getElementById('app');
+  app.style.display = 'none';
+  // Reset auth screen
+  const auth = document.getElementById('auth-screen');
+  auth.style.opacity = '1';
+  auth.style.display = 'flex';
+  updateDots();
+  setHint('// AWAITING INPUT', '');
+  window._eggBuffer = '';
+}
+
+// ── Friend Easter Egg trigger ──────────────────────────────
+function triggerFriendEgg(egg) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    background:#080B0F;z-index:9998;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:60px;font-family:'VT323',monospace;font-size:22px;
+    opacity:0;transition:opacity 0.3s;
+  `;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.style.opacity = '1');
+  egg.msg.forEach((t, i) => {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.textContent = t;
+      el.style.color = egg.color;
+      el.style.lineHeight = '1.8';
+      el.style.textShadow = `0 0 10px ${egg.color}88`;
+      overlay.appendChild(el);
+    }, i * 800);
+  });
+  setTimeout(() => {
+    overlay.style.transition = 'opacity 1s';
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), 1100);
+  }, egg.msg.length * 800 + 1200);
+}
+
+// ── Render ─────────────────────────────────────────────────
+function asciiBar(done, total, width = 18) {
+  const pct = total === 0 ? 0 : done / total;
+  const filled = Math.round(pct * width);
+  const empty = width - filled;
+  const pctStr = Math.round(pct * 100) + '%';
+  return '[' + '|'.repeat(filled) + '-'.repeat(empty) + '] ' + pctStr;
+}
+
+function render() {
+  try {
+    renderTopbar();
+    renderSidebar();
+    renderBoard();
+    if (document.getElementById('overview-view').style.display !== 'none') {
+      renderOverview();
+    }
+    applyMobileLayout();
+  } catch(err) { console.error('[render]', err); }
+}
+
+function renderTopbar() {
+  const total = tasks.length;
+  document.getElementById('task-count-display').textContent = `// ${total} TASK${total !== 1 ? 'S' : ''} LOADED`;
+
+  const now = new Date();
+  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  document.getElementById('date-display').textContent =
+    `${days[now.getDay()]} ${String(now.getDate()).padStart(2,'0')}.${months[now.getMonth()]}.${now.getFullYear()}`;
+}
+
+function renderSidebar() {
+  const list = document.getElementById('mission-list');
+  list.innerHTML = '';
+  missions.forEach(m => {
+    const mTasks = tasks.filter(t => t.missionId === m.id);
+    const mDone = mTasks.filter(t => t.done).length;
+    const bar = asciiBar(mDone, mTasks.length);
+
+    const el = document.createElement('div');
+    el.className = 'mission-item';
+    el.innerHTML = `
+      <div class="mission-top">
+        <span class="mission-sigil" style="color:${m.color}">${m.sigil}</span>
+        <span class="mission-name" style="color:${m.color}">${m.name}</span>
+        <span class="mission-count">${mDone}/${mTasks.length}</span>
+        <button class="mission-delete-btn" onclick="deleteMission('${m.id}')" title="Delete mission">✕</button>
+      </div>
+      <div class="mission-bar" style="color:${m.color};opacity:0.5">${bar}</div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function renderBoard() {
+  try {
+    COLUMNS.forEach(col => {
+      // Sort: urgent first, then by explicit order index
+      const colTasks = tasks
+        .filter(t => t && t.col === col)
+        .sort((a, b) => {
+          if (!!b.urgent !== !!a.urgent) return b.urgent ? 1 : -1;
+          return (a.order ?? 0) - (b.order ?? 0);
+        });
+
+      const countEl = document.getElementById('count-' + col);
+      if (countEl) countEl.textContent = colTasks.length;
+
+      const container = document.getElementById('tasks-' + col);
+      if (!container) return;
+      container.innerHTML = '';
+
+      colTasks.forEach(task => {
+        const mission = missions.find(m => m && m.id === task.missionId) || null;
+        const colIdx = COLUMNS.indexOf(col);
+        container.appendChild(createTaskCard(task, mission, colIdx));
+      });
+
+      // ── Drop zone: between-card insertion ──
+      container.ondragover = e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        container.classList.add('drag-over');
+
+        // Find the card we're hovering over
+        const afterEl = getDragAfterElement(container, e.clientY);
+        const dragging = document.querySelector('.dragging');
+        // Remove any existing drop-line
+        container.querySelectorAll('.drop-line').forEach(l => l.remove());
+
+        const line = document.createElement('div');
+        line.className = 'drop-line';
+        if (!afterEl) {
+          container.appendChild(line);
+        } else {
+          container.insertBefore(line, afterEl);
+        }
+      };
+
+      container.ondragleave = e => {
+        // Only clear if leaving the container entirely
+        if (!container.contains(e.relatedTarget)) {
+          container.classList.remove('drag-over');
+          container.querySelectorAll('.drop-line').forEach(l => l.remove());
+        }
+      };
+
+      container.ondrop = e => {
+        e.preventDefault();
+        container.classList.remove('drag-over');
+        container.querySelectorAll('.drop-line').forEach(l => l.remove());
+
+        const draggedId = e.dataTransfer.getData('taskId');
+        if (!draggedId) return;
+
+        const dragged = tasks.find(t => t && t.id === draggedId);
+        if (!dragged) return;
+
+        // Determine insert position
+        const afterEl = getDragAfterElement(container, e.clientY);
+        const colTasksNow = tasks
+          .filter(t => t && t.col === col && t.id !== draggedId)
+          .sort((a, b) => {
+            if (!!b.urgent !== !!a.urgent) return b.urgent ? 1 : -1;
+            return (a.order ?? 0) - (b.order ?? 0);
+          });
+
+        let insertIdx;
+        if (!afterEl) {
+          insertIdx = colTasksNow.length; // drop at bottom
+        } else {
+          const afterId = afterEl.dataset.id;
+          insertIdx = colTasksNow.findIndex(t => t.id === afterId);
+          if (insertIdx === -1) insertIdx = colTasksNow.length;
+        }
+
+        // Reinsert dragged task and reassign order values
+        colTasksNow.splice(insertIdx, 0, dragged);
+        dragged.col = col;
+        colTasksNow.forEach((t, i) => { t.order = i; });
+
+        playSound('move');
+        saveState();
+        render();
+      };
+    });
+  } catch(err) {
+    console.error('[renderBoard]', err);
+  }
+}
+
+// Returns the card element the cursor is above (i.e., insert BEFORE this one)
+function getDragAfterElement(container, y) {
+  const cards = [...container.querySelectorAll('.task-card:not(.dragging)')];
+  return cards.reduce((closest, card) => {
+    const box = card.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > (closest.offset ?? -Infinity)) {
+      return { offset, element: card };
+    }
+    return closest;
+  }, {}).element ?? null;
+}
+
+function createTaskCard(task, mission, colIdx) {
+  try {
+    const card = document.createElement('div');
+    card.className = 'task-card' + (task.urgent ? ' is-urgent' : '');
+    card.draggable = true;
+    card.dataset.id = task.id;
+
+    card.addEventListener('dragstart', e => {
+      try {
+        e.dataTransfer.setData('taskId', task.id);
+        e.dataTransfer.effectAllowed = 'move';
+        setTimeout(() => card.classList.add('dragging'), 0);
+        playSound('pick');
+      } catch(err) { console.error('[dragstart]', err); }
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      document.querySelectorAll('.drop-line').forEach(l => l.remove());
+      document.querySelectorAll('.col-tasks').forEach(c => c.classList.remove('drag-over'));
+    });
+
+    const checkIcon = task.done ? '◉' : '○';
+    const checkColor = task.done ? (mission ? mission.color : '#4A5568') : '#4A5568';
+    const nameClass = task.done ? 'task-name done-text' : 'task-name';
+
+    const missionTag = mission
+      ? `<span class="task-mission-tag" style="color:${mission.color};border-color:${mission.color}">${mission.sigil} ${escHtml(mission.name)}</span>`
+      : '<span class="task-mission-tag" style="color:#4A5568;border-color:#3A3A4A">UNASSIGNED</span>';
+
+    const urgentBtn = task.urgent
+      ? `<span class="urgent-tag" onclick="toggleUrgent('${task.id}')" title="Remove urgent">!! NOW</span>`
+      : `<span style="font-size:9px;color:#3A3A4A;cursor:pointer;padding:1px 4px;border:1px solid transparent;user-select:none"
+           onmouseover="this.style.color='#FF3131';this.style.borderColor='#FF313144'"
+           onmouseout="this.style.color='#3A3A4A';this.style.borderColor='transparent'"
+           onclick="toggleUrgent('${task.id}')" title="Mark as urgent">!!</span>`;
+
+    card.innerHTML = `
+      <div class="task-top">
+        <button class="task-check" style="color:${checkColor}" onclick="toggleTask('${task.id}')">${checkIcon}</button>
+        <span class="${nameClass}">${escHtml(task.name)}</span>
+        ${urgentBtn}
+        <button class="task-delete" onclick="deleteTask('${task.id}')">✕</button>
+      </div>
+      <div class="task-bottom">
+        ${missionTag}
+        <div class="task-arrows">
+          <button class="arrow-btn" onclick="moveTask('${task.id}',-1)" ${colIdx === 0 ? 'disabled' : ''}>←</button>
+          <button class="arrow-btn" onclick="moveTask('${task.id}',1)" ${colIdx === COLUMNS.length-1 ? 'disabled' : ''}>→</button>
+        </div>
+      </div>
+    `;
+    return card;
+  } catch(err) {
+    console.error('[createTaskCard]', err);
+    const fallback = document.createElement('div');
+    fallback.className = 'task-card';
+    fallback.textContent = task?.name ?? '[error]';
+    return fallback;
+  }
+}
+
+function renderOverview() {
+  const ov = document.getElementById('overview-view');
+  const total = tasks.length;
+  const completed = tasks.filter(t => t.done).length;
+  const blocked = tasks.filter(t => t.col === 'blocked').length;
+  const inprog = tasks.filter(t => t.col === 'inprogress').length;
+
+  let html = `
+    <div class="stats-panel">
+      <div class="stats-header">// DAILY STATS</div>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-num" style="color:#00F5D4">${total}</span>
+          <span class="stat-label">TOTAL</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" style="color:#00F5D4">${completed}</span>
+          <span class="stat-label">COMPLETED</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" style="color:#FFE033">${inprog}</span>
+          <span class="stat-label">IN PROGRESS</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" style="color:#F72585">${blocked}</span>
+          <span class="stat-label">BLOCKED</span>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-header" style="margin-bottom:12px;border:none;padding:0">// MISSION STATUS</div>
+    <div class="overview-grid">
+  `;
+
+  missions.forEach(m => {
+    const mTasks = tasks.filter(t => t.missionId === m.id);
+    const mDone = mTasks.filter(t => t.done).length;
+    const bar = asciiBar(mDone, mTasks.length, 22);
+    html += `
+      <div class="overview-mission-card">
+        <div class="omc-top">
+          <span style="color:${m.color};font-size:16px">${m.sigil}</span>
+          <span class="omc-name" style="color:${m.color}">${m.name}</span>
+        </div>
+        <div class="omc-stats">${mDone} / ${mTasks.length} TASKS COMPLETED</div>
+        <div style="font-size:10px;color:${m.color};opacity:0.6">${bar}</div>
+      </div>
+    `;
+  });
+
+  html += '</div>';
+  ov.innerHTML = html;
+}
+
+// ── Actions ────────────────────────────────────────────────
+function toggleTask(id) {
+  try {
+    const t = tasks.find(t => t.id === id);
+    if (!t) return;
+    t.done = !t.done;
+    if (t.done) { t.col = 'done'; t.urgent = false; playSound('done'); }
+    else { t.col = 'today'; playSound('click'); }
+    saveState(); render();
+  } catch(err) { console.error('[toggleTask]', err); }
+}
+
+function toggleUrgent(id) {
+  try {
+    const t = tasks.find(t => t.id === id);
+    if (!t) return;
+    t.urgent = !t.urgent;
+    if (t.urgent) playSound('urgent');
+    saveState(); render();
+  } catch(err) { console.error('[toggleUrgent]', err); }
+}
+
+function deleteMission(id) {
+  try {
+    const m = missions.find(m => m.id === id);
+    if (!m) return;
+    const affected = tasks.filter(t => t.missionId === id).length;
+    openModal(
+      '> DELETE MISSION',
+      `<div style="color:#4A5568;font-size:13px;line-height:1.8">
+        Delete mission <span style="color:${m.color}">${m.sigil} ${escHtml(m.name)}</span>?<br>
+        ${affected > 0
+          ? `<span style="color:#FFE033">${affected} task${affected!==1?'s':''} will become UNASSIGNED.</span>`
+          : '<span style="color:#3A3A4A">// No tasks assigned.</span>'}
+      </div>`,
+      () => {
+        try {
+          tasks.forEach(t => { if (t.missionId === id) t.missionId = null; });
+          missions = missions.filter(m => m.id !== id);
+          saveState(); closeModal(); render();
+        } catch(err) { console.error('[deleteMission confirm]', err); }
+      },
+      true
+    );
+  } catch(err) { console.error('[deleteMission]', err); }
+}
+
+function deleteTask(id) {
+  try {
+    tasks = tasks.filter(t => t.id !== id);
+    saveState(); render();
+  } catch(err) { console.error('[deleteTask]', err); }
+}
+
+function clearDone() {
+  try {
+    const count = tasks.filter(t => t.col === 'done').length;
+    if (count === 0) return;
+    openModal(
+      '> PURGE ARCHIVE',
+      `<div style="color:#4A5568;font-size:13px;line-height:1.8;margin-bottom:4px">
+        This will permanently delete <span style="color:#F72585">${count} completed task${count !== 1 ? 's' : ''}</span> from the DONE column.<br>
+        <span style="color:#3A3A4A">// This cannot be undone.</span>
+      </div>`,
+      () => {
+        try {
+          tasks = tasks.filter(t => t.col !== 'done');
+          saveState(); closeModal(); render();
+        } catch(err) { console.error('[clearDone confirm]', err); }
+      },
+      true
+    );
+  } catch(err) { console.error('[clearDone]', err); }
+}
+
+function moveTask(id, dir) {
+  try {
+    const t = tasks.find(t => t.id === id);
+    if (!t) return;
+    const idx = COLUMNS.indexOf(t.col);
+    const newIdx = idx + dir;
+    if (newIdx >= 0 && newIdx < COLUMNS.length) {
+      t.col = COLUMNS[newIdx];
+      playSound('move');
+      saveState(); render();
+    }
+  } catch(err) { console.error('[moveTask]', err); }
+}
+
+// ── Tab switching ──────────────────────────────────────────
+function switchTab(tab) {
+  const board = document.getElementById('board-view');
+  const ov = document.getElementById('overview-view');
+  document.getElementById('btn-board').classList.toggle('active', tab === 'board');
+  document.getElementById('btn-overview').classList.toggle('active', tab === 'overview');
+  if (tab === 'board') {
+    board.style.display = 'flex';
+    ov.style.display = 'none';
+  } else {
+    board.style.display = 'none';
+    ov.style.display = 'block';
+    renderOverview();
+  }
+}
+
+// ── Modals ─────────────────────────────────────────────────
+let modalConfirmFn = null;
+
+function openModal(title, bodyHTML, confirmFn, danger = false) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = bodyHTML;
+  document.getElementById('modal-confirm').onclick = confirmFn;
+  const btn = document.getElementById('modal-confirm');
+  btn.textContent = danger ? '[ PURGE ]' : '[ CONFIRM ]';
+  btn.style.borderColor = danger ? '#F72585' : '#00F5D4';
+  btn.style.color       = danger ? '#F72585' : '#00F5D4';
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+
+const NEON_PRESETS = [
+  '#00F5D4','#F72585','#FFE033','#7B2FBE','#FF6B35',
+  '#00D4FF','#39FF14','#FF0090','#BF5AF2','#FF3131',
+  '#00FFFF','#FFAA00','#1AFF8C','#FF61D8','#4DEEEA',
+];
+
+function openNewMissionModal() {
+  const sigil = SIGILS[missions.length % SIGILS.length];
+  let chosenColor = COLORS[0];
+
+  const presetsHTML = NEON_PRESETS.map((c,i) =>
+    `<div class="hex-preset ${i===0?'selected':''}" data-color="${c}" title="${c}"
+      style="background:${c};box-shadow:0 0 6px ${c}88"
+      onclick="selectHexPreset('${c}',this)"></div>`
+  ).join('');
+
+  const body = `
+    <label class="modal-label">MISSION NAME</label>
+    <input class="modal-input" id="mi-name" type="text" placeholder="e.g. FINANCE" maxlength="16" />
+    <label class="modal-label">ACCENT COLOR</label>
+    <div class="color-options" id="color-opts">
+      ${COLORS.map((c,i) => `
+        <div class="color-opt ${i===0?'selected':''}" data-color="${c}" onclick="selectColor('${c}',this)"
+          style="background:${c}15;border-color:${i===0?c:'#1E2530'};color:${c}">
+          ${COLOR_NAMES[i]}
+        </div>
+      `).join('')}
+    </div>
+    <label class="modal-label">// OR PICK NEON</label>
+    <div class="color-hex-row">
+      <div class="color-hex-presets" id="hex-presets">${presetsHTML}</div>
+      <div class="hex-input-wrap">
+        <div class="hex-swatch" id="hex-swatch" style="background:${chosenColor};box-shadow:0 0 8px ${chosenColor}66"></div>
+        <input class="hex-text-input" id="hex-input" type="text" value="${chosenColor}" maxlength="7" placeholder="#FF0090" oninput="onHexInput(this)" />
+      </div>
+    </div>
+  `;
+
+  openModal('> NEW MISSION', body, () => {
+    const name = document.getElementById('mi-name').value.trim().toUpperCase();
+    if (!name) return;
+    // Priority: hex input if valid, else selected preset/swatch, else first color
+    const hexVal = document.getElementById('hex-input')?.value.trim() || '';
+    const hexPresetSel = document.querySelector('.hex-preset.selected');
+    const swatchColor = hexPresetSel ? hexPresetSel.dataset.color : null;
+    const colorOptSel = document.querySelector('.color-opt.selected');
+    const finalColor = isValidHex(hexVal) ? hexVal : (swatchColor || (colorOptSel ? colorOptSel.dataset.color : COLORS[0]));
+    missions.push({ id: uid(), name, color: finalColor, sigil });
+    saveState();
+    closeModal();
+    render();
+  });
+
+  setTimeout(() => document.getElementById('mi-name').focus(), 50);
+}
+
+function isValidHex(h) {
+  return /^#[0-9A-Fa-f]{6}$/.test(h);
+}
+
+function selectHexPreset(color, el) {
+  document.querySelectorAll('.hex-preset').forEach(e => e.classList.remove('selected'));
+  document.querySelectorAll('.color-opt').forEach(e => {
+    e.classList.remove('selected');
+    e.style.borderColor = '#1E2530';
+    e.style.background = e.dataset.color + '10';
+  });
+  el.classList.add('selected');
+  const inp = document.getElementById('hex-input');
+  const sw = document.getElementById('hex-swatch');
+  if (inp) inp.value = color;
+  if (sw) { sw.style.background = color; sw.style.boxShadow = `0 0 8px ${color}88`; }
+}
+
+function onHexInput(inp) {
+  let v = inp.value;
+  if (!v.startsWith('#')) { v = '#' + v; inp.value = v; }
+  if (isValidHex(v)) {
+    document.querySelectorAll('.hex-preset').forEach(e => e.classList.remove('selected'));
+    document.querySelectorAll('.color-opt').forEach(e => {
+      e.classList.remove('selected');
+      e.style.borderColor = '#1E2530';
+      e.style.background = e.dataset.color + '10';
+    });
+    const sw = document.getElementById('hex-swatch');
+    if (sw) { sw.style.background = v; sw.style.boxShadow = `0 0 8px ${v}88`; }
+  }
+}
+
+function selectColor(color, el) {
+  document.querySelectorAll('.color-opt').forEach((e) => {
+    const c = e.dataset.color;
+    e.classList.remove('selected');
+    e.style.borderColor = '#1E2530';
+    e.style.background = c + '10';
+  });
+  el.classList.add('selected');
+  el.style.borderColor = color;
+  el.style.background = color + '25';
+}
+
+function openAddTaskModal(col) {
+  const missionOptions = missions.map(m =>
+    `<option value="${m.id}">${m.sigil} ${m.name}</option>`
+  ).join('');
+
+  const body = `
+    <label class="modal-label">TASK NAME</label>
+    <input class="modal-input" id="task-name-input" type="text" placeholder="Describe your task..." maxlength="80" />
+    <label class="modal-label">ASSIGN TO MISSION</label>
+    <select class="modal-select" id="task-mission-select">
+      ${missionOptions || '<option value="">NO MISSIONS YET</option>'}
+    </select>
+  `;
+
+  openModal(`> ADD TASK :: ${col.toUpperCase()}`, body, () => {
+    const name = document.getElementById('task-name-input').value.trim();
+    if (!name) return;
+    const mId = document.getElementById('task-mission-select')?.value || null;
+    const colTasks = tasks.filter(t => t.col === col);
+    tasks.push({
+      id: uid(), name, col, done: false,
+      missionId: mId || null,
+      urgent: false,
+      order: colTasks.length, // append to bottom
+    });
+    saveState();
+    closeModal();
+    render();
+  });
+
+  setTimeout(() => document.getElementById('task-name-input').focus(), 50);
+}
+
+// ── Sound Engine ───────────────────────────────────────────
+let audioCtx = null;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(freq, type, duration, gainVal, fadeOut = true) {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+    if (fadeOut) gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration);
+  } catch(e) {}
+}
+
+function playSound(type) {
+  try {
+    const ctx = getAudioCtx();
+    switch(type) {
+      case 'click':   // soft blip — uncheck
+        playTone(440, 'sine', 0.08, 0.06);
+        break;
+      case 'done':    // satisfying two-tone confirm
+        playTone(523, 'sine', 0.12, 0.08);
+        setTimeout(() => playTone(784, 'sine', 0.18, 0.07), 100);
+        break;
+      case 'urgent':  // sharp alert ping
+        playTone(880, 'square', 0.06, 0.04);
+        setTimeout(() => playTone(660, 'square', 0.08, 0.04), 70);
+        break;
+      case 'pick':    // drag pick-up — low thud
+        playTone(120, 'sine', 0.08, 0.08);
+        break;
+      case 'move':    // drag drop — mid click
+        playTone(330, 'sine', 0.1, 0.06);
+        break;
+      case 'error':   // wrong PIN buzz
+        playTone(160, 'sawtooth', 0.25, 0.09);
+        break;
+      case 'login':   // successful login chime
+        [523,659,784].forEach((f,i) => setTimeout(() => playTone(f,'sine',0.2,0.07), i*90));
+        break;
+      case 'pin':     // single digit tap
+        playTone(600, 'sine', 0.05, 0.04);
+        break;
+    }
+  } catch(e) {}
+}
+
+// ── Easter Egg: Konami Code ────────────────────────────────
+const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let konamiIdx = 0;
+
+function triggerEasterEgg() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    background:#080B0F;z-index:9998;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:60px;font-family:'VT323',monospace;font-size:22px;
+    opacity:0;transition:opacity 0.3s;
+  `;
+
+  const lines = [
+    { t:'> UNAUTHORISED ACCESS DETECTED...', c:'#F72585', d:0 },
+    { t:'> TRACING SIGNAL...', c:'#F72585', d:600 },
+    { t:'> OPERATOR IDENTIFIED: RABIAT', c:'#00F5D4', d:1400 },
+    { t:'> CLEARANCE LEVEL: ██████ [REDACTED]', c:'#FFE033', d:2200 },
+    { t:'', c:'', d:3000 },
+    { t:'> ACCESSING CLASSIFIED MISSION ARCHIVE...', c:'#4A5568', d:3200 },
+    { t:'> DECRYPTING...  [||||||||||||||||||||] DONE', c:'#00F5D4', d:4200 },
+    { t:'', c:'', d:5000 },
+    { t:'██████████████████████████████████████', c:'#F72585', d:5200 },
+    { t:'  MISSION: STAY FOCUSED. SHIP THE THING.', c:'#FFE033', d:5500 },
+    { t:'  AGENT RABIAT — YOU KNOW WHAT TO DO.', c:'#00F5D4', d:6000 },
+    { t:'██████████████████████████████████████', c:'#F72585', d:6400 },
+    { t:'', c:'', d:7000 },
+    { t:'> SELF-DESTRUCT SEQUENCE INITIATED...', c:'#F72585', d:7200 },
+    { t:'> WIPING TRACE IN 3...', c:'#4A5568', d:8000 },
+    { t:'> WIPING TRACE IN 2...', c:'#4A5568', d:8700 },
+    { t:'> WIPING TRACE IN 1...', c:'#4A5568', d:9400 },
+    { t:'> CONNECTION TERMINATED. THIS NEVER HAPPENED.', c:'#3A3A4A', d:10100 },
+  ];
+
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.style.opacity = '1');
+
+  lines.forEach(({t, c, d}) => {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.textContent = t || '\u00A0';
+      el.style.color = c || 'transparent';
+      el.style.lineHeight = '1.7';
+      if (c === '#F72585') el.style.textShadow = `0 0 10px ${c}`;
+      if (c === '#00F5D4') el.style.textShadow = `0 0 8px ${c}`;
+      overlay.appendChild(el);
+    }, d);
+  });
+
+  setTimeout(() => {
+    overlay.style.transition = 'opacity 1s';
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), 1100);
+  }, 11200);
+}
+
+// Enter key submits modal / auth routing
+document.addEventListener('keydown', e => {
+  // Route digit keys to PIN when auth screen is visible
+  const authVisible = document.getElementById('auth-screen').style.display === 'flex';
+  if (authVisible && document.activeElement !== document.getElementById('guest-name-input')) {
+    if (/^\d$/.test(e.key)) { authKeyPress(e.key); return; }
+    if (/^[A-Za-z]$/.test(e.key)) { authKeyPress(e.key); return; }
+    if (e.key === 'Backspace') {
+      pinBuffer = pinBuffer.slice(0,-1);
+      updateDots();
+      setHint('// AWAITING INPUT','');
+      return;
+    }
+  }
+
+  // Konami code tracker (only in app)
+  if (!authVisible) {
+    if (e.key === KONAMI[konamiIdx]) {
+      konamiIdx++;
+      if (konamiIdx === KONAMI.length) { konamiIdx = 0; triggerEasterEgg(); }
+    } else { konamiIdx = 0; }
+  }
+
+  if (e.key === 'Enter' && document.getElementById('modal').style.display !== 'none') {
+    document.getElementById('modal-confirm').click();
+  }
+  if (e.key === 'Escape') closeModal();
+});
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Mobile ─────────────────────────────────────────────────
+let mobileActiveCol = 'today';
+const isMobile = () => window.innerWidth <= 768;
+
+function switchMobileCol(col) {
+  mobileActiveCol = col;
+  // Update tab highlights
+  document.querySelectorAll('.mob-col-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.col === col);
+    // Color active tab to match column
+    if (t.dataset.col === col) {
+      const colors = { today:'#00F5D4', inprogress:'#FFE033', blocked:'#F72585', done:'#4A5568' };
+      t.style.color = colors[col];
+      t.style.borderBottomColor = colors[col];
+    } else {
+      t.style.color = '';
+      t.style.borderBottomColor = '';
+    }
+  });
+  // Show only active column
+  document.querySelectorAll('.column').forEach(c => {
+    c.classList.toggle('mob-active', c.id === 'col-' + col);
+  });
+}
+
+function fabAdd() {
+  // Open add task modal for current mobile column
+  openAddTaskModal(mobileActiveCol);
+}
+
+function toggleMobileSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('mob-sidebar-overlay');
+  const isOpen = sidebar.classList.contains('mob-open');
+  sidebar.classList.toggle('mob-open', !isOpen);
+  sidebar.style.display = isOpen ? '' : 'flex';
+  overlay.classList.toggle('open', !isOpen);
+}
+
+function authBackspace() {
+  if (pinBuffer.length > 0) {
+    pinBuffer = pinBuffer.slice(0, -1);
+    updateDots();
+    setHint('// AWAITING INPUT', '');
+  }
+}
+
+function applyMobileLayout() {
+  if (isMobile()) {
+    // Make sure active col is shown
+    switchMobileCol(mobileActiveCol);
+  } else {
+    // Desktop: show all columns, hide mobile UI
+    document.querySelectorAll('.column').forEach(c => c.style.display = '');
+    document.querySelectorAll('.column').forEach(c => c.classList.remove('mob-active'));
+    const sidebar = document.getElementById('sidebar');
+    sidebar.style.display = '';
+    sidebar.classList.remove('mob-open');
+    document.getElementById('mob-sidebar-overlay').classList.remove('open');
+  }
+}
+
+window.addEventListener('resize', applyMobileLayout);
+
+// ── Init ───────────────────────────────────────────────────
+runBoot();
+</script>
+</body>
+</html>

@@ -1002,6 +1002,14 @@ document.addEventListener('DOMContentLoaded', () => {
     pupilLeft.style.transform = 'translate(-50%, -50%)';
     pupilRight.style.transform = 'translate(-50%, -50%)';
   });
+
+  // Make VR headset clickable to open daily planner
+  vrEye.style.cursor = 'pointer';
+  vrEye.style.pointerEvents = 'auto';
+  vrEye.setAttribute('title', 'Click to open HQ Daily Planner');
+  vrEye.addEventListener('click', () => {
+    window.location.href = 'hq-daily-planner.html';
+  });
 })();
 
 
