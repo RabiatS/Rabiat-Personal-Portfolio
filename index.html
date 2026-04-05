@@ -6,9 +6,21 @@
   <title>Rabiat Sadiq</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
-  <!-- Prevent theme flash -->
+  <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
       var saved = localStorage.getItem('theme');
       var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
@@ -135,7 +147,7 @@
 
       <div class="grid cards-3">
         <article class="card img-card" data-tags="Web HCI Research"
-                 style="--grad:linear-gradient(135deg,#C41230,#f5a623)">
+                 style="--img:url('assets/img/stickyobservatory.png')">
           <div class="card-body">
             <h3><a href="sticky-counter.html" target="_blank" rel="noopener" style="color:inherit">CMU MHCI Sticky Note Counter</a></h3>
             <p class="muted">A live physics-based observatory tracking every sticky note used by CMU MHCI cohorts since 2012. Real-time counter, peeling animations, year-by-year breakdowns, and a Matter.js physics floor pile.</p>
@@ -150,8 +162,24 @@
           </div>
         </article>
 
+        <article class="card img-card" data-tags="Web Software HCI"
+                 style="--img:url('assets/img/projects/truetohue.png')">
+          <div class="card-body">
+            <h3><a href="projects.html#true-to-hue" style="color:inherit">True to Hue</a></h3>
+            <p class="muted">AI-assisted design system starter for color: from product context and references to a live theme, CSS variables, token/PDF exports, and accessibility reporting.</p>
+            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
+              <span class="tag">Web</span>
+              <span class="tag">AI</span>
+              <span class="tag">HCI</span>
+            </div>
+            <div style="margin-top: 10px;">
+              <a href="https://github.com/RabiatS/True-to-hue" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8;">GitHub ↗</a>
+            </div>
+          </div>
+        </article>
+
         <article class="card img-card" data-tags="XR Hardware Unity"
-                 style="--img:url('img/mm.png')">
+                 style="--img:url('assets/img/mm.png')">
           <div class="card-body">
             <h3><a href="case-studies/case-study.html" style="color:inherit">Magic Mitts</a></h3>
             <p class="muted">1st Place UTSA Tech Symposium • Affordable haptic VR glove with electromagnetic braking. 18% latency reduction, 24% comfort improvement.</p>
@@ -167,7 +195,7 @@
         </article>
 
         <article class="card img-card" data-tags="ML Data CV Audio"
-                 style="--grad:linear-gradient(135deg,#6366f1,#8b5cf6)">
+                 style="--img:url('assets/img/projects/Multimodalstructred pipleiline.png')">
           <div class="card-body">
             <h3><a href="projects.html#multimodal-pipeline" style="color:inherit">Multimodal Unstructured Data Pipeline</a></h3>
             <p class="muted">Modular pipeline converting unstructured video, audio, and sensor data into structured, timestamped events. Production-ready processing with Ray, FFmpeg, and MLflow.</p>
@@ -183,7 +211,7 @@
         </article>
 
         <article class="card img-card" data-tags="HCI Research UX"
-                 style="--grad:linear-gradient(135deg,#8b5cf6,#ec4899)">
+                 style="--img:url('assets/img/projects/spotify-vs-ai-research.png')">
           <div class="card-body">
             <h3><a href="https://spotify-vs-ai-research-study.vercel.app/" target="_blank" rel="noopener" style="color:inherit">Spotify vs AI Research</a></h3>
             <p class="muted">UX research exploring how listeners perceive AI-generated music and build trust through transparent labeling.</p>
@@ -196,7 +224,7 @@
         </article>
 
         <article class="card img-card" data-tags="ML iOS Health"
-                 style="--grad:linear-gradient(135deg,#ec4899,#f59e0b)">
+                 style="--img:url('assets/img/projects/assuage-logo.png')">
           <div class="card-body">
             <h3><a href="case-studies/case-study-assuage.html" style="color:inherit">Assuage — Health ML</a></h3>
             <p class="muted">Distress prediction from HealthKit biometrics using logistic regression. 82% test accuracy with CoreML on-device inference.</p>
@@ -209,7 +237,7 @@
         </article>
 
         <article class="card img-card" data-tags="XR Unity VR"
-                 style="--grad:linear-gradient(135deg,#06b6d4,#3b82f6)">
+                 style="--img:url('assets/img/projects/VR Mussic Viz.webp')">
           <div class="card-body">
             <h3><a href="projects.html#vr-music-visualizer" style="color:inherit">VR Music Visualizer</a></h3>
             <p class="muted">Audio-reactive 3D environments with gesture input. Quest 2 app built with Unity and Meta XR SDK.</p>
@@ -222,7 +250,7 @@
         </article>
 
         <article class="card img-card" data-tags="XR Research Perception"
-                 style="--grad:linear-gradient(135deg,#3b82f6,#6366f1)">
+                 style="--img:url('assets/img/projects/vr-pain-augmentation-research.png')">
           <div class="card-body">
             <h3><a href="case-studies/case-study-pain-xr.html" style="color:inherit">XR Pain Perception</a></h3>
             <p class="muted">CMU research: Multimodal XR prototypes studying how visual, auditory, and ambient cues influence pain perception.</p>

@@ -6,9 +6,21 @@
   <title>Coursework | Rabiat Sadiq</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
-  <!-- Prevent theme flash -->
+  <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
       var saved = localStorage.getItem('theme');
       var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }

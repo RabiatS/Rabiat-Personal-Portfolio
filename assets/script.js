@@ -9,7 +9,6 @@
     // Check if plain mode is active - disable dark mode toggle
     const isPlainMode = document.documentElement.classList.contains('plain-mode');
     if (isPlainMode && mode !== 'rainbow') {
-      // Don't allow dark mode changes in plain mode
       return;
     }
     
@@ -145,9 +144,10 @@
       // Check if plain mode is active - disable theme toggle
       const isPlainMode = document.documentElement.classList.contains('plain-mode');
       if (isPlainMode) {
-        // Show message that dark mode is disabled in plain mode
         const tooltip = document.createElement('div');
-        tooltip.textContent = 'Dark mode disabled in Minimalist Mode';
+        tooltip.textContent = document.documentElement.classList.contains('plain-mode--rabiat')
+          ? 'Theme is fixed while Rabiat minimal mode is on'
+          : 'Dark mode disabled in Minimalist Mode';
         tooltip.style.cssText = `
           position: fixed;
           top: 100px;
@@ -249,8 +249,14 @@
     { name: 'emerald-jade', primary: '#3d9a6b', accent: '#7dd4a8', hero: 'linear-gradient(135deg, #2a7050 0%, #3d9a6b 50%, #7dd4a8 100%)' }
   ];
   
+  const PLAIN_VARIANT_CLASSIC = 'classic';
+  const PLAIN_VARIANT_RABIAT = 'rabiat';
+  const RABIAT_VOID = '#0a0a0f';
+  const RABIAT_TRAIL = 'rgba(184, 30, 44, 0.45)';
+
   let currentScheme = parseInt(localStorage.getItem('colorScheme') || '0');
   let isPlainMode = localStorage.getItem('plainMode') === 'true';
+  let plainCursorTrailColor = '#000000';
   let hoverTimeout = null;
   let plainModePopup = null;
   let hoverStartTime = null;
@@ -259,8 +265,10 @@
     // Remove plain mode if active
     if (isPlainMode) {
       document.documentElement.classList.remove('plain-mode');
+      document.documentElement.classList.remove('plain-mode--rabiat');
       isPlainMode = false;
       localStorage.setItem('plainMode', 'false');
+      localStorage.removeItem('plainModeVariant');
       
       // Re-enable nebula canvas
       const nebula = document.getElementById('nebula');
@@ -334,8 +342,9 @@
     plainModePopup.className = 'plain-mode-popup';
     plainModePopup.innerHTML = `
       <div class="plain-mode-popup-content">
-        <p style="margin-bottom: 12px; font-size: 14px; font-weight: 600;">Minimalist Mode</p>
-        <button id="activatePlainMode" class="plain-mode-btn" style="
+        <p style="margin-bottom: 8px; font-size: 14px; font-weight: 600;">Minimalist Mode</p>
+        <p style="margin-bottom: 14px; font-size: 12px; color: #444; line-height: 1.4;">Pick a look — both stay minimal (no galaxy, no VR hero).</p>
+        <button type="button" id="activatePlainClassic" class="plain-mode-btn" style="
           background: #000;
           color: #fff;
           border: 1px solid #000;
@@ -343,8 +352,18 @@
           cursor: pointer;
           font-size: 13px;
           width: 100%;
-        ">Activate</button>
-        <button id="cancelPlainMode" class="plain-mode-btn" style="
+        ">Classic light</button>
+        <button type="button" id="activatePlainRabiat" class="plain-mode-btn" style="
+          background: #0a0a0f;
+          color: #ececee;
+          border: 1px solid #b81e2c;
+          padding: 8px 16px;
+          cursor: pointer;
+          font-size: 13px;
+          width: 100%;
+          margin-top: 8px;
+        ">Rabiat theme (brand)</button>
+        <button type="button" id="cancelPlainMode" class="plain-mode-btn" style="
           background: transparent;
           color: #000;
           border: 1px solid #000;
@@ -370,8 +389,12 @@
     `;
     document.body.appendChild(plainModePopup);
     
-    document.getElementById('activatePlainMode').addEventListener('click', () => {
-      applyPlainMode();
+    document.getElementById('activatePlainClassic').addEventListener('click', () => {
+      applyPlainMode(PLAIN_VARIANT_CLASSIC);
+      removePlainModePopup();
+    });
+    document.getElementById('activatePlainRabiat').addEventListener('click', () => {
+      applyPlainMode(PLAIN_VARIANT_RABIAT);
       removePlainModePopup();
     });
     
@@ -388,34 +411,49 @@
     }
   }
   
-  function applyPlainMode() {
-    // Remove any color scheme and dark mode completely
-    document.documentElement.classList.add('plain-mode');
-    document.documentElement.classList.remove('dark');
-    document.body.classList.remove('dark');
-    document.documentElement.style.colorScheme = 'light';
-    
-    // Clear dark mode from localStorage temporarily (we'll restore it when exiting)
-    const wasDark = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
-    if (wasDark) {
+  function applyPlainMode(variant) {
+    const rabiat = variant === PLAIN_VARIANT_RABIAT;
+    const wasDarkBefore =
+      document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+    if (wasDarkBefore) {
       localStorage.setItem('themeBeforePlain', 'dark');
     } else {
       localStorage.removeItem('themeBeforePlain');
     }
-    localStorage.setItem('theme', 'light');
-    
+
+    document.documentElement.classList.add('plain-mode');
+    if (rabiat) {
+      document.documentElement.classList.add('plain-mode--rabiat');
+      document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
+      document.documentElement.style.colorScheme = 'dark';
+      plainCursorTrailColor = RABIAT_TRAIL;
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('plain-mode--rabiat');
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
+      document.documentElement.style.colorScheme = 'light';
+      plainCursorTrailColor = '#000000';
+      localStorage.setItem('theme', 'light');
+    }
+
     isPlainMode = true;
     localStorage.setItem('plainMode', 'true');
-    
-    // Set plain mode colors
+    localStorage.setItem('plainModeVariant', variant);
+
     const root = document.documentElement;
-    root.style.setProperty('--primary', '#000000');
-    root.style.setProperty('--accent', '#000000');
-    
-    // Update hero to solid white
+    if (rabiat) {
+      root.style.setProperty('--primary', '#b81e2c');
+      root.style.setProperty('--accent', '#4a8f8f');
+    } else {
+      root.style.setProperty('--primary', '#000000');
+      root.style.setProperty('--accent', '#000000');
+    }
+
     const hero = document.querySelector('.hero--fullscreen');
     if (hero) {
-      hero.style.background = '#ffffff';
+      hero.style.background = rabiat ? RABIAT_VOID : '#ffffff';
       hero.style.backgroundSize = '100% 100%';
     }
     
@@ -518,7 +556,7 @@
         top: ${y}px;
         width: 3px;
         height: 3px;
-        background: #000000;
+        background: ${plainCursorTrailColor};
         border-radius: 50%;
         pointer-events: none;
         z-index: 9999;
@@ -574,21 +612,38 @@
   
   // Apply saved state on load
   if (isPlainMode) {
-    // Apply plain mode (this will create exit button)
+    if (!localStorage.getItem('plainModeVariant')) {
+      localStorage.setItem('plainModeVariant', PLAIN_VARIANT_CLASSIC);
+    }
+    const variant = localStorage.getItem('plainModeVariant') || PLAIN_VARIANT_CLASSIC;
+    const rabiat = variant === PLAIN_VARIANT_RABIAT;
     document.documentElement.classList.add('plain-mode');
-    document.documentElement.classList.remove('dark');
-    document.body.classList.remove('dark');
-    document.documentElement.style.colorScheme = 'light';
-    
-    // Set plain mode colors
+    if (rabiat) {
+      document.documentElement.classList.add('plain-mode--rabiat');
+      document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
+      document.documentElement.style.colorScheme = 'dark';
+      plainCursorTrailColor = RABIAT_TRAIL;
+    } else {
+      document.documentElement.classList.remove('plain-mode--rabiat');
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
+      document.documentElement.style.colorScheme = 'light';
+      plainCursorTrailColor = '#000000';
+    }
+
     const root = document.documentElement;
-    root.style.setProperty('--primary', '#000000');
-    root.style.setProperty('--accent', '#000000');
-    
-    // Update hero to solid white
+    if (rabiat) {
+      root.style.setProperty('--primary', '#b81e2c');
+      root.style.setProperty('--accent', '#4a8f8f');
+    } else {
+      root.style.setProperty('--primary', '#000000');
+      root.style.setProperty('--accent', '#000000');
+    }
+
     const hero = document.querySelector('.hero--fullscreen');
     if (hero) {
-      hero.style.background = '#ffffff';
+      hero.style.background = rabiat ? RABIAT_VOID : '#ffffff';
       hero.style.backgroundSize = '100% 100%';
     }
     
@@ -1021,17 +1076,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Embedded projects data (works without server)
   const EMBEDDED_PROJECTS = [
-    {id:"cmu-mhci-sticky-counter",title:"CMU MHCI Sticky Note Counter",subtitle:"Interactive Physics Observatory",category:"Web / Full-Stack / Product",tags:["Web","HCI","Research","Personal"],description:"A live-updating observatory estimating the total sticky notes used by every CMU MHCI cohort since 2012. Physics-based animations, year-by-year breakdowns, and a real-time counter.",github:null,demo:"sticky-counter.html",caseStudy:null,status:"complete",images:[],year:"2026"},
-    {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 — XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR","VR","Research","HCI","Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",caseStudy:null,status:"complete",images:[],year:"2025"},
-    {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML","Data","Streaming","CV","Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps.",github:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:["img/ps.PNG"],year:"2025"},
-    {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves — 1st Place UTSA",category:"XR / Unity / Immersive",tags:["XR","Hardware","Unity","Research"],description:"Led team to build affordable haptic glove with flex sensors and EM braking. 18% latency reduction, 24% comfort improvement.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",caseStudy:"case-studies/case-study.html",status:"complete",images:["img/mm.png"],year:"2024"},
-    {id:"xr-pain-perception",title:"XR Pain Augmentation Research",subtitle:"CMU Augmented Perception Lab",category:"XR / Unity / Immersive",tags:["XR","Research","HCI","Perception"],description:"Multimodal XR prototypes to study pain perception; building adaptive interfaces with structured logging for ML personalization.",github:null,caseStudy:"case-studies/case-study-pain-xr.html",status:"complete",images:[],year:"2025"},
-    {id:"assuage",title:"Assuage",subtitle:"ML Distress Prediction",category:"Applied ML / CV / Video",tags:["ML","Research","HCI"],description:"Logistic regression to predict distress level from HealthKit biometrics; 82% test accuracy with on-device CoreML inference.",github:"https://github.com/RabiatS/final-project-aimleaders",caseStudy:"case-study-assuage.html",status:"complete",images:[],year:"2024"},
-    {id:"spotify-research",title:"Spotify vs AI Research Study",subtitle:"UX Research & Design",category:"Research / HCI",tags:["HCI","Research"],description:"UX research exploring how Spotify listeners perceive AI-generated music, and how clearer labeling can build trust.",github:"https://github.com/RabiatS/spotify-vs-ai-research-study",demo:"https://spotify-vs-ai-research-study.vercel.app/",caseStudy:"case-studies/case-study-spotify.html",status:"complete",images:[],year:"2024"},
-    {id:"vr-music-visualizer",title:"VR Music Visualizer",subtitle:"Audio-Reactive 3D Environments",category:"XR / Unity / Immersive",tags:["XR","Unity","VR","Personal"],description:"Reactive 3D visuals responding to audio frequencies with hand tracking interactions. Quest 2 app.",github:"https://github.com/RabiatS/VR-music-visualizer",caseStudy:null,status:"complete",images:[],year:"2024"},
-    {id:"multimodal-pipeline",title:"Multimodal Unstructured Data Pipeline",subtitle:"Production-Ready Processing",category:"Applied ML / CV / Video",tags:["ML","Data","CV","Audio","Personal"],description:"Modular pipeline converting unstructured video, audio, and sensor data into structured, timestamped events.",github:"https://github.com/RabiatS",caseStudy:null,status:"complete",images:[],year:"2024"},
+    {id:"cmu-mhci-sticky-counter",title:"CMU MHCI Sticky Note Counter",subtitle:"Interactive Physics Observatory",category:"Web / Full-Stack / Product",tags:["Web","HCI","Research","Personal"],description:"A live-updating observatory estimating the total sticky notes used by every CMU MHCI cohort since 2012. Physics-based animations, year-by-year breakdowns, and a real-time counter.",github:null,demo:"sticky-counter.html",caseStudy:null,status:"complete",images:["assets/img/stickyobservatory.png"],year:"2026"},
+    {id:"true-to-hue",title:"True to Hue",subtitle:"AI-assisted color design system starter",category:"Web / Full-Stack / Product",tags:["Web","Software","HCI","Personal"],description:"Turns product context, color preferences, light/dark mode, and optional reference images into a structured brand palette—then refine in a live studio with CSS variables, exports (CSS, tokens, PDF), and accessibility reporting.",github:"https://github.com/RabiatS/True-to-hue",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/truetohue.png"],year:"2026"},
+    {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 — XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR","VR","Research","HCI","Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",caseStudy:null,status:"complete",images:["assets/img/projects/gazeflow image.png"],year:"2025"},
+    {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML","Data","Streaming","CV","Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps.",github:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:["assets/img/ps.PNG"],year:"2025"},
+    {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves — 1st Place UTSA",category:"XR / Unity / Immersive",tags:["XR","Hardware","Unity","Research"],description:"Led team to build affordable haptic glove with flex sensors and EM braking. 18% latency reduction, 24% comfort improvement.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",caseStudy:"case-studies/case-study.html",status:"complete",images:["assets/img/mm.png"],year:"2024"},
+    {id:"xr-pain-perception",title:"XR Pain Augmentation Research",subtitle:"CMU Augmented Perception Lab",category:"XR / Unity / Immersive",tags:["XR","Research","HCI","Perception"],description:"Multimodal XR prototypes to study pain perception; building adaptive interfaces with structured logging for ML personalization.",github:null,caseStudy:"case-studies/case-study-pain-xr.html",status:"complete",images:["assets/img/projects/vr-pain-augmentation-research.png"],year:"2025"},
+    {id:"assuage",title:"Assuage",subtitle:"ML Distress Prediction",category:"Applied ML / CV / Video",tags:["ML","Research","HCI"],description:"Logistic regression to predict distress level from HealthKit biometrics; 82% test accuracy with on-device CoreML inference.",github:"https://github.com/RabiatS/final-project-aimleaders",caseStudy:"case-study-assuage.html",status:"complete",images:["assets/img/projects/assuage-logo.png"],year:"2024"},
+    {id:"spotify-research",title:"Spotify vs AI Research Study",subtitle:"UX Research & Design",category:"Research / HCI",tags:["HCI","Research"],description:"UX research exploring how Spotify listeners perceive AI-generated music, and how clearer labeling can build trust.",github:"https://github.com/RabiatS/spotify-vs-ai-research-study",demo:"https://spotify-vs-ai-research-study.vercel.app/",caseStudy:"case-studies/case-study-spotify.html",status:"complete",images:["assets/img/projects/spotify-vs-ai-research.png"],year:"2024"},
+    {id:"vr-music-visualizer",title:"VR Music Visualizer",subtitle:"Audio-Reactive 3D Environments",category:"XR / Unity / Immersive",tags:["XR","Unity","VR","Personal"],description:"Reactive 3D visuals responding to audio frequencies with hand tracking interactions. Quest 2 app.",github:"https://github.com/RabiatS/VR-music-visualizer",caseStudy:null,status:"complete",images:["assets/img/projects/VR Mussic Viz.webp"],year:"2024"},
+    {id:"multimodal-pipeline",title:"Multimodal Unstructured Data Pipeline",subtitle:"Production-Ready Processing",category:"Applied ML / CV / Video",tags:["ML","Data","CV","Audio","Personal"],description:"Modular pipeline converting unstructured video, audio, and sensor data into structured, timestamped events.",github:"https://github.com/RabiatS",caseStudy:null,status:"complete",images:["assets/img/projects/Multimodalstructred pipleiline.png"],year:"2024"},
     {id:"yolov5-car-detection",title:"YOLOv5 Car Detection",subtitle:"Real-Time Vehicle Detection",category:"Applied ML / CV / Video",tags:["ML","CV","Personal"],description:"Vehicle detection from video using YOLOv5 with real-time inference using OpenCV.",github:"https://github.com/RabiatS/Pytorch_car_detection_model",caseStudy:null,status:"complete",images:[],year:"2024"},
-    {id:"applied-stem",title:"Applied STEM Platform",subtitle:"Co-founder / AI & Full-Stack Engineer",category:"Applied ML / CV / Video",tags:["ML","Industry"],description:"AI-powered technical interview platform with React/TypeScript canvas and FastAPI backend for circuit simulation.",github:null,caseStudy:null,status:"complete",images:[],year:"2024"},
+    {id:"applied-stem",title:"Applied STEM Platform",subtitle:"Co-founder / AI & Full-Stack Engineer",category:"Applied ML / CV / Video",tags:["ML","Industry"],description:"AI-powered technical interview platform with React/TypeScript canvas and FastAPI backend for circuit simulation.",github:null,caseStudy:null,status:"complete",images:["assets/img/projects/appliedSTEM_img.png"],year:"2024"},
     {id:"weeping-angel-vr",title:"Weeping Angel VR",subtitle:"Don't Blink Experience",category:"XR / Unity / Immersive",tags:["XR","Unity","VR","Personal"],description:"VR experience where objects move closer when not observed—'weeping angel' mechanic focusing on presence and tension.",github:"https://github.com/RabiatS/Weeping_angel_VR",caseStudy:null,status:"complete",images:[],year:"2024"},
     {id:"ar-guided-journeys",title:"AR Guided Journeys",subtitle:"Quest 3 Mixed Reality Navigation",category:"XR / Unity / Immersive",tags:["XR","AR","Unity","Personal"],description:"Quest 3 mixed reality indoor navigation and learning app with AR paths and informative content.",github:"https://github.com/RabiatS/AR-Guided-Journeys-Interactive-Learning",caseStudy:null,status:"complete",images:[],year:"2024"},
     {id:"vr-data-visualization",title:"VR Interactive Data Visualization",subtitle:"3D Graph Exploration",category:"XR / Unity / Immersive",tags:["XR","VR","Data","ML","Personal"],description:"VR system for exploring graphs and datasets in 3D space with grab/drag/move interaction.",github:"https://github.com/RabiatS/VR-Interactive-Data-Visualization-with-AIML",caseStudy:null,status:"complete",images:[],year:"2024"},
@@ -1106,9 +1162,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const catStyle = categoryStyles[project.category] || { gradient: 'linear-gradient(135deg,#6366f1,#8b5cf6)', icon: '💻' };
 
       if (hasImage) {
-        card.style.cssText += `--img:url('${project.images[0]}')`;
+        const src = project.images[0];
+        const resolved = new URL(src, document.baseURI).href;
+        card.style.setProperty('--img', `url("${resolved}")`);
       } else {
-        card.style.cssText += `--grad:${catStyle.gradient}`;
+        card.style.setProperty('--grad', catStyle.gradient);
       }
 
       const cardBody = document.createElement('div');
@@ -1320,6 +1378,29 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 })();
 
+// Featured section on index.html: absolute --img URLs + plain-mode #work used to hide ::before
+(function(){
+  function resolveWorkThumbnails(){
+    const work = document.getElementById('work');
+    if (!work) return;
+    work.querySelectorAll('.img-card').forEach(card => {
+      const raw = card.style.getPropertyValue('--img').trim();
+      if (!raw) return;
+      const m = raw.match(/url\(\s*["']?([^"')]+)["']?\s*\)/i);
+      if (!m) return;
+      const path = m[1].trim();
+      try {
+        card.style.setProperty('--img', `url("${new URL(path, document.baseURI).href}")`);
+      } catch (e) {}
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', resolveWorkThumbnails);
+  } else {
+    resolveWorkThumbnails();
+  }
+})();
+
 // GLOBAL TILT LOADER with header UI (desktop/mobile/off)
 (function(){
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1413,7 +1494,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // Global reset function - can be called from console: resetPlainMode()
 window.resetPlainMode = function() {
   localStorage.setItem('plainMode', 'false');
+  localStorage.removeItem('plainModeVariant');
   document.documentElement.classList.remove('plain-mode');
+  document.documentElement.classList.remove('plain-mode--rabiat');
   document.body.classList.remove('dark');
   document.documentElement.classList.remove('dark');
   document.documentElement.style.colorScheme = 'light';

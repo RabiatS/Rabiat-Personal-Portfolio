@@ -13,7 +13,25 @@
       "demo": "sticky-counter.html",
       "caseStudy": null,
       "status": "complete",
-      "images": ["assets/img/projects/stickyobservatory.png"],
+      "images": ["assets/img/stickyobservatory.png"],
+      "videos": [],
+      "year": "2026",
+      "type": "Personal"
+    },
+    {
+      "id": "true-to-hue",
+      "title": "True to Hue",
+      "subtitle": "AI-assisted color design system starter",
+      "category": "Web / Full-Stack / Product",
+      "tags": ["Web", "Software", "HCI", "Personal"],
+      "description": "Web app that turns product context, color preferences, light/dark mode, and optional reference images into a structured brand color system—then refine in a studio with live CSS variables, handoff exports, and accessibility checks.",
+      "longDescription": "Landing and input capture product name, description, color direction, mode, and reference uploads or camera. AI generation (structured JSON) produces named roles, accent variations with related shades, and preview content. Studio picks primary/secondary variations, pairs display and body fonts, previews the theme as real CSS variables, with copy/download for CSS. Exports include PDF and token/zip-style bundles plus an accessibility report for contrast and usability.",
+      "technologies": ["TypeScript", "React", "Web", "AI", "CSS", "Design systems"],
+      "github": "https://github.com/RabiatS/True-to-hue",
+      "demo": null,
+      "caseStudy": null,
+      "status": "complete",
+      "images": ["assets/img/projects/truetohue.png"],
       "videos": [],
       "year": "2026",
       "type": "Personal"
@@ -31,7 +49,7 @@
       "demo": null,
       "caseStudy": "case-studies/case-study-ps.html",
       "status": "complete",
-      "images": ["assets/img/projects/ps.png"],
+      "images": ["assets/img/ps.PNG"],
       "videos": [],
       "year": "2025",
       "type": "Industry"
@@ -49,7 +67,7 @@
       "demo": null,
       "caseStudy": null,
       "status": "complete",
-      "images": [],
+      "images": ["assets/img/projects/Multimodalstructred pipleiline.png"],
       "videos": [],
       "year": "2024",
       "type": "Personal"
@@ -158,7 +176,7 @@
       "demo": null,
       "caseStudy": null,
       "status": "complete",
-      "images": [],
+      "images": ["assets/img/projects/VR Mussic Viz.webp"],
       "videos": [],
       "year": "2024",
       "type": "Personal"
@@ -248,7 +266,7 @@
       "demo": null,
       "caseStudy": "case-studies/case-study-pain-xr.html",
       "status": "complete",
-      "images": [],
+      "images": ["assets/img/projects/vr-pain-augmentation-research.png"],
       "videos": [],
       "year": "2025",
       "type": "Research"
@@ -266,7 +284,7 @@
       "demo": null,
       "caseStudy": "case-study-assuage.html",
       "status": "complete",
-      "images": [],
+      "images": ["assets/img/projects/assuage-logo.png"],
       "videos": [],
       "year": "2024",
       "type": "Research"
@@ -284,7 +302,7 @@
       "demo": "https://spotify-vs-ai-research-study.vercel.app/",
       "caseStudy": "case-studies/case-study-spotify.html",
       "status": "complete",
-      "images": [],
+      "images": ["assets/img/projects/spotify-vs-ai-research.png"],
       "videos": [],
       "year": "2024",
       "type": "Research"
@@ -320,7 +338,7 @@
       "demo": null,
       "caseStudy": null,
       "status": "complete",
-      "images": [],
+      "images": ["assets/img/projects/appliedSTEM_img.png"],
       "videos": [],
       "year": "2024",
       "type": "Industry"

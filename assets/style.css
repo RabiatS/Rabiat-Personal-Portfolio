@@ -2,6 +2,8 @@
    MODERN PORTFOLIO DESIGN - FRESH START
    ============================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Rajdhani:wght@500;600;700&display=swap');
+
 :root {
   /* Personal portfolio palette - warmer, more inviting */
   --primary: #7c3aed;
@@ -110,7 +112,20 @@
 }
 
 .plain-mode #work .img-card::before {
-  display: none !important; /* Hide any background images/gradients */
+  display: none !important; /* Hide gradient placeholders; real photos restored below */
+}
+
+/* Featured project photos (same as .plain-mode .img-card[style*="--img:"] but beats #work display:none) */
+.plain-mode #work .img-card[style*="--img:"]::before {
+  content: '' !important;
+  display: block !important;
+  flex-shrink: 0;
+  aspect-ratio: 16 / 9;
+  border-bottom: 1px solid #000000;
+  background-image: var(--img) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
 }
 
 .plain-mode #work .img-card .card-body {
@@ -420,6 +435,19 @@
   display: none !important;
 }
 
+/* img-card heroes use ::before for the photo; re-show when a real thumbnail is set */
+.plain-mode .img-card[style*="--img:"]::before {
+  content: '' !important;
+  display: block !important;
+  flex-shrink: 0;
+  aspect-ratio: 16 / 9;
+  border-bottom: 1px solid #000000;
+  background-image: var(--img) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
 .plain-mode .img-card {
   border: 1px solid #000000;
   background: #ffffff !important;
@@ -451,8 +479,18 @@
   transform: translateY(-2px);
 }
 
-.plain-mode .img-card:hover::before {
+/* Gradient-only heroes: hover goes solid. Real photos keep their image (see below). */
+.plain-mode .img-card[style*="--grad:"]:hover::before {
   background: #000000 !important;
+}
+
+.plain-mode .img-card[style*="--img:"]:hover::before {
+  background-image: var(--img) !important;
+  background-color: transparent !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  transform: scale(1.02);
 }
 
 .plain-mode .img-card:hover .card-body {
@@ -816,6 +854,447 @@
 .plain-mode .scroll-cue:hover {
   background: #000000;
   color: #ffffff !important;
+}
+
+/* --------------------------------------------------------------------------
+   Minimalist mode — RabiatTheme (brand guide: void, bloodline red, teal)
+   -------------------------------------------------------------------------- */
+.plain-mode.plain-mode--rabiat {
+  --rabiat-void: #0a0a0f;
+  --rabiat-elevated: #12121c;
+  --rabiat-panel: #16161f;
+  --rabiat-bloodline: #b81e2c;
+  --rabiat-teal: #4a8f8f;
+  --rabiat-text: #ececee;
+  --rabiat-muted: #9ca3af;
+  --rabiat-border: #2a2a36;
+  --primary: var(--rabiat-bloodline);
+  --accent: var(--rabiat-teal);
+  --bg: var(--rabiat-void);
+  --bg-elevated: var(--rabiat-elevated);
+  --surface: var(--rabiat-panel);
+  --text: var(--rabiat-text);
+  --text-muted: var(--rabiat-muted);
+  --text-light: #71717a;
+  --border: var(--rabiat-border);
+  --border-strong: #3f3f4d;
+  color-scheme: dark;
+}
+
+.plain-mode.plain-mode--rabiat #work {
+  background: var(--rabiat-void) !important;
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat #work .section-head h2,
+.plain-mode.plain-mode--rabiat #work .section-head p,
+.plain-mode.plain-mode--rabiat #work .section-head .link,
+.plain-mode.plain-mode--rabiat #work h2 {
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat #work .section-head .link {
+  color: var(--rabiat-teal) !important;
+}
+
+.plain-mode.plain-mode--rabiat #work .card {
+  background: var(--rabiat-panel);
+  color: var(--rabiat-text);
+  border-color: var(--rabiat-border);
+}
+
+.plain-mode.plain-mode--rabiat #work .card h3,
+.plain-mode.plain-mode--rabiat #work .card h3 a,
+.plain-mode.plain-mode--rabiat #work .card .muted {
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat #work .card:hover {
+  background: var(--rabiat-bloodline) !important;
+  color: #ffffff !important;
+  border-color: var(--rabiat-bloodline);
+}
+
+.plain-mode.plain-mode--rabiat #work .card:hover h3,
+.plain-mode.plain-mode--rabiat #work .card:hover h3 a,
+.plain-mode.plain-mode--rabiat #work .card:hover .muted {
+  color: #ffffff !important;
+}
+
+.plain-mode.plain-mode--rabiat #work .img-card {
+  border-color: var(--rabiat-border);
+}
+
+.plain-mode.plain-mode--rabiat #work .img-card[style*="--img:"]::before {
+  border-bottom-color: var(--rabiat-border);
+}
+
+.plain-mode.plain-mode--rabiat #work .img-card .card-body h3,
+.plain-mode.plain-mode--rabiat #work .img-card .card-body h3 a {
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat #work .img-card:hover {
+  border-color: var(--rabiat-bloodline);
+}
+
+.plain-mode.plain-mode--rabiat #work .img-card:hover .card-body {
+  background: var(--rabiat-bloodline) !important;
+}
+
+.plain-mode.plain-mode--rabiat #work .img-card:hover .card-body h3,
+.plain-mode.plain-mode--rabiat #work .img-card:hover .card-body h3 a {
+  color: #ffffff !important;
+}
+
+.plain-mode.plain-mode--rabiat #experience {
+  background: var(--rabiat-void) !important;
+}
+
+.plain-mode.plain-mode--rabiat #skills::before {
+  background: var(--rabiat-elevated);
+}
+
+.plain-mode.plain-mode--rabiat #skills .section-head h2,
+.plain-mode.plain-mode--rabiat #skills .section-head p {
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat #skills .card {
+  background: var(--rabiat-panel);
+  color: var(--rabiat-text) !important;
+  border-color: var(--rabiat-border);
+}
+
+.plain-mode.plain-mode--rabiat #skills .card h3,
+.plain-mode.plain-mode--rabiat #skills .card h3 a,
+.plain-mode.plain-mode--rabiat #skills .card p,
+.plain-mode.plain-mode--rabiat #skills .card .muted {
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat #skills .card:hover {
+  background: var(--rabiat-bloodline) !important;
+  color: #ffffff !important;
+  border-color: var(--rabiat-bloodline);
+  box-shadow: none;
+}
+
+.plain-mode.plain-mode--rabiat #skills .card:hover h3,
+.plain-mode.plain-mode--rabiat #skills .card:hover h3 a,
+.plain-mode.plain-mode--rabiat #skills .card:hover p,
+.plain-mode.plain-mode--rabiat #skills .card:hover .muted {
+  color: #ffffff !important;
+}
+
+.plain-mode.plain-mode--rabiat #awards {
+  background: var(--rabiat-void) !important;
+}
+
+.plain-mode.plain-mode--rabiat #education::before {
+  background: var(--rabiat-elevated);
+}
+
+.plain-mode.plain-mode--rabiat #education .section-head h2,
+.plain-mode.plain-mode--rabiat #education .section-head p {
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat #education .card {
+  background: var(--rabiat-panel);
+  color: var(--rabiat-text) !important;
+  border-color: var(--rabiat-border);
+}
+
+.plain-mode.plain-mode--rabiat #education .card h3,
+.plain-mode.plain-mode--rabiat #education .card h3 a,
+.plain-mode.plain-mode--rabiat #education .card p,
+.plain-mode.plain-mode--rabiat #education .card .muted,
+.plain-mode.plain-mode--rabiat #education .card .eyebrow {
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat #education .card:hover {
+  background: var(--rabiat-bloodline) !important;
+  border-color: var(--rabiat-bloodline);
+  box-shadow: none;
+}
+
+.plain-mode.plain-mode--rabiat #education .card:hover h3,
+.plain-mode.plain-mode--rabiat #education .card:hover h3 a,
+.plain-mode.plain-mode--rabiat #education .card:hover p,
+.plain-mode.plain-mode--rabiat #education .card:hover .muted,
+.plain-mode.plain-mode--rabiat #education .card:hover .eyebrow {
+  color: #ffffff !important;
+}
+
+.plain-mode.plain-mode--rabiat h1,
+.plain-mode.plain-mode--rabiat h2,
+.plain-mode.plain-mode--rabiat h3,
+.plain-mode.plain-mode--rabiat h4,
+.plain-mode.plain-mode--rabiat h5,
+.plain-mode.plain-mode--rabiat h6 {
+  font-family: 'Rajdhani', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat #skills h2,
+.plain-mode.plain-mode--rabiat #skills h3,
+.plain-mode.plain-mode--rabiat #education h2,
+.plain-mode.plain-mode--rabiat #education h3 {
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat h1 {
+  font-weight: 700;
+  transform: none;
+  text-transform: uppercase;
+}
+
+.plain-mode.plain-mode--rabiat body,
+.plain-mode.plain-mode--rabiat p,
+.plain-mode.plain-mode--rabiat .lead,
+.plain-mode.plain-mode--rabiat .muted {
+  font-family: 'Lora', Georgia, 'Times New Roman', serif;
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat .lead {
+  color: var(--rabiat-muted) !important;
+}
+
+.plain-mode.plain-mode--rabiat .muted {
+  color: var(--rabiat-muted) !important;
+}
+
+.plain-mode.plain-mode--rabiat .grad {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: var(--rabiat-bloodline) !important;
+  color: var(--rabiat-bloodline) !important;
+}
+
+.plain-mode.plain-mode--rabiat .hero--fullscreen {
+  background: var(--rabiat-void) !important;
+}
+
+.plain-mode.plain-mode--rabiat .hero--fullscreen h1 {
+  color: var(--rabiat-text) !important;
+  transform: none !important;
+  text-shadow: none !important;
+}
+
+.plain-mode.plain-mode--rabiat .eyebrow {
+  color: var(--rabiat-teal) !important;
+}
+
+.plain-mode.plain-mode--rabiat .card {
+  background: var(--rabiat-panel);
+  border-color: var(--rabiat-border);
+  color: var(--rabiat-text);
+}
+
+.plain-mode.plain-mode--rabiat .card:hover {
+  background: var(--rabiat-bloodline) !important;
+  color: #ffffff !important;
+  border-color: var(--rabiat-bloodline);
+}
+
+.plain-mode.plain-mode--rabiat .card:hover * {
+  color: #ffffff !important;
+}
+
+.plain-mode.plain-mode--rabiat .img-card {
+  border-color: var(--rabiat-border);
+  background: var(--rabiat-panel) !important;
+}
+
+.plain-mode.plain-mode--rabiat .img-card[style*="background:"]:not([style*="--img:"])::before {
+  background: var(--rabiat-elevated) !important;
+  border-bottom-color: var(--rabiat-border);
+}
+
+.plain-mode.plain-mode--rabiat .img-card .card-body {
+  background: var(--rabiat-panel) !important;
+  color: var(--rabiat-text) !important;
+  border-top-color: var(--rabiat-border);
+}
+
+.plain-mode.plain-mode--rabiat .img-card .card-body .muted {
+  color: var(--rabiat-muted) !important;
+}
+
+.plain-mode.plain-mode--rabiat .img-card:hover {
+  background: var(--rabiat-panel) !important;
+}
+
+.plain-mode.plain-mode--rabiat .img-card[style*="--grad:"]:hover::before {
+  background: var(--rabiat-bloodline) !important;
+}
+
+.plain-mode.plain-mode--rabiat .img-card[style*="--img:"]:hover::before {
+  background-image: var(--img) !important;
+  background-color: transparent !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.plain-mode.plain-mode--rabiat .img-card:hover .card-body {
+  background: var(--rabiat-bloodline) !important;
+}
+
+.plain-mode.plain-mode--rabiat .btn {
+  background: var(--rabiat-bloodline);
+  color: #ffffff !important;
+  border: 1px solid var(--rabiat-bloodline);
+}
+
+.plain-mode.plain-mode--rabiat .btn:hover {
+  background: #8c1a24;
+  border-color: #8c1a24;
+}
+
+.plain-mode.plain-mode--rabiat .btn.secondary {
+  background: transparent;
+  color: var(--rabiat-teal) !important;
+  border: 1px solid var(--rabiat-teal);
+}
+
+.plain-mode.plain-mode--rabiat .btn.secondary:hover {
+  background: rgba(74, 143, 143, 0.12);
+  color: var(--rabiat-teal) !important;
+}
+
+.plain-mode.plain-mode--rabiat .tag {
+  border-color: var(--rabiat-border) !important;
+  color: var(--rabiat-muted) !important;
+}
+
+.plain-mode.plain-mode--rabiat .img-card .card-body .tag {
+  border-color: var(--rabiat-teal) !important;
+  color: var(--rabiat-teal) !important;
+}
+
+.plain-mode.plain-mode--rabiat .header {
+  border-bottom: 1px solid var(--rabiat-border);
+  background: var(--rabiat-void) !important;
+}
+
+.plain-mode.plain-mode--rabiat .brand {
+  font-family: 'Rajdhani', system-ui, sans-serif;
+  color: var(--rabiat-text) !important;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.plain-mode.plain-mode--rabiat .nav-pill {
+  color: var(--rabiat-muted) !important;
+}
+
+.plain-mode.plain-mode--rabiat .nav-pill:hover {
+  background: var(--rabiat-elevated);
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat .nav-pill[aria-current="page"],
+.plain-mode.plain-mode--rabiat .nav-pill.active {
+  background: var(--rabiat-bloodline) !important;
+  color: #ffffff !important;
+  box-shadow: none;
+}
+
+.plain-mode.plain-mode--rabiat .footer {
+  border-top: 1px solid var(--rabiat-border);
+  background: var(--rabiat-void) !important;
+  color: var(--rabiat-muted) !important;
+}
+
+.plain-mode.plain-mode--rabiat .footer a {
+  color: var(--rabiat-teal) !important;
+}
+
+.plain-mode.plain-mode--rabiat .footer a:hover {
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat .timeline::before {
+  background: var(--rabiat-border);
+}
+
+.plain-mode.plain-mode--rabiat .t-dot {
+  background: var(--rabiat-bloodline) !important;
+  box-shadow: 0 0 0 3px var(--rabiat-void), 0 0 0 4px var(--rabiat-bloodline);
+}
+
+.plain-mode.plain-mode--rabiat .t-card {
+  background: var(--rabiat-panel);
+  border: 1px solid var(--rabiat-border);
+}
+
+.plain-mode.plain-mode--rabiat .t-card h3 {
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat .t-card:hover {
+  background: var(--rabiat-bloodline) !important;
+  border-color: var(--rabiat-bloodline);
+  box-shadow: none;
+}
+
+.plain-mode.plain-mode--rabiat a {
+  color: var(--rabiat-teal) !important;
+}
+
+.plain-mode.plain-mode--rabiat a:hover {
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat .scroll-cue {
+  color: var(--rabiat-teal) !important;
+  border: 1px solid var(--rabiat-teal);
+}
+
+.plain-mode.plain-mode--rabiat .scroll-cue:hover {
+  background: var(--rabiat-teal);
+  color: var(--rabiat-void) !important;
+}
+
+.plain-mode.plain-mode--rabiat .section-head h2 {
+  font-family: 'Rajdhani', system-ui, sans-serif;
+  color: var(--rabiat-text) !important;
+}
+
+.plain-mode.plain-mode--rabiat .plain-mode-popup-content p {
+  color: #000000;
+}
+
+html.plain-mode.plain-mode--rabiat .exit-plain-mode-btn {
+  background: var(--rabiat-bloodline) !important;
+  border-color: var(--rabiat-bloodline) !important;
+  font-family: 'Rajdhani', system-ui, sans-serif !important;
+}
+
+html.plain-mode.plain-mode--rabiat .exit-plain-mode-btn:hover {
+  background: #8c1a24 !important;
+  border-color: #8c1a24 !important;
+}
+
+.plain-mode.plain-mode--rabiat .toggle {
+  color: var(--rabiat-muted) !important;
+  border: 1px solid var(--rabiat-border);
+  opacity: 0.85;
+}
+
+.plain-mode.plain-mode--rabiat .tilt-select {
+  color: var(--rabiat-text);
+  border-color: var(--rabiat-border);
+  background: var(--rabiat-panel);
 }
 
 /* Reset & Base */
