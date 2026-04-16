@@ -27,7 +27,7 @@
       "description": "Web app that turns product context, color preferences, light/dark mode, and optional reference images into a structured brand color system—then refine in a studio with live CSS variables, handoff exports, and accessibility checks.",
       "longDescription": "Landing and input capture product name, description, color direction, mode, and reference uploads or camera. AI generation (structured JSON) produces named roles, accent variations with related shades, and preview content. Studio picks primary/secondary variations, pairs display and body fonts, previews the theme as real CSS variables, with copy/download for CSS. Exports include PDF and token/zip-style bundles plus an accessibility report for contrast and usability.",
       "technologies": ["TypeScript", "React", "Web", "AI", "CSS", "Design systems"],
-      "github": "https://github.com/RabiatS/True-to-hue",
+      "github": "https://rabiats.github.io/True-to-hue/",
       "demo": null,
       "caseStudy": null,
       "status": "complete",
