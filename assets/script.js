@@ -1077,7 +1077,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Embedded projects data (works without server)
   const EMBEDDED_PROJECTS = [
     {id:"cmu-mhci-sticky-counter",title:"CMU MHCI Sticky Note Counter",subtitle:"Interactive Physics Observatory",category:"Web / Full-Stack / Product",tags:["Web","HCI","Research","Personal"],description:"A live-updating observatory estimating the total sticky notes used by every CMU MHCI cohort since 2012. Physics-based animations, year-by-year breakdowns, and a real-time counter.",github:null,demo:"sticky-counter.html",caseStudy:null,status:"complete",images:["assets/img/stickyobservatory.png"],year:"2026"},
-    {id:"true-to-hue",title:"True to Hue",subtitle:"AI-assisted color design system starter",category:"Web / Full-Stack / Product",tags:["Web","Software","HCI","Personal"],description:"Turns product context, color preferences, light/dark mode, and optional reference images into a structured brand palette—then refine in a live studio with CSS variables, exports (CSS, tokens, PDF), and accessibility reporting.",github:"https://github.com/RabiatS/True-to-hue",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/truetohue.png"],year:"2026"},
+    {id:"true-to-hue",title:"True to Hue",subtitle:"AI-assisted color design system starter",category:"Web / Full-Stack / Product",tags:["Web","Software","HCI","Personal"],description:"Turns product context, color preferences, light/dark mode, and optional reference images into a structured brand palette—then refine in a live studio with CSS variables, exports (CSS, tokens, PDF), and accessibility reporting.",github:"https://github.com/RabiatS/True-to-hue",demo:"https://rabiats.github.io/True-to-hue/",caseStudy:null,status:"complete",images:["assets/img/projects/truetohue.png"],year:"2026"},
     {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 — XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR","VR","Research","HCI","Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",caseStudy:null,status:"complete",images:["assets/img/projects/gazeflow image.png"],year:"2025"},
     {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML","Data","Streaming","CV","Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps.",github:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:["assets/img/ps.PNG"],year:"2025"},
     {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves — 1st Place UTSA",category:"XR / Unity / Immersive",tags:["XR","Hardware","Unity","Research"],description:"Led team to build affordable haptic glove with flex sensors and EM braking. 18% latency reduction, 24% comfort improvement.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",caseStudy:"case-studies/case-study.html",status:"complete",images:["assets/img/mm.png"],year:"2024"},
@@ -1182,9 +1182,9 @@ document.addEventListener('DOMContentLoaded', () => {
         link.style.color = 'inherit';
         link.style.textDecoration = 'none';
         title.appendChild(link);
-      } else if (project.github) {
+      } else if (project.demo) {
         const link = document.createElement('a');
-        link.href = project.github;
+        link.href = project.demo;
         link.target = '_blank';
         link.rel = 'noopener';
         link.textContent = project.title;
@@ -1192,9 +1192,9 @@ document.addEventListener('DOMContentLoaded', () => {
         link.style.textDecoration = 'none';
         link.innerHTML += ' ↗';
         title.appendChild(link);
-      } else if (project.demo) {
+      } else if (project.github) {
         const link = document.createElement('a');
-        link.href = project.demo;
+        link.href = project.github;
         link.target = '_blank';
         link.rel = 'noopener';
         link.textContent = project.title;

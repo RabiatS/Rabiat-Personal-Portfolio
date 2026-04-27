@@ -1078,6 +1078,215 @@
   ::-webkit-scrollbar-track { background: #080B0F; }
   ::-webkit-scrollbar-thumb { background: #1E2530; }
   ::-webkit-scrollbar-thumb:hover { background: #3A3A4A; }
+
+  /* ── Timer View ── */
+  #timer-view {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px 20px;
+    overflow-y: auto;
+    gap: 0;
+  }
+
+  .timer-header {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    color: #4A5568;
+    letter-spacing: 3px;
+    margin-bottom: 32px;
+  }
+
+  .timer-display-wrap {
+    background: #0D1117;
+    border: 1px solid #1E2530;
+    padding: 32px 48px;
+    margin-bottom: 28px;
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+  }
+
+  .timer-display-wrap::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 30px; right: 30px; height: 2px;
+    background: #00F5D4;
+    box-shadow: 0 0 12px #00F5D4;
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+
+  .timer-display-wrap.running::before {
+    background: #FFE033;
+    box-shadow: 0 0 14px #FFE033;
+    animation: timerRunPulse 1s ease-in-out infinite alternate;
+  }
+
+  @keyframes timerRunPulse {
+    from { opacity: 0.7; }
+    to   { opacity: 1; }
+  }
+
+  .timer-display {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(36px, 8vw, 72px);
+    color: #00F5D4;
+    letter-spacing: 4px;
+    line-height: 1;
+    text-shadow: 0 0 24px #00F5D466;
+    transition: color 0.3s, text-shadow 0.3s;
+    user-select: none;
+  }
+
+  .timer-display.running {
+    color: #FFE033;
+    text-shadow: 0 0 24px #FFE03366;
+  }
+
+  .timer-ms {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(16px, 3vw, 24px);
+    color: #4A5568;
+    letter-spacing: 2px;
+    margin-top: 6px;
+    transition: color 0.3s;
+  }
+
+  .timer-ms.running { color: #FFE03388; }
+
+  .timer-status {
+    font-size: 10px;
+    color: #4A5568;
+    letter-spacing: 2px;
+    margin-top: 14px;
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 16px;
+  }
+
+  .timer-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .timer-btn {
+    background: transparent;
+    border: 1px solid #1E2530;
+    color: #4A5568;
+    padding: 10px 24px;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.15s;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .timer-btn:hover { border-color: #00F5D4; color: #00F5D4; background: rgba(0,245,212,0.05); }
+
+  .timer-btn.start-btn {
+    border-color: #00F5D4;
+    color: #00F5D4;
+    box-shadow: inset 0 0 0 0 rgba(0,245,212,0);
+  }
+
+  .timer-btn.start-btn:hover { background: rgba(0,245,212,0.08); }
+
+  .timer-btn.stop-btn {
+    border-color: #F72585;
+    color: #F72585;
+  }
+
+  .timer-btn.stop-btn:hover { background: rgba(247,37,133,0.08); }
+
+  .timer-btn.lap-btn {
+    border-color: #FFE033;
+    color: #FFE033;
+  }
+
+  .timer-btn.lap-btn:hover { background: rgba(255,224,51,0.06); }
+
+  .timer-btn:disabled { opacity: 0.2; cursor: default; pointer-events: none; }
+
+  .timer-laps-wrap {
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .timer-laps-header {
+    font-size: 10px;
+    color: #4A5568;
+    letter-spacing: 2px;
+    font-family: 'Orbitron', monospace;
+    border-bottom: 1px solid #1E2530;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .timer-laps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  .lap-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 10px;
+    background: #0D1117;
+    border: 1px solid #1E2530;
+    font-size: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    animation: lapFadeIn 0.2s ease;
+  }
+
+  @keyframes lapFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .lap-num {
+    color: #4A5568;
+    font-size: 10px;
+    letter-spacing: 1px;
+    width: 36px;
+    flex-shrink: 0;
+  }
+
+  .lap-time {
+    color: #C9D1D9;
+    flex: 1;
+    letter-spacing: 1px;
+  }
+
+  .lap-split {
+    color: #4A5568;
+    font-size: 10px;
+  }
+
+  .lap-row.lap-best .lap-time { color: #00F5D4; }
+  .lap-row.lap-best .lap-num::after { content: ' ★'; color: #00F5D4; }
+  .lap-row.lap-worst .lap-time { color: #F72585; }
+
+  @media (max-width: 768px) {
+    #timer-view { padding: 24px 12px 80px; }
+    .timer-display-wrap { padding: 24px 20px; }
+    .timer-btn { font-size: 10px; padding: 10px 14px; letter-spacing: 1px; }
+  }
 </style>
 </head>
 <body>
@@ -1144,6 +1353,7 @@
       <span class="session-badge" id="session-badge"></span>
       <button class="tab-btn active" id="btn-board" onclick="switchTab('board')">[ BOARD ]</button>
       <button class="tab-btn" id="btn-overview" onclick="switchTab('overview')">[ OVERVIEW ]</button>
+      <button class="tab-btn" id="btn-timer" onclick="switchTab('timer')">[ TIMER ]</button>
       <button class="tab-btn" id="btn-logout" onclick="logout()" style="border-color:#F7258544;color:#F7258566">[ OUT ]</button>
     </div>
   </div>
@@ -1212,6 +1422,31 @@
     </div>
 
     <div id="overview-view"></div>
+
+    <div id="timer-view">
+      <div class="timer-header">// FOCUS TIMER</div>
+
+      <div class="timer-display-wrap" id="timer-display-wrap">
+        <div class="timer-display" id="timer-display">00:00:00</div>
+        <div class="timer-ms" id="timer-ms">.000</div>
+        <div class="timer-status" id="timer-status">// READY</div>
+      </div>
+
+      <div class="timer-controls">
+        <button class="timer-btn start-btn" id="timer-start-btn" onclick="timerStart()">[ START ]</button>
+        <button class="timer-btn stop-btn" id="timer-stop-btn" onclick="timerStop()" disabled>[ STOP ]</button>
+        <button class="timer-btn lap-btn" id="timer-lap-btn" onclick="timerLap()" disabled>[ LAP ]</button>
+        <button class="timer-btn" id="timer-reset-btn" onclick="timerReset()" disabled>[ RESET ]</button>
+      </div>
+
+      <div class="timer-laps-wrap" id="timer-laps-wrap" style="display:none">
+        <div class="timer-laps-header">
+          <span>// LAPS</span>
+          <span id="timer-lap-count" style="color:#4A5568;font-size:10px"></span>
+        </div>
+        <div class="timer-laps-list" id="timer-laps-list"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1918,17 +2153,15 @@ function moveTask(id, dir) {
 // ── Tab switching ──────────────────────────────────────────
 function switchTab(tab) {
   const board = document.getElementById('board-view');
-  const ov = document.getElementById('overview-view');
+  const ov    = document.getElementById('overview-view');
+  const tv    = document.getElementById('timer-view');
   document.getElementById('btn-board').classList.toggle('active', tab === 'board');
   document.getElementById('btn-overview').classList.toggle('active', tab === 'overview');
-  if (tab === 'board') {
-    board.style.display = 'flex';
-    ov.style.display = 'none';
-  } else {
-    board.style.display = 'none';
-    ov.style.display = 'block';
-    renderOverview();
-  }
+  document.getElementById('btn-timer').classList.toggle('active', tab === 'timer');
+  board.style.display = tab === 'board'    ? 'flex'  : 'none';
+  ov.style.display    = tab === 'overview' ? 'block' : 'none';
+  tv.style.display    = tab === 'timer'    ? 'flex'  : 'none';
+  if (tab === 'overview') renderOverview();
 }
 
 // ── Modals ─────────────────────────────────────────────────
@@ -2298,6 +2531,154 @@ function applyMobileLayout() {
 }
 
 window.addEventListener('resize', applyMobileLayout);
+
+// ── Timer Engine ───────────────────────────────────────────
+let timerInterval  = null;
+let timerStartTime = 0;   // performance.now() snapshot when last started
+let timerAccum     = 0;   // ms accumulated before the last start
+let timerRunning   = false;
+let timerLaps      = [];
+let timerLastLap   = 0;   // accumulated ms at the time of last lap
+
+function timerElapsed() {
+  if (timerRunning) return timerAccum + (performance.now() - timerStartTime);
+  return timerAccum;
+}
+
+function timerFmt(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const h  = Math.floor(totalSec / 3600);
+  const m  = Math.floor((totalSec % 3600) / 60);
+  const s  = totalSec % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function timerFmtMs(ms) {
+  return '.' + String(Math.floor(ms % 1000)).padStart(3,'0');
+}
+
+function timerFmtLap(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  const centis = Math.floor((ms % 1000) / 10);
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(centis).padStart(2,'0')}`;
+}
+
+function timerTick() {
+  const elapsed = timerElapsed();
+  document.getElementById('timer-display').textContent = timerFmt(elapsed);
+  document.getElementById('timer-ms').textContent      = timerFmtMs(elapsed);
+}
+
+function timerStart() {
+  if (timerRunning) return;
+  timerRunning   = true;
+  timerStartTime = performance.now();
+  timerInterval  = setInterval(timerTick, 30);
+
+  document.getElementById('timer-display-wrap').classList.add('running');
+  document.getElementById('timer-display').classList.add('running');
+  document.getElementById('timer-ms').classList.add('running');
+  document.getElementById('timer-status').textContent = '// RUNNING';
+
+  document.getElementById('timer-start-btn').disabled = true;
+  document.getElementById('timer-stop-btn').disabled  = false;
+  document.getElementById('timer-lap-btn').disabled   = false;
+  document.getElementById('timer-reset-btn').disabled = true;
+
+  playSound('click');
+}
+
+function timerStop() {
+  if (!timerRunning) return;
+  timerAccum  += performance.now() - timerStartTime;
+  timerRunning = false;
+  clearInterval(timerInterval);
+  timerTick();
+
+  document.getElementById('timer-display-wrap').classList.remove('running');
+  document.getElementById('timer-display').classList.remove('running');
+  document.getElementById('timer-ms').classList.remove('running');
+  document.getElementById('timer-status').textContent = '// PAUSED — PRESS START TO RESUME';
+
+  document.getElementById('timer-start-btn').disabled = false;
+  document.getElementById('timer-stop-btn').disabled  = true;
+  document.getElementById('timer-lap-btn').disabled   = true;
+  document.getElementById('timer-reset-btn').disabled = false;
+
+  playSound('move');
+}
+
+function timerLap() {
+  if (!timerRunning) return;
+  const elapsed  = timerElapsed();
+  const lapTime  = elapsed - timerLastLap;
+  timerLastLap   = elapsed;
+  timerLaps.push({ total: elapsed, lap: lapTime });
+
+  timerRenderLaps();
+  playSound('done');
+}
+
+function timerReset() {
+  if (timerRunning) { timerStop(); }
+  clearInterval(timerInterval);
+  timerAccum    = 0;
+  timerStartTime = 0;
+  timerLastLap  = 0;
+  timerRunning  = false;
+  timerLaps     = [];
+
+  document.getElementById('timer-display').textContent = '00:00:00';
+  document.getElementById('timer-ms').textContent      = '.000';
+  document.getElementById('timer-status').textContent  = '// READY';
+  document.getElementById('timer-display-wrap').classList.remove('running');
+  document.getElementById('timer-display').classList.remove('running');
+  document.getElementById('timer-ms').classList.remove('running');
+
+  document.getElementById('timer-start-btn').disabled = false;
+  document.getElementById('timer-stop-btn').disabled  = true;
+  document.getElementById('timer-lap-btn').disabled   = true;
+  document.getElementById('timer-reset-btn').disabled = true;
+
+  document.getElementById('timer-laps-wrap').style.display = 'none';
+  document.getElementById('timer-laps-list').innerHTML = '';
+  document.getElementById('timer-lap-count').textContent = '';
+
+  playSound('click');
+}
+
+function timerRenderLaps() {
+  const laps   = timerLaps;
+  const wrap   = document.getElementById('timer-laps-wrap');
+  const list   = document.getElementById('timer-laps-list');
+  const count  = document.getElementById('timer-lap-count');
+
+  if (laps.length === 0) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  count.textContent = laps.length + ' LAP' + (laps.length !== 1 ? 'S' : '');
+
+  const lapTimes = laps.map(l => l.lap);
+  const bestMs   = Math.min(...lapTimes);
+  const worstMs  = laps.length > 1 ? Math.max(...lapTimes) : -1;
+
+  list.innerHTML = '';
+  // Show newest lap first
+  [...laps].reverse().forEach((l, ri) => {
+    const i   = laps.length - 1 - ri;
+    const row = document.createElement('div');
+    row.className = 'lap-row'
+      + (l.lap === bestMs  ? ' lap-best'  : '')
+      + (l.lap === worstMs && laps.length > 1 ? ' lap-worst' : '');
+    row.innerHTML = `
+      <span class="lap-num">LAP ${String(i + 1).padStart(2,'0')}</span>
+      <span class="lap-time">${timerFmtLap(l.lap)}</span>
+      <span class="lap-split">${timerFmtLap(l.total)}</span>
+    `;
+    list.appendChild(row);
+  });
+}
 
 // ── Init ───────────────────────────────────────────────────
 runBoot();
