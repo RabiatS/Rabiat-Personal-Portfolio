@@ -28,7 +28,7 @@
       "longDescription": "React + Vite + React Three Fiber + Plotly SPA that turns uploaded datasets into immersive 3D spatial environments. LENS classifies data and suggests the right 3D view; SCOUT highlights anomalies and pins them in scene; CURATOR creates sub-scenes for focused exploration; BRIDGE exports shareable views and badges. Supports structured tables, geospatial sets, and audio. Optional Node AI gateway keeps API keys off the browser while still enabling LLM-backed agent behavior.",
       "technologies": ["React", "TypeScript", "Vite", "React Three Fiber", "Plotly", "Three.js", "Node.js", "JavaScript", "CSS"],
       "github": "https://github.com/RabiatS/PERSPECTIVE",
-      "demo": null,
+      "demo": "https://rabiats.github.io/PERSPECTIVE/",
       "caseStudy": null,
       "status": "complete",
       "images": ["assets/img/projects/vr data vis.png"],
