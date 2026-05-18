@@ -55,6 +55,30 @@
       "type": "Personal"
     },
     {
+      "id": "ctrl-alt-elite",
+      "title": "Semi-Autonomous E-Scooter Control System",
+      "subtitle": "IXD — Interaction Design Fundamentals · Fall 2025",
+      "category": "Research / HCI",
+      "tags": ["HCI", "UX", "Product", "Hardware", "Design"],
+      "description": "End-to-end interaction design for Hyundai’s Level 2 semi-autonomous electric scooter: research-driven physical controls, a child-facing rider dashboard, and a parent oversight app (geofencing, speed limits, walkie-talkie)—plus CAD handlebar concepts and a functional prototype.",
+      "longDescription": "CMU Interaction Design Fundamentals (IXD) team project (Ctrl + Alt + Elite). Centered on a young-rider persona: simplified reachability, clear Auto/Manual mode, under-2-second safety tasks, and non-intrusive parental monitoring. Process spanned contextual research, think-aloud testing, Figma UI flows, hardware CAD, and a built prototype with LED signaling and onboard display.",
+      "technologies": ["Figma", "UX Research", "Interaction Design", "CAD", "Prototyping", "Hardware"],
+      "github": null,
+      "demo": "files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pdf",
+      "ppt": "files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pptx",
+      "caseStudy": null,
+      "status": "complete",
+      "images": [
+        "assets/img/projects/scooter-parental-control-ui.png",
+        "assets/img/projects/scooter-prototype.png",
+        "assets/img/projects/scooter-handlebar-cad-1.png",
+        "assets/img/projects/scooter-handlebar-cad-2.png"
+      ],
+      "videos": [],
+      "year": "2025",
+      "type": "Research"
+    },
+    {
       "id": "playstation-internship",
       "title": "Gameplay Video Score Extraction Pipeline",
       "subtitle": "Applied ML Intern — PlayStation (SIE)",

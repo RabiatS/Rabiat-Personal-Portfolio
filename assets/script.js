@@ -1079,6 +1079,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {id:"cmu-mhci-sticky-counter",title:"CMU MHCI Sticky Note Counter",subtitle:"Interactive Physics Observatory",category:"Web / Full-Stack / Product",tags:["Web","HCI","Research","Personal"],description:"A live-updating observatory estimating the total sticky notes used by every CMU MHCI cohort since 2012. Physics-based animations, year-by-year breakdowns, and a real-time counter.",github:null,demo:"sticky-counter.html",caseStudy:null,status:"complete",images:["assets/img/stickyobservatory.png"],year:"2026"},
     {id:"true-to-hue",title:"True to Hue",subtitle:"AI-assisted color design system starter",category:"Web / Full-Stack / Product",tags:["Web","Software","HCI","Personal"],description:"Turns product context, color preferences, light/dark mode, and optional reference images into a structured brand palette—then refine in a live studio with CSS variables, exports (CSS, tokens, PDF), and accessibility reporting.",github:"https://github.com/RabiatS/True-to-hue",demo:"https://rabiats.github.io/True-to-hue/",caseStudy:null,status:"complete",images:["assets/img/projects/truetohue.png"],year:"2026"},
     {id:"perspective",title:"Perspective",subtitle:"A Spatial Canvas for Your Data",category:"Web / Full-Stack / Product",tags:["Web","Data","AI","3D","Personal"],description:"Most data visualization tools default to 2D because it's the safe, familiar option. But a lot of data—geographic distributions, network graphs, frequency analysis, surface topologies—actually lives in three dimensions, and flattening it means losing information. Drag in a file (CSV, JSON, GeoJSON, or audio), an AI agent classifies it and maps it to the right 3D chart type, and you're immediately in a navigable scene you can orbit, zoom, and explore. A second agent runs anomaly detection and drops insight pins directly into the scene. Shareable URLs encode your exact view; snapshot export included. Everything runs in the browser—no coding required, no software to install. Ideation and research in Perplexity and Claude, then fully designed and built in Cursor.",github:"https://github.com/RabiatS/PERSPECTIVE",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/perspective.png"],year:"2026"},
+    {id:"ctrl-alt-elite",title:"Semi-Autonomous E-Scooter Control System",subtitle:"IXD — Interaction Design Fundamentals · Fall 2025",category:"Research / HCI",tags:["HCI","UX","Product","Hardware","Design"],description:"End-to-end interaction design for Hyundai’s Level 2 semi-autonomous e-scooter: research-driven physical controls, child rider dashboard, parent oversight app, CAD handlebar concepts, and a functional prototype.",github:null,demo:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pdf",ppt:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pptx",caseStudy:null,status:"complete",images:["assets/img/projects/scooter-parental-control-ui.png"],year:"2025"},
     {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 — XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR","VR","Research","HCI","Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",caseStudy:null,status:"complete",images:["assets/img/projects/gazeflow image.png"],year:"2025"},
     {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML","Data","Streaming","CV","Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps.",github:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:["assets/img/ps.PNG"],year:"2025"},
     {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves — 1st Place UTSA",category:"XR / Unity / Immersive",tags:["XR","Hardware","Unity","Research"],description:"Led team to build affordable haptic glove with flex sensors and EM braking. 18% latency reduction, 24% comfort improvement.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",caseStudy:"case-studies/case-study.html",status:"complete",images:["assets/img/mm.png"],year:"2024"},
@@ -1260,7 +1261,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cardBody.appendChild(badges);
 
       // Links
-      if (project.github || project.demo) {
+      if (project.github || project.demo || project.ppt) {
         const links = document.createElement('div');
         links.style.marginTop = '10px';
         links.style.display = 'flex';
@@ -1284,12 +1285,25 @@ document.addEventListener('DOMContentLoaded', () => {
           demoLink.href = project.demo;
           demoLink.target = '_blank';
           demoLink.rel = 'noopener';
-          demoLink.textContent = '▶ Launch';
+          const isPdf = /\.pdf$/i.test(project.demo);
+          demoLink.textContent = isPdf && !project.github ? 'View Slides (PDF) ↗' : '▶ Launch';
           demoLink.style.fontSize = '13px';
           demoLink.style.color = 'inherit';
           demoLink.style.opacity = '0.9';
           demoLink.style.fontWeight = '600';
           links.appendChild(demoLink);
+        }
+
+        if (project.ppt) {
+          const pptLink = document.createElement('a');
+          pptLink.href = project.ppt;
+          pptLink.target = '_blank';
+          pptLink.rel = 'noopener';
+          pptLink.textContent = 'Download Deck (PPT)';
+          pptLink.style.fontSize = '13px';
+          pptLink.style.color = 'inherit';
+          pptLink.style.opacity = '0.8';
+          links.appendChild(pptLink);
         }
         
         if (links.children.length > 0) {
