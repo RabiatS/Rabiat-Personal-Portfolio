@@ -747,6 +747,216 @@ document.addEventListener('DOMContentLoaded', () => {
   if (y) y.textContent = new Date().getFullYear();
 });
 
+// HOLIDAY ACCENTS (subtle day-based decorations)
+(function(){
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const root = document.documentElement;
+  const body = document.body;
+  if (!body) return;
+
+  function getEasterSunday(year) {
+    // Anonymous Gregorian algorithm
+    const a = year % 19;
+    const b = Math.floor(year / 100);
+    const c = year % 100;
+    const d = Math.floor(b / 4);
+    const e = b % 4;
+    const f = Math.floor((b + 8) / 25);
+    const g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4);
+    const k = c % 4;
+    const l = (32 + 2 * e + 2 * i - h - k) % 7;
+    const m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const month = Math.floor((h + l - 7 * m + 114) / 31) - 1; // JS month index
+    const day = ((h + l - 7 * m + 114) % 31) + 1;
+    return { month, day };
+  }
+
+  function isSameMonthDay(date, month, day) {
+    return date.getMonth() === month && date.getDate() === day;
+  }
+
+  const now = new Date();
+  const easter = getEasterSunday(now.getFullYear());
+
+  const holidays = [
+    {
+      name: 'new-year',
+      label: 'Happy New Year ✨',
+      symbols: ['✨', '🎉', '🎊', '🥂'],
+      matches: (date) => isSameMonthDay(date, 11, 31) || isSameMonthDay(date, 0, 1),
+      spawnMin: 220,
+      spawnMax: 650,
+      lifeMin: 4200,
+      lifeMax: 7600,
+      sizeMin: 16,
+      sizeMax: 26,
+      maxItems: 34,
+      drift: 120,
+      rotation: 420
+    },
+    {
+      name: 'valentine',
+      label: "Happy Valentine's Day 💖",
+      symbols: ['💖', '💕', '💗', '💘'],
+      matches: (date) => isSameMonthDay(date, 1, 14),
+      spawnMin: 380,
+      spawnMax: 920,
+      lifeMin: 5600,
+      lifeMax: 9800,
+      sizeMin: 14,
+      sizeMax: 25,
+      maxItems: 26,
+      drift: 90,
+      rotation: 260
+    },
+    {
+      name: 'easter',
+      label: 'Happy Easter 🐣',
+      symbols: ['🥚', '🐣', '🐰', '🌸'],
+      matches: (date) => isSameMonthDay(date, easter.month, easter.day),
+      spawnMin: 460,
+      spawnMax: 980,
+      lifeMin: 6200,
+      lifeMax: 10400,
+      sizeMin: 15,
+      sizeMax: 24,
+      maxItems: 24,
+      drift: 80,
+      rotation: 220
+    },
+    {
+      name: 'halloween',
+      label: 'Happy Halloween 🎃',
+      symbols: ['🎃', '👻', '🦇', '🕸️'],
+      matches: (date) => isSameMonthDay(date, 9, 31),
+      spawnMin: 320,
+      spawnMax: 800,
+      lifeMin: 5200,
+      lifeMax: 9000,
+      sizeMin: 16,
+      sizeMax: 26,
+      maxItems: 28,
+      drift: 110,
+      rotation: 360
+    },
+    {
+      name: 'christmas',
+      label: 'Merry Christmas ❄️',
+      symbols: ['❄️', '❄', '❅', '✨'],
+      matches: (date) => isSameMonthDay(date, 11, 25),
+      spawnMin: 180,
+      spawnMax: 450,
+      lifeMin: 6000,
+      lifeMax: 11000,
+      sizeMin: 12,
+      sizeMax: 22,
+      maxItems: 44,
+      drift: 70,
+      rotation: 180
+    }
+  ];
+
+  const holiday = holidays.find((item) => item.matches(now));
+  if (!holiday) return;
+
+  const holidayClass = `holiday-${holiday.name}-day`;
+  root.classList.add(holidayClass);
+  body.classList.add(holidayClass);
+
+  const chip = document.createElement('div');
+  chip.className = 'holiday-chip';
+  chip.textContent = holiday.label;
+  body.appendChild(chip);
+
+  // Keep non-animated accents even when reduced motion is preferred.
+  if (reduceMotion) return;
+
+  const layer = document.createElement('div');
+  layer.className = 'holiday-layer';
+  layer.setAttribute('aria-hidden', 'true');
+  body.appendChild(layer);
+
+  const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  const viewportScaledMax = Math.max(10, Math.floor(window.innerWidth / 42));
+  const maxItems = Math.max(8, Math.min(holiday.maxItems, viewportScaledMax - (isTouch ? 4 : 0)));
+
+  let activeItems = 0;
+  let spawnTimer = null;
+  let stopped = false;
+
+  function rand(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function sample(list) {
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  function spawnParticle() {
+    if (stopped || document.hidden || activeItems >= maxItems) return;
+
+    const particle = document.createElement('span');
+    const duration = rand(holiday.lifeMin, holiday.lifeMax);
+    const sway = rand(2300, 4200);
+    const drift = rand(-holiday.drift, holiday.drift);
+    const rotation = rand(-holiday.rotation, holiday.rotation);
+
+    particle.className = 'holiday-particle';
+    particle.textContent = sample(holiday.symbols);
+    particle.style.left = `${rand(0, 100)}%`;
+    particle.style.fontSize = `${rand(holiday.sizeMin, holiday.sizeMax)}px`;
+    particle.style.setProperty('--particle-opacity', `${rand(0.55, 0.95)}`);
+    particle.style.setProperty('--particle-scale', `${rand(0.8, 1.25)}`);
+    particle.style.setProperty('--particle-drift', `${drift}px`);
+    particle.style.setProperty('--particle-rotate', `${rotation}deg`);
+    particle.style.animationDuration = `${duration}ms, ${sway}ms`;
+    particle.style.animationDelay = `${rand(0, 600)}ms, 0ms`;
+
+    particle.addEventListener('animationend', () => {
+      if (particle.parentNode) particle.remove();
+      activeItems = Math.max(0, activeItems - 1);
+    }, { once: true });
+
+    activeItems += 1;
+    layer.appendChild(particle);
+  }
+
+  function scheduleSpawn() {
+    if (stopped) return;
+    const delay = rand(holiday.spawnMin, holiday.spawnMax);
+    spawnTimer = window.setTimeout(() => {
+      spawnParticle();
+      scheduleSpawn();
+    }, delay);
+  }
+
+  const initialCount = Math.max(4, Math.floor(maxItems / 3));
+  for (let i = 0; i < initialCount; i += 1) {
+    window.setTimeout(() => spawnParticle(), i * 120);
+  }
+  scheduleSpawn();
+
+  function handleVisibility() {
+    if (document.hidden && spawnTimer) {
+      clearTimeout(spawnTimer);
+      spawnTimer = null;
+      return;
+    }
+    if (!document.hidden && !spawnTimer && !stopped) {
+      scheduleSpawn();
+    }
+  }
+
+  document.addEventListener('visibilitychange', handleVisibility);
+  window.addEventListener('beforeunload', () => {
+    stopped = true;
+    if (spawnTimer) clearTimeout(spawnTimer);
+    document.removeEventListener('visibilitychange', handleVisibility);
+  }, { once: true });
+})();
+
 
 // INTERACTIVE GALAXY CANVAS with SHOOTING STARS
 (function(){
