@@ -145,7 +145,7 @@ export function createCubeFallController(ctx) {
     clearTimeout(showHeavyHint._t);
   }
 
-  const IMPACT_SHAKE_MS = 520;
+  const IMPACT_SHAKE_MS = 700;
 
   function microShake() {
     if (prefersReducedMotion) return;
