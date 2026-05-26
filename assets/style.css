@@ -3788,7 +3788,7 @@ html.builder-mode .builder-cube-host {
   width: 100% !important;
   height: 100% !important;
   pointer-events: auto;
-  cursor: default;
+  cursor: pointer;
 }
 
 @media (max-width: 1023px) {
@@ -3817,4 +3817,95 @@ html.builder-mode .builder-cube-host {
     transform: none !important;
     filter: none !important;
   }
+}
+
+/* Builder cube — fall state */
+.builder-cube-host--falling {
+  z-index: 60;
+  pointer-events: none;
+  transition: none;
+}
+
+.builder-cube-host--landed {
+  z-index: 12;
+  pointer-events: auto;
+  opacity: 1 !important;
+  height: min(22vw, 220px) !important;
+  width: min(22vw, 220px) !important;
+}
+
+.builder-cube-host--landed canvas {
+  cursor: not-allowed;
+}
+
+html.builder-cube-fall-scroll-lock {
+  overflow: hidden;
+}
+
+html.builder-cube-impact-shake {
+  animation: builder-cube-shake 0.28s ease-out;
+}
+
+@keyframes builder-cube-shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(1px, -1px); }
+  40% { transform: translate(-1px, 1px); }
+  60% { transform: translate(1px, 0); }
+  80% { transform: translate(-1px, 0); }
+}
+
+.builder-cube-dust {
+  position: absolute;
+  width: 72px;
+  height: 48px;
+  pointer-events: none;
+  z-index: 11;
+  transform: translate(-20%, -60%);
+  background:
+    radial-gradient(ellipse 60% 40% at 30% 70%, rgba(160, 150, 130, 0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 70% 60%, rgba(140, 130, 110, 0.28) 0%, transparent 65%),
+    radial-gradient(circle 3px at 20% 80%, rgba(180, 170, 150, 0.5) 0%, transparent 100%),
+    radial-gradient(circle 2px at 55% 75%, rgba(170, 160, 140, 0.45) 0%, transparent 100%),
+    radial-gradient(circle 2px at 80% 85%, rgba(150, 140, 120, 0.4) 0%, transparent 100%);
+  animation: builder-cube-dust-puff 0.9s ease-out forwards;
+}
+
+@keyframes builder-cube-dust-puff {
+  0% {
+    opacity: 0.85;
+    transform: translate(-20%, -60%) scale(0.4);
+  }
+  40% {
+    opacity: 0.55;
+    transform: translate(-20%, -80%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-20%, -110%) scale(1.3);
+  }
+}
+
+.builder-cube-heavy-hint {
+  position: absolute;
+  bottom: -1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: Rajdhani, system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted, #888);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  white-space: nowrap;
+}
+
+.builder-cube-heavy-hint.is-visible {
+  opacity: 0.72;
+}
+
+html.builder-cube-fallen .builder-cube-host {
+  pointer-events: auto;
 }
