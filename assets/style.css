@@ -3719,3 +3719,94 @@ input[type="search"]:focus {
     display: none !important;
   }
 }
+
+/* ── Builder mode — scroll-driven cinematic sections (desktop only) ── */
+@media (min-width: 1024px) {
+  html.builder-mode {
+    scroll-behavior: auto;
+  }
+
+  html.builder-mode #work.launch-work {
+    overflow: visible;
+    padding-bottom: 120px;
+  }
+
+  html.builder-mode #work.launch-work .cards-3 {
+    perspective: 1600px;
+    transform-style: preserve-3d;
+    gap: 28px;
+  }
+
+  html.builder-mode #work .launch-card {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    transition: box-shadow 0.45s ease, filter 0.45s ease;
+  }
+
+  html.builder-mode #work .launch-card.is-spotlight {
+    z-index: 2;
+    box-shadow: var(--shadow-xl);
+    filter: saturate(1.08);
+  }
+
+  html.builder-mode #work .launch-card:not(.is-spotlight) {
+    filter: saturate(0.92);
+  }
+
+  html.builder-mode #experience.launch-experience .timeline {
+    --line-progress: 1;
+  }
+
+  html.builder-mode #experience.launch-experience .timeline::before {
+    transform-origin: top center;
+    transform: scaleY(var(--line-progress, 1));
+  }
+
+  html.builder-mode #experience .t-item {
+    will-change: transform, opacity;
+  }
+
+  html.builder-mode #experience .t-card {
+    transition: box-shadow 0.35s ease;
+  }
+
+  html.builder-mode #education.launch-education .cards-3 {
+    perspective: 1200px;
+    transform-style: preserve-3d;
+  }
+
+  html.builder-mode #education .launch-card {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+  }
+
+  html.builder-mode #skills.launch-skills {
+    --skills-scroll: 0;
+    overflow: visible;
+  }
+
+  html.builder-mode #skills.launch-skills .grid {
+    position: relative;
+  }
+
+  html.builder-mode #skills .launch-card {
+    transition: box-shadow 0.3s ease;
+  }
+
+  html.builder-mode #skills .launch-card:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  html.builder-mode .launch-card .tag {
+    will-change: transform, opacity;
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+  html.builder-mode #work .launch-card,
+  html.builder-mode #education .launch-card,
+  html.builder-mode #skills .launch-card {
+    transform: none !important;
+    filter: none !important;
+  }
+}

@@ -4,9 +4,15 @@
  * Disable: index.html?cube=0  or  localStorage.removeItem('builderCubeMode')
  */
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import {
+  applyUrlUnlock,
+  canUseBuilderCube,
+  canUseBuilderMode,
+  DESKTOP_MIN,
+  enableBuilderModeClass,
+} from './builder-mode.js';
+import { initLaunchScroll } from './launch-scroll.js';
 
-const STORAGE_KEY = 'builderCubeMode';
-const DESKTOP_MIN = 1024;
 const FACES = [
   { label: 'ENGINEER', bg: '#16161f', accent: '#b81e2c' },
   { label: 'SOFTWARE', bg: '#12121c', accent: '#4a8f8f' },
@@ -15,45 +21,6 @@ const FACES = [
   { label: 'AI / ML', bg: '#0f2a2a', accent: '#4a8f8f' },
   { label: 'RESEARCHER', bg: '#0a0a0f', accent: '#ececee' },
 ];
-
-function applyUrlUnlock() {
-  const params = new URLSearchParams(window.location.search);
-  const cube = params.get('cube');
-  if (cube === '1') {
-    localStorage.setItem(STORAGE_KEY, 'true');
-    params.delete('cube');
-    const next = params.toString();
-    history.replaceState({}, '', window.location.pathname + (next ? `?${next}` : '') + window.location.hash);
-  } else if (cube === '0') {
-    localStorage.removeItem(STORAGE_KEY);
-    params.delete('cube');
-    const next = params.toString();
-    history.replaceState({}, '', window.location.pathname + (next ? `?${next}` : '') + window.location.hash);
-  }
-}
-
-function isHomePage() {
-  return document.body.classList.contains('page-home') ||
-    /index\.html?$/.test(window.location.pathname) ||
-    window.location.pathname.endsWith('/');
-}
-
-function canUseCube() {
-  if (!isHomePage()) return false;
-  if (localStorage.getItem(STORAGE_KEY) !== 'true') return false;
-  if (window.innerWidth < DESKTOP_MIN) return false;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
-  return hasWebGL();
-}
-
-function hasWebGL() {
-  try {
-    const canvas = document.createElement('canvas');
-    return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
-  } catch {
-    return false;
-  }
-}
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
@@ -94,10 +61,13 @@ function makeFaceTexture(label, bg, accent) {
 }
 
 applyUrlUnlock();
+enableBuilderModeClass();
 
-if (!canUseCube()) {
-  // Silent exit — no placeholder DOM
-} else {
+if (canUseBuilderMode()) {
+  initLaunchScroll();
+}
+
+if (canUseBuilderCube()) {
   initBuilderCube();
 }
 
