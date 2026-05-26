@@ -325,11 +325,12 @@
     root.style.setProperty('--primary', scheme.primary);
     root.style.setProperty('--accent', scheme.accent);
     
-    // Update hero gradient
+    // Theme colors drive CSS ambient orbs; clear legacy inline hero gradient
     const hero = document.querySelector('.hero--fullscreen');
     if (hero) {
-      hero.style.background = scheme.hero;
-      hero.style.backgroundSize = '200% 200%';
+      hero.style.background = '';
+      hero.style.backgroundSize = '';
+      hero.style.animation = '';
     }
     
     localStorage.setItem('colorScheme', index.toString());
@@ -784,6 +785,76 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  function parseCssColor(str) {
+    if (!str) return null;
+    str = str.trim();
+    if (str.startsWith('#')) {
+      const h = str.slice(1);
+      const full = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+      if (full.length !== 6) return null;
+      return {
+        r: parseInt(full.slice(0, 2), 16),
+        g: parseInt(full.slice(2, 4), 16),
+        b: parseInt(full.slice(4, 6), 16)
+      };
+    }
+    const m = str.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+    if (m) return { r: +m[1], g: +m[2], b: +m[3] };
+    return null;
+  }
+
+  function getThemeColors() {
+    const style = getComputedStyle(document.documentElement);
+    return {
+      primary: parseCssColor(style.getPropertyValue('--primary')) || { r: 124, g: 58, b: 237 },
+      accent: parseCssColor(style.getPropertyValue('--accent')) || { r: 236, g: 72, b: 153 }
+    };
+  }
+
+  const canvasOrbs = [
+    { nx: 0.2, ny: 0.3, r: 0.38, role: 'primary', phase: 0, speed: 0.11 },
+    { nx: 0.78, ny: 0.25, r: 0.34, role: 'accent', phase: 2.1, speed: 0.09 },
+    { nx: 0.5, ny: 0.72, r: 0.4, role: 'blend', phase: 4.3, speed: 0.08 }
+  ];
+
+  function drawCanvasOrbs(t, offsetX, offsetY) {
+    const { primary, accent } = getThemeColors();
+    const blend = {
+      r: Math.round((primary.r + accent.r) / 2),
+      g: Math.round((primary.g + accent.g) / 2),
+      b: Math.round((primary.b + accent.b) / 2)
+    };
+    const size = Math.max(w, h);
+
+    for (const orb of canvasOrbs) {
+      const color = orb.role === 'accent' ? accent : orb.role === 'blend' ? blend : primary;
+      const px = (orb.nx + Math.sin(t * orb.speed + orb.phase) * 0.07 + (cur.x - 0.5) * 0.04) * w + offsetX * 0.3;
+      const py = (orb.ny + Math.cos(t * orb.speed * 0.85 + orb.phase) * 0.06 + (cur.y - 0.5) * 0.04) * h + offsetY * 0.3;
+      const radius = orb.r * size * (0.92 + Math.sin(t * 0.4 + orb.phase) * 0.06);
+      const g = ctx.createRadialGradient(px, py, 0, px, py, radius);
+      g.addColorStop(0, `rgba(${color.r},${color.g},${color.b},0.14)`);
+      g.addColorStop(0.45, `rgba(${color.r},${color.g},${color.b},0.06)`);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    // Soft moving streak
+    const streakAngle = t * 0.06;
+    const sx = w * (0.35 + Math.sin(t * 0.05) * 0.12) + offsetX;
+    const sy = h * (0.48 + Math.cos(t * 0.04) * 0.08) + offsetY;
+    const len = size * 0.55;
+    const ex = sx + Math.cos(streakAngle) * len;
+    const ey = sy + Math.sin(streakAngle) * len;
+    const streak = ctx.createLinearGradient(sx, sy, ex, ey);
+    streak.addColorStop(0, 'rgba(0,0,0,0)');
+    streak.addColorStop(0.35, `rgba(${accent.r},${accent.g},${accent.b},0.07)`);
+    streak.addColorStop(0.65, `rgba(${primary.r},${primary.g},${primary.b},0.09)`);
+    streak.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = streak;
+    ctx.fillRect(0, 0, w, h);
+  }
+
   function resize(){
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     const rect = canvas.parentElement.getBoundingClientRect();
@@ -795,17 +866,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function seed(){
-    // More stars in rainbow mode, larger and brighter
-    const baseCount = rainbowMode ? 2000 : 6000;
+    const baseCount = rainbowMode ? 2000 : 9000;
     const count = Math.round((w*h)/(baseCount*dpr));
     stars = Array.from({length: count}, () => ({
       x: Math.random()*w,
       y: Math.random()*h,
       z: Math.random()*0.5 + 0.5,
-      r: rainbowMode ? Math.random()*3.5 + 1.5 : Math.random()*2.5 + 1.0,
+      r: rainbowMode ? Math.random()*3.5 + 1.5 : Math.random()*1.8 + 0.6,
       tw: Math.random()*0.5 + 0.5,
       color: rainbowMode ? Math.random() : (Math.random() > 0.7 ? 'warm' : 'cool'),
-      hue: Math.random() // For rainbow mode
+      hue: Math.random()
     }));
   }
 
@@ -846,27 +916,32 @@ document.addEventListener('DOMContentLoaded', () => {
     cur.y += (target.y - cur.y) * 0.08;
 
     ctx.clearRect(0,0,w,h);
-    // Darker, more transparent background to let stars pop
-    const g = ctx.createLinearGradient(0,0,w,h);
-    g.addColorStop(0,'rgba(0,0,0,0.3)');
-    g.addColorStop(1,'rgba(10,10,30,0.3)');
-    ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
 
-    // Double the parallax movement in rainbow mode
     const parallaxMultiplier = rainbowMode ? 4 : 1;
-    const offsetX = (cur.x - 0.5) * 25 * parallaxMultiplier;
-    const offsetY = (cur.y - 0.5) * 20 * parallaxMultiplier;
+    const offsetX = (cur.x - 0.5) * 18 * parallaxMultiplier;
+    const offsetY = (cur.y - 0.5) * 14 * parallaxMultiplier;
     const t = now * 0.001;
-    const twinkleSpeed = rainbowMode ? 8 : 3; // Faster twinkling in rainbow mode
+
+    if (!rainbowMode) {
+      drawCanvasOrbs(t, offsetX, offsetY);
+    }
+
+    // Light veil so stars stay subtle over the ambient field
+    const veil = ctx.createLinearGradient(0, 0, w, h);
+    veil.addColorStop(0, 'rgba(18,17,20,0.08)');
+    veil.addColorStop(1, 'rgba(14,13,16,0.14)');
+    ctx.fillStyle = veil;
+    ctx.fillRect(0, 0, w, h);
+
+    const twinkleSpeed = rainbowMode ? 8 : 2.5;
 
     // Draw stars
     for(const s of stars){
       const x = s.x + offsetX * (1.6 - s.z);
       const y = s.y + offsetY * (1.6 - s.z);
-      const twinkle = 0.7 + Math.sin(t*twinkleSpeed + s.x*0.003 + s.y*0.003)*0.3*s.tw;
+      const twinkle = 0.55 + Math.sin(t*twinkleSpeed + s.x*0.003 + s.y*0.003)*0.25*s.tw;
 
-      // Draw star glow
-      const glowSize = s.r * s.z * (rainbowMode ? 4 : 3);
+      const glowSize = s.r * s.z * (rainbowMode ? 4 : 2.2);
       const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, glowSize);
       
       if (rainbowMode) {
@@ -874,11 +949,11 @@ document.addEventListener('DOMContentLoaded', () => {
         glowGradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b},${0.6*twinkle})`);
         glowGradient.addColorStop(0.5, `rgba(${color.r},${color.g},${color.b},${0.25*twinkle})`);
       } else if (s.color === 'warm') {
-        glowGradient.addColorStop(0, `rgba(255,200,150,${0.4*twinkle})`);
-        glowGradient.addColorStop(0.5, `rgba(255,150,100,${0.15*twinkle})`);
+        glowGradient.addColorStop(0, `rgba(255,200,150,${0.22*twinkle})`);
+        glowGradient.addColorStop(0.5, `rgba(255,150,100,${0.08*twinkle})`);
       } else {
-        glowGradient.addColorStop(0, `rgba(220,230,255,${0.5*twinkle})`);
-        glowGradient.addColorStop(0.5, `rgba(150,180,255,${0.2*twinkle})`);
+        glowGradient.addColorStop(0, `rgba(220,230,255,${0.28*twinkle})`);
+        glowGradient.addColorStop(0.5, `rgba(150,180,255,${0.1*twinkle})`);
       }
       glowGradient.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.beginPath();
@@ -893,7 +968,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const color = getRainbowColor(t * 0.5 + s.hue, s.x * 0.001);
         ctx.fillStyle = `rgba(${color.r},${color.g},${color.b},${twinkle})`;
       } else {
-        ctx.fillStyle = s.color === 'warm' ? `rgba(255,240,220,${twinkle})` : `rgba(255,255,255,${twinkle})`;
+        ctx.fillStyle = s.color === 'warm' ? `rgba(255,240,220,${0.75*twinkle})` : `rgba(255,255,255,${0.7*twinkle})`;
       }
       ctx.fill();
 
@@ -1541,3 +1616,303 @@ window.resetPlainMode = function() {
   // Reload page to apply color scheme
   location.reload();
 };
+
+// AI chat placeholder — double-click footer tagline to open
+(function initAiChatPlaceholder() {
+  const tagline = document.querySelector('.footer-tagline');
+  if (!tagline) return;
+
+  tagline.classList.add('footer-tagline--ai-trigger');
+
+  const portal = document.createElement('div');
+  portal.id = 'aiChatPortal';
+  portal.className = 'ai-chat-portal';
+  portal.setAttribute('aria-hidden', 'true');
+  portal.innerHTML = `
+    <div class="ai-chat-backdrop" data-ai-close tabindex="-1" aria-hidden="true"></div>
+    <div class="ai-chat-panel" role="dialog" aria-modal="true" aria-labelledby="aiChatTitle">
+      <header class="ai-chat-header">
+        <div class="ai-chat-header-main">
+          <div class="ai-chat-avatar" aria-hidden="true">✦</div>
+          <div>
+            <h2 class="ai-chat-title" id="aiChatTitle">Talk to <span class="grad">AI me</span></h2>
+            <p class="ai-chat-subtitle">Ask about my work, research, and projects.</p>
+          </div>
+        </div>
+        <button type="button" class="ai-chat-close" data-ai-close aria-label="Close">×</button>
+      </header>
+      <div class="ai-chat-body">
+        <div class="ai-chat-bubble ai-chat-bubble--user">What XR projects have you built?</div>
+        <div class="ai-chat-bubble ai-chat-bubble--assistant">
+          I will learn from this portfolio and answer soon.
+          <div class="ai-chat-coming-soon" role="status">
+            <span class="ai-chat-coming-soon-dot" aria-hidden="true"></span>
+            <span class="ai-chat-coming-soon-dot" aria-hidden="true"></span>
+            <span class="ai-chat-coming-soon-dot" aria-hidden="true"></span>
+            Coming soon
+          </div>
+        </div>
+      </div>
+      <footer class="ai-chat-footer">
+        <div class="ai-chat-input-wrap">
+          <input class="ai-chat-input" type="text" disabled placeholder="Ask about my work…" aria-disabled="true" tabindex="-1" />
+          <button type="button" class="ai-chat-send" disabled aria-label="Send (coming soon)" tabindex="-1">↑</button>
+        </div>
+      </footer>
+    </div>
+  `;
+  document.body.appendChild(portal);
+
+  const closeEls = portal.querySelectorAll('[data-ai-close]');
+  let lastFocus = null;
+
+  function openPanel() {
+    lastFocus = document.activeElement;
+    portal.classList.add('is-open');
+    portal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    const closeBtn = portal.querySelector('.ai-chat-close');
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closePanel() {
+    portal.classList.remove('is-open');
+    portal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+  }
+
+  tagline.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    openPanel();
+  });
+
+  closeEls.forEach((el) => el.addEventListener('click', closePanel));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && portal.classList.contains('is-open')) {
+      e.preventDefault();
+      closePanel();
+    }
+  });
+})();
+
+// Mobile navigation menu
+(function () {
+  const header = document.querySelector('.header');
+  const nav = header?.querySelector('.nav');
+  const controls = header?.querySelector('.header-controls');
+  if (!header || !nav || !controls || header.querySelector('.nav-toggle')) return;
+
+  const mq = window.matchMedia('(max-width: 900px)');
+
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'nav-toggle';
+  toggle.setAttribute('aria-label', 'Open menu');
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.setAttribute('aria-controls', 'primary-nav');
+  toggle.innerHTML =
+    '<span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span>';
+
+  const backdrop = document.createElement('button');
+  backdrop.type = 'button';
+  backdrop.className = 'nav-backdrop';
+  backdrop.setAttribute('aria-label', 'Close menu');
+  backdrop.hidden = true;
+
+  nav.id = 'primary-nav';
+  controls.appendChild(toggle);
+  document.body.appendChild(backdrop);
+
+  const setOpen = (open) => {
+    header.classList.toggle('nav-open', open);
+    document.body.classList.toggle('nav-menu-open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    backdrop.hidden = !open;
+  };
+
+  const closeMenu = () => setOpen(false);
+
+  toggle.addEventListener('click', () => {
+    setOpen(!header.classList.contains('nav-open'));
+  });
+
+  backdrop.addEventListener('click', closeMenu);
+
+  nav.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  mq.addEventListener('change', (e) => {
+    if (!e.matches) closeMenu();
+  });
+})();
+
+// Nav: single sliding glass pill (active page only)
+(function () {
+  const nav = document.querySelector('.nav');
+  if (!nav || document.documentElement.classList.contains('plain-mode')) return;
+
+  const glider = document.createElement('span');
+  glider.className = 'nav-glider';
+  glider.setAttribute('aria-hidden', 'true');
+  nav.prepend(glider);
+
+  const pills = [...nav.querySelectorAll('.nav-pill')];
+  const internalPills = pills.filter((p) => {
+    const href = p.getAttribute('href');
+    return href && !href.startsWith('http') && !p.classList.contains('nav-external');
+  });
+
+  function getPageKey(path) {
+    const u = new URL(path, window.location.origin);
+    const parts = u.pathname.split('/').filter(Boolean);
+    const file = parts.pop();
+    if (!file || u.pathname.endsWith('/')) return 'index.html';
+    return file;
+  }
+
+  function getActivePill() {
+    const marked =
+      nav.querySelector('.nav-pill[aria-current="page"]') ||
+      nav.querySelector('.nav-pill.active');
+    if (marked && internalPills.includes(marked)) return marked;
+
+    const currentKey = getPageKey(window.location.pathname);
+    return internalPills.find((pill) => {
+      const href = pill.getAttribute('href');
+      return href && getPageKey(href) === currentKey;
+    });
+  }
+
+  let gliderTarget = getActivePill();
+
+  function setUnderGlider(pill) {
+    pills.forEach((p) => p.classList.toggle('is-under-glider', p === pill));
+  }
+
+  function moveGlider(pill, animate) {
+    if (!pill || document.documentElement.classList.contains('plain-mode')) return;
+
+    const navRect = nav.getBoundingClientRect();
+    const rect = pill.getBoundingClientRect();
+
+    if (!animate) {
+      glider.style.transition = 'none';
+    }
+
+    glider.style.width = `${rect.width}px`;
+    glider.style.height = `${rect.height}px`;
+    glider.style.transform = `translate(${rect.left - navRect.left}px, ${rect.top - navRect.top}px)`;
+
+    setUnderGlider(pill);
+    gliderTarget = pill;
+
+    if (!animate) {
+      glider.offsetHeight;
+      glider.style.transition = '';
+    }
+  }
+
+  function initGlider() {
+    const active = getActivePill();
+    if (!active) {
+      glider.style.opacity = '0';
+      return;
+    }
+    moveGlider(active, false);
+    nav.classList.add('is-glider-ready');
+  }
+
+  initGlider();
+
+  internalPills.forEach((pill) => {
+    pill.addEventListener('mouseenter', () => moveGlider(pill, true));
+    pill.addEventListener('focus', () => moveGlider(pill, true));
+  });
+
+  nav.addEventListener('mouseleave', () => {
+    const active = getActivePill();
+    if (active) moveGlider(active, true);
+  });
+
+  pills.forEach((pill) => {
+    pill.addEventListener('blur', () => {
+      window.requestAnimationFrame(() => {
+        if (!nav.contains(document.activeElement)) {
+          const active = getActivePill();
+          if (active) moveGlider(active, true);
+        }
+      });
+    });
+  });
+
+  window.addEventListener('resize', () => moveGlider(gliderTarget || getActivePill(), false));
+
+  const header = nav.closest('.header');
+  if (header) {
+    const mo = new MutationObserver(() => {
+      window.requestAnimationFrame(() => moveGlider(gliderTarget || getActivePill(), true));
+    });
+    mo.observe(header, { attributes: true, attributeFilter: ['class'] });
+  }
+})();
+
+// Home page: smooth hero ↔ content scroll blend + header glass transition
+(function () {
+  const hero = document.querySelector('.hero--fullscreen');
+  if (!hero || !document.body.classList.contains('page-home')) return;
+
+  const root = document.documentElement;
+  let ticking = false;
+
+  function updateScrollBlend() {
+    const rect = hero.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const blendZone = vh * 0.55;
+    const progress = Math.min(1, Math.max(0, rect.bottom / blendZone));
+
+    root.style.setProperty('--hero-scroll', progress.toFixed(3));
+    document.body.classList.toggle('on-hero', rect.bottom > vh * 0.12);
+    ticking = false;
+  }
+
+  function onScroll() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(updateScrollBlend);
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', updateScrollBlend, { passive: true });
+  updateScrollBlend();
+})();
+
+// View in VR — header entry when immersive WebXR is available
+(function () {
+  const controls = document.querySelector('.header .header-controls');
+  if (!controls || controls.querySelector('.btn-view-vr')) return;
+
+  function insertVrLink() {
+    if (controls.querySelector('.btn-view-vr')) return;
+    const link = document.createElement('a');
+    link.href = 'vr.html';
+    link.className = 'btn-view-vr';
+    link.textContent = 'View in VR';
+    link.setAttribute('aria-label', 'Step inside the portfolio in VR');
+    controls.insertBefore(link, controls.firstChild);
+  }
+
+  if (!navigator.xr || typeof navigator.xr.isSessionSupported !== 'function') return;
+
+  navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+    if (supported) insertVrLink();
+  }).catch(() => {});
+})();

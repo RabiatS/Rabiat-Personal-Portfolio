@@ -30,11 +30,11 @@
   <link rel="stylesheet" href="assets/style.css" />
   <script src="assets/script.js" defer></script>
 </head>
-<body data-tilt-mode="desktop" class="on-hero">
+<body data-tilt-mode="desktop" class="on-hero page-home">
   <header class="header">
     <a class="brand" href="index.html">Rabiat Sadiq</a>
     <nav class="nav" aria-label="Primary">
-      <a href="index.html" class="nav-pill">
+      <a href="index.html" class="nav-pill" aria-current="page">
         <span class="nav-icon">🏠</span>
         <span class="nav-text">Home</span>
       </a>
@@ -74,6 +74,13 @@
   <main>
     <!-- New Hero Section -->
     <section class="hero hero--fullscreen parallax-hero">
+      <div class="hero-ambient" aria-hidden="true">
+        <span class="hero-orb hero-orb--1"></span>
+        <span class="hero-orb hero-orb--2"></span>
+        <span class="hero-orb hero-orb--3"></span>
+        <span class="hero-streak hero-streak--1"></span>
+        <span class="hero-streak hero-streak--2"></span>
+      </div>
       <canvas id="nebula" aria-hidden="true"></canvas>
       
       <div class="hero-inner hero-centered">
@@ -101,13 +108,11 @@
         
         <p class="eyebrow">Hey there! 👋🏾</p>
         <h1>
-          I'm <span class="grad">Rabiat</span> — I Build<br>
-          <span class="grad">XR × ML</span> Magic
+          I'm <span class="grad">Rabiat</span> - I Build<br>
+          <span class="grad">what the Problem</span> Demands
         </h1>
         <p class="lead">
-          Building systems that sense and respond to people across sensors, XR, and AI. I like working where physical signals, 
-          spatial computing, and human perception meet, and turning that into analytics or interactions you can actually feel.
-           My background mixes Computer Engineering, MHCI @ CMU, research, and hands-on prototyping in XR, iOS, and ML-driven systems
+          Problem solver first. I solve problems the way nature does, study how things actually work, then engineer from there. I focus on systems that sense and respond to people: physical signals, spatial computing, and human perception turned into ML pipelines, XR interactions, and analytics you can actually feel. I learn by building and implement as I go. My background mixes Computer Engineering, MHCI at CMU, research, and hands-on prototyping across XR, iOS, and ML-driven systems.
         </p>
 
 
@@ -146,22 +151,6 @@
       </div>
 
       <div class="grid cards-3">
-        <article class="card img-card" data-tags="Web HCI Research"
-                 style="--img:url('assets/img/stickyobservatory.png')">
-          <div class="card-body">
-            <h3><a href="sticky-counter.html" target="_blank" rel="noopener" style="color:inherit">CMU MHCI Sticky Note Counter</a></h3>
-            <p class="muted">A live physics-based observatory tracking every sticky note used by CMU MHCI cohorts since 2012. Real-time counter, peeling animations, year-by-year breakdowns, and a Matter.js physics floor pile.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag">HCI</span>
-              <span class="tag">Web</span>
-              <span class="tag">Physics</span>
-            </div>
-            <div style="margin-top: 10px;">
-              <a href="sticky-counter.html" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Run Live ↗</a>
-            </div>
-          </div>
-        </article>
-
         <article class="card img-card" data-tags="Web Software HCI"
                  style="--img:url('assets/img/projects/truetohue.png')">
           <div class="card-body">
