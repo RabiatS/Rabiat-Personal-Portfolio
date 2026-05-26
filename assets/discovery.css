@@ -1,0 +1,177 @@
+/* Signal Lab — hidden discovery overlay (index.html) */
+
+.signal-lab {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 3vw, 32px);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.signal-lab.is-open {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.signal-lab__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 15, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.signal-lab.is-open .signal-lab__backdrop {
+  opacity: 1;
+}
+
+.signal-lab__panel {
+  position: relative;
+  width: min(1100px, 96vw);
+  height: min(85vh, 760px);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(74, 143, 143, 0.35);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(184, 30, 44, 0.08) inset;
+  background: #0a0a0f;
+  opacity: 0;
+  transform: translateY(24px) scale(0.97);
+  transition:
+    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.55s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.signal-lab.is-open .signal-lab__panel {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.signal-lab__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+.signal-lab__hud {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 28px 32px 32px;
+  background: linear-gradient(to top, rgba(10, 10, 15, 0.92) 0%, rgba(10, 10, 15, 0.4) 70%, transparent 100%);
+  pointer-events: none;
+}
+
+.signal-lab__kicker {
+  margin: 0 0 6px;
+  font-family: 'Rajdhani', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #4a8f8f;
+}
+
+.signal-lab__copy {
+  margin: 0;
+  font-size: clamp(18px, 2.4vw, 24px);
+  font-weight: 500;
+  color: #ececee;
+  letter-spacing: -0.01em;
+}
+
+.signal-lab__hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: rgba(236, 236, 238, 0.45);
+}
+
+.signal-lab__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(236, 236, 238, 0.12);
+  border-radius: 50%;
+  background: rgba(10, 10, 15, 0.6);
+  color: rgba(236, 236, 238, 0.7);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.signal-lab__close:hover {
+  border-color: rgba(184, 30, 44, 0.5);
+  color: #ececee;
+  background: rgba(184, 30, 44, 0.12);
+}
+
+.signal-lab__close:focus-visible {
+  outline: 2px solid #4a8f8f;
+  outline-offset: 2px;
+}
+
+/* Return-visit hint toast */
+.signal-lab-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(74, 143, 143, 0.35);
+  background: rgba(10, 10, 15, 0.88);
+  color: rgba(236, 236, 238, 0.75);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.4s ease,
+    transform 0.45s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.signal-lab-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 768px) {
+  .signal-lab__panel {
+    width: 100%;
+    height: min(78vh, 620px);
+    border-radius: 16px;
+  }
+
+  .signal-lab__hud {
+    padding: 20px 20px 24px;
+  }
+
+  .signal-lab__copy {
+    font-size: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-lab__backdrop,
+  .signal-lab__panel,
+  .signal-lab-toast {
+    transition: none;
+  }
+
+  .signal-lab__canvas {
+    cursor: default;
+  }
+}
