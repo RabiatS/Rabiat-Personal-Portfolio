@@ -98,9 +98,9 @@ function buildThemePalette(themeKey) {
         edge: '#b81e2c',
         glow: '#b81e2c',
         steelTint: 0xc0c0c8,
-        envIntensity: 0.38,
+        envIntensity: 0.52,
         metalness: 0.93,
-        roughness: 0.2,
+        roughness: 0.19,
         lights: { ambient: 0xffffff, ambientI: 0.42, key: 0xffffff, keyI: 0.95, rim: 0xb81e2c, rimI: 0.45, fill: 0x4a8f8f, fillI: 0.28 },
       };
     case 'plain':
@@ -118,9 +118,9 @@ function buildThemePalette(themeKey) {
         edge: '#000000',
         glow: '#333333',
         steelTint: 0xffffff,
-        envIntensity: 0.88,
-        metalness: 0.95,
-        roughness: 0.12,
+        envIntensity: 1.12,
+        metalness: 0.96,
+        roughness: 0.09,
         lights: { ambient: 0xffffff, ambientI: 0.82, key: 0xffffff, keyI: 0.85, rim: 0x333333, rimI: 0.12, fill: 0xffffff, fillI: 0.28 },
       };
     case 'rainbow':
@@ -136,9 +136,9 @@ function buildThemePalette(themeKey) {
         edge: '#ff006e',
         glow: '#8338ec',
         steelTint: 0x909098,
-        envIntensity: 0.36,
+        envIntensity: 0.5,
         metalness: 0.92,
-        roughness: 0.22,
+        roughness: 0.2,
         lights: { ambient: 0xffffff, ambientI: 0.38, key: 0xffffff, keyI: 0.9, rim: 0x8338ec, rimI: 0.42, fill: 0x06ffa5, fillI: 0.25 },
       };
     case 'dark':
@@ -156,9 +156,9 @@ function buildThemePalette(themeKey) {
         edge: accent,
         glow: primary,
         steelTint: 0x888890,
-        envIntensity: 0.34,
+        envIntensity: 0.48,
         metalness: 0.93,
-        roughness: 0.21,
+        roughness: 0.19,
         lights: { ambient: 0xffffff, ambientI: 0.35, key: 0xf3f2f4, keyI: 0.82, rim: primary, rimI: 0.38, fill: accent, fillI: 0.22 },
       };
     default:
@@ -176,9 +176,9 @@ function buildThemePalette(themeKey) {
         edge: accent,
         glow: primary,
         steelTint: 0xffffff,
-        envIntensity: 0.92,
-        metalness: 0.95,
-        roughness: 0.11,
+        envIntensity: 1.18,
+        metalness: 0.96,
+        roughness: 0.08,
         lights: { ambient: 0xffffff, ambientI: 0.85, key: 0xffffff, keyI: 0.78, rim: primary, rimI: 0.16, fill: accent, fillI: 0.22 },
       };
   }
@@ -221,40 +221,113 @@ function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
 }
 
-function makeEnvMap(themeKey) {
+function paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength) {
+  ctx.clearRect(0, 0, size, size);
+
+  const grad = ctx.createLinearGradient(0, 0, 0, size);
+  if (dark) {
+    grad.addColorStop(0, '#585862');
+    grad.addColorStop(0.28, '#3a3a44');
+    grad.addColorStop(0.55, '#24242c');
+    grad.addColorStop(0.82, '#16161e');
+    grad.addColorStop(1, '#0a0a10');
+  } else {
+    grad.addColorStop(0, '#ffffff');
+    grad.addColorStop(0.18, '#fafbfe');
+    grad.addColorStop(0.42, '#eef0f6');
+    grad.addColorStop(0.68, '#d8dce8');
+    grad.addColorStop(0.88, '#c4c8d4');
+    grad.addColorStop(1, '#aeb4c2');
+  }
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, size, size);
+
+  const studioBand = ctx.createLinearGradient(0, 0, size, size * 0.35);
+  studioBand.addColorStop(0, 'rgba(255,255,255,0)');
+  studioBand.addColorStop(0.38, dark ? 'rgba(210,210,225,0.18)' : 'rgba(255,255,255,0.72)');
+  studioBand.addColorStop(0.62, dark ? 'rgba(180,180,200,0.08)' : 'rgba(255,255,255,0.28)');
+  studioBand.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = studioBand;
+  ctx.fillRect(0, 0, size, size);
+
+  const rimBand = ctx.createLinearGradient(size, 0, 0, size);
+  rimBand.addColorStop(0, 'rgba(255,255,255,0)');
+  rimBand.addColorStop(0.5, dark ? 'rgba(140,140,160,0.1)' : 'rgba(255,255,255,0.38)');
+  rimBand.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = rimBand;
+  ctx.fillRect(0, 0, size, size);
+
+  if (shineStrength > 0.008) {
+    const cx = size * 0.5;
+    const cy = size * 0.5;
+    const streakPeak = dark ? 0.42 * shineStrength : 0.98 * shineStrength;
+    const streakWidth = dark ? 0.09 : 0.065;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(shineAngle);
+    const streak = ctx.createLinearGradient(-size, 0, size, 0);
+    streak.addColorStop(0, 'rgba(255,255,255,0)');
+    streak.addColorStop(0.5 - streakWidth, 'rgba(255,255,255,0)');
+    streak.addColorStop(0.5 - streakWidth * 0.35, `rgba(255,255,255,${streakPeak * 0.55})`);
+    streak.addColorStop(0.5, `rgba(255,255,255,${streakPeak})`);
+    streak.addColorStop(0.5 + streakWidth * 0.35, `rgba(255,255,255,${streakPeak * 0.55})`);
+    streak.addColorStop(0.5 + streakWidth, 'rgba(255,255,255,0)');
+    streak.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = streak;
+    ctx.fillRect(-size, -size * 0.5, size * 2, size);
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(shineAngle + Math.PI * 0.5);
+    const crossPeak = streakPeak * (dark ? 0.28 : 0.22);
+    const cross = ctx.createLinearGradient(-size * 0.5, 0, size * 0.5, 0);
+    cross.addColorStop(0, 'rgba(255,255,255,0)');
+    cross.addColorStop(0.46, 'rgba(255,255,255,0)');
+    cross.addColorStop(0.5, `rgba(255,255,255,${crossPeak})`);
+    cross.addColorStop(0.54, 'rgba(255,255,255,0)');
+    cross.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = cross;
+    ctx.fillRect(-size * 0.5, -size * 0.22, size, size * 0.44);
+    ctx.restore();
+
+    const hotspotX = cx + Math.cos(shineAngle) * size * 0.22;
+    const hotspotY = cy + Math.sin(shineAngle) * size * 0.22;
+    const hotspot = ctx.createRadialGradient(hotspotX, hotspotY, 0, hotspotX, hotspotY, size * 0.34);
+    const hotPeak = dark ? 0.24 * shineStrength : 0.52 * shineStrength;
+    hotspot.addColorStop(0, `rgba(255,255,255,${hotPeak})`);
+    hotspot.addColorStop(0.45, `rgba(255,255,255,${hotPeak * 0.35})`);
+    hotspot.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = hotspot;
+    ctx.fillRect(0, 0, size, size);
+  }
+}
+
+function createEnvMap(themeKey) {
   const dark = isDarkSteelTheme(themeKey);
-  const size = 128;
+  const size = 256;
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext('2d');
 
-  const grad = ctx.createLinearGradient(0, 0, 0, size);
-  if (dark) {
-    grad.addColorStop(0, '#4a4a54');
-    grad.addColorStop(0.35, '#2a2a32');
-    grad.addColorStop(0.7, '#1a1a22');
-    grad.addColorStop(1, '#0c0c12');
-  } else {
-    grad.addColorStop(0, '#ffffff');
-    grad.addColorStop(0.22, '#f6f7fb');
-    grad.addColorStop(0.5, '#e8ebf2');
-    grad.addColorStop(0.78, '#d0d4de');
-    grad.addColorStop(1, '#b8bcc8');
-  }
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, size, size);
-
-  const band = ctx.createLinearGradient(0, 0, size, 0);
-  band.addColorStop(0, 'rgba(255,255,255,0)');
-  band.addColorStop(0.42, dark ? 'rgba(180,180,200,0.12)' : 'rgba(255,255,255,0.62)');
-  band.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = band;
-  ctx.fillRect(0, 0, size, size);
+  paintEnvMapCanvas(ctx, size, dark, 0, 0);
 
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
+
+  return {
+    texture: tex,
+    themeKey,
+    update(shineAngle, shineStrength) {
+      paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength);
+      tex.needsUpdate = true;
+    },
+    dispose() {
+      tex.dispose();
+    },
+  };
 }
 
 function drawLabelPlate(ctx, cx, cy, w, h, darkSteel) {
@@ -425,7 +498,7 @@ function initBuilderCube() {
   renderer.toneMappingExposure = 1.08;
   host.appendChild(renderer.domElement);
 
-  let envMap = makeEnvMap(getThemeKey());
+  let envMap = createEnvMap(getThemeKey());
 
   const ambient = new THREE.AmbientLight(0xffffff, 0.55);
   scene.add(ambient);
@@ -442,13 +515,8 @@ function initBuilderCube() {
   fillLight.position.set(0, -2, 2);
   scene.add(fillLight);
 
-  const cursorLight = new THREE.PointLight(0xffffff, 0, 6);
-  scene.add(cursorLight);
-
-  const cursorHit = new THREE.Vector3();
-  const cursorNormal = new THREE.Vector3();
-  const cursorLightTarget = new THREE.Vector3();
-  let cursorLightStrength = 0;
+  let shineStrength = 0;
+  let shineAngle = 0;
 
   const cubeGroup = new THREE.Group();
   cubeGroup.rotation.x = -0.12;
@@ -460,7 +528,7 @@ function initBuilderCube() {
       new THREE.MeshStandardMaterial({
         metalness: 0.93,
         roughness: 0.2,
-        envMap,
+        envMap: envMap.texture,
         envMapIntensity: 0.75,
       })
   );
@@ -523,7 +591,7 @@ function initBuilderCube() {
     const themeKey = getThemeKey();
     const darkSteel = isDarkSteelTheme(themeKey);
     if (envMap) envMap.dispose();
-    envMap = makeEnvMap(themeKey);
+    envMap = createEnvMap(themeKey);
 
     const palette = buildThemePalette(themeKey);
     baseEnvIntensity = palette.envIntensity;
@@ -534,7 +602,7 @@ function initBuilderCube() {
       const face = palette.faces[i];
       if (materials[i].map) materials[i].map.dispose();
       materials[i].map = makeFaceTexture(face.steel, face.accent, darkSteel);
-      materials[i].envMap = envMap;
+      materials[i].envMap = envMap.texture;
       materials[i].metalness = palette.metalness;
       materials[i].roughness = palette.roughness;
       materials[i].envMapIntensity = palette.envIntensity;
@@ -565,6 +633,7 @@ function initBuilderCube() {
     baseEdgeOpacity = 0.72;
 
     renderer.toneMappingExposure = darkSteel ? 1.08 : 1.18;
+    envMap.update(shineAngle, shineStrength);
   }
 
   ensureLabelFontReady().then(() => applyTheme());
@@ -615,6 +684,8 @@ function initBuilderCube() {
       fallActive = true;
       pointerInside = false;
       hoverAmount = 0;
+      shineStrength = 0;
+      envMap.update(shineAngle, 0);
       renderer.domElement.style.cursor = 'default';
     },
     onFallComplete() {
@@ -698,33 +769,22 @@ function initBuilderCube() {
     scrollProgress = THREE.MathUtils.clamp(scrollY / maxScroll, 0, 1);
   }
 
-  function updateCursorLight(dt) {
+  function updateMetalShine() {
     if (fallActive || fallController.isLanded || fallController.isFalling || fallController.isResetting) {
-      cursorLightStrength = THREE.MathUtils.lerp(cursorLightStrength, 0, 0.14);
-      cursorLight.intensity = cursorLightStrength;
-      return;
-    }
-
-    const darkSteel = isDarkSteelTheme(getThemeKey());
-    const targetStrength = pointerInside ? (darkSteel ? 0.55 : 2.4) : 0;
-    cursorLightStrength = THREE.MathUtils.lerp(cursorLightStrength, targetStrength, 0.12);
-    cursorLight.intensity = cursorLightStrength;
-    cursorLight.color.set(darkSteel ? 0xf4f2f8 : 0xffffff);
-
-    if (cursorLightStrength < 0.02) return;
-
-    cube.updateMatrixWorld(true);
-    raycaster.setFromCamera(pointer, camera);
-    const hits = raycaster.intersectObject(cube, false);
-    if (hits.length > 0) {
-      cursorHit.copy(hits[0].point);
-      cursorNormal.copy(hits[0].face.normal).transformDirection(cube.matrixWorld).normalize();
-      cursorLightTarget.copy(cursorHit).addScaledVector(cursorNormal, 0.55);
+      shineStrength = THREE.MathUtils.lerp(shineStrength, 0, 0.14);
     } else {
-      const t = -raycaster.ray.origin.z / raycaster.ray.direction.z;
-      cursorLightTarget.copy(raycaster.ray.origin).addScaledVector(raycaster.ray.direction, t);
+      const darkSteel = isDarkSteelTheme(getThemeKey());
+      const targetStrength = pointerInside ? (darkSteel ? 0.72 : 1) : 0;
+      shineStrength = THREE.MathUtils.lerp(shineStrength, targetStrength, 0.12);
     }
-    cursorLight.position.lerp(cursorLightTarget, 0.22);
+
+    const targetAngle = Math.atan2(mouseNdc.y, mouseNdc.x);
+    let angleDelta = targetAngle - shineAngle;
+    while (angleDelta > Math.PI) angleDelta -= Math.PI * 2;
+    while (angleDelta < -Math.PI) angleDelta += Math.PI * 2;
+    shineAngle += angleDelta * (pointerInside ? 0.14 : 0.08);
+
+    envMap.update(shineAngle, shineStrength);
   }
 
   function updateHover(dt) {
@@ -734,8 +794,8 @@ function initBuilderCube() {
     hoverAmount = THREE.MathUtils.lerp(hoverAmount, target, 0.09);
     hoverSnap = THREE.MathUtils.lerp(hoverSnap, 0, 0.06);
 
-    const tiltTargetX = mouseNdc.y * 0.22 * hoverAmount;
-    const tiltTargetY = mouseNdc.x * 0.28 * hoverAmount;
+    const tiltTargetX = mouseNdc.y * 0.16 * hoverAmount;
+    const tiltTargetY = mouseNdc.x * 0.2 * hoverAmount;
     hoverTilt.x = THREE.MathUtils.lerp(hoverTilt.x, tiltTargetX, 0.12);
     hoverTilt.y = THREE.MathUtils.lerp(hoverTilt.y, tiltTargetY, 0.12);
 
@@ -747,7 +807,8 @@ function initBuilderCube() {
       if (!fallController.isFalling) {
         mat.metalness = baseMetalness;
         mat.roughness = baseRoughness;
-        const envBoost = pointerInside && !isDarkSteelTheme(getThemeKey()) ? cursorLightStrength * 0.08 : 0;
+        const darkSteel = isDarkSteelTheme(getThemeKey());
+        const envBoost = shineStrength * (darkSteel ? 0.14 : 0.32);
         mat.envMapIntensity = baseEnvIntensity + envBoost;
       }
     });
@@ -756,7 +817,7 @@ function initBuilderCube() {
   function updateCube(dt) {
     readScroll();
     idleTime += dt;
-    updateCursorLight(dt);
+    updateMetalShine();
     updateHover(dt);
 
     if (fallController.isFalling || fallController.isResetting) {
