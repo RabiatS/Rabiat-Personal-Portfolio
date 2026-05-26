@@ -145,9 +145,16 @@ export function createCubeFallController(ctx) {
     clearTimeout(showHeavyHint._t);
   }
 
+  const IMPACT_SHAKE_MS = 520;
+
   function microShake() {
+    if (prefersReducedMotion) return;
     document.documentElement.classList.add('builder-cube-impact-shake');
-    setTimeout(() => document.documentElement.classList.remove('builder-cube-impact-shake'), 320);
+    host.classList.add('builder-cube-host--impact-shake');
+    setTimeout(() => {
+      document.documentElement.classList.remove('builder-cube-impact-shake');
+      host.classList.remove('builder-cube-host--impact-shake');
+    }, IMPACT_SHAKE_MS);
   }
 
   function settleCube(finalFaceIndex) {

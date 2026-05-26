@@ -17,6 +17,17 @@ import { initLaunchScroll } from './launch-scroll.js';
 import { createCubeFallController } from './cube-fall.js';
 
 const FACE_LABELS = ['HARDWARE', 'SOFTWARE', 'ENGINEER', 'VR', 'AI / ML', 'RESEARCHER'];
+const LABEL_FONT_STACK = "'Share Tech Mono', monospace";
+let labelFontReady = null;
+
+function ensureLabelFontReady() {
+  if (!labelFontReady) {
+    labelFontReady =
+      document.fonts?.load?.(`16px ${LABEL_FONT_STACK}`)?.catch(() => undefined) ??
+      Promise.resolve();
+  }
+  return labelFontReady;
+}
 
 const RAINBOW_ACCENTS = ['#ff006e', '#8338ec', '#3a86ff', '#06ffa5', '#ffbe0b', '#fb5607'];
 
@@ -266,11 +277,11 @@ function drawLabelPlate(ctx, cx, cy, w, h, darkSteel) {
 }
 
 function drawEngravedLabel(ctx, label, cx, cy, fontSize, textColor, labelShadow, darkSteel) {
-  ctx.font = `900 ${fontSize}px Rajdhani, system-ui, sans-serif`;
+  ctx.font = `400 ${fontSize}px ${LABEL_FONT_STACK}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  const plateW = Math.min(440, label.length * (fontSize * 0.66) + 56);
+  const plateW = Math.min(440, label.length * (fontSize * 0.58) + 52);
   const plateH = fontSize * 1.65;
   drawLabelPlate(ctx, cx, cy, plateW, plateH, darkSteel);
 
@@ -526,9 +537,11 @@ function initBuilderCube() {
     baseEdgeOpacity = 0.72;
   }
 
-  applyTheme();
+  ensureLabelFontReady().then(() => applyTheme());
 
-  const themeObserver = new MutationObserver(() => applyTheme());
+  const themeObserver = new MutationObserver(() => {
+    ensureLabelFontReady().then(() => applyTheme());
+  });
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] });
   themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
