@@ -1,0 +1,110 @@
+{
+  "colors": {
+    "primary": "#7c3aed",
+    "accent": "#ec4899",
+    "heroBase": "#14121f",
+    "heroBaseDark": "#0c0b14",
+    "text": "#f1f5f9",
+    "textMuted": "#94a3b8"
+  },
+  "hero": {
+    "eyebrow": "Hey there!",
+    "headlineLine1": "I'm Rabiat - I Build",
+    "headlineLine2": "What the Problem Demands",
+    "headlineAccent": "Rabiat",
+    "lead": "Problem solver first. I focus on systems that sense and respond to people: spatial computing, XR, and human perception turned into ML pipelines you can actually feel. MHCI at CMU — building across research and hands-on prototyping."
+  },
+  "tags": [
+    "Applied ML",
+    "XR & Spatial Computing",
+    "HCI Research",
+    "Computer Vision",
+    "Data Pipelines",
+    "Prototyping"
+  ],
+  "ctas": [
+    { "label": "Explore Projects", "href": "projects.html", "primary": true },
+    { "label": "Resume", "href": "assets/Rabiat_Sadiq_Resume.pdf", "external": true },
+    { "label": "GitHub", "href": "https://github.com/RabiatS", "external": true },
+    { "label": "Get in Touch", "href": "contact.html", "primary": false }
+  ],
+  "galleryTitle": "Featured Projects",
+  "gallerySubtitle": "A selection of my most impactful work",
+  "featuredProjectIds": [
+    "true-to-hue-vr",
+    "perspective-vr",
+    "magic-mitts-vr",
+    "xr-pain-vr",
+    "vr-music-vr",
+    "assuage-vr"
+  ],
+  "projects": [
+    {
+      "id": "true-to-hue-vr",
+      "title": "True to Hue",
+      "description": "AI-assisted color design system: live theme, CSS variables, and accessibility reporting.",
+      "image": "assets/img/projects/truetohue.png",
+      "href": "https://rabiats.github.io/True-to-hue/",
+      "external": true
+    },
+    {
+      "id": "perspective-vr",
+      "title": "Perspective",
+      "description": "Drag in any dataset — AI maps it to the right 3D view with anomaly pins in the scene.",
+      "image": "assets/img/projects/perspective.png",
+      "href": "https://github.com/RabiatS/PERSPECTIVE",
+      "external": true
+    },
+    {
+      "id": "magic-mitts-vr",
+      "title": "Magic Mitts",
+      "description": "1st Place UTSA Tech Symposium — affordable haptic VR glove with electromagnetic braking.",
+      "image": "assets/img/mm.png",
+      "href": "case-studies/case-study.html",
+      "external": false
+    },
+    {
+      "id": "xr-pain-vr",
+      "title": "XR Pain Perception",
+      "description": "CMU research: multimodal XR prototypes studying pain perception cues.",
+      "image": "assets/img/projects/vr-pain-augmentation-research.png",
+      "href": "case-studies/case-study-pain-xr.html",
+      "external": false
+    },
+    {
+      "id": "vr-music-vr",
+      "title": "VR Music Visualizer",
+      "description": "Audio-reactive 3D environments with gesture input. Quest 2 + Meta XR SDK.",
+      "image": "assets/img/projects/VR Mussic Viz.webp",
+      "href": "projects.html#vr-music-visualizer",
+      "external": false
+    },
+    {
+      "id": "assuage-vr",
+      "title": "Assuage — Health ML",
+      "description": "Distress prediction from HealthKit biometrics. 82% accuracy with CoreML on-device.",
+      "image": "assets/img/projects/assuage-logo.png",
+      "href": "case-studies/case-study-assuage.html",
+      "external": false
+    }
+  ],
+  "nav": [
+    { "label": "Home", "href": "vr.html", "icon": "🏠", "current": true },
+    { "label": "Projects", "href": "projects.html", "icon": "🚀" },
+    { "label": "Coursework", "href": "coursework.html", "icon": "🎓" },
+    { "label": "Cool", "href": "cool.html", "icon": "✨" },
+    { "label": "Contact", "href": "contact.html", "icon": "📧" },
+    { "label": "LinkedIn", "href": "https://www.linkedin.com/in/rabiat-sadiq/", "icon": "🔗", "external": true }
+  ],
+  "layout": {
+    "spawnY": 1.6,
+    "introZ": -2.4,
+    "galleryZ": -3.8,
+    "galleryRadius": 2.8,
+    "galleryArcDegrees": 70,
+    "navY": 2.35,
+    "navZ": -1.8,
+    "headsetY": 2.05,
+    "headsetZ": -1.6
+  }
+}

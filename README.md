@@ -9,6 +9,7 @@ A comprehensive, interactive portfolio website showcasing my interdisciplinary w
 ```
 Personal webpage/
 ├── index.html              # Home page with hero, featured projects, timeline
+├── vr.html                 # WebXR immersive view (inside the site hero + featured work)
 ├── projects.html           # Comprehensive projects page with filtering
 ├── coursework.html         # Coursework showcase page
 ├── contact.html            # Contact form page
@@ -48,6 +49,7 @@ Personal webpage/
 - **Secret Rainbow Mode**: Hidden party mode activated by holding the theme toggle button
 - **Interactive Galaxy Canvas**: Animated nebula background with parallax effect and shooting stars
 - **VR Eye Animation**: Interactive VR headset with eyes that follow cursor movement
+- **View in VR (WebXR)**: On supported headsets (Quest Browser, etc.), a header link opens [`vr.html`](vr.html) — an immersive 3D version of the home hero and featured projects (A-Frame)
 - **Card Tilt Effects**: 3D tilt animations on project cards (configurable: off, desktop-only, or all devices)
 - **Color Scheme Switcher**: 20+ fun color schemes to customize the site's appearance
 - **Smooth Animations**: CSS transitions and JavaScript-powered animations throughout
@@ -101,6 +103,20 @@ Personal webpage/
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Responsive design for mobile devices
 - Graceful degradation for older browsers
+
+## View in VR (WebXR)
+
+The **View in VR** button appears in the site header when the browser reports support for `immersive-vr` (typical in Meta Quest Browser).
+
+1. Open the live site over **HTTPS** (required for WebXR), e.g. [rabiatsadiq.com](https://www.rabiatsadiq.com)
+2. Tap **View in VR** → **Enter VR** on the VR page
+3. You spawn inside the portfolio hero: nebula atmosphere, VR headset, intro copy, featured project cards, and nav pills
+
+**Local testing:** Serve over HTTPS (`npx local-ssl-proxy` or similar) — `file://` and plain HTTP will not enable WebXR on Quest.
+
+**Desktop without a headset:** Open `vr.html` directly; use mouse-look to preview the 3D layout (Enter VR hidden if WebXR is unavailable).
+
+**Data:** Scene copy and featured projects are defined in [`assets/vr-lobby.json`](assets/vr-lobby.json); layout logic in [`assets/vr-lobby.js`](assets/vr-lobby.js).
 
 ## License
 
