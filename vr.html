@@ -98,7 +98,7 @@
   <div id="vrOverlay" class="vr-overlay" role="dialog" aria-labelledby="vrOverlayTitle">
     <div class="vr-overlay__panel">
       <h1 id="vrOverlayTitle">Step inside the site</h1>
-      <p id="vrOverlayDesc">You are about to enter the portfolio hero in immersive VR. Look around for projects, nav, and CTAs — same content as the home page, in 3D.</p>
+      <p id="vrOverlayDesc">Enter the portfolio hero in immersive VR. Use your hands (Quest hand tracking), controllers, or mouse — point, pinch, or grab project cards to interact.</p>
       <div class="vr-overlay__actions">
         <button type="button" class="vr-btn vr-btn--primary" id="enterVrBtn">Enter VR</button>
         <a href="index.html" class="vr-btn vr-btn--secondary">Back to 2D site</a>
@@ -111,7 +111,7 @@
     id="vrScene"
     embedded
     renderer="colorManagement: true; physicallyCorrectLights: false"
-    webxr="requiredFeatures: local-floor; optionalFeatures: bounded-floor"
+    webxr="requiredFeatures: local-floor; optionalFeatures: bounded-floor, hand-tracking"
     vr-mode-ui="enabled: true"
     loading-screen="dotsColor: #7c3aed; backgroundColor: #14121f"
     background="color: #14121f"
@@ -135,8 +135,8 @@
       ></a-camera>
     </a-entity>
 
-    <a-entity id="leftHand" laser-controls="hand: left" raycaster="objects: .clickable; far: 12; lineColor: #ec4899; lineOpacity: 0.75"></a-entity>
-    <a-entity id="rightHand" laser-controls="hand: right" raycaster="objects: .clickable; far: 12; lineColor: #7c3aed; lineOpacity: 0.85"></a-entity>
+    <a-entity id="leftHand"></a-entity>
+    <a-entity id="rightHand"></a-entity>
   </a-scene>
 
   <script src="assets/vr-lobby.js"></script>
