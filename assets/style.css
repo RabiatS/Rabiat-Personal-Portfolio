@@ -1721,6 +1721,22 @@ body:not(.on-hero) .btn-view-vr {
   }
 }
 
+.vr-site-tips {
+  margin-top: 12px;
+  padding-left: 1.15rem;
+  font-size: 14px;
+  line-height: 1.55;
+  list-style: disc;
+}
+
+.vr-site-tips li + li {
+  margin-top: 6px;
+}
+
+.vr-site-tips[hidden] {
+  display: none;
+}
+
 .toggle, .tilt-select, .nav-toggle {
   padding: 10px 14px;
   border: 1px solid var(--glass-border);

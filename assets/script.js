@@ -1916,3 +1916,39 @@ window.resetPlainMode = function() {
     if (supported) insertVrLink();
   }).catch(() => {});
 })();
+
+// Cool page — VR site card copy for XR vs regular browsers
+(function () {
+  const card = document.getElementById('vrSiteCard');
+  if (!card) return;
+
+  const hint = card.querySelector('[data-vr-hint]');
+  const tips = card.querySelector('[data-vr-tips]');
+  const cta = card.querySelector('[data-vr-cta]');
+
+  function setRegularDevice() {
+    if (hint) {
+      hint.innerHTML =
+        'This portfolio has an immersive WebXR room—the same hero, featured projects, and nav, rebuilt in 3D. On a phone or laptop you cannot enter VR here; open this site on any <strong>XR headset browser</strong> (Meta Quest, Pico, etc.) over <strong>HTTPS</strong>, then tap <strong>View in VR</strong> in the header or open the VR space from the headset.';
+    }
+    if (tips) tips.hidden = false;
+    if (cta) cta.textContent = '▶ Open VR space (3D preview) ↗';
+  }
+
+  function setXrDevice() {
+    if (hint) {
+      hint.textContent =
+        'This browser supports immersive VR. Step inside the portfolio hero—nebula, headset, featured project cards, and nav—in full WebXR.';
+    }
+    if (tips) tips.hidden = true;
+    if (cta) cta.textContent = '▶ Enter VR ↗';
+  }
+
+  setRegularDevice();
+
+  if (!navigator.xr || typeof navigator.xr.isSessionSupported !== 'function') return;
+
+  navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+    if (supported) setXrDevice();
+  }).catch(() => {});
+})();
