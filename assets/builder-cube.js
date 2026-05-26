@@ -97,11 +97,11 @@ function buildThemePalette(themeKey) {
         labelShadow,
         edge: '#b81e2c',
         glow: '#b81e2c',
-        steelTint: 0xc0c0c8,
-        envIntensity: 0.52,
-        metalness: 0.93,
-        roughness: 0.19,
-        lights: { ambient: 0xffffff, ambientI: 0.42, key: 0xffffff, keyI: 0.95, rim: 0xb81e2c, rimI: 0.45, fill: 0x4a8f8f, fillI: 0.28 },
+        steelTint: 0xc8c8d0,
+        envIntensity: 0.82,
+        metalness: 0.96,
+        roughness: 0.12,
+        lights: { ambient: 0xffffff, ambientI: 0.44, key: 0xffffff, keyI: 1.05, rim: 0xb81e2c, rimI: 0.52, fill: 0x4a8f8f, fillI: 0.32 },
       };
     case 'plain':
       return {
@@ -118,10 +118,10 @@ function buildThemePalette(themeKey) {
         edge: '#000000',
         glow: '#333333',
         steelTint: 0xffffff,
-        envIntensity: 1.12,
-        metalness: 0.96,
-        roughness: 0.09,
-        lights: { ambient: 0xffffff, ambientI: 0.82, key: 0xffffff, keyI: 0.85, rim: 0x333333, rimI: 0.12, fill: 0xffffff, fillI: 0.28 },
+        envIntensity: 1.2,
+        metalness: 0.98,
+        roughness: 0.08,
+        lights: { ambient: 0xffffff, ambientI: 0.84, key: 0xffffff, keyI: 0.98, rim: 0x333333, rimI: 0.18, fill: 0xffffff, fillI: 0.32 },
       };
     case 'rainbow':
       return {
@@ -135,11 +135,11 @@ function buildThemePalette(themeKey) {
         labelShadow,
         edge: '#ff006e',
         glow: '#8338ec',
-        steelTint: 0x909098,
-        envIntensity: 0.5,
-        metalness: 0.92,
-        roughness: 0.2,
-        lights: { ambient: 0xffffff, ambientI: 0.38, key: 0xffffff, keyI: 0.9, rim: 0x8338ec, rimI: 0.42, fill: 0x06ffa5, fillI: 0.25 },
+        steelTint: 0x9898a0,
+        envIntensity: 0.78,
+        metalness: 0.95,
+        roughness: 0.13,
+        lights: { ambient: 0xffffff, ambientI: 0.4, key: 0xffffff, keyI: 1.0, rim: 0x8338ec, rimI: 0.5, fill: 0x06ffa5, fillI: 0.3 },
       };
     case 'dark':
       return {
@@ -155,11 +155,11 @@ function buildThemePalette(themeKey) {
         labelShadow,
         edge: accent,
         glow: primary,
-        steelTint: 0x888890,
-        envIntensity: 0.48,
-        metalness: 0.93,
-        roughness: 0.19,
-        lights: { ambient: 0xffffff, ambientI: 0.35, key: 0xf3f2f4, keyI: 0.82, rim: primary, rimI: 0.38, fill: accent, fillI: 0.22 },
+        steelTint: 0x909098,
+        envIntensity: 0.85,
+        metalness: 0.96,
+        roughness: 0.12,
+        lights: { ambient: 0xffffff, ambientI: 0.38, key: 0xf3f2f4, keyI: 0.98, rim: primary, rimI: 0.48, fill: accent, fillI: 0.28 },
       };
     default:
       return {
@@ -176,10 +176,10 @@ function buildThemePalette(themeKey) {
         edge: accent,
         glow: primary,
         steelTint: 0xffffff,
-        envIntensity: 1.18,
-        metalness: 0.96,
+        envIntensity: 1.2,
+        metalness: 0.98,
         roughness: 0.08,
-        lights: { ambient: 0xffffff, ambientI: 0.85, key: 0xffffff, keyI: 0.78, rim: primary, rimI: 0.16, fill: accent, fillI: 0.22 },
+        lights: { ambient: 0xffffff, ambientI: 0.86, key: 0xffffff, keyI: 0.95, rim: primary, rimI: 0.22, fill: accent, fillI: 0.26 },
       };
   }
 }
@@ -226,42 +226,78 @@ function paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength) {
 
   const grad = ctx.createLinearGradient(0, 0, 0, size);
   if (dark) {
-    grad.addColorStop(0, '#585862');
-    grad.addColorStop(0.28, '#3a3a44');
-    grad.addColorStop(0.55, '#24242c');
-    grad.addColorStop(0.82, '#16161e');
-    grad.addColorStop(1, '#0a0a10');
+    grad.addColorStop(0, '#686872');
+    grad.addColorStop(0.22, '#484852');
+    grad.addColorStop(0.48, '#2e2e38');
+    grad.addColorStop(0.74, '#1a1a24');
+    grad.addColorStop(1, '#080810');
   } else {
     grad.addColorStop(0, '#ffffff');
-    grad.addColorStop(0.18, '#fafbfe');
-    grad.addColorStop(0.42, '#eef0f6');
-    grad.addColorStop(0.68, '#d8dce8');
-    grad.addColorStop(0.88, '#c4c8d4');
-    grad.addColorStop(1, '#aeb4c2');
+    grad.addColorStop(0.14, '#fcfdff');
+    grad.addColorStop(0.36, '#f2f4fa');
+    grad.addColorStop(0.58, '#e0e4f0');
+    grad.addColorStop(0.8, '#c8cedc');
+    grad.addColorStop(1, '#b0b8c8');
   }
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, size, size);
 
   const studioBand = ctx.createLinearGradient(0, 0, size, size * 0.35);
   studioBand.addColorStop(0, 'rgba(255,255,255,0)');
-  studioBand.addColorStop(0.38, dark ? 'rgba(210,210,225,0.18)' : 'rgba(255,255,255,0.72)');
-  studioBand.addColorStop(0.62, dark ? 'rgba(180,180,200,0.08)' : 'rgba(255,255,255,0.28)');
+  studioBand.addColorStop(0.34, dark ? 'rgba(230,230,245,0.28)' : 'rgba(255,255,255,0.88)');
+  studioBand.addColorStop(0.58, dark ? 'rgba(200,200,220,0.14)' : 'rgba(255,255,255,0.42)');
   studioBand.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = studioBand;
   ctx.fillRect(0, 0, size, size);
 
   const rimBand = ctx.createLinearGradient(size, 0, 0, size);
   rimBand.addColorStop(0, 'rgba(255,255,255,0)');
-  rimBand.addColorStop(0.5, dark ? 'rgba(140,140,160,0.1)' : 'rgba(255,255,255,0.38)');
+  rimBand.addColorStop(0.48, dark ? 'rgba(170,170,195,0.18)' : 'rgba(255,255,255,0.52)');
   rimBand.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = rimBand;
   ctx.fillRect(0, 0, size, size);
 
+  const cx = size * 0.5;
+  const cy = size * 0.5;
+
+  function drawSpecularStreak(angle, peak, width, span) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    const streak = ctx.createLinearGradient(-size, 0, size, 0);
+    streak.addColorStop(0, 'rgba(255,255,255,0)');
+    streak.addColorStop(0.5 - width, 'rgba(255,255,255,0)');
+    streak.addColorStop(0.5 - width * 0.32, `rgba(255,255,255,${peak * 0.62})`);
+    streak.addColorStop(0.5, `rgba(255,255,255,${peak})`);
+    streak.addColorStop(0.5 + width * 0.32, `rgba(255,255,255,${peak * 0.62})`);
+    streak.addColorStop(0.5 + width, 'rgba(255,255,255,0)');
+    streak.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = streak;
+    ctx.fillRect(-size, -size * span, size * 2, size * span * 2);
+    ctx.restore();
+  }
+
+  // Polished chrome bands visible even at rest (replaces static env-map + point-light baseline)
+  drawSpecularStreak(dark ? -0.52 : -0.48, dark ? 0.38 : 0.78, dark ? 0.075 : 0.055, 0.5);
+  drawSpecularStreak(dark ? 0.95 : 1.05, dark ? 0.16 : 0.32, dark ? 0.09 : 0.048, 0.38);
+  drawSpecularStreak(dark ? -1.65 : -1.45, dark ? 0.1 : 0.2, dark ? 0.11 : 0.065, 0.28);
+
+  const cornerHotspots = [
+    [size * 0.18, size * 0.14, dark ? 0.14 : 0.28],
+    [size * 0.82, size * 0.86, dark ? 0.1 : 0.22],
+  ];
+  cornerHotspots.forEach(([hx, hy, peak]) => {
+    const hotspot = ctx.createRadialGradient(hx, hy, 0, hx, hy, size * 0.22);
+    hotspot.addColorStop(0, `rgba(255,255,255,${peak})`);
+    hotspot.addColorStop(0.55, `rgba(255,255,255,${peak * 0.28})`);
+    hotspot.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = hotspot;
+    ctx.fillRect(0, 0, size, size);
+  });
+
   if (shineStrength > 0.008) {
-    const cx = size * 0.5;
-    const cy = size * 0.5;
-    const streakPeak = dark ? 0.42 * shineStrength : 0.98 * shineStrength;
-    const streakWidth = dark ? 0.09 : 0.065;
+    const streakPeak = dark ? 0.55 * shineStrength : 1.05 * shineStrength;
+    const streakWidth = dark ? 0.085 : 0.058;
 
     ctx.save();
     ctx.translate(cx, cy);
@@ -269,9 +305,9 @@ function paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength) {
     const streak = ctx.createLinearGradient(-size, 0, size, 0);
     streak.addColorStop(0, 'rgba(255,255,255,0)');
     streak.addColorStop(0.5 - streakWidth, 'rgba(255,255,255,0)');
-    streak.addColorStop(0.5 - streakWidth * 0.35, `rgba(255,255,255,${streakPeak * 0.55})`);
+    streak.addColorStop(0.5 - streakWidth * 0.32, `rgba(255,255,255,${streakPeak * 0.58})`);
     streak.addColorStop(0.5, `rgba(255,255,255,${streakPeak})`);
-    streak.addColorStop(0.5 + streakWidth * 0.35, `rgba(255,255,255,${streakPeak * 0.55})`);
+    streak.addColorStop(0.5 + streakWidth * 0.32, `rgba(255,255,255,${streakPeak * 0.58})`);
     streak.addColorStop(0.5 + streakWidth, 'rgba(255,255,255,0)');
     streak.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = streak;
@@ -281,7 +317,7 @@ function paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength) {
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(shineAngle + Math.PI * 0.5);
-    const crossPeak = streakPeak * (dark ? 0.28 : 0.22);
+    const crossPeak = streakPeak * (dark ? 0.32 : 0.26);
     const cross = ctx.createLinearGradient(-size * 0.5, 0, size * 0.5, 0);
     cross.addColorStop(0, 'rgba(255,255,255,0)');
     cross.addColorStop(0.46, 'rgba(255,255,255,0)');
@@ -294,10 +330,10 @@ function paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength) {
 
     const hotspotX = cx + Math.cos(shineAngle) * size * 0.22;
     const hotspotY = cy + Math.sin(shineAngle) * size * 0.22;
-    const hotspot = ctx.createRadialGradient(hotspotX, hotspotY, 0, hotspotX, hotspotY, size * 0.34);
-    const hotPeak = dark ? 0.24 * shineStrength : 0.52 * shineStrength;
+    const hotspot = ctx.createRadialGradient(hotspotX, hotspotY, 0, hotspotX, hotspotY, size * 0.36);
+    const hotPeak = dark ? 0.32 * shineStrength : 0.68 * shineStrength;
     hotspot.addColorStop(0, `rgba(255,255,255,${hotPeak})`);
-    hotspot.addColorStop(0.45, `rgba(255,255,255,${hotPeak * 0.35})`);
+    hotspot.addColorStop(0.42, `rgba(255,255,255,${hotPeak * 0.38})`);
     hotspot.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = hotspot;
     ctx.fillRect(0, 0, size, size);
@@ -495,7 +531,7 @@ function initBuilderCube() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.08;
+  renderer.toneMappingExposure = 1.12;
   host.appendChild(renderer.domElement);
 
   let envMap = createEnvMap(getThemeKey());
@@ -526,10 +562,11 @@ function initBuilderCube() {
   const materials = FACE_LABELS.map(
     () =>
       new THREE.MeshStandardMaterial({
-        metalness: 0.93,
-        roughness: 0.2,
+        metalness: 0.96,
+        roughness: 0.12,
         envMap: envMap.texture,
-        envMapIntensity: 0.75,
+        envMapIntensity: 0.85,
+        color: 0xffffff,
       })
   );
 
@@ -577,9 +614,9 @@ function initBuilderCube() {
   let baseRimIntensity = 0.65;
   let baseEdgeOpacity = 0.72;
   let baseGlowOpacity = 0;
-  let baseEnvIntensity = 0.75;
-  let baseMetalness = 0.93;
-  let baseRoughness = 0.2;
+  let baseEnvIntensity = 0.85;
+  let baseMetalness = 0.96;
+  let baseRoughness = 0.12;
   let currentThemeSignature = '';
   let fallActive = false;
 
@@ -632,7 +669,7 @@ function initBuilderCube() {
 
     baseEdgeOpacity = 0.72;
 
-    renderer.toneMappingExposure = darkSteel ? 1.08 : 1.18;
+    renderer.toneMappingExposure = darkSteel ? 1.14 : 1.24;
     envMap.update(shineAngle, shineStrength);
   }
 
@@ -774,7 +811,7 @@ function initBuilderCube() {
       shineStrength = THREE.MathUtils.lerp(shineStrength, 0, 0.14);
     } else {
       const darkSteel = isDarkSteelTheme(getThemeKey());
-      const targetStrength = pointerInside ? (darkSteel ? 0.72 : 1) : 0;
+      const targetStrength = pointerInside ? (darkSteel ? 0.85 : 1) : 0;
       shineStrength = THREE.MathUtils.lerp(shineStrength, targetStrength, 0.12);
     }
 
@@ -808,7 +845,7 @@ function initBuilderCube() {
         mat.metalness = baseMetalness;
         mat.roughness = baseRoughness;
         const darkSteel = isDarkSteelTheme(getThemeKey());
-        const envBoost = shineStrength * (darkSteel ? 0.14 : 0.32);
+        const envBoost = shineStrength * (darkSteel ? 0.24 : 0.48);
         mat.envMapIntensity = baseEnvIntensity + envBoost;
       }
     });
