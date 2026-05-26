@@ -98,10 +98,10 @@ function buildThemePalette(themeKey) {
         edge: '#b81e2c',
         glow: '#b81e2c',
         steelTint: 0xd4d4dc,
-        envIntensity: 1.0,
+        envIntensity: 1.55,
         metalness: 0.99,
-        roughness: 0.07,
-        lights: { ambient: 0xffffff, ambientI: 0.44, key: 0xffffff, keyI: 1.18, rim: 0xb81e2c, rimI: 0.62, fill: 0x4a8f8f, fillI: 0.32 },
+        roughness: 0.06,
+        lights: { ambient: 0xffffff, ambientI: 0.48, key: 0xffffff, keyI: 1.18, rim: 0xb81e2c, rimI: 0.62, fill: 0x4a8f8f, fillI: 0.52 },
       };
     case 'plain':
       return {
@@ -118,10 +118,10 @@ function buildThemePalette(themeKey) {
         edge: '#000000',
         glow: '#333333',
         steelTint: 0xffffff,
-        envIntensity: 1.4,
+        envIntensity: 1.75,
         metalness: 1.0,
-        roughness: 0.06,
-        lights: { ambient: 0xffffff, ambientI: 0.84, key: 0xffffff, keyI: 1.14, rim: 0x333333, rimI: 0.28, fill: 0xffffff, fillI: 0.32 },
+        roughness: 0.05,
+        lights: { ambient: 0xffffff, ambientI: 0.88, key: 0xffffff, keyI: 1.14, rim: 0x333333, rimI: 0.28, fill: 0xffffff, fillI: 0.52 },
       };
     case 'rainbow':
       return {
@@ -136,10 +136,10 @@ function buildThemePalette(themeKey) {
         edge: '#ff006e',
         glow: '#8338ec',
         steelTint: 0xa8a8b0,
-        envIntensity: 1.0,
+        envIntensity: 1.55,
         metalness: 0.99,
-        roughness: 0.08,
-        lights: { ambient: 0xffffff, ambientI: 0.4, key: 0xffffff, keyI: 1.14, rim: 0x8338ec, rimI: 0.6, fill: 0x06ffa5, fillI: 0.3 },
+        roughness: 0.06,
+        lights: { ambient: 0xffffff, ambientI: 0.44, key: 0xffffff, keyI: 1.14, rim: 0x8338ec, rimI: 0.6, fill: 0x06ffa5, fillI: 0.5 },
       };
     case 'dark':
       return {
@@ -156,10 +156,10 @@ function buildThemePalette(themeKey) {
         edge: accent,
         glow: primary,
         steelTint: 0x9898a0,
-        envIntensity: 1.0,
+        envIntensity: 1.55,
         metalness: 0.99,
-        roughness: 0.07,
-        lights: { ambient: 0xffffff, ambientI: 0.38, key: 0xf3f2f4, keyI: 1.12, rim: primary, rimI: 0.58, fill: accent, fillI: 0.28 },
+        roughness: 0.06,
+        lights: { ambient: 0xffffff, ambientI: 0.42, key: 0xf3f2f4, keyI: 1.12, rim: primary, rimI: 0.58, fill: accent, fillI: 0.48 },
       };
     default:
       return {
@@ -176,10 +176,10 @@ function buildThemePalette(themeKey) {
         edge: accent,
         glow: primary,
         steelTint: 0xffffff,
-        envIntensity: 1.45,
+        envIntensity: 1.75,
         metalness: 1.0,
-        roughness: 0.05,
-        lights: { ambient: 0xffffff, ambientI: 0.86, key: 0xffffff, keyI: 1.1, rim: primary, rimI: 0.34, fill: accent, fillI: 0.26 },
+        roughness: 0.04,
+        lights: { ambient: 0xffffff, ambientI: 0.9, key: 0xffffff, keyI: 1.1, rim: primary, rimI: 0.34, fill: accent, fillI: 0.48 },
       };
   }
 }
@@ -224,53 +224,87 @@ function easeOutCubic(t) {
 function paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength) {
   ctx.clearRect(0, 0, size, size);
 
-  const grad = ctx.createLinearGradient(0, 0, 0, size);
+  const cx = size * 0.5;
+  const cy = size * 0.5;
+
+  const omniChrome = ctx.createRadialGradient(cx, cy * 0.82, size * 0.04, cx, cy, size * 0.78);
   if (dark) {
-    grad.addColorStop(0, '#787882');
-    grad.addColorStop(0.18, '#505058');
-    grad.addColorStop(0.42, '#2a2a34');
-    grad.addColorStop(0.68, '#14141c');
-    grad.addColorStop(1, '#040408');
+    omniChrome.addColorStop(0, '#a0a0ac');
+    omniChrome.addColorStop(0.18, '#787888');
+    omniChrome.addColorStop(0.42, '#505060');
+    omniChrome.addColorStop(0.68, '#303040');
+    omniChrome.addColorStop(0.88, '#181824');
+    omniChrome.addColorStop(1, '#080810');
   } else {
-    grad.addColorStop(0, '#ffffff');
-    grad.addColorStop(0.1, '#feffff');
-    grad.addColorStop(0.28, '#f8faff');
-    grad.addColorStop(0.5, '#eef2fc');
-    grad.addColorStop(0.72, '#d8e0f0');
-    grad.addColorStop(0.88, '#b8c4d8');
-    grad.addColorStop(1, '#98a8c0');
+    omniChrome.addColorStop(0, '#ffffff');
+    omniChrome.addColorStop(0.14, '#fcfdff');
+    omniChrome.addColorStop(0.32, '#f0f4fc');
+    omniChrome.addColorStop(0.52, '#dce4f4');
+    omniChrome.addColorStop(0.72, '#c0cce0');
+    omniChrome.addColorStop(0.88, '#a0b0c8');
+    omniChrome.addColorStop(1, '#8898b0');
   }
-  ctx.fillStyle = grad;
+  ctx.fillStyle = omniChrome;
   ctx.fillRect(0, 0, size, size);
 
-  const studioBand = ctx.createLinearGradient(0, 0, size, size * 0.35);
+  const depthGrad = ctx.createLinearGradient(0, 0, 0, size);
+  if (dark) {
+    depthGrad.addColorStop(0, 'rgba(255,255,255,0.18)');
+    depthGrad.addColorStop(0.35, 'rgba(255,255,255,0.04)');
+    depthGrad.addColorStop(0.65, 'rgba(0,0,0,0.08)');
+    depthGrad.addColorStop(1, 'rgba(0,0,0,0.22)');
+  } else {
+    depthGrad.addColorStop(0, 'rgba(255,255,255,0.42)');
+    depthGrad.addColorStop(0.35, 'rgba(255,255,255,0.12)');
+    depthGrad.addColorStop(0.65, 'rgba(0,0,0,0.04)');
+    depthGrad.addColorStop(1, 'rgba(0,0,0,0.12)');
+  }
+  ctx.fillStyle = depthGrad;
+  ctx.fillRect(0, 0, size, size);
+
+  function drawSoftLobe(x, y, radius, peak) {
+    const lobe = ctx.createRadialGradient(x, y, 0, x, y, radius);
+    lobe.addColorStop(0, `rgba(255,255,255,${peak})`);
+    lobe.addColorStop(0.28, `rgba(255,255,255,${peak * 0.62})`);
+    lobe.addColorStop(0.58, `rgba(255,255,255,${peak * 0.22})`);
+    lobe.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = lobe;
+    ctx.fillRect(0, 0, size, size);
+  }
+
+  drawSoftLobe(size * 0.32, size * 0.26, size * 0.48, dark ? 0.55 : 0.82);
+  drawSoftLobe(size * 0.74, size * 0.34, size * 0.42, dark ? 0.38 : 0.58);
+  drawSoftLobe(size * 0.18, size * 0.68, size * 0.5, dark ? 0.34 : 0.52);
+  drawSoftLobe(size * 0.82, size * 0.76, size * 0.4, dark ? 0.28 : 0.44);
+  drawSoftLobe(cx, cy, size * 0.55, dark ? 0.22 : 0.36);
+
+  const studioBand = ctx.createLinearGradient(0, 0, size, size * 0.55);
   studioBand.addColorStop(0, 'rgba(255,255,255,0)');
-  studioBand.addColorStop(0.3, dark ? 'rgba(240,240,255,0.38)' : 'rgba(255,255,255,0.96)');
-  studioBand.addColorStop(0.52, dark ? 'rgba(220,220,240,0.22)' : 'rgba(255,255,255,0.58)');
+  studioBand.addColorStop(0.22, dark ? 'rgba(240,240,255,0.28)' : 'rgba(255,255,255,0.72)');
+  studioBand.addColorStop(0.48, dark ? 'rgba(220,220,240,0.18)' : 'rgba(255,255,255,0.48)');
+  studioBand.addColorStop(0.72, dark ? 'rgba(200,200,220,0.1)' : 'rgba(255,255,255,0.22)');
   studioBand.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = studioBand;
   ctx.fillRect(0, 0, size, size);
 
   const rimBand = ctx.createLinearGradient(size, 0, 0, size);
   rimBand.addColorStop(0, 'rgba(255,255,255,0)');
-  rimBand.addColorStop(0.44, dark ? 'rgba(190,190,215,0.24)' : 'rgba(255,255,255,0.68)');
+  rimBand.addColorStop(0.38, dark ? 'rgba(190,190,215,0.2)' : 'rgba(255,255,255,0.55)');
+  rimBand.addColorStop(0.62, dark ? 'rgba(170,170,200,0.12)' : 'rgba(255,255,255,0.32)');
   rimBand.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = rimBand;
   ctx.fillRect(0, 0, size, size);
 
-  const cx = size * 0.5;
-  const cy = size * 0.5;
-
-  function drawSpecularStreak(angle, peak, width, span) {
+  function drawBroadSpecularStreak(angle, peak, width, span) {
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(angle);
     const streak = ctx.createLinearGradient(-size, 0, size, 0);
     streak.addColorStop(0, 'rgba(255,255,255,0)');
     streak.addColorStop(0.5 - width, 'rgba(255,255,255,0)');
-    streak.addColorStop(0.5 - width * 0.32, `rgba(255,255,255,${peak * 0.62})`);
+    streak.addColorStop(0.5 - width * 0.45, `rgba(255,255,255,${peak * 0.42})`);
     streak.addColorStop(0.5, `rgba(255,255,255,${peak})`);
-    streak.addColorStop(0.5 + width * 0.32, `rgba(255,255,255,${peak * 0.62})`);
+    streak.addColorStop(0.5 + width * 0.45, `rgba(255,255,255,${peak * 0.42})`);
     streak.addColorStop(0.5 + width, 'rgba(255,255,255,0)');
     streak.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = streak;
@@ -278,27 +312,13 @@ function paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength) {
     ctx.restore();
   }
 
-  // Polished chrome bands visible even at rest (replaces static env-map + point-light baseline)
-  drawSpecularStreak(dark ? -0.52 : -0.48, dark ? 0.52 : 0.92, dark ? 0.062 : 0.042, 0.52);
-  drawSpecularStreak(dark ? 0.95 : 1.05, dark ? 0.24 : 0.42, dark ? 0.075 : 0.038, 0.4);
-  drawSpecularStreak(dark ? -1.65 : -1.45, dark ? 0.16 : 0.28, dark ? 0.095 : 0.052, 0.3);
-
-  const cornerHotspots = [
-    [size * 0.18, size * 0.14, dark ? 0.2 : 0.38],
-    [size * 0.82, size * 0.86, dark ? 0.14 : 0.3],
-  ];
-  cornerHotspots.forEach(([hx, hy, peak]) => {
-    const hotspot = ctx.createRadialGradient(hx, hy, 0, hx, hy, size * 0.18);
-    hotspot.addColorStop(0, `rgba(255,255,255,${peak})`);
-    hotspot.addColorStop(0.42, `rgba(255,255,255,${peak * 0.35})`);
-    hotspot.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = hotspot;
-    ctx.fillRect(0, 0, size, size);
-  });
+  drawBroadSpecularStreak(dark ? -0.48 : -0.42, dark ? 0.38 : 0.62, dark ? 0.22 : 0.18, 0.62);
+  drawBroadSpecularStreak(dark ? 0.92 : 1.02, dark ? 0.22 : 0.38, dark ? 0.24 : 0.2, 0.55);
+  drawBroadSpecularStreak(dark ? -1.55 : -1.38, dark ? 0.16 : 0.28, dark ? 0.28 : 0.22, 0.48);
 
   if (shineStrength > 0.008) {
-    const streakPeak = dark ? 0.68 * shineStrength : 1.22 * shineStrength;
-    const streakWidth = dark ? 0.072 : 0.048;
+    const streakPeak = dark ? 0.26 * shineStrength : 0.38 * shineStrength;
+    const streakWidth = dark ? 0.048 : 0.032;
 
     ctx.save();
     ctx.translate(cx, cy);
@@ -306,35 +326,21 @@ function paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength) {
     const streak = ctx.createLinearGradient(-size, 0, size, 0);
     streak.addColorStop(0, 'rgba(255,255,255,0)');
     streak.addColorStop(0.5 - streakWidth, 'rgba(255,255,255,0)');
-    streak.addColorStop(0.5 - streakWidth * 0.32, `rgba(255,255,255,${streakPeak * 0.58})`);
+    streak.addColorStop(0.5 - streakWidth * 0.28, `rgba(255,255,255,${streakPeak * 0.48})`);
     streak.addColorStop(0.5, `rgba(255,255,255,${streakPeak})`);
-    streak.addColorStop(0.5 + streakWidth * 0.32, `rgba(255,255,255,${streakPeak * 0.58})`);
+    streak.addColorStop(0.5 + streakWidth * 0.28, `rgba(255,255,255,${streakPeak * 0.48})`);
     streak.addColorStop(0.5 + streakWidth, 'rgba(255,255,255,0)');
     streak.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = streak;
-    ctx.fillRect(-size, -size * 0.5, size * 2, size);
+    ctx.fillRect(-size, -size * 0.42, size * 2, size * 0.84);
     ctx.restore();
 
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(shineAngle + Math.PI * 0.5);
-    const crossPeak = streakPeak * (dark ? 0.32 : 0.26);
-    const cross = ctx.createLinearGradient(-size * 0.5, 0, size * 0.5, 0);
-    cross.addColorStop(0, 'rgba(255,255,255,0)');
-    cross.addColorStop(0.46, 'rgba(255,255,255,0)');
-    cross.addColorStop(0.5, `rgba(255,255,255,${crossPeak})`);
-    cross.addColorStop(0.54, 'rgba(255,255,255,0)');
-    cross.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = cross;
-    ctx.fillRect(-size * 0.5, -size * 0.22, size, size * 0.44);
-    ctx.restore();
-
-    const hotspotX = cx + Math.cos(shineAngle) * size * 0.22;
-    const hotspotY = cy + Math.sin(shineAngle) * size * 0.22;
-    const hotspot = ctx.createRadialGradient(hotspotX, hotspotY, 0, hotspotX, hotspotY, size * 0.28);
-    const hotPeak = dark ? 0.42 * shineStrength : 0.82 * shineStrength;
+    const hotspotX = cx + Math.cos(shineAngle) * size * 0.18;
+    const hotspotY = cy + Math.sin(shineAngle) * size * 0.18;
+    const hotspot = ctx.createRadialGradient(hotspotX, hotspotY, 0, hotspotX, hotspotY, size * 0.2);
+    const hotPeak = dark ? 0.18 * shineStrength : 0.32 * shineStrength;
     hotspot.addColorStop(0, `rgba(255,255,255,${hotPeak})`);
-    hotspot.addColorStop(0.35, `rgba(255,255,255,${hotPeak * 0.45})`);
+    hotspot.addColorStop(0.4, `rgba(255,255,255,${hotPeak * 0.35})`);
     hotspot.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = hotspot;
     ctx.fillRect(0, 0, size, size);
@@ -468,10 +474,20 @@ function makeFaceTexture(steel, accent, darkSteel) {
   ctx.fillRect(0, 0, size, size);
 
   ctx.save();
-  ctx.globalAlpha = 0.07;
-  for (let i = 0; i < size; i += 4) {
-    ctx.fillStyle = i % 8 === 0 ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.15)';
-    ctx.fillRect(0, i, size, 1);
+  ctx.globalAlpha = darkSteel ? 0.045 : 0.035;
+  for (let x = 0; x < size; x += 2) {
+    const n = ((x * 17 + 31) % 97) / 97;
+    ctx.fillStyle = n > 0.5 ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.12)';
+    ctx.fillRect(x, 0, 1, size);
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.globalAlpha = darkSteel ? 0.04 : 0.028;
+  for (let y = 0; y < size; y += 3) {
+    const n = ((y * 13 + 7) % 89) / 89;
+    ctx.fillStyle = n > 0.55 ? 'rgba(255,255,255,0.28)' : 'rgba(0,0,0,0.1)';
+    ctx.fillRect(0, y, size, 1);
   }
   ctx.restore();
 
@@ -488,11 +504,23 @@ function makeFaceTexture(steel, accent, darkSteel) {
 
   ctx.save();
   ctx.globalCompositeOperation = 'overlay';
-  const sheen = ctx.createLinearGradient(0, 0, size * 0.6, size);
-  sheen.addColorStop(0, darkSteel ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.52)');
-  sheen.addColorStop(0.35, darkSteel ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.14)');
-  sheen.addColorStop(1, darkSteel ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.04)');
+  const sheen = ctx.createLinearGradient(0, 0, size * 0.55, size);
+  sheen.addColorStop(0, darkSteel ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.58)');
+  sheen.addColorStop(0.3, darkSteel ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.22)');
+  sheen.addColorStop(0.55, darkSteel ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.08)');
+  sheen.addColorStop(1, darkSteel ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.06)');
   ctx.fillStyle = sheen;
+  ctx.fillRect(0, 0, size, size);
+  ctx.restore();
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'soft-light';
+  ctx.globalAlpha = darkSteel ? 0.35 : 0.28;
+  const faceChrome = ctx.createRadialGradient(cx, cy * 0.9, size * 0.08, cx, cy, size * 0.62);
+  faceChrome.addColorStop(0, 'rgba(255,255,255,0.55)');
+  faceChrome.addColorStop(0.45, 'rgba(255,255,255,0.12)');
+  faceChrome.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = faceChrome;
   ctx.fillRect(0, 0, size, size);
   ctx.restore();
 
@@ -556,8 +584,8 @@ function initBuilderCube() {
   rimLight.position.set(3, 1, -2);
   scene.add(rimLight);
 
-  const fillLight = new THREE.DirectionalLight(0x4a8f8f, 0.35);
-  fillLight.position.set(0, -2, 2);
+  const fillLight = new THREE.DirectionalLight(0x4a8f8f, 0.5);
+  fillLight.position.set(0.5, -3.2, 2.5);
   scene.add(fillLight);
 
   let shineStrength = 0;
@@ -572,9 +600,11 @@ function initBuilderCube() {
     () =>
       new THREE.MeshStandardMaterial({
         metalness: 0.99,
-        roughness: 0.07,
+        roughness: 0.06,
         envMap: envMap.texture,
-        envMapIntensity: 1.0,
+        envMapIntensity: 1.55,
+        clearcoat: 1,
+        clearcoatRoughness: 0.05,
         color: 0xffffff,
       })
   );
@@ -661,6 +691,8 @@ function initBuilderCube() {
       materials[i].metalness = palette.metalness;
       materials[i].roughness = palette.roughness;
       materials[i].envMapIntensity = palette.envIntensity;
+      materials[i].clearcoat = 1;
+      materials[i].clearcoatRoughness = 0.05;
       materials[i].color.setHex(palette.steelTint);
       materials[i].emissive.copy(hexToThreeColor(face.accent));
       materials[i].emissiveIntensity = 0;
@@ -831,7 +863,7 @@ function initBuilderCube() {
       shineStrength = THREE.MathUtils.lerp(shineStrength, 0, 0.14);
     } else {
       const darkSteel = isDarkSteelTheme(getThemeKey());
-      const targetStrength = pointerInside ? (darkSteel ? 0.85 : 1) : 0;
+      const targetStrength = pointerInside ? (darkSteel ? 0.55 : 0.65) : 0;
       shineStrength = THREE.MathUtils.lerp(shineStrength, targetStrength, 0.12);
     }
 
@@ -866,7 +898,7 @@ function initBuilderCube() {
         mat.metalness = baseMetalness;
         mat.roughness = baseRoughness;
         const darkSteel = isDarkSteelTheme(getThemeKey());
-        const envBoost = shineStrength * (darkSteel ? 0.32 : 0.55);
+        const envBoost = shineStrength * (darkSteel ? 0.1 : 0.14);
         mat.envMapIntensity = baseEnvIntensity + envBoost;
       }
     });
