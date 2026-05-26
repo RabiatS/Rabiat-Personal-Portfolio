@@ -105,7 +105,7 @@ function initBuilderCube() {
   const cubeGroup = new THREE.Group();
   scene.add(cubeGroup);
 
-  const geometry = new THREE.BoxGeometry(1.35, 1.35, 1.35);
+  const geometry = new THREE.BoxGeometry(0.92, 0.92, 0.92);
   const materials = FACES.map((face) => {
     const map = makeFaceTexture(face.label, face.bg, face.accent);
     return new THREE.MeshStandardMaterial({
@@ -129,6 +129,9 @@ function initBuilderCube() {
   let running = true;
   let scrollProgress = 0;
   let entryProgress = 0;
+  let lastScrollY = window.scrollY;
+  let scrollVelocity = 0;
+  let idleTime = 0;
 
   function resize() {
     if (window.innerWidth < DESKTOP_MIN) {
@@ -149,32 +152,45 @@ function initBuilderCube() {
     const scrollY = window.scrollY;
     const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
 
+    scrollVelocity = THREE.MathUtils.lerp(scrollVelocity, scrollY - lastScrollY, 0.18);
+    lastScrollY = scrollY;
+
     entryProgress = easeOutCubic(
       THREE.MathUtils.clamp((scrollY - heroH * 0.15) / (heroH * 0.85), 0, 1)
     );
     scrollProgress = THREE.MathUtils.clamp(scrollY / maxScroll, 0, 1);
   }
 
-  function updateCube() {
+  function updateCube(dt) {
     readScroll();
+    idleTime += dt;
 
-    const slideX = THREE.MathUtils.lerp(3.2, 0.55, entryProgress);
-    const slideY = THREE.MathUtils.lerp(-0.45, 0.05, entryProgress);
-    cubeGroup.position.set(slideX, slideY, 0);
+    const slideX = THREE.MathUtils.lerp(2.4, 0.42, entryProgress);
+    const slideY = THREE.MathUtils.lerp(-0.35, 0.02, entryProgress);
+    const idleFloat = Math.sin(idleTime * 0.0012) * 0.04;
+    cubeGroup.position.set(slideX, slideY + idleFloat, 0);
 
-    cube.rotation.y = scrollProgress * Math.PI * 2.4 + entryProgress * 0.6;
-    cube.rotation.x = 0.28 + Math.sin(scrollProgress * Math.PI) * 0.22;
-    cube.rotation.z = Math.sin(scrollProgress * Math.PI * 0.5) * 0.08;
+    const scrollSpin = scrollProgress * Math.PI * 3.2;
+    const velocityTilt = THREE.MathUtils.clamp(scrollVelocity * 0.004, -0.35, 0.35);
+    const idleRotate = idleTime * 0.00035;
 
-    const scale = THREE.MathUtils.lerp(0.65, 1, entryProgress);
+    cube.rotation.y = scrollSpin + entryProgress * 0.5 + idleRotate;
+    cube.rotation.x = 0.22 + Math.sin(scrollProgress * Math.PI * 1.4) * 0.18 + velocityTilt;
+    cube.rotation.z = Math.sin(scrollProgress * Math.PI * 0.6) * 0.06 + Math.sin(idleTime * 0.0009) * 0.03;
+
+    const scale = THREE.MathUtils.lerp(0.55, 0.72, entryProgress);
     cubeGroup.scale.setScalar(scale);
 
     host.style.opacity = String(entryProgress);
   }
 
-  function render() {
+  let lastFrame = performance.now();
+
+  function render(now) {
     if (!running) return;
-    updateCube();
+    const dt = Math.min(48, now - lastFrame);
+    lastFrame = now;
+    updateCube(dt);
     renderer.render(scene, camera);
     rafId = requestAnimationFrame(render);
   }
