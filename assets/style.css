@@ -3694,3 +3694,28 @@ input[type="search"]:focus {
     animation: none;
   }
 }
+
+/* Builder cube — unlocked scroll companion (desktop, index only) */
+.builder-cube-host {
+  position: fixed;
+  top: var(--header-height);
+  right: 0;
+  width: min(42vw, 520px);
+  height: calc(100vh - var(--header-height));
+  pointer-events: none;
+  z-index: 40;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.builder-cube-host canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+@media (max-width: 1023px) {
+  .builder-cube-host {
+    display: none !important;
+  }
+}
