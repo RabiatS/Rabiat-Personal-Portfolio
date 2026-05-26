@@ -4,6 +4,9 @@
 import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js';
 
 const FALL_DURATION = 1.75;
+const RESET_DURATION = 1.35;
+const AUTO_RESET_DELAY = 6500;
+const MANUAL_RESET_COOLDOWN = 2200;
 const FACE_NORMALS = [
   [1, 0, 0],
   [-1, 0, 0],
@@ -23,15 +26,23 @@ export function createCubeFallController(ctx) {
     glowLines,
     renderer,
     prefersReducedMotion,
+    baseMaterialState,
     onFallStart,
     onFallComplete,
+    onResetStart,
+    onResetComplete,
   } = ctx;
 
-  let state = 'idle'; // idle | falling | landed
+  let state = 'idle'; // idle | falling | landed | resetting
   let dustEl = null;
   let hintEl = null;
   let wiggleTween = null;
-  let landingFaceIndex = 2; // ENGINEER (+Y) default
+  let activeTween = null;
+  let autoResetTimer = 0;
+  let landedAt = 0;
+  let landingFaceIndex = 2;
+  let scrollYBeforeFall = 0;
+  let fallScale = 1;
 
   function getFooter() {
     return document.querySelector('footer.footer');
@@ -63,14 +74,36 @@ export function createCubeFallController(ctx) {
     host.style.opacity = '1';
   }
 
-  function setHeavyMaterials() {
+  function clearHostInlineStyles() {
+    host.style.position = '';
+    host.style.top = '';
+    host.style.left = '';
+    host.style.right = '';
+    host.style.width = '';
+    host.style.height = '';
+  }
+
+  function applyHeavyFeel() {
     materials.forEach((mat) => {
-      mat.metalness = 0.97;
-      mat.roughness = 0.14;
-      mat.envMapIntensity = Math.max(0.2, mat.envMapIntensity * 0.5);
+      mat.metalness = Math.min(0.96, mat.metalness + 0.02);
+      mat.roughness = Math.max(0.16, mat.roughness - 0.03);
+      mat.envMapIntensity = Math.max(mat.envMapIntensity * 0.82, 0.45);
       mat.emissiveIntensity = 0;
     });
-    edgeLines.material.opacity = 0.32;
+    edgeLines.material.opacity = Math.max(edgeLines.material.opacity * 0.85, 0.48);
+    glowLines.material.opacity = 0;
+  }
+
+  function restoreBaseMaterials() {
+    const base = baseMaterialState?.();
+    if (!base) return;
+    materials.forEach((mat) => {
+      mat.metalness = base.metalness;
+      mat.roughness = base.roughness;
+      mat.envMapIntensity = base.envIntensity;
+      mat.emissiveIntensity = 0;
+    });
+    edgeLines.material.opacity = base.edgeOpacity ?? 0.72;
     glowLines.material.opacity = 0;
   }
 
@@ -87,12 +120,30 @@ export function createCubeFallController(ctx) {
 
   function ensureHintEl() {
     if (hintEl) return hintEl;
-    hintEl = document.createElement('div');
+    hintEl = document.createElement('button');
+    hintEl.type = 'button';
     hintEl.className = 'builder-cube-heavy-hint';
     hintEl.textContent = 'Too heavy.';
-    hintEl.setAttribute('aria-hidden', 'true');
+    hintEl.setAttribute('aria-label', 'Too heavy. Click to float the cube back up.');
     host.appendChild(hintEl);
+    hintEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      hideHeavyHint();
+      requestReset();
+    });
     return hintEl;
+  }
+
+  function showHeavyHint() {
+    const el = ensureHintEl();
+    el.classList.add('is-visible');
+    clearTimeout(showHeavyHint._t);
+    showHeavyHint._t = setTimeout(() => el.classList.remove('is-visible'), 2200);
+  }
+
+  function hideHeavyHint() {
+    hintEl?.classList.remove('is-visible');
+    clearTimeout(showHeavyHint._t);
   }
 
   function microShake() {
@@ -117,48 +168,71 @@ export function createCubeFallController(ctx) {
     materials.forEach((mat, i) => {
       gsap.fromTo(
         mat,
-        { emissiveIntensity: i === finalFaceIndex ? 0.06 : 0 },
+        { emissiveIntensity: i === finalFaceIndex ? 0.05 : 0 },
         { emissiveIntensity: 0, duration: 0.5, ease: 'power2.out' }
       );
     });
+  }
+
+  function clearFallClasses() {
+    host.classList.remove('builder-cube-host--falling', 'builder-cube-host--landed');
+    document.documentElement.classList.remove('builder-cube-fallen');
+  }
+
+  function scheduleAutoReset() {
+    clearTimeout(autoResetTimer);
+    autoResetTimer = window.setTimeout(() => {
+      if (state === 'landed') requestReset();
+    }, AUTO_RESET_DELAY);
+  }
+
+  function finishLanding(coords) {
+    state = 'landed';
+    landedAt = performance.now();
+    host.classList.remove('builder-cube-host--falling');
+    host.classList.add('builder-cube-host--landed');
+    document.documentElement.classList.add('builder-cube-fallen');
+    cubeGroup.scale.setScalar(fallScale);
+
+    const dustX = coords.landLeft + coords.hostW * 0.15;
+    const dustY = coords.landTop + coords.hostH * 0.82;
+    spawnDust(dustX, dustY);
+    microShake();
+    settleCube(2);
+    onFallComplete?.({ landed: true });
+    scheduleAutoReset();
   }
 
   function instantLand() {
     const coords = computeLandingCoords();
     if (!coords) return;
 
+    scrollYBeforeFall = window.scrollY;
     const startRect = host.getBoundingClientRect();
+    fallScale = cubeGroup.scale.x;
     pinHostAbsolute(startRect);
-    setHeavyMaterials();
+    applyHeavyFeel();
     onFallStart?.();
 
     window.scrollTo(0, coords.maxScroll);
     host.style.top = `${coords.landTop}px`;
     host.style.left = `${coords.landLeft}px`;
 
-    state = 'landed';
-    host.classList.remove('builder-cube-host--falling');
-    host.classList.add('builder-cube-host--landed');
-    document.documentElement.classList.add('builder-cube-fallen');
-
-    const dustX = coords.landLeft + coords.hostW * 0.15;
-    const dustY = coords.landTop + coords.hostH * 0.82;
-    spawnDust(dustX, dustY);
-    settleCube(2);
-    onFallComplete?.({ landed: true });
+    finishLanding(coords);
   }
 
   function animateFall() {
     const coords = computeLandingCoords();
     if (!coords) return;
 
+    scrollYBeforeFall = window.scrollY;
     const startRect = host.getBoundingClientRect();
+    fallScale = cubeGroup.scale.x;
     pinHostAbsolute(startRect);
-    setHeavyMaterials();
+    applyHeavyFeel();
     onFallStart?.();
 
     state = 'falling';
-    document.documentElement.classList.add('builder-cube-fall-scroll-lock');
 
     const proxy = {
       scrollY: window.scrollY,
@@ -167,31 +241,20 @@ export function createCubeFallController(ctx) {
       rotY: cube.rotation.y,
       rotX: cube.rotation.x,
       rotZ: cube.rotation.z,
-      squash: 1,
     };
 
     const tumbleRotY = proxy.rotY + Math.PI * 2.4;
     const tumbleRotX = proxy.rotX + Math.PI * 0.85;
-    const baseScale = cubeGroup.scale.x;
 
-    const tl = gsap.timeline({
+    activeTween?.kill();
+    activeTween = gsap.timeline({
       onComplete: () => {
-        document.documentElement.classList.remove('builder-cube-fall-scroll-lock');
-        state = 'landed';
-        host.classList.remove('builder-cube-host--falling');
-        host.classList.add('builder-cube-host--landed');
-        document.documentElement.classList.add('builder-cube-fallen');
-
-        const dustX = coords.landLeft + coords.hostW * 0.15;
-        const dustY = coords.landTop + coords.hostH * 0.82;
-        spawnDust(dustX, dustY);
-        microShake();
-        settleCube(2);
-        onFallComplete?.({ landed: true });
+        activeTween = null;
+        finishLanding(coords);
       },
     });
 
-    tl.to(
+    activeTween.to(
       proxy,
       {
         scrollY: coords.maxScroll,
@@ -213,31 +276,94 @@ export function createCubeFallController(ctx) {
       },
       0
     );
+  }
 
-    tl.to(
+  function requestReset() {
+    if (state !== 'landed') return false;
+    clearTimeout(autoResetTimer);
+    hideHeavyHint();
+    if (prefersReducedMotion) {
+      instantReset();
+      return true;
+    }
+    animateReset();
+    return true;
+  }
+
+  function instantReset() {
+    state = 'resetting';
+    onResetStart?.();
+    clearFallClasses();
+    clearHostInlineStyles();
+    restoreBaseMaterials();
+    window.scrollTo(0, scrollYBeforeFall);
+    cubeGroup.scale.setScalar(fallScale);
+    state = 'idle';
+    onResetComplete?.();
+  }
+
+  function animateReset() {
+    const coords = computeLandingCoords();
+    if (!coords) {
+      instantReset();
+      return;
+    }
+
+    state = 'resetting';
+    onResetStart?.();
+
+    const hostTop = parseFloat(host.style.top) || coords.landTop;
+    const hostLeft = parseFloat(host.style.left) || coords.landLeft;
+    const headerHeight =
+      parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 64;
+    const fixedWidth = host.offsetWidth || Math.min(window.innerWidth * 0.28, 360);
+    const targetLeft = Math.max(0, window.innerWidth - fixedWidth);
+    const endTop = scrollYBeforeFall + headerHeight;
+
+    const proxy = {
+      scrollY: window.scrollY,
+      top: hostTop,
+      left: hostLeft,
+      rotY: cube.rotation.y,
+      rotX: cube.rotation.x,
+      rotZ: cube.rotation.z,
+    };
+
+    activeTween?.kill();
+    activeTween = gsap.timeline({
+      onComplete: () => {
+        activeTween = null;
+        clearFallClasses();
+        clearHostInlineStyles();
+        restoreBaseMaterials();
+        cubeGroup.scale.setScalar(fallScale);
+        cubeGroup.rotation.x = -0.12;
+        state = 'idle';
+        onResetComplete?.();
+      },
+    });
+
+    activeTween.to(
       proxy,
       {
-        squash: 0.88,
-        duration: 0.12,
-        ease: 'power2.in',
+        scrollY: scrollYBeforeFall,
+        top: endTop,
+        left: targetLeft,
+        rotY: proxy.rotY - Math.PI * 0.35,
+        rotX: 0.48,
+        rotZ: 0,
+        duration: RESET_DURATION,
+        ease: 'power2.inOut',
         onUpdate: () => {
-          cubeGroup.scale.setScalar(baseScale * proxy.squash);
+          window.scrollTo(0, proxy.scrollY);
+          host.style.top = `${proxy.top}px`;
+          host.style.left = `${proxy.left}px`;
+          cube.rotation.y = proxy.rotY;
+          cube.rotation.x = proxy.rotX;
+          cube.rotation.z = proxy.rotZ;
         },
       },
-      FALL_DURATION - 0.12
-    );
-
-    tl.to(
-      proxy,
-      {
-        squash: 1,
-        duration: 0.22,
-        ease: 'elastic.out(1, 0.5)',
-        onUpdate: () => {
-          cubeGroup.scale.setScalar(baseScale * proxy.squash);
-        },
-      },
-      FALL_DURATION
+      0
     );
   }
 
@@ -249,13 +375,6 @@ export function createCubeFallController(ctx) {
     }
     animateFall();
     return true;
-  }
-
-  function showHeavyHint() {
-    const el = ensureHintEl();
-    el.classList.add('is-visible');
-    clearTimeout(showHeavyHint._t);
-    showHeavyHint._t = setTimeout(() => el.classList.remove('is-visible'), 2200);
   }
 
   function wiggleRefusal() {
@@ -271,6 +390,9 @@ export function createCubeFallController(ctx) {
   function handleClick() {
     if (state === 'idle') return triggerFall();
     if (state === 'landed') {
+      if (performance.now() - landedAt >= MANUAL_RESET_COOLDOWN) {
+        return requestReset();
+      }
       wiggleRefusal();
       return true;
     }
@@ -287,10 +409,16 @@ export function createCubeFallController(ctx) {
     get isFalling() {
       return state === 'falling';
     },
+    get isResetting() {
+      return state === 'resetting';
+    },
     handleClick,
     triggerFall,
+    requestReset,
     wiggleRefusal,
     dispose() {
+      clearTimeout(autoResetTimer);
+      activeTween?.kill();
       wiggleTween?.kill();
       dustEl?.remove();
       hintEl?.remove();

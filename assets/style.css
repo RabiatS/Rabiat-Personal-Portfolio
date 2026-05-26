@@ -3830,16 +3830,10 @@ html.builder-mode .builder-cube-host {
   z-index: 12;
   pointer-events: auto;
   opacity: 1 !important;
-  height: min(22vw, 220px) !important;
-  width: min(22vw, 220px) !important;
 }
 
 .builder-cube-host--landed canvas {
   cursor: not-allowed;
-}
-
-html.builder-cube-fall-scroll-lock {
-  overflow: hidden;
 }
 
 html.builder-cube-impact-shake {
@@ -3896,14 +3890,23 @@ html.builder-cube-impact-shake {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted, #888);
+  background: none;
+  border: none;
+  padding: 0.2rem 0.45rem;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s ease;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .builder-cube-heavy-hint.is-visible {
   opacity: 0.72;
+  pointer-events: auto;
+}
+
+.builder-cube-heavy-hint.is-visible:hover {
+  opacity: 0.95;
 }
 
 html.builder-cube-fallen .builder-cube-host {
