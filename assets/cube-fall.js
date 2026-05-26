@@ -52,7 +52,6 @@ export function createCubeFallController(ctx) {
     const footer = getFooter();
     if (!footer) return null;
 
-    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
     const hostW = host.offsetWidth || 320;
     const hostH = host.offsetHeight || 400;
 
@@ -60,7 +59,7 @@ export function createCubeFallController(ctx) {
     const landTop = footerDocTop - hostH * 0.72 - 12;
     const landLeft = Math.max(24, window.innerWidth - hostW - 48);
 
-    return { landTop, landLeft, maxScroll, hostW, hostH };
+    return { landTop, landLeft, hostW, hostH };
   }
 
   function pinHostAbsolute(startRect) {
@@ -214,7 +213,6 @@ export function createCubeFallController(ctx) {
     applyHeavyFeel();
     onFallStart?.();
 
-    window.scrollTo(0, coords.maxScroll);
     host.style.top = `${coords.landTop}px`;
     host.style.left = `${coords.landLeft}px`;
 
@@ -235,7 +233,6 @@ export function createCubeFallController(ctx) {
     state = 'falling';
 
     const proxy = {
-      scrollY: window.scrollY,
       top: startRect.top + window.scrollY,
       left: startRect.left,
       rotY: cube.rotation.y,
@@ -257,7 +254,6 @@ export function createCubeFallController(ctx) {
     activeTween.to(
       proxy,
       {
-        scrollY: coords.maxScroll,
         top: coords.landTop,
         left: coords.landLeft,
         rotY: tumbleRotY,
@@ -266,7 +262,6 @@ export function createCubeFallController(ctx) {
         duration: FALL_DURATION,
         ease: 'power3.in',
         onUpdate: () => {
-          window.scrollTo(0, proxy.scrollY);
           host.style.top = `${proxy.top}px`;
           host.style.left = `${proxy.left}px`;
           cube.rotation.y = proxy.rotY;
@@ -296,7 +291,6 @@ export function createCubeFallController(ctx) {
     clearFallClasses();
     clearHostInlineStyles();
     restoreBaseMaterials();
-    window.scrollTo(0, scrollYBeforeFall);
     cubeGroup.scale.setScalar(fallScale);
     state = 'idle';
     onResetComplete?.();
@@ -321,7 +315,6 @@ export function createCubeFallController(ctx) {
     const endTop = scrollYBeforeFall + headerHeight;
 
     const proxy = {
-      scrollY: window.scrollY,
       top: hostTop,
       left: hostLeft,
       rotY: cube.rotation.y,
@@ -346,7 +339,6 @@ export function createCubeFallController(ctx) {
     activeTween.to(
       proxy,
       {
-        scrollY: scrollYBeforeFall,
         top: endTop,
         left: targetLeft,
         rotY: proxy.rotY - Math.PI * 0.35,
@@ -355,7 +347,6 @@ export function createCubeFallController(ctx) {
         duration: RESET_DURATION,
         ease: 'power2.inOut',
         onUpdate: () => {
-          window.scrollTo(0, proxy.scrollY);
           host.style.top = `${proxy.top}px`;
           host.style.left = `${proxy.left}px`;
           cube.rotation.y = proxy.rotY;

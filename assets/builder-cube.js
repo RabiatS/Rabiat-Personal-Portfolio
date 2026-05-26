@@ -68,8 +68,8 @@ function buildThemePalette(themeKey) {
   const steelBase = darkSteel ? '#2a2a32' : '#d4d4da';
   const steelMid = darkSteel ? '#1c1c24' : '#e8e8ee';
   const steelDeep = darkSteel ? '#121218' : '#b0b0b8';
-  const labelInk = darkSteel ? '#f0f0f4' : '#1a1a22';
-  const labelShadow = darkSteel ? '#050508' : '#4a4a54';
+  const labelInk = darkSteel ? '#ffffff' : '#0a0a0e';
+  const labelShadow = darkSteel ? '#000000' : '#5a5a64';
 
   switch (themeKey) {
     case 'rabiat':
@@ -87,7 +87,7 @@ function buildThemePalette(themeKey) {
         edge: '#b81e2c',
         glow: '#b81e2c',
         steelTint: 0xc0c0c8,
-        envIntensity: 0.62,
+        envIntensity: 0.38,
         metalness: 0.93,
         roughness: 0.2,
         lights: { ambient: 0xffffff, ambientI: 0.42, key: 0xffffff, keyI: 0.95, rim: 0xb81e2c, rimI: 0.45, fill: 0x4a8f8f, fillI: 0.28 },
@@ -107,7 +107,7 @@ function buildThemePalette(themeKey) {
         edge: '#000000',
         glow: '#333333',
         steelTint: 0xe8e8ec,
-        envIntensity: 0.88,
+        envIntensity: 0.48,
         metalness: 0.94,
         roughness: 0.18,
         lights: { ambient: 0xffffff, ambientI: 0.7, key: 0xffffff, keyI: 1.05, rim: 0x333333, rimI: 0.18, fill: 0xffffff, fillI: 0.22 },
@@ -125,7 +125,7 @@ function buildThemePalette(themeKey) {
         edge: '#ff006e',
         glow: '#8338ec',
         steelTint: 0x909098,
-        envIntensity: 0.58,
+        envIntensity: 0.36,
         metalness: 0.92,
         roughness: 0.22,
         lights: { ambient: 0xffffff, ambientI: 0.38, key: 0xffffff, keyI: 0.9, rim: 0x8338ec, rimI: 0.42, fill: 0x06ffa5, fillI: 0.25 },
@@ -145,7 +145,7 @@ function buildThemePalette(themeKey) {
         edge: accent,
         glow: primary,
         steelTint: 0x888890,
-        envIntensity: 0.55,
+        envIntensity: 0.34,
         metalness: 0.93,
         roughness: 0.21,
         lights: { ambient: 0xffffff, ambientI: 0.35, key: 0xf3f2f4, keyI: 0.82, rim: primary, rimI: 0.38, fill: accent, fillI: 0.22 },
@@ -165,7 +165,7 @@ function buildThemePalette(themeKey) {
         edge: accent,
         glow: primary,
         steelTint: 0xffffff,
-        envIntensity: 0.9,
+        envIntensity: 0.5,
         metalness: 0.94,
         roughness: 0.17,
         lights: { ambient: 0xffffff, ambientI: 0.72, key: 0xffffff, keyI: 1.15, rim: primary, rimI: 0.28, fill: accent, fillI: 0.18 },
@@ -246,7 +246,7 @@ function makeEnvMap(themeKey) {
 }
 
 function drawLabelPlate(ctx, cx, cy, w, h, darkSteel) {
-  const r = 10;
+  const r = 12;
   ctx.beginPath();
   ctx.moveTo(cx - w / 2 + r, cy - h / 2);
   ctx.lineTo(cx + w / 2 - r, cy - h / 2);
@@ -258,38 +258,50 @@ function drawLabelPlate(ctx, cx, cy, w, h, darkSteel) {
   ctx.lineTo(cx - w / 2, cy - h / 2 + r);
   ctx.quadraticCurveTo(cx - w / 2, cy - h / 2, cx - w / 2 + r, cy - h / 2);
   ctx.closePath();
-  ctx.fillStyle = darkSteel ? 'rgba(6, 6, 10, 0.62)' : 'rgba(255, 255, 255, 0.78)';
+  ctx.fillStyle = darkSteel ? 'rgba(8, 8, 12, 0.92)' : 'rgba(255, 255, 255, 0.94)';
   ctx.fill();
-  ctx.strokeStyle = darkSteel ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.1)';
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = darkSteel ? 'rgba(255, 255, 255, 0.28)' : 'rgba(0, 0, 0, 0.22)';
+  ctx.lineWidth = 2;
   ctx.stroke();
 }
 
 function drawEngravedLabel(ctx, label, cx, cy, fontSize, textColor, labelShadow, darkSteel) {
-  ctx.font = `700 ${fontSize}px Rajdhani, system-ui, sans-serif`;
+  ctx.font = `900 ${fontSize}px Rajdhani, system-ui, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  const plateW = Math.min(420, label.length * (fontSize * 0.62) + 48);
-  const plateH = fontSize * 1.55;
+  const plateW = Math.min(440, label.length * (fontSize * 0.66) + 56);
+  const plateH = fontSize * 1.65;
   drawLabelPlate(ctx, cx, cy, plateW, plateH, darkSteel);
 
   ctx.fillStyle = labelShadow;
   ctx.fillText(label, cx + 2, cy + 3);
-  ctx.fillText(label, cx + 1, cy + 2);
 
-  ctx.fillStyle = darkSteel ? 'rgba(255, 255, 255, 0.42)' : 'rgba(255, 255, 255, 0.92)';
-  ctx.fillText(label, cx - 1, cy - 1);
-
-  ctx.strokeStyle = darkSteel ? 'rgba(0, 0, 0, 0.72)' : 'rgba(0, 0, 0, 0.42)';
-  ctx.lineWidth = darkSteel ? 1.4 : 1;
+  ctx.strokeStyle = darkSteel ? 'rgba(0, 0, 0, 0.85)' : 'rgba(0, 0, 0, 0.55)';
+  ctx.lineWidth = darkSteel ? 2 : 1.5;
   ctx.strokeText(label, cx, cy);
 
   ctx.fillStyle = textColor;
   ctx.fillText(label, cx, cy);
 }
 
-function makeFaceTexture(label, steel, accent, textColor, labelShadow, darkSteel) {
+function makeLabelOverlayTexture(label, textColor, labelShadow, darkSteel) {
+  const size = 512;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  const fontSize = label.length > 9 ? 46 : label.length > 7 ? 52 : 60;
+  drawEngravedLabel(ctx, label, size / 2, size / 2, fontSize, textColor, labelShadow, darkSteel);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 8;
+  return texture;
+}
+
+function makeFaceTexture(steel, accent, darkSteel) {
   const size = 512;
   const canvas = document.createElement('canvas');
   canvas.width = size;
@@ -334,9 +346,6 @@ function makeFaceTexture(label, steel, accent, textColor, labelShadow, darkSteel
   ctx.fillStyle = sheen;
   ctx.fillRect(0, 0, size, size);
   ctx.restore();
-
-  const fontSize = label.length > 9 ? 38 : label.length > 7 ? 44 : 52;
-  drawEngravedLabel(ctx, label, cx, cy, fontSize, textColor, labelShadow, darkSteel);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -420,6 +429,29 @@ function initBuilderCube() {
   const cube = new THREE.Mesh(geometry, materials);
   cubeGroup.add(cube);
 
+  const labelOffset = 0.462;
+  const labelPlanes = FACE_LABELS.map((label, i) => {
+    const normal = FACE_NORMALS[i];
+    const mat = new THREE.MeshBasicMaterial({
+      transparent: true,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -2,
+      polygonOffsetUnits: -2,
+    });
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(0.76, 0.76), mat);
+    plane.position.set(normal.x * labelOffset, normal.y * labelOffset, normal.z * labelOffset);
+    plane.lookAt(
+      plane.position.x + normal.x,
+      plane.position.y + normal.y,
+      plane.position.z + normal.z
+    );
+    plane.userData.label = label;
+    plane.renderOrder = 2;
+    cube.add(plane);
+    return plane;
+  });
+
   const edges = new THREE.EdgesGeometry(geometry);
   const edgeLines = new THREE.LineSegments(
     edges,
@@ -434,19 +466,6 @@ function initBuilderCube() {
   );
   glowLines.scale.setScalar(1.012);
   cube.add(glowLines);
-
-  const glintMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.55, 0.018),
-    new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-    })
-  );
-  cube.add(glintMesh);
 
   let baseRimIntensity = 0.65;
   let baseEdgeOpacity = 0.72;
@@ -475,14 +494,7 @@ function initBuilderCube() {
     FACE_LABELS.forEach((label, i) => {
       const face = palette.faces[i];
       if (materials[i].map) materials[i].map.dispose();
-      materials[i].map = makeFaceTexture(
-        label,
-        face.steel,
-        face.accent,
-        palette.text,
-        palette.labelShadow,
-        darkSteel
-      );
+      materials[i].map = makeFaceTexture(face.steel, face.accent, darkSteel);
       materials[i].envMap = envMap;
       materials[i].metalness = palette.metalness;
       materials[i].roughness = palette.roughness;
@@ -491,6 +503,11 @@ function initBuilderCube() {
       materials[i].emissive.copy(hexToThreeColor(face.accent));
       materials[i].emissiveIntensity = 0;
       materials[i].needsUpdate = true;
+
+      const labelMat = labelPlanes[i].material;
+      if (labelMat.map) labelMat.map.dispose();
+      labelMat.map = makeLabelOverlayTexture(label, palette.text, palette.labelShadow, darkSteel);
+      labelMat.needsUpdate = true;
     });
 
     edgeLines.material.color.copy(hexToThreeColor(palette.edge));
@@ -525,11 +542,8 @@ function initBuilderCube() {
   let pointerInside = false;
   let hoverAmount = 0;
   let hoverSnap = 0;
-  let nearestFaceIndex = -1;
   let mouseNdc = { x: 0, y: 0 };
   let hoverTilt = { x: 0, y: 0 };
-  let pulsePhase = 0;
-  let glintPhase = 0;
 
   function setPointerFromEvent(e) {
     const rect = renderer.domElement.getBoundingClientRect();
@@ -537,15 +551,6 @@ function initBuilderCube() {
     mouseNdc.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     pointer.x = mouseNdc.x;
     pointer.y = mouseNdc.y;
-  }
-
-  function pickNearestFace() {
-    raycaster.setFromCamera(pointer, camera);
-    const hits = raycaster.intersectObject(cube, false);
-    if (hits.length > 0 && hits[0].face) {
-      return hits[0].face.materialIndex;
-    }
-    return -1;
   }
 
   const fallController = createCubeFallController({
@@ -609,12 +614,10 @@ function initBuilderCube() {
     });
     renderer.domElement.addEventListener('pointerleave', () => {
       pointerInside = false;
-      nearestFaceIndex = -1;
     });
     renderer.domElement.addEventListener('pointermove', (e) => {
       if (fallController.isLanded || fallController.isFalling || fallController.isResetting) return;
       setPointerFromEvent(e);
-      nearestFaceIndex = pickNearestFace();
     });
   }
 
@@ -654,57 +657,29 @@ function initBuilderCube() {
     scrollProgress = THREE.MathUtils.clamp(scrollY / maxScroll, 0, 1);
   }
 
-  function updateGlint(dt) {
-    if (nearestFaceIndex < 0 || hoverAmount < 0.05 || fallActive) {
-      glintMesh.material.opacity = THREE.MathUtils.lerp(glintMesh.material.opacity, 0, 0.15);
-      return;
-    }
-
-    glintPhase += dt * 0.0022;
-    const sweep = Math.sin(glintPhase) * 0.32;
-    const normal = FACE_NORMALS[nearestFaceIndex];
-    glintMesh.position.set(normal.x * 0.462, normal.y * 0.462 + sweep * 0.08, normal.z * 0.462);
-    glintMesh.lookAt(
-      glintMesh.position.x + normal.x,
-      glintMesh.position.y + normal.y,
-      glintMesh.position.z + normal.z
-    );
-    glintMesh.material.opacity = hoverAmount * (0.22 + Math.sin(glintPhase * 1.6) * 0.1);
-  }
-
   function updateHover(dt) {
-    if (!hoverEnabled || fallActive) {
-      glintMesh.material.opacity = 0;
-      return;
-    }
+    if (!hoverEnabled || fallActive) return;
 
     const target = pointerInside ? 1 : 0;
     hoverAmount = THREE.MathUtils.lerp(hoverAmount, target, 0.09);
     hoverSnap = THREE.MathUtils.lerp(hoverSnap, 0, 0.06);
-    pulsePhase += dt * 0.004;
 
     const tiltTargetX = mouseNdc.y * 0.22 * hoverAmount;
     const tiltTargetY = mouseNdc.x * 0.28 * hoverAmount;
     hoverTilt.x = THREE.MathUtils.lerp(hoverTilt.x, tiltTargetX, 0.12);
     hoverTilt.y = THREE.MathUtils.lerp(hoverTilt.y, tiltTargetY, 0.12);
 
-    rimLight.intensity = baseRimIntensity + hoverAmount * 0.28 + hoverSnap * 0.12;
-    edgeLines.material.opacity = baseEdgeOpacity + hoverAmount * 0.08;
-    glowLines.material.opacity = baseGlowOpacity + hoverAmount * 0.22;
+    rimLight.intensity = baseRimIntensity + hoverAmount * 0.12;
+    edgeLines.material.opacity = baseEdgeOpacity + hoverAmount * 0.04;
 
-    const pulse = 0.5 + Math.sin(pulsePhase) * 0.5;
-    materials.forEach((mat, i) => {
-      const isNearest = i === nearestFaceIndex;
-      mat.emissiveIntensity = isNearest ? (0.04 + pulse * 0.06) * hoverAmount : 0;
-      mat.envMapIntensity =
-        baseEnvIntensity + hoverAmount * 0.1 + (isNearest ? pulse * 0.06 * hoverAmount : 0);
+    materials.forEach((mat) => {
+      mat.emissiveIntensity = 0;
       if (!fallController.isFalling) {
         mat.metalness = baseMetalness;
         mat.roughness = baseRoughness;
+        mat.envMapIntensity = baseEnvIntensity;
       }
     });
-
-    updateGlint(dt);
   }
 
   function updateCube(dt) {
@@ -789,8 +764,11 @@ function initBuilderCube() {
     edgeLines.material.dispose();
     glowLines.geometry.dispose();
     glowLines.material.dispose();
-    glintMesh.geometry.dispose();
-    glintMesh.material.dispose();
+    labelPlanes.forEach((plane) => {
+      if (plane.material.map) plane.material.map.dispose();
+      plane.geometry.dispose();
+      plane.material.dispose();
+    });
     renderer.dispose();
   }
 
