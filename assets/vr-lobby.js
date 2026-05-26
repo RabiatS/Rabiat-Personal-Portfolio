@@ -7,13 +7,127 @@
   const COLORS = {
     primary: '#7c3aed',
     accent: '#ec4899',
-    heroBase: '#14121f',
-    text: '#f1f5f9',
-    textMuted: '#94a3b8',
-    glass: '#1a1f2e',
+    heroBase: '#151416',
+    heroWash: '#1e1828',
+    heroWash2: '#221a26',
+    text: '#ffffff',
+    textMuted: '#cbd5e1',
+    gradHi: '#ffffff',
+    gradLo: '#e0e7ff',
+    glass: 'rgba(255, 255, 255, 0.08)',
+    glassBorder: 'rgba(255, 255, 255, 0.22)',
+    glassPill: 'rgba(255, 255, 255, 0.14)',
   };
 
+  const TEX = { star: null, heroBg: null, btnGrad: null };
+  const VR_FONT = 'exo2bold';
   let lobbyData = null;
+
+  function parseCssColor(str) {
+    if (!str) return null;
+    str = String(str).trim();
+    if (str.startsWith('#')) {
+      const h = str.slice(1);
+      const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+      if (full.length !== 6) return null;
+      return {
+        r: parseInt(full.slice(0, 2), 16),
+        g: parseInt(full.slice(2, 4), 16),
+        b: parseInt(full.slice(4, 6), 16),
+      };
+    }
+    const m = str.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/);
+    if (m) return { r: +m[1], g: +m[2], b: +m[3] };
+    return null;
+  }
+
+  function syncSiteTheme() {
+    const root = document.documentElement;
+    const cs = getComputedStyle(root);
+    const primary = cs.getPropertyValue('--primary').trim() || COLORS.primary;
+    const accent = cs.getPropertyValue('--accent').trim() || COLORS.accent;
+    const flowBase = cs.getPropertyValue('--flow-base').trim() || '#faf9fc';
+    Object.assign(COLORS, {
+      primary,
+      accent,
+      heroBase: root.classList.contains('dark') ? '#151416' : flowBase,
+      heroWash: root.classList.contains('dark')
+        ? `color-mix(in srgb, ${primary} 12%, #151416)`
+        : `color-mix(in srgb, ${primary} 18%, ${flowBase})`,
+      heroWash2: root.classList.contains('dark')
+        ? `color-mix(in srgb, ${accent} 10%, #151416)`
+        : `color-mix(in srgb, ${accent} 14%, ${flowBase})`,
+      text: root.classList.contains('dark') ? '#ffffff' : '#1a1a1a',
+      textMuted: cs.getPropertyValue('--text-muted').trim() || '#94a3b8',
+      glass: 'rgba(255, 255, 255, 0.1)',
+      glassBorder: cs.getPropertyValue('--glass-border').trim() || 'rgba(255, 255, 255, 0.22)',
+      glassPill: cs.getPropertyValue('--glass-pill').trim() || 'rgba(255, 255, 255, 0.14)',
+    });
+    return COLORS;
+  }
+
+  function getStarTexture() {
+    if (TEX.star) return TEX.star;
+    const c = document.createElement('canvas');
+    c.width = 64;
+    c.height = 64;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,0.95)');
+    g.addColorStop(0.25, 'rgba(255,255,255,0.35)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 64, 64);
+    TEX.star = new THREE.CanvasTexture(c);
+    TEX.star.needsUpdate = true;
+    return TEX.star;
+  }
+
+  function getHeroBgTexture(primary, accent, base) {
+    if (TEX.heroBg) TEX.heroBg.dispose();
+    const c = document.createElement('canvas');
+    c.width = 512;
+    c.height = 512;
+    const ctx = c.getContext('2d');
+    const p = parseCssColor(primary) || { r: 124, g: 58, b: 237 };
+    const a = parseCssColor(accent) || { r: 236, g: 72, b: 153 };
+    const b = parseCssColor(base) || { r: 21, g: 20, b: 22 };
+    const g = ctx.createLinearGradient(0, 0, 512, 512);
+    g.addColorStop(0, `rgb(${b.r},${b.g},${b.b})`);
+    g.addColorStop(0.38, `rgba(${p.r},${p.g},${p.b},0.35)`);
+    g.addColorStop(0.62, `rgba(${a.r},${a.g},${a.b},0.28)`);
+    g.addColorStop(1, `rgb(${Math.min(b.r + 8, 255)},${Math.min(b.g + 6, 255)},${Math.min(b.b + 10, 255)})`);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 512, 512);
+    TEX.heroBg = new THREE.CanvasTexture(c);
+    return TEX.heroBg;
+  }
+
+  function getBtnGradTexture() {
+    if (TEX.btnGrad) return TEX.btnGrad;
+    const c = document.createElement('canvas');
+    c.width = 256;
+    c.height = 64;
+    const ctx = c.getContext('2d');
+    const p = parseCssColor(COLORS.primary) || { r: 124, g: 58, b: 237 };
+    const a = parseCssColor(COLORS.accent) || { r: 236, g: 72, b: 153 };
+    const g = ctx.createLinearGradient(0, 0, 256, 0);
+    g.addColorStop(0, `rgb(${p.r},${p.g},${p.b})`);
+    g.addColorStop(1, `rgb(${a.r},${a.g},${a.b})`);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 256, 64);
+    TEX.btnGrad = new THREE.CanvasTexture(c);
+    return TEX.btnGrad;
+  }
+
+  function setupRenderer() {
+    const scene = document.getElementById('vrScene');
+    if (!scene || !scene.renderer) return;
+    const r = scene.renderer;
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    r.setClearColor(0x151416, 1);
+    if (r.xr) r.xr.enabled = true;
+  }
 
   /* ——— A-Frame components ——— */
 
@@ -41,24 +155,93 @@
   });
 
   AFRAME.registerComponent('hover-highlight', {
+    schema: {
+      scale: { type: 'number', default: 1.04 },
+    },
     init: function () {
       this.baseScale = this.el.object3D.scale.clone();
-      this.onMouseEnter = () => {
+      this.highlighted = false;
+      this.onEnter = () => {
+        if (this.highlighted) return;
+        this.highlighted = true;
+        const s = this.data.scale;
         this.el.object3D.scale.set(
-          this.baseScale.x * 1.04,
-          this.baseScale.y * 1.04,
-          this.baseScale.z * 1.04
+          this.baseScale.x * s,
+          this.baseScale.y * s,
+          this.baseScale.z * s
         );
       };
-      this.onMouseLeave = () => {
+      this.onLeave = () => {
+        if (!this.highlighted) return;
+        this.highlighted = false;
         this.el.object3D.scale.copy(this.baseScale);
       };
-      this.el.addEventListener('mouseenter', this.onMouseEnter);
-      this.el.addEventListener('mouseleave', this.onMouseLeave);
+      this.el.addEventListener('mouseenter', this.onEnter);
+      this.el.addEventListener('mouseleave', this.onLeave);
+      this.el.addEventListener('raycaster-intersected', this.onEnter);
+      this.el.addEventListener('raycaster-intersected-cleared', this.onLeave);
     },
     remove: function () {
-      this.el.removeEventListener('mouseenter', this.onMouseEnter);
-      this.el.removeEventListener('mouseleave', this.onMouseLeave);
+      this.el.removeEventListener('mouseenter', this.onEnter);
+      this.el.removeEventListener('mouseleave', this.onLeave);
+      this.el.removeEventListener('raycaster-intersected', this.onEnter);
+      this.el.removeEventListener('raycaster-intersected-cleared', this.onLeave);
+    },
+  });
+
+  AFRAME.registerComponent('rest-on-release', {
+    init: function () {
+      this.storeHome();
+      this.returning = false;
+      this.el.addEventListener('grab-end', () => {
+        this.returning = true;
+      });
+    },
+    storeHome: function () {
+      this.homePos = this.el.object3D.position.clone();
+      this.homeQuat = this.el.object3D.quaternion.clone();
+      this.homeScale = this.el.object3D.scale.clone();
+    },
+    tick: function () {
+      if (!this.returning) return;
+      const p = this.el.object3D.position;
+      const q = this.el.object3D.quaternion;
+      const s = this.el.object3D.scale;
+      p.lerp(this.homePos, 0.12);
+      q.slerp(this.homeQuat, 0.12);
+      s.lerp(this.homeScale, 0.12);
+      if (p.distanceTo(this.homePos) < 0.008) {
+        p.copy(this.homePos);
+        q.copy(this.homeQuat);
+        s.copy(this.homeScale);
+        this.returning = false;
+      }
+    },
+  });
+
+  AFRAME.registerComponent('grab-feedback', {
+    schema: {
+      tapMs: { type: 'number', default: 480 },
+    },
+    init: function () {
+      this.el.classList.add('grabbable');
+      this.grabStart = 0;
+      this.onGrabStart = () => {
+        this.grabStart = Date.now();
+        this.el.emit('hover-exit');
+      };
+      this.onGrabEnd = () => {
+        const dt = Date.now() - this.grabStart;
+        if (dt < this.data.tapMs && this.el.classList.contains('clickable')) {
+          this.el.click();
+        }
+      };
+      this.el.addEventListener('grab-start', this.onGrabStart);
+      this.el.addEventListener('grab-end', this.onGrabEnd);
+    },
+    remove: function () {
+      this.el.removeEventListener('grab-start', this.onGrabStart);
+      this.el.removeEventListener('grab-end', this.onGrabEnd);
     },
   });
 
@@ -82,32 +265,51 @@
     },
   });
 
-  AFRAME.registerComponent('nebula-points', {
+  AFRAME.registerComponent('nebula-stars', {
     schema: {
-      count: { type: 'number', default: 500 },
-      spread: { type: 'number', default: 14 },
-      color: { type: 'color', default: '#7c3aed' },
+      count: { type: 'number', default: 900 },
+      spread: { type: 'number', default: 16 },
     },
     init: function () {
+      const primary = parseCssColor(COLORS.primary) || { r: 124, g: 58, b: 237 };
+      const accent = parseCssColor(COLORS.accent) || { r: 236, g: 72, b: 153 };
       const n = this.data.count;
       const positions = new Float32Array(n * 3);
+      const colors = new Float32Array(n * 3);
       for (let i = 0; i < n; i++) {
         positions[i * 3] = (Math.random() - 0.5) * this.data.spread;
-        positions[i * 3 + 1] = Math.random() * 5 + 0.2;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * this.data.spread - 3;
+        positions[i * 3 + 1] = Math.random() * 6 + 0.3;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * this.data.spread - 4;
+        const roll = Math.random();
+        const c = roll < 0.12 ? accent : roll < 0.28 ? primary : { r: 255, g: 255, b: 255 };
+        const dim = 0.35 + Math.random() * 0.65;
+        colors[i * 3] = (c.r / 255) * dim;
+        colors[i * 3 + 1] = (c.g / 255) * dim;
+        colors[i * 3 + 2] = (c.b / 255) * dim;
       }
+
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
       const mat = new THREE.PointsMaterial({
-        color: this.data.color,
-        size: 0.035,
+        map: getStarTexture(),
+        vertexColors: true,
+        size: 0.022,
         transparent: true,
-        opacity: 0.55,
+        opacity: 0.85,
         sizeAttenuation: true,
         depthWrite: false,
+        blending: THREE.AdditiveBlending,
       });
       this.points = new THREE.Points(geo, mat);
       this.el.object3D.add(this.points);
+      this.t0 = performance.now();
+    },
+    tick: function () {
+      if (!this.points) return;
+      const t = (performance.now() - this.t0) * 0.00008;
+      this.points.rotation.y = t * 0.35;
     },
     remove: function () {
       if (this.points) {
@@ -181,28 +383,60 @@
 
   function makeText(text, opts) {
     const o = opts || {};
-    return el('a-text', {
+    const node = el('a-text', {
       value: text,
       align: o.align || 'center',
       width: o.width || 2.2,
       wrapCount: o.wrapCount || 40,
       color: o.color || COLORS.text,
       position: o.position || '0 0 0',
-      'material-opacity': o.opacity != null ? o.opacity : 1,
+      font: VR_FONT,
+      'material-shader': 'msdf',
+      'material-side': 'double',
     });
+    if (o.opacity != null) node.setAttribute('material', `opacity: ${o.opacity}`);
+    return node;
   }
 
   function makeGlassPanel(w, h, position) {
-    return el('a-plane', {
-      position,
-      width: String(w),
-      height: String(h),
-      color: COLORS.glass,
-      opacity: '0.82',
-      'material-shader': 'flat',
-      'material-transparent': 'true',
-      'material-side': 'double',
-    });
+    const group = el('a-entity', { position });
+    group.appendChild(
+      el('a-plane', {
+        width: String(w),
+        height: String(h),
+        position: '0 0 0',
+        color: '#ffffff',
+        opacity: '0.1',
+        'material-transparent': 'true',
+        'material-shader': 'flat',
+        'material-side': 'double',
+      })
+    );
+    group.appendChild(
+      el('a-plane', {
+        width: String(w + 0.02),
+        height: String(h + 0.02),
+        position: '0 0 -0.001',
+        color: COLORS.primary,
+        opacity: '0.22',
+        'material-transparent': 'true',
+        'material-shader': 'flat',
+      })
+    );
+    return group;
+  }
+
+  function applyPlaneGradient(planeEl, texture) {
+    const apply = () => {
+      const mesh = planeEl.getObject3D('mesh');
+      if (!mesh || !mesh.material) return;
+      mesh.material.map = texture;
+      mesh.material.transparent = true;
+      mesh.material.opacity = 1;
+      mesh.material.needsUpdate = true;
+    };
+    planeEl.addEventListener('loaded', apply);
+    setTimeout(apply, 50);
   }
 
   function makeButton(label, href, external, primary, position) {
@@ -212,16 +446,21 @@
       width: String(w),
       height: '0.14',
       position: '0 0 0.01',
-      color: primary ? COLORS.primary : '#2a2f42',
-      opacity: primary ? '0.95' : '0.75',
       'material-transparent': 'true',
       'material-shader': 'flat',
+      'material-side': 'double',
     });
+    if (primary) {
+      applyPlaneGradient(bg, getBtnGradTexture());
+    } else {
+      bg.setAttribute('color', '#ffffff');
+      bg.setAttribute('opacity', '0.14');
+    }
     const txt = makeText(label, { width: w - 0.1, color: '#ffffff', position: '0 0 0.02' });
     group.appendChild(bg);
     group.appendChild(txt);
     group.setAttribute('open-link', `href: ${href}; external: ${!!external}`);
-    group.setAttribute('hover-highlight', '');
+    group.setAttribute('hover-highlight', 'scale: 1.04');
     group.classList.add('clickable');
     return group;
   }
@@ -239,51 +478,80 @@
     root.appendChild(
       el('a-sky', {
         color: rainbow ? '#2a1535' : base,
-        'material-opacity': '1',
       })
     );
 
+    const heroBg = getHeroBgTexture(primary, accent, base);
+    const backdrop = el('a-plane', {
+      position: '0 2 -5',
+      width: '16',
+      height: '10',
+      'material-shader': 'flat',
+      'material-side': 'double',
+      opacity: '0.95',
+    });
+    applyPlaneGradient(backdrop, heroBg);
+    root.appendChild(backdrop);
+
+    const starCount = 900;
     const nebula = document.createElement('a-entity');
-    nebula.setAttribute('nebula-points', `count: 500; spread: 14; color: ${rainbow ? '#ff006e' : primary}`);
+    nebula.setAttribute('nebula-stars', `count: ${starCount}; spread: 16`);
     root.appendChild(nebula);
 
     const orbs = [
-      { pos: '-3 2.5 -5', color: primary, scale: '2.2 2.2 2.2', phase: 0 },
-      { pos: '3.5 2 -4', color: accent, scale: '1.8 1.8 1.8', phase: 1.2 },
-      { pos: '0 0.5 -6', color: primary, scale: '2.5 2.5 2.5', phase: 2.4 },
+      { pos: '-2.8 2.4 -4.8', color: primary, scale: '2.4 2.4 2.4', phase: 0 },
+      { pos: '3.2 1.9 -4.2', color: accent, scale: '2 2 2', phase: 1.2 },
+      { pos: '0 0.8 -5.5', color: primary, scale: '2.8 2.8 2.8', phase: 2.4 },
     ];
-    orbs.forEach((o) => {
+    orbs.forEach((o, idx) => {
       const orb = el('a-sphere', {
         position: o.pos,
         radius: '1',
         color: o.color,
-        opacity: '0.28',
+        opacity: '0.14',
         'material-transparent': 'true',
         'material-shader': 'flat',
         scale: o.scale,
       });
-      orb.setAttribute('drift-orb', `phase: ${o.phase}; speed: 0.35`);
+      orb.setAttribute('drift-orb', `phase: ${o.phase}; speed: 0.28`);
+      if (idx === 1) {
+        orb.classList.add('grabbable');
+        orb.setAttribute('grab-feedback', 'tapMs: 9999');
+        orb.setAttribute('rest-on-release', '');
+        orb.setAttribute('hover-highlight', 'scale: 1.06');
+      }
       root.appendChild(orb);
     });
 
     const floor = el('a-ring', {
       position: '0 0.01 -2.2',
-      'rotation': '-90 0 0',
-      'radius-inner': '0.12',
-      'radius-outer': '0.22',
+      rotation: '-90 0 0',
+      'radius-inner': '0.14',
+      'radius-outer': '0.26',
       color: accent,
-      opacity: '0.5',
+      opacity: '0.35',
       'material-transparent': 'true',
       'material-shader': 'flat',
     });
     root.appendChild(floor);
-    const cue = makeText('↓ Featured work', {
-      color: COLORS.textMuted,
-      width: 1.2,
-      position: '0 0.06 -2.2',
-      wrapCount: 24,
-    });
-    root.appendChild(cue);
+    root.appendChild(
+      makeText('↓ Featured work', {
+        color: COLORS.textMuted,
+        width: 1.2,
+        position: '0 0.06 -2.2',
+        wrapCount: 24,
+        opacity: 0.85,
+      })
+    );
+    root.appendChild(
+      makeText('Point · pinch · or grab cards', {
+        color: COLORS.textMuted,
+        width: 1.5,
+        position: '0 1.35 -2.1',
+        wrapCount: 26,
+        opacity: 0.75,
+      })
+    );
   }
 
   function buildHeadset(layout) {
@@ -359,7 +627,7 @@
     );
     introGroup.appendChild(
       makeText(hero.headlineLine2, {
-        color: COLORS.accent,
+        color: COLORS.gradLo,
         width: 2.3,
         position: '0 -0.02 0.01',
         wrapCount: 32,
@@ -388,7 +656,7 @@
           width: String(w),
           height: '0.08',
           color: '#ffffff',
-          opacity: '0.12',
+          opacity: '0.14',
           'material-transparent': 'true',
           'material-shader': 'flat',
         })
@@ -419,9 +687,11 @@
     const group = el('a-entity', {
       position,
       rotation: `0 ${rotationY} 0`,
-      class: 'clickable',
+      class: 'clickable grabbable',
     });
-    group.setAttribute('hover-highlight', '');
+    group.setAttribute('hover-highlight', 'scale: 1.04');
+    group.setAttribute('grab-feedback', '');
+    group.setAttribute('rest-on-release', '');
 
     const cardW = 0.88;
     const imgH = cardW * (9 / 16);
@@ -429,15 +699,26 @@
     const totalH = imgH + bodyH;
 
     const frame = el('a-plane', {
-      width: String(cardW + 0.04),
-      height: String(totalH + 0.04),
-      color: COLORS.glass,
-      opacity: '0.9',
+      width: String(cardW + 0.03),
+      height: String(totalH + 0.03),
+      color: '#ffffff',
+      opacity: '0.1',
       position: `0 ${totalH / 2} 0`,
       'material-transparent': 'true',
       'material-shader': 'flat',
+      'material-side': 'double',
     });
     group.appendChild(frame);
+    const border = el('a-plane', {
+      width: String(cardW + 0.05),
+      height: String(totalH + 0.05),
+      color: COLORS.primary,
+      opacity: '0.18',
+      position: `0 ${totalH / 2} -0.002`,
+      'material-transparent': 'true',
+      'material-shader': 'flat',
+    });
+    group.appendChild(border);
 
     addAssetImage(project.image, `img-${project.id}`);
     const imgPlane = el('a-plane', {
@@ -535,16 +816,26 @@
       const pill = el('a-entity', { position: `${x} ${y} ${z}` });
       const w = 0.2 + item.label.length * 0.012;
       const isCurrent = !!item.current;
-      pill.appendChild(
-        el('a-plane', {
+      const pillBg = el('a-plane', {
+        width: String(w),
+        height: '0.1',
+        color: '#ffffff',
+        opacity: isCurrent ? '0.22' : '0.12',
+        'material-transparent': 'true',
+        'material-shader': 'flat',
+      });
+      pill.appendChild(pillBg);
+      if (isCurrent) {
+        const activeGrad = el('a-plane', {
           width: String(w),
           height: '0.1',
-          color: isCurrent ? COLORS.primary : '#ffffff',
-          opacity: isCurrent ? '0.85' : '0.14',
+          position: '0 0 0.001',
           'material-transparent': 'true',
           'material-shader': 'flat',
-        })
-      );
+        });
+        applyPlaneGradient(activeGrad, getBtnGradTexture());
+        pill.appendChild(activeGrad);
+      }
       const label = `${item.icon || ''} ${item.label}`.trim();
       pill.appendChild(
         makeText(label, {
@@ -564,9 +855,13 @@
   }
 
   function applyThemeTints(data) {
+    syncSiteTheme();
+    data.colors = { ...data.colors, ...COLORS };
     const rainbow = localStorage.getItem('rainbowMode') === 'true';
     if (rainbow) {
-      data.colors = { ...data.colors, primary: '#ff006e', accent: '#8338ec' };
+      data.colors.primary = '#ff006e';
+      data.colors.accent = '#8338ec';
+      Object.assign(COLORS, { primary: '#ff006e', accent: '#8338ec' });
     }
     return rainbow;
   }
@@ -581,14 +876,52 @@
     }
   }
 
+  function setupInputHands() {
+    const rayOpts =
+      'objects: .clickable, .grabbable; far: 12; showLine: true; lineOpacity: 0.85; cursorColor: white';
+
+    [
+      { id: 'leftHand', hand: 'left', color: '#ec4899' },
+      { id: 'rightHand', hand: 'right', color: '#7c3aed' },
+    ].forEach(({ id, hand, color }) => {
+      const handEl = document.getElementById(id);
+      if (!handEl) return;
+
+      handEl.setAttribute('hand-tracking-controls', `hand: ${hand}`);
+      handEl.setAttribute('hand-tracking-grab', '');
+      handEl.setAttribute(
+        'laser-controls',
+        `hand: ${hand}; handTrackingEnabled: true`
+      );
+      handEl.setAttribute('raycaster', `${rayOpts}; lineColor: ${color}`);
+      handEl.setAttribute('oculus-touch-controls', `hand: ${hand}`);
+
+      if (AFRAME.components['gesture-detector']) {
+        handEl.setAttribute('gesture-detector', '');
+        handEl.addEventListener('pinchstarted', () => {
+          const hits = handEl.components.raycaster?.intersectedEls;
+          if (!hits || !hits.length) return;
+          const target = hits[0];
+          if (target.classList.contains('clickable')) target.click();
+        });
+      }
+    });
+
+    const scene = document.getElementById('vrScene');
+    scene?.addEventListener('enter-vr', () => {
+      document.body.setAttribute('data-vr-input', 'immersive');
+    });
+    scene?.addEventListener('exit-vr', () => {
+      document.body.removeAttribute('data-vr-input');
+    });
+  }
+
   function initScene(data) {
     const rainbow = applyThemeTints(data);
-    if (data.colors) {
-      Object.assign(COLORS, {
-        primary: data.colors.primary || COLORS.primary,
-        accent: data.colors.accent || COLORS.accent,
-      });
-    }
+    TEX.heroBg = null;
+    TEX.btnGrad = null;
+    setupRenderer();
+    setupInputHands();
     buildAtmosphere(data, rainbow);
     buildHero(data);
     buildGallery(data);
@@ -643,8 +976,9 @@
     }
 
     const scene = document.getElementById('vrScene');
-    if (scene.hasLoaded) initScene(lobbyData);
-    else scene.addEventListener('loaded', () => initScene(lobbyData), { once: true });
+    const run = () => initScene(lobbyData);
+    if (scene.hasLoaded) run();
+    else scene.addEventListener('loaded', run, { once: true });
 
     setupOverlay();
   }

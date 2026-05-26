@@ -6,6 +6,19 @@
   <meta name="theme-color" content="#14121f" />
   <title>View in VR | Rabiat Sadiq</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <script>
+    (function () {
+      var plain = localStorage.getItem('plainMode') === 'true';
+      if (plain) return;
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = 'dark';
+      }
+    })();
+  </script>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -13,7 +26,7 @@
       height: 100%;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #14121f;
+      background: #151416;
       color: #f1f5f9;
     }
     .vr-overlay {
@@ -110,14 +123,19 @@
   <a-scene
     id="vrScene"
     embedded
-    renderer="colorManagement: true; physicallyCorrectLights: false"
+    renderer="antialias: true; colorManagement: true; physicallyCorrectLights: false; alpha: false; precision: mediump"
     webxr="requiredFeatures: local-floor; optionalFeatures: bounded-floor, hand-tracking"
     vr-mode-ui="enabled: true"
-    loading-screen="dotsColor: #7c3aed; backgroundColor: #14121f"
-    background="color: #14121f"
-    fog="type: exponential; color: #14121f; density: 0.045"
+    loading-screen="dotsColor: #7c3aed; backgroundColor: #151416"
+    background="color: #151416"
   >
-    <a-assets id="vrAssets" timeout="120000"></a-assets>
+    <a-assets id="vrAssets" timeout="120000">
+      <a-asset-item id="vrFont" src="https://cdn.aframe.io/fonts/Exo2Bold.fnt"></a-asset-item>
+    </a-assets>
+
+    <a-light type="ambient" color="#c4b5fd" intensity="0.55"></a-light>
+    <a-light type="directional" color="#ffffff" intensity="0.35" position="2 4 3"></a-light>
+    <a-light type="directional" color="#f9a8d4" intensity="0.2" position="-2 2 -2"></a-light>
 
     <a-entity id="vrAtmosphere"></a-entity>
     <a-entity id="vrHero"></a-entity>

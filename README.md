@@ -111,6 +111,7 @@ The **View in VR** button appears in the site header when the browser reports su
 1. Open the live site over **HTTPS** (required for WebXR), e.g. [rabiatsadiq.com](https://www.rabiatsadiq.com)
 2. Tap **View in VR** → **Enter VR** on the VR page
 3. You spawn inside the portfolio hero: nebula atmosphere, VR headset, intro copy, featured project cards, and nav pills
+4. **Hands:** enable Quest hand tracking to point with your index finger, pinch to select, or grab and release project cards (controllers and mouse also work)
 
 **Local testing:** Serve over HTTPS (`npx local-ssl-proxy` or similar) — `file://` and plain HTTP will not enable WebXR on Quest.
 

@@ -1938,7 +1938,7 @@ window.resetPlainMode = function() {
   function setXrDevice() {
     if (hint) {
       hint.textContent =
-        'This browser supports immersive VR. Step inside the portfolio hero—nebula, headset, featured project cards, and nav—in full WebXR.';
+        'This browser supports immersive VR. Step inside the portfolio hero—use hand tracking or controllers to point, pinch, and grab project cards.';
     }
     if (tips) tips.hidden = true;
     if (cta) cta.textContent = '▶ Enter VR ↗';
