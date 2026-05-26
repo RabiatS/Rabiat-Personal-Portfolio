@@ -3771,7 +3771,8 @@ input[type="search"]:focus {
   top: var(--header-height);
   right: 0;
   width: min(28vw, 360px);
-  height: calc(70vh - var(--header-height));
+  height: calc(76vh - var(--header-height));
+  overflow: visible;
   pointer-events: none;
   z-index: 40;
   opacity: 0;
