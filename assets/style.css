@@ -3779,10 +3779,16 @@ input[type="search"]:focus {
   transition: opacity 0.35s ease;
 }
 
+html.builder-mode .builder-cube-host {
+  pointer-events: auto;
+}
+
 .builder-cube-host canvas {
   display: block;
   width: 100% !important;
   height: 100% !important;
+  pointer-events: auto;
+  cursor: default;
 }
 
 @media (max-width: 1023px) {
