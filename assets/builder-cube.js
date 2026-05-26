@@ -76,11 +76,11 @@ function buildThemePalette(themeKey) {
   const accent = cssVar('--accent', '#ec4899');
   const darkSteel = isDarkSteelTheme(themeKey);
 
-  const steelBase = darkSteel ? '#2a2a32' : '#e8e8ee';
-  const steelMid = darkSteel ? '#1c1c24' : '#f2f2f6';
-  const steelDeep = darkSteel ? '#121218' : '#d8d8de';
-  const labelInk = darkSteel ? '#ffffff' : '#121218';
-  const labelShadow = darkSteel ? '#000000' : '#484850';
+  const steelBase = darkSteel ? '#2a2a32' : '#f4f4f8';
+  const steelMid = darkSteel ? '#1c1c24' : '#f8f8fc';
+  const steelDeep = darkSteel ? '#121218' : '#ececf2';
+  const labelInk = darkSteel ? '#ffffff' : '#0e0e14';
+  const labelShadow = darkSteel ? '#000000' : '#2a2a32';
 
   switch (themeKey) {
     case 'rabiat':
@@ -97,31 +97,31 @@ function buildThemePalette(themeKey) {
         labelShadow,
         edge: '#b81e2c',
         glow: '#b81e2c',
-        steelTint: 0xc8c8d0,
-        envIntensity: 0.82,
-        metalness: 0.96,
-        roughness: 0.12,
-        lights: { ambient: 0xffffff, ambientI: 0.44, key: 0xffffff, keyI: 1.05, rim: 0xb81e2c, rimI: 0.52, fill: 0x4a8f8f, fillI: 0.32 },
+        steelTint: 0xd4d4dc,
+        envIntensity: 1.0,
+        metalness: 0.99,
+        roughness: 0.07,
+        lights: { ambient: 0xffffff, ambientI: 0.44, key: 0xffffff, keyI: 1.18, rim: 0xb81e2c, rimI: 0.62, fill: 0x4a8f8f, fillI: 0.32 },
       };
     case 'plain':
       return {
         faces: alignPaletteFaces([
-          { steel: '#e4e4e8', accent: '#000000' },
-          { steel: '#d8d8dc', accent: '#333333' },
-          { steel: '#ececee', accent: '#000000' },
-          { steel: '#d0d0d4', accent: '#000000' },
-          { steel: '#dedee2', accent: '#333333' },
-          { steel: '#e8e8ec', accent: '#000000' },
+          { steel: '#f4f4f8', accent: '#000000' },
+          { steel: '#ececf0', accent: '#333333' },
+          { steel: '#f8f8fc', accent: '#000000' },
+          { steel: '#e8e8ee', accent: '#000000' },
+          { steel: '#f0f0f4', accent: '#333333' },
+          { steel: '#f6f6fa', accent: '#000000' },
         ]),
-        text: '#141418',
-        labelShadow: '#606068',
+        text: '#0e0e14',
+        labelShadow: '#2a2a32',
         edge: '#000000',
         glow: '#333333',
         steelTint: 0xffffff,
-        envIntensity: 1.2,
-        metalness: 0.98,
-        roughness: 0.08,
-        lights: { ambient: 0xffffff, ambientI: 0.84, key: 0xffffff, keyI: 0.98, rim: 0x333333, rimI: 0.18, fill: 0xffffff, fillI: 0.32 },
+        envIntensity: 1.4,
+        metalness: 1.0,
+        roughness: 0.06,
+        lights: { ambient: 0xffffff, ambientI: 0.84, key: 0xffffff, keyI: 1.14, rim: 0x333333, rimI: 0.28, fill: 0xffffff, fillI: 0.32 },
       };
     case 'rainbow':
       return {
@@ -135,11 +135,11 @@ function buildThemePalette(themeKey) {
         labelShadow,
         edge: '#ff006e',
         glow: '#8338ec',
-        steelTint: 0x9898a0,
-        envIntensity: 0.78,
-        metalness: 0.95,
-        roughness: 0.13,
-        lights: { ambient: 0xffffff, ambientI: 0.4, key: 0xffffff, keyI: 1.0, rim: 0x8338ec, rimI: 0.5, fill: 0x06ffa5, fillI: 0.3 },
+        steelTint: 0xa8a8b0,
+        envIntensity: 1.0,
+        metalness: 0.99,
+        roughness: 0.08,
+        lights: { ambient: 0xffffff, ambientI: 0.4, key: 0xffffff, keyI: 1.14, rim: 0x8338ec, rimI: 0.6, fill: 0x06ffa5, fillI: 0.3 },
       };
     case 'dark':
       return {
@@ -155,31 +155,31 @@ function buildThemePalette(themeKey) {
         labelShadow,
         edge: accent,
         glow: primary,
-        steelTint: 0x909098,
-        envIntensity: 0.85,
-        metalness: 0.96,
-        roughness: 0.12,
-        lights: { ambient: 0xffffff, ambientI: 0.38, key: 0xf3f2f4, keyI: 0.98, rim: primary, rimI: 0.48, fill: accent, fillI: 0.28 },
+        steelTint: 0x9898a0,
+        envIntensity: 1.0,
+        metalness: 0.99,
+        roughness: 0.07,
+        lights: { ambient: 0xffffff, ambientI: 0.38, key: 0xf3f2f4, keyI: 1.12, rim: primary, rimI: 0.58, fill: accent, fillI: 0.28 },
       };
     default:
       return {
         faces: alignPaletteFaces([
-          { steel: '#e0e0e6', accent: primary },
-          { steel: '#eaeaf0', accent: accent },
-          { steel: '#f0f0f4', accent: primary },
-          { steel: '#d4d4da', accent: accent },
-          { steel: '#e4e4ea', accent: primary },
-          { steel: '#ececf0', accent: accent },
+          { steel: '#f4f4f8', accent: primary },
+          { steel: '#f6f6fa', accent: accent },
+          { steel: '#f8f8fc', accent: primary },
+          { steel: '#ececf2', accent: accent },
+          { steel: '#f2f2f6', accent: primary },
+          { steel: '#f6f6fa', accent: accent },
         ]),
         text: labelInk,
         labelShadow,
         edge: accent,
         glow: primary,
         steelTint: 0xffffff,
-        envIntensity: 1.2,
-        metalness: 0.98,
-        roughness: 0.08,
-        lights: { ambient: 0xffffff, ambientI: 0.86, key: 0xffffff, keyI: 0.95, rim: primary, rimI: 0.22, fill: accent, fillI: 0.26 },
+        envIntensity: 1.45,
+        metalness: 1.0,
+        roughness: 0.05,
+        lights: { ambient: 0xffffff, ambientI: 0.86, key: 0xffffff, keyI: 1.1, rim: primary, rimI: 0.34, fill: accent, fillI: 0.26 },
       };
   }
 }
@@ -226,33 +226,34 @@ function paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength) {
 
   const grad = ctx.createLinearGradient(0, 0, 0, size);
   if (dark) {
-    grad.addColorStop(0, '#686872');
-    grad.addColorStop(0.22, '#484852');
-    grad.addColorStop(0.48, '#2e2e38');
-    grad.addColorStop(0.74, '#1a1a24');
-    grad.addColorStop(1, '#080810');
+    grad.addColorStop(0, '#787882');
+    grad.addColorStop(0.18, '#505058');
+    grad.addColorStop(0.42, '#2a2a34');
+    grad.addColorStop(0.68, '#14141c');
+    grad.addColorStop(1, '#040408');
   } else {
     grad.addColorStop(0, '#ffffff');
-    grad.addColorStop(0.14, '#fcfdff');
-    grad.addColorStop(0.36, '#f2f4fa');
-    grad.addColorStop(0.58, '#e0e4f0');
-    grad.addColorStop(0.8, '#c8cedc');
-    grad.addColorStop(1, '#b0b8c8');
+    grad.addColorStop(0.1, '#feffff');
+    grad.addColorStop(0.28, '#f8faff');
+    grad.addColorStop(0.5, '#eef2fc');
+    grad.addColorStop(0.72, '#d8e0f0');
+    grad.addColorStop(0.88, '#b8c4d8');
+    grad.addColorStop(1, '#98a8c0');
   }
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, size, size);
 
   const studioBand = ctx.createLinearGradient(0, 0, size, size * 0.35);
   studioBand.addColorStop(0, 'rgba(255,255,255,0)');
-  studioBand.addColorStop(0.34, dark ? 'rgba(230,230,245,0.28)' : 'rgba(255,255,255,0.88)');
-  studioBand.addColorStop(0.58, dark ? 'rgba(200,200,220,0.14)' : 'rgba(255,255,255,0.42)');
+  studioBand.addColorStop(0.3, dark ? 'rgba(240,240,255,0.38)' : 'rgba(255,255,255,0.96)');
+  studioBand.addColorStop(0.52, dark ? 'rgba(220,220,240,0.22)' : 'rgba(255,255,255,0.58)');
   studioBand.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = studioBand;
   ctx.fillRect(0, 0, size, size);
 
   const rimBand = ctx.createLinearGradient(size, 0, 0, size);
   rimBand.addColorStop(0, 'rgba(255,255,255,0)');
-  rimBand.addColorStop(0.48, dark ? 'rgba(170,170,195,0.18)' : 'rgba(255,255,255,0.52)');
+  rimBand.addColorStop(0.44, dark ? 'rgba(190,190,215,0.24)' : 'rgba(255,255,255,0.68)');
   rimBand.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = rimBand;
   ctx.fillRect(0, 0, size, size);
@@ -278,26 +279,26 @@ function paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength) {
   }
 
   // Polished chrome bands visible even at rest (replaces static env-map + point-light baseline)
-  drawSpecularStreak(dark ? -0.52 : -0.48, dark ? 0.38 : 0.78, dark ? 0.075 : 0.055, 0.5);
-  drawSpecularStreak(dark ? 0.95 : 1.05, dark ? 0.16 : 0.32, dark ? 0.09 : 0.048, 0.38);
-  drawSpecularStreak(dark ? -1.65 : -1.45, dark ? 0.1 : 0.2, dark ? 0.11 : 0.065, 0.28);
+  drawSpecularStreak(dark ? -0.52 : -0.48, dark ? 0.52 : 0.92, dark ? 0.062 : 0.042, 0.52);
+  drawSpecularStreak(dark ? 0.95 : 1.05, dark ? 0.24 : 0.42, dark ? 0.075 : 0.038, 0.4);
+  drawSpecularStreak(dark ? -1.65 : -1.45, dark ? 0.16 : 0.28, dark ? 0.095 : 0.052, 0.3);
 
   const cornerHotspots = [
-    [size * 0.18, size * 0.14, dark ? 0.14 : 0.28],
-    [size * 0.82, size * 0.86, dark ? 0.1 : 0.22],
+    [size * 0.18, size * 0.14, dark ? 0.2 : 0.38],
+    [size * 0.82, size * 0.86, dark ? 0.14 : 0.3],
   ];
   cornerHotspots.forEach(([hx, hy, peak]) => {
-    const hotspot = ctx.createRadialGradient(hx, hy, 0, hx, hy, size * 0.22);
+    const hotspot = ctx.createRadialGradient(hx, hy, 0, hx, hy, size * 0.18);
     hotspot.addColorStop(0, `rgba(255,255,255,${peak})`);
-    hotspot.addColorStop(0.55, `rgba(255,255,255,${peak * 0.28})`);
+    hotspot.addColorStop(0.42, `rgba(255,255,255,${peak * 0.35})`);
     hotspot.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = hotspot;
     ctx.fillRect(0, 0, size, size);
   });
 
   if (shineStrength > 0.008) {
-    const streakPeak = dark ? 0.55 * shineStrength : 1.05 * shineStrength;
-    const streakWidth = dark ? 0.085 : 0.058;
+    const streakPeak = dark ? 0.68 * shineStrength : 1.22 * shineStrength;
+    const streakWidth = dark ? 0.072 : 0.048;
 
     ctx.save();
     ctx.translate(cx, cy);
@@ -330,10 +331,10 @@ function paintEnvMapCanvas(ctx, size, dark, shineAngle, shineStrength) {
 
     const hotspotX = cx + Math.cos(shineAngle) * size * 0.22;
     const hotspotY = cy + Math.sin(shineAngle) * size * 0.22;
-    const hotspot = ctx.createRadialGradient(hotspotX, hotspotY, 0, hotspotX, hotspotY, size * 0.36);
-    const hotPeak = dark ? 0.32 * shineStrength : 0.68 * shineStrength;
+    const hotspot = ctx.createRadialGradient(hotspotX, hotspotY, 0, hotspotX, hotspotY, size * 0.28);
+    const hotPeak = dark ? 0.42 * shineStrength : 0.82 * shineStrength;
     hotspot.addColorStop(0, `rgba(255,255,255,${hotPeak})`);
-    hotspot.addColorStop(0.42, `rgba(255,255,255,${hotPeak * 0.38})`);
+    hotspot.addColorStop(0.35, `rgba(255,255,255,${hotPeak * 0.45})`);
     hotspot.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = hotspot;
     ctx.fillRect(0, 0, size, size);
@@ -410,18 +411,26 @@ function drawEngravedLabel(ctx, label, cx, cy, fontSize, textColor, labelShadow,
   }
 
   ctx.fillStyle = labelShadow;
-  ctx.fillText(label, cx + 2, cy + 2.5);
+  ctx.fillText(label, cx + 2.5, cy + 3);
 
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
-  ctx.lineWidth = 4;
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.96)';
+  ctx.lineWidth = 5;
   ctx.strokeText(label, cx, cy);
 
-  ctx.strokeStyle = 'rgba(0, 0, 0, 0.72)';
-  ctx.lineWidth = 2.25;
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.82)';
+  ctx.lineWidth = 3;
   ctx.strokeText(label, cx, cy);
 
   ctx.fillStyle = textColor;
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+  ctx.shadowBlur = 3;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 1.5;
   ctx.fillText(label, cx, cy);
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
 }
 
 function makeLabelOverlayTexture(label, textColor, labelShadow, darkSteel) {
@@ -452,9 +461,9 @@ function makeFaceTexture(steel, accent, darkSteel) {
   const cy = size / 2;
 
   const steelGrad = ctx.createLinearGradient(0, 0, size, size);
-  steelGrad.addColorStop(0, mixHex(steel, '#ffffff', darkSteel ? 0.18 : 0.42));
+  steelGrad.addColorStop(0, mixHex(steel, '#ffffff', darkSteel ? 0.22 : 0.48));
   steelGrad.addColorStop(0.45, steel);
-  steelGrad.addColorStop(1, mixHex(steel, '#000000', darkSteel ? 0.28 : 0.06));
+  steelGrad.addColorStop(1, mixHex(steel, '#000000', darkSteel ? 0.28 : 0.04));
   ctx.fillStyle = steelGrad;
   ctx.fillRect(0, 0, size, size);
 
@@ -480,9 +489,9 @@ function makeFaceTexture(steel, accent, darkSteel) {
   ctx.save();
   ctx.globalCompositeOperation = 'overlay';
   const sheen = ctx.createLinearGradient(0, 0, size * 0.6, size);
-  sheen.addColorStop(0, darkSteel ? 'rgba(255,255,255,0.28)' : 'rgba(255,255,255,0.42)');
-  sheen.addColorStop(0.35, darkSteel ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.1)');
-  sheen.addColorStop(1, darkSteel ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.06)');
+  sheen.addColorStop(0, darkSteel ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.52)');
+  sheen.addColorStop(0.35, darkSteel ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.14)');
+  sheen.addColorStop(1, darkSteel ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.04)');
   ctx.fillStyle = sheen;
   ctx.fillRect(0, 0, size, size);
   ctx.restore();
@@ -531,7 +540,7 @@ function initBuilderCube() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.12;
+  renderer.toneMappingExposure = 1.2;
   host.appendChild(renderer.domElement);
 
   let envMap = createEnvMap(getThemeKey());
@@ -539,11 +548,11 @@ function initBuilderCube() {
   const ambient = new THREE.AmbientLight(0xffffff, 0.55);
   scene.add(ambient);
 
-  const keyLight = new THREE.DirectionalLight(0xffffff, 1.1);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
   keyLight.position.set(-2.5, 4, 3);
   scene.add(keyLight);
 
-  const rimLight = new THREE.DirectionalLight(0xb81e2c, 0.65);
+  const rimLight = new THREE.DirectionalLight(0xb81e2c, 0.72);
   rimLight.position.set(3, 1, -2);
   scene.add(rimLight);
 
@@ -562,10 +571,10 @@ function initBuilderCube() {
   const materials = FACE_LABELS.map(
     () =>
       new THREE.MeshStandardMaterial({
-        metalness: 0.96,
-        roughness: 0.12,
+        metalness: 0.99,
+        roughness: 0.07,
         envMap: envMap.texture,
-        envMapIntensity: 0.85,
+        envMapIntensity: 1.0,
         color: 0xffffff,
       })
   );
@@ -599,9 +608,17 @@ function initBuilderCube() {
   const edges = new THREE.EdgesGeometry(geometry);
   const edgeLines = new THREE.LineSegments(
     edges,
-    new THREE.LineBasicMaterial({ color: 0xb81e2c, transparent: true, opacity: 0.72 })
+    new THREE.LineBasicMaterial({ color: 0xb81e2c, transparent: true, opacity: 0.78 })
   );
   cube.add(edgeLines);
+
+  const chromeRim = new THREE.EdgesGeometry(geometry);
+  const chromeRimLines = new THREE.LineSegments(
+    chromeRim,
+    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.22 })
+  );
+  chromeRimLines.scale.setScalar(1.004);
+  cube.add(chromeRimLines);
 
   const glowEdges = new THREE.EdgesGeometry(geometry);
   const glowLines = new THREE.LineSegments(
@@ -611,12 +628,13 @@ function initBuilderCube() {
   glowLines.scale.setScalar(1.012);
   cube.add(glowLines);
 
-  let baseRimIntensity = 0.65;
-  let baseEdgeOpacity = 0.72;
+  let baseRimIntensity = 0.72;
+  let baseEdgeOpacity = 0.78;
+  let baseChromeRimOpacity = 0.22;
   let baseGlowOpacity = 0;
-  let baseEnvIntensity = 0.85;
-  let baseMetalness = 0.96;
-  let baseRoughness = 0.12;
+  let baseEnvIntensity = 1.0;
+  let baseMetalness = 0.99;
+  let baseRoughness = 0.07;
   let currentThemeSignature = '';
   let fallActive = false;
 
@@ -667,9 +685,11 @@ function initBuilderCube() {
     fillLight.color.copy(hexToThreeColor(palette.lights.fill));
     fillLight.intensity = palette.lights.fillI;
 
-    baseEdgeOpacity = 0.72;
+    baseEdgeOpacity = darkSteel ? 0.78 : 0.82;
+    baseChromeRimOpacity = darkSteel ? 0.18 : 0.28;
+    chromeRimLines.material.opacity = baseChromeRimOpacity;
 
-    renderer.toneMappingExposure = darkSteel ? 1.14 : 1.24;
+    renderer.toneMappingExposure = darkSteel ? 1.2 : 1.35;
     envMap.update(shineAngle, shineStrength);
   }
 
@@ -836,8 +856,9 @@ function initBuilderCube() {
     hoverTilt.x = THREE.MathUtils.lerp(hoverTilt.x, tiltTargetX, 0.12);
     hoverTilt.y = THREE.MathUtils.lerp(hoverTilt.y, tiltTargetY, 0.12);
 
-    rimLight.intensity = baseRimIntensity + hoverAmount * 0.12;
-    edgeLines.material.opacity = baseEdgeOpacity + hoverAmount * 0.04;
+    rimLight.intensity = baseRimIntensity + hoverAmount * 0.16;
+    edgeLines.material.opacity = baseEdgeOpacity + hoverAmount * 0.06;
+    chromeRimLines.material.opacity = baseChromeRimOpacity + hoverAmount * 0.12;
 
     materials.forEach((mat) => {
       mat.emissiveIntensity = 0;
@@ -845,7 +866,7 @@ function initBuilderCube() {
         mat.metalness = baseMetalness;
         mat.roughness = baseRoughness;
         const darkSteel = isDarkSteelTheme(getThemeKey());
-        const envBoost = shineStrength * (darkSteel ? 0.24 : 0.48);
+        const envBoost = shineStrength * (darkSteel ? 0.32 : 0.55);
         mat.envMapIntensity = baseEnvIntensity + envBoost;
       }
     });
@@ -925,6 +946,7 @@ function initBuilderCube() {
     envMap.dispose();
     geometry.dispose();
     edges.dispose();
+    chromeRim.dispose();
     glowEdges.dispose();
     materials.forEach((m) => {
       if (m.map) m.map.dispose();
@@ -932,6 +954,8 @@ function initBuilderCube() {
     });
     edgeLines.geometry.dispose();
     edgeLines.material.dispose();
+    chromeRimLines.geometry.dispose();
+    chromeRimLines.material.dispose();
     glowLines.geometry.dispose();
     glowLines.material.dispose();
     labelPlanes.forEach((plane) => {
