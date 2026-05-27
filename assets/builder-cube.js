@@ -276,23 +276,6 @@ function paintEnvMapCanvas(ctx, size, dark) {
   drawSoftLobe(size * 0.2, size * 0.72, size * 0.54, dark ? 0.28 : 0.46);
   drawSoftLobe(size * 0.8, size * 0.74, size * 0.46, dark ? 0.24 : 0.4);
   drawSoftLobe(cx, cy, size * 0.58, dark ? 0.18 : 0.32);
-
-  const studioBand = ctx.createLinearGradient(0, 0, size, size * 0.6);
-  studioBand.addColorStop(0, 'rgba(255,255,255,0)');
-  studioBand.addColorStop(0.25, dark ? 'rgba(240,240,255,0.16)' : 'rgba(255,255,255,0.48)');
-  studioBand.addColorStop(0.5, dark ? 'rgba(220,220,240,0.1)' : 'rgba(255,255,255,0.32)');
-  studioBand.addColorStop(0.75, dark ? 'rgba(200,200,220,0.06)' : 'rgba(255,255,255,0.16)');
-  studioBand.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = studioBand;
-  ctx.fillRect(0, 0, size, size);
-
-  const rimBand = ctx.createLinearGradient(size, 0, 0, size);
-  rimBand.addColorStop(0, 'rgba(255,255,255,0)');
-  rimBand.addColorStop(0.4, dark ? 'rgba(190,190,215,0.12)' : 'rgba(255,255,255,0.38)');
-  rimBand.addColorStop(0.6, dark ? 'rgba(170,170,200,0.08)' : 'rgba(255,255,255,0.22)');
-  rimBand.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = rimBand;
-  ctx.fillRect(0, 0, size, size);
 }
 
 function createEnvMap(themeKey) {
@@ -407,9 +390,6 @@ function makeFaceTexture(steel, accent, darkSteel) {
   canvas.height = size;
   const ctx = canvas.getContext('2d');
 
-  const cx = size / 2;
-  const cy = size / 2;
-
   const steelGrad = ctx.createLinearGradient(0, 0, size, size);
   steelGrad.addColorStop(0, mixHex(steel, '#ffffff', darkSteel ? 0.28 : 0.38));
   steelGrad.addColorStop(0.5, steel);
@@ -445,28 +425,6 @@ function makeFaceTexture(steel, accent, darkSteel) {
   ctx.strokeStyle = mixHex(accent, '#ffffff', 0.25);
   ctx.lineWidth = 1;
   ctx.strokeRect(24, 24, size - 48, size - 48);
-
-  ctx.save();
-  ctx.globalCompositeOperation = 'overlay';
-  const sheen = ctx.createLinearGradient(0, 0, size * 0.55, size);
-  sheen.addColorStop(0, darkSteel ? 'rgba(255,255,255,0.28)' : 'rgba(255,255,255,0.42)');
-  sheen.addColorStop(0.35, darkSteel ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.16)');
-  sheen.addColorStop(0.6, darkSteel ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)');
-  sheen.addColorStop(1, darkSteel ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.03)');
-  ctx.fillStyle = sheen;
-  ctx.fillRect(0, 0, size, size);
-  ctx.restore();
-
-  ctx.save();
-  ctx.globalCompositeOperation = 'soft-light';
-  ctx.globalAlpha = darkSteel ? 0.22 : 0.18;
-  const faceChrome = ctx.createRadialGradient(cx, cy * 0.92, size * 0.12, cx, cy, size * 0.68);
-  faceChrome.addColorStop(0, 'rgba(255,255,255,0.42)');
-  faceChrome.addColorStop(0.5, 'rgba(255,255,255,0.1)');
-  faceChrome.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = faceChrome;
-  ctx.fillRect(0, 0, size, size);
-  ctx.restore();
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -765,8 +723,6 @@ function initBuilderCube() {
   let running = true;
   let scrollProgress = 0;
   let entryProgress = 0;
-  let lastScrollY = window.scrollY;
-  let scrollVelocity = 0;
   let idleTime = 0;
 
   function resize() {
@@ -787,9 +743,6 @@ function initBuilderCube() {
     const heroH = hero ? hero.offsetHeight : window.innerHeight;
     const scrollY = window.scrollY;
     const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-
-    scrollVelocity = THREE.MathUtils.lerp(scrollVelocity, scrollY - lastScrollY, 0.18);
-    lastScrollY = scrollY;
 
     entryProgress = easeOutCubic(
       THREE.MathUtils.clamp((scrollY - heroH * 0.15) / (heroH * 0.85), 0, 1)
@@ -842,18 +795,12 @@ function initBuilderCube() {
     const idleFloat = Math.sin(idleTime * 0.0012) * 0.04;
     cubeGroup.position.set(slideX, slideY + idleFloat, 0);
 
-    const scrollSpin = scrollProgress * Math.PI * 3.2;
-    const velocityTilt = THREE.MathUtils.clamp(scrollVelocity * 0.004, -0.35, 0.35);
-    const idleRotate = idleTime * 0.00035;
+    const scrollSpin = scrollProgress * Math.PI * 2.4;
     const snapYaw = hoverSnap * 0.18;
 
-    cube.rotation.y = scrollSpin + entryProgress * 0.5 + idleRotate + hoverTilt.y + snapYaw;
-    cube.rotation.x =
-      0.48 + Math.sin(scrollProgress * Math.PI * 1.4) * 0.16 + velocityTilt + hoverTilt.x;
-    cube.rotation.z =
-      Math.sin(scrollProgress * Math.PI * 0.6) * 0.06 +
-      Math.sin(idleTime * 0.0009) * 0.03 +
-      hoverTilt.y * 0.15;
+    cube.rotation.y = scrollSpin + entryProgress * 0.35 + hoverTilt.y + snapYaw;
+    cube.rotation.x = THREE.MathUtils.lerp(0.5, 0.38, entryProgress) + hoverTilt.x;
+    cube.rotation.z = hoverTilt.y * 0.06;
 
     const baseScale = THREE.MathUtils.lerp(0.55, 0.72, entryProgress);
     const hoverScale = 1 + hoverAmount * 0.07;
