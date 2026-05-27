@@ -1,7 +1,6 @@
 /**
- * Builder cube — desktop-only scroll companion for index.html
- * Unlock: index.html?cube=1  or  localStorage.setItem('builderCubeMode','true')
- * Disable: index.html?cube=0  or  localStorage.removeItem('builderCubeMode')
+ * Builder cube — desktop-only scroll companion for index.html (on by default)
+ * Opt out: index.html?cube=0  or  localStorage.setItem('builderCubeMode','false')
  *
  * BoxGeometry material order (Three.js): +X, -X, +Y, -Y, +Z, -Z
  */

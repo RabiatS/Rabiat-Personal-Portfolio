@@ -1,5 +1,5 @@
 /**
- * Builder-mode scroll extras — toned down (desktop, unlocked only)
+ * Builder-mode scroll extras — toned down (homepage desktop)
  */
 import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js';
 import ScrollTrigger from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js';

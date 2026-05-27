@@ -3765,7 +3765,7 @@ input[type="search"]:focus {
   }
 }
 
-/* Builder cube — unlocked scroll companion (desktop, index only) */
+/* Builder cube — scroll companion (desktop, index only) */
 .builder-cube-host {
   position: fixed;
   top: var(--header-height);

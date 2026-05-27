@@ -1,7 +1,7 @@
 /**
- * Shared unlock + eligibility for builder cube mode experiences
- * Unlock: index.html?cube=1  or  localStorage.setItem('builderCubeMode','true')
- * Disable: index.html?cube=0  or  localStorage.removeItem('builderCubeMode')
+ * Shared eligibility for builder cube mode (homepage desktop by default)
+ * Opt out: index.html?cube=0  or  localStorage.setItem('builderCubeMode','false')
+ * Opt back in: index.html?cube=1  or  localStorage.removeItem('builderCubeMode')
  */
 
 export const STORAGE_KEY = 'builderCubeMode';
@@ -11,12 +11,12 @@ export function applyUrlUnlock() {
   const params = new URLSearchParams(window.location.search);
   const cube = params.get('cube');
   if (cube === '1') {
-    localStorage.setItem(STORAGE_KEY, 'true');
+    localStorage.removeItem(STORAGE_KEY);
     params.delete('cube');
     const next = params.toString();
     history.replaceState({}, '', window.location.pathname + (next ? `?${next}` : '') + window.location.hash);
   } else if (cube === '0') {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.setItem(STORAGE_KEY, 'false');
     params.delete('cube');
     const next = params.toString();
     history.replaceState({}, '', window.location.pathname + (next ? `?${next}` : '') + window.location.hash);
@@ -30,7 +30,7 @@ export function isHomePage() {
 }
 
 export function isBuilderModeUnlocked() {
-  return localStorage.getItem(STORAGE_KEY) === 'true';
+  return localStorage.getItem(STORAGE_KEY) !== 'false';
 }
 
 export function canUseBuilderMode() {
