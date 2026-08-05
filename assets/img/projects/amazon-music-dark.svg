@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-label="amazon music">
+  <rect width="1200" height="1200" fill="#0B1214"/>
+  <g fill="#00D6E0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-weight="700"
+     font-size="120" letter-spacing="-1.2" text-anchor="middle">
+    <text x="600" y="520">amazon</text>
+    <text x="600" y="660">music</text>
+  </g>
+  <path d="M 390 720 C 470 775, 730 775, 810 720" fill="none" stroke="#00D6E0"
+        stroke-width="11" stroke-linecap="round"/>
+  <path d="M 796 706 L 830 720 L 798 736 Z" fill="#00D6E0"/>
+</svg>
