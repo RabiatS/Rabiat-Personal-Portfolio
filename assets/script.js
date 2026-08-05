@@ -1362,7 +1362,11 @@ document.addEventListener('DOMContentLoaded', () => {
           demoLink.target = '_blank';
           demoLink.rel = 'noopener';
           const isPdf = /\.pdf$/i.test(project.demo);
-          demoLink.textContent = isPdf && !project.github ? 'View Slides (PDF) ↗' : '▶ Launch';
+          if (isPdf && !project.github) {
+            demoLink.textContent = project.caseStudy ? 'Case Study PDF ↗' : 'View Slides (PDF) ↗';
+          } else {
+            demoLink.textContent = '▶ Launch';
+          }
           demoLink.style.fontSize = '13px';
           demoLink.style.color = 'inherit';
           demoLink.style.opacity = '0.9';
