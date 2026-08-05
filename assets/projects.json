@@ -1,6 +1,24 @@
 {
   "projects": [
     {
+      "id": "amazon-music-capstone",
+      "title": "Amazon Music Adaptive UI",
+      "subtitle": "CMU MHCI Capstone · Jan – Jul 2026",
+      "category": "Research / HCI",
+      "tags": ["HCI", "UX", "Research", "Product", "Industry"],
+      "description": "Seven-month Amazon Music–sponsored MHCI capstone: Adaptive UI that reshapes the artist page by listening loyalty so fans feel recognized without being asked to broadcast.",
+      "longDescription": "Streaming holds years of history between a listener and an artist and reflects almost none of it back. Through 85 survey responses, 22 interviews, staged experiments, and evaluation against the live Amazon Music app, the team designed three listener tiers (new, returning, longtime fan) that progressively unlock recognition, milestones, and belonging—reframing personalization as recognition rather than recommendation. Role: Project Manager & Engineer.",
+      "technologies": ["UX Research", "Product Design", "Prototyping", "Figma", "User Testing", "HCI"],
+      "github": null,
+      "demo": "files/amazon-music/amazon-music-case-study.pdf",
+      "caseStudy": "case-studies/case-study-amazon-music.html",
+      "status": "complete",
+      "images": ["assets/img/projects/amazon-music.png"],
+      "videos": ["files/amazon-music/concept-video.mp4"],
+      "year": "2026",
+      "type": "Industry"
+    },
+    {
       "id": "cmu-mhci-sticky-counter",
       "title": "CMU MHCI Sticky Note Counter",
       "subtitle": "Interactive Physics Observatory",
