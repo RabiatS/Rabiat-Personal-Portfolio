@@ -3,6 +3,18 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Contact | Rabiat Sadiq</title>
+  <meta name="description" content="Get in touch with Rabiat Sadiq about collaboration, research, or work." />
+  <link rel="canonical" href="https://www.rabiatsadiq.com/contact.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Rabiat Sadiq" />
+  <meta property="og:title" content="Contact | Rabiat Sadiq" />
+  <meta property="og:description" content="Get in touch with Rabiat Sadiq about collaboration, research, or work." />
+  <meta property="og:url" content="https://www.rabiatsadiq.com/contact.html" />
+  <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/projects/amazon-music.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Contact | Rabiat Sadiq" />
+  <meta name="twitter:description" content="Get in touch with Rabiat Sadiq about collaboration, research, or work." />
+  <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/projects/amazon-music.png" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
   <!-- Prevent theme flash & minimalist Rabiat -->
@@ -79,39 +91,33 @@
     </section>
 
     <section class="card" style="max-width:720px;margin:0 auto">
-      <form id="contactForm" class="grid" style="grid-template-columns:1fr 1fr; gap:16px"
-            action="#" method="GET">
-        <div style="grid-column:1 / span 1">
+      <form id="contactForm" class="contact-form" action="#" method="GET">
+        <div class="field">
           <label for="name">Name</label>
-          <input id="name" name="name" required placeholder="Your name"
-                 style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)">
+          <input id="name" name="name" required placeholder="Your name" autocomplete="name">
         </div>
-        <div style="grid-column:2 / span 1">
+        <div class="field">
           <label for="email">Email</label>
-          <input id="email" name="_replyto" type="email" required placeholder="you@example.com"
-                 style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)">
+          <input id="email" name="_replyto" type="email" required placeholder="you@example.com" autocomplete="email">
         </div>
-        <div style="grid-column:1 / -1">
+        <div class="field field--full">
           <label for="subject">Subject</label>
-          <input id="subject" name="subject" required placeholder="Collaboration / Question / Just saying hi"
-                 style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)">
+          <input id="subject" name="subject" required placeholder="Collaboration / Question / Just saying hi">
         </div>
-        <div style="grid-column:1 / -1">
+        <div class="field field--full">
           <label for="message">Message</label>
-          <textarea id="message" name="message" required rows="6" placeholder="What's on your mind?"
-                    style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)"></textarea>
+          <textarea id="message" name="message" required rows="6" placeholder="What's on your mind?"></textarea>
         </div>
 
         <!-- Honeypot -->
-        <input type="text" name="_gotcha" style="display:none">
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="honeypot">
 
-        <div style="grid-column:1 / -1;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <div class="field--full contact-actions">
           <button class="btn" type="submit">Send</button>
           <a class="btn secondary"
              href="mailto:robbiahsadiq@gmail.com?subject=Portfolio%20Contact&body=Hi%20Rabiat%2C%0D%0A%0D%0A"
              >Email instead</a>
-          <a class="btn secondary" href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank" rel="noopener"
-             style="opacity:0.7">🎁 Don't click</a>
+          <a class="btn secondary contact-joke" href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank" rel="noopener">🎁 Don't click</a>
           <span id="formStatus" class="muted" aria-live="polite"></span>
         </div>
       </form>

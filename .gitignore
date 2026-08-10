@@ -1,0 +1,17 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Local tooling / notes (not part of the deployed site)
+ARCHITECTURE.md
+.local/
+*.local.*
+
+# Logs
+*.log
+npm-debug.log*

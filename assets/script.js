@@ -34,6 +34,8 @@
     document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
     localStorage.setItem('theme', dark ? 'dark' : 'light');
     window.dispatchEvent(new CustomEvent('rainbowMode', { detail: { enabled: false } }));
+    // Readable brand tokens depend on the page background — re-derive them.
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { dark } }));
   };
   
   const createSecretTooltip = () => {
@@ -256,6 +258,92 @@
 
   let currentScheme = parseInt(localStorage.getItem('colorScheme') || '0');
   let isPlainMode = localStorage.getItem('plainMode') === 'true';
+
+  /* ── Readable color derivation ────────────────────────────────────────────
+     Several schemes are very light (gold #c9a227, amber accent #f5e0b3).
+     Using those raw as link text, or painting white on top of them, drops
+     below 4.5:1. These helpers derive two tokens the stylesheet consumes:
+       --primary-readable : the brand hue, nudged until it reads on the page
+       --on-primary       : black or white, whichever reads on a brand fill
+     Recomputed on every scheme change and every theme flip.               */
+  function hexToRgb(hex) {
+    const h = hex.replace('#', '');
+    const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+    return {
+      r: parseInt(full.slice(0, 2), 16),
+      g: parseInt(full.slice(2, 4), 16),
+      b: parseInt(full.slice(4, 6), 16),
+    };
+  }
+
+  function rgbToHex({ r, g, b }) {
+    const c = (v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+    return `#${c(r)}${c(g)}${c(b)}`;
+  }
+
+  function relLuminance({ r, g, b }) {
+    const f = (v) => {
+      v /= 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+  }
+
+  function contrast(a, b) {
+    const l1 = relLuminance(a);
+    const l2 = relLuminance(b);
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  }
+
+  function mix(c, target, amount) {
+    return {
+      r: c.r + (target.r - c.r) * amount,
+      g: c.g + (target.g - c.g) * amount,
+      b: c.b + (target.b - c.b) * amount,
+    };
+  }
+
+  // Walk the hue toward black (light theme) or white (dark theme) until it clears 4.5:1.
+  function readableOn(colorHex, backgroundHex) {
+    const bg = hexToRgb(backgroundHex);
+    const target = relLuminance(bg) > 0.5 ? { r: 0, g: 0, b: 0 } : { r: 255, g: 255, b: 255 };
+    let color = hexToRgb(colorHex);
+    for (let step = 0; step <= 20; step++) {
+      const candidate = mix(hexToRgb(colorHex), target, step * 0.05);
+      color = candidate;
+      if (contrast(candidate, bg) >= 4.5) break;
+    }
+    return rgbToHex(color);
+  }
+
+  // Foreground for a brand-colored fill. Checks the lighter of primary/accent
+  // so it stays legible across the primary→accent gradients (.btn, .cs-hero).
+  function foregroundFor(primaryHex, accentHex) {
+    const white = { r: 255, g: 255, b: 255 };
+    const black = { r: 17, g: 17, b: 17 };
+    const lighter =
+      relLuminance(hexToRgb(primaryHex)) > relLuminance(hexToRgb(accentHex))
+        ? hexToRgb(primaryHex)
+        : hexToRgb(accentHex);
+    return contrast(white, lighter) >= contrast(black, lighter) ? '#ffffff' : '#111111';
+  }
+
+  function applyReadableTokens(primaryHex, accentHex) {
+    const root = document.documentElement;
+    const dark = root.classList.contains('dark');
+    const pageBg = dark ? '#111011' : '#fefefe';
+    root.style.setProperty('--primary-readable', readableOn(primaryHex, pageBg));
+    root.style.setProperty('--accent-readable', readableOn(accentHex, pageBg));
+    root.style.setProperty('--on-primary', foregroundFor(primaryHex, accentHex));
+  }
+
+  // Re-derive when the light/dark toggle flips the page background.
+  window.addEventListener('themechange', () => {
+    const scheme = colorSchemes[currentScheme] || colorSchemes[0];
+    if (!document.documentElement.classList.contains('plain-mode')) {
+      applyReadableTokens(scheme.primary, scheme.accent);
+    }
+  });
   let plainCursorTrailColor = '#000000';
   let hoverTimeout = null;
   let plainModePopup = null;
@@ -324,6 +412,7 @@
     const root = document.documentElement;
     root.style.setProperty('--primary', scheme.primary);
     root.style.setProperty('--accent', scheme.accent);
+    applyReadableTokens(scheme.primary, scheme.accent);
     
     // Theme colors drive CSS ambient orbs; clear legacy inline hero gradient
     const hero = document.querySelector('.hero--fullscreen');
@@ -447,9 +536,11 @@
     if (rabiat) {
       root.style.setProperty('--primary', '#b81e2c');
       root.style.setProperty('--accent', '#4a8f8f');
+      applyReadableTokens('#b81e2c', '#4a8f8f');
     } else {
       root.style.setProperty('--primary', '#000000');
       root.style.setProperty('--accent', '#000000');
+      applyReadableTokens('#000000', '#000000');
     }
 
     const hero = document.querySelector('.hero--fullscreen');
@@ -637,9 +728,11 @@
     if (rabiat) {
       root.style.setProperty('--primary', '#b81e2c');
       root.style.setProperty('--accent', '#4a8f8f');
+      applyReadableTokens('#b81e2c', '#4a8f8f');
     } else {
       root.style.setProperty('--primary', '#000000');
       root.style.setProperty('--accent', '#000000');
+      applyReadableTokens('#000000', '#000000');
     }
 
     const hero = document.querySelector('.hero--fullscreen');
@@ -1150,31 +1243,33 @@ document.addEventListener('DOMContentLoaded', () => {
   let filteredProjects = [];
 
   // Embedded projects data (works without server)
+  // Generated from assets/projects.json — do not hand-edit.
+  // Offline/file:// fallback for when fetch() of the JSON is unavailable.
   const EMBEDDED_PROJECTS = [
-    {id:"amazon-music-capstone",title:"Amazon Music Adaptive UI",subtitle:"CMU MHCI Capstone · Jan – Jul 2026",category:"Research / HCI",tags:["HCI","UX","Research","Product","Industry"],description:"Seven-month Amazon Music–sponsored MHCI capstone: Adaptive UI that reshapes the artist page by listening loyalty so fans feel recognized without being asked to broadcast.",github:null,demo:"files/amazon-music/amazon-music-case-study.pdf",caseStudy:"case-studies/case-study-amazon-music.html",status:"complete",images:["assets/img/projects/amazon-music.png"],year:"2026"},
-    {id:"cmu-mhci-sticky-counter",title:"CMU MHCI Sticky Note Counter",subtitle:"Interactive Physics Observatory",category:"Web / Full-Stack / Product",tags:["Web","HCI","Research","Personal"],description:"A live-updating observatory estimating the total sticky notes used by every CMU MHCI cohort since 2012. Physics-based animations, year-by-year breakdowns, and a real-time counter.",github:null,demo:"sticky-counter.html",caseStudy:null,status:"complete",images:["assets/img/stickyobservatory.png"],year:"2026"},
-    {id:"true-to-hue",title:"True to Hue",subtitle:"AI-assisted color design system starter",category:"Web / Full-Stack / Product",tags:["Web","Software","HCI","Personal"],description:"Turns product context, color preferences, light/dark mode, and optional reference images into a structured brand palette—then refine in a live studio with CSS variables, exports (CSS, tokens, PDF), and accessibility reporting.",github:"https://github.com/RabiatS/True-to-hue",demo:"https://rabiats.github.io/True-to-hue/",caseStudy:null,status:"complete",images:["assets/img/projects/truetohue.png"],year:"2026"},
-    {id:"perspective",title:"Perspective",subtitle:"A Spatial Canvas for Your Data",category:"Web / Full-Stack / Product",tags:["Web","Data","AI","3D","Personal"],description:"Most data visualization tools default to 2D because it's the safe, familiar option. But a lot of data—geographic distributions, network graphs, frequency analysis, surface topologies—actually lives in three dimensions, and flattening it means losing information. Drag in a file (CSV, JSON, GeoJSON, or audio), an AI agent classifies it and maps it to the right 3D chart type, and you're immediately in a navigable scene you can orbit, zoom, and explore. A second agent runs anomaly detection and drops insight pins directly into the scene. Shareable URLs encode your exact view; snapshot export included. Everything runs in the browser—no coding required, no software to install. Ideation and research in Perplexity and Claude, then fully designed and built in Cursor.",github:"https://github.com/RabiatS/PERSPECTIVE",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/perspective.png"],year:"2026"},
-    {id:"ctrl-alt-elite",title:"Semi-Autonomous E-Scooter Control System",subtitle:"IXD — Interaction Design Fundamentals · Fall 2025",category:"Research / HCI",tags:["HCI","UX","Product","Hardware","Design"],description:"End-to-end interaction design for Hyundai’s Level 2 semi-autonomous e-scooter: research-driven physical controls, child rider dashboard, parent oversight app, CAD handlebar concepts, and a functional prototype.",github:null,demo:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pdf",ppt:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pptx",caseStudy:null,status:"complete",images:["assets/img/projects/scooter-parental-control-ui.png"],year:"2025"},
-    {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 — XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR","VR","Research","HCI","Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",caseStudy:null,status:"complete",images:["assets/img/projects/gazeflow image.png"],year:"2025"},
-    {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML","Data","Streaming","CV","Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps.",github:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:["assets/img/ps.PNG"],year:"2025"},
-    {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves — 1st Place UTSA",category:"XR / Unity / Immersive",tags:["XR","Hardware","Unity","Research"],description:"Led team to build affordable haptic glove with flex sensors and EM braking. 18% latency reduction, 24% comfort improvement.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",caseStudy:"case-studies/case-study.html",status:"complete",images:["assets/img/mm.png"],year:"2024"},
-    {id:"xr-pain-perception",title:"XR Pain Augmentation Research",subtitle:"CMU Augmented Perception Lab",category:"XR / Unity / Immersive",tags:["XR","Research","HCI","Perception"],description:"Multimodal XR prototypes to study pain perception; building adaptive interfaces with structured logging for ML personalization.",github:null,caseStudy:"case-studies/case-study-pain-xr.html",status:"complete",images:["assets/img/projects/vr-pain-augmentation-research.png"],year:"2025"},
-    {id:"assuage",title:"Assuage",subtitle:"ML Distress Prediction",category:"Applied ML / CV / Video",tags:["ML","Research","HCI"],description:"Logistic regression to predict distress level from HealthKit biometrics; 82% test accuracy with on-device CoreML inference.",github:"https://github.com/RabiatS/final-project-aimleaders",caseStudy:"case-study-assuage.html",status:"complete",images:["assets/img/projects/assuage-logo.png"],year:"2024"},
-    {id:"spotify-research",title:"Spotify vs AI Research Study",subtitle:"UX Research & Design",category:"Research / HCI",tags:["HCI","Research"],description:"UX research exploring how Spotify listeners perceive AI-generated music, and how clearer labeling can build trust.",github:"https://github.com/RabiatS/spotify-vs-ai-research-study",demo:"https://spotify-vs-ai-research-study.vercel.app/",caseStudy:"case-studies/case-study-spotify.html",status:"complete",images:["assets/img/projects/spotify-vs-ai-research.png"],year:"2024"},
-    {id:"vr-music-visualizer",title:"VR Music Visualizer",subtitle:"Audio-Reactive 3D Environments",category:"XR / Unity / Immersive",tags:["XR","Unity","VR","Personal"],description:"Reactive 3D visuals responding to audio frequencies with hand tracking interactions. Quest 2 app.",github:"https://github.com/RabiatS/VR-music-visualizer",caseStudy:null,status:"complete",images:["assets/img/projects/VR Mussic Viz.webp"],year:"2024"},
-    {id:"multimodal-pipeline",title:"Multimodal Unstructured Data Pipeline",subtitle:"Production-Ready Processing",category:"Applied ML / CV / Video",tags:["ML","Data","CV","Audio","Personal"],description:"Modular pipeline converting unstructured video, audio, and sensor data into structured, timestamped events.",github:"https://github.com/RabiatS",caseStudy:null,status:"complete",images:["assets/img/projects/Multimodalstructred pipleiline.png"],year:"2024"},
-    {id:"yolov5-car-detection",title:"YOLOv5 Car Detection",subtitle:"Real-Time Vehicle Detection",category:"Applied ML / CV / Video",tags:["ML","CV","Personal"],description:"Vehicle detection from video using YOLOv5 with real-time inference using OpenCV.",github:"https://github.com/RabiatS/Pytorch_car_detection_model",caseStudy:null,status:"complete",images:[],year:"2024"},
-    {id:"applied-stem",title:"Applied STEM Platform",subtitle:"Co-founder / AI & Full-Stack Engineer",category:"Applied ML / CV / Video",tags:["ML","Industry"],description:"AI-powered technical interview platform with React/TypeScript canvas and FastAPI backend for circuit simulation.",github:null,caseStudy:null,status:"complete",images:["assets/img/projects/appliedSTEM_img.png"],year:"2024"},
-    {id:"weeping-angel-vr",title:"Weeping Angel VR",subtitle:"Don't Blink Experience",category:"XR / Unity / Immersive",tags:["XR","Unity","VR","Personal"],description:"VR experience where objects move closer when not observed—'weeping angel' mechanic focusing on presence and tension.",github:"https://github.com/RabiatS/Weeping_angel_VR",caseStudy:null,status:"complete",images:[],year:"2024"},
-    {id:"ar-guided-journeys",title:"AR Guided Journeys",subtitle:"Quest 3 Mixed Reality Navigation",category:"XR / Unity / Immersive",tags:["XR","AR","Unity","Personal"],description:"Quest 3 mixed reality indoor navigation and learning app with AR paths and informative content.",github:"https://github.com/RabiatS/AR-Guided-Journeys-Interactive-Learning",caseStudy:null,status:"complete",images:[],year:"2024"},
-    {id:"vr-data-visualization",title:"VR Interactive Data Visualization",subtitle:"3D Graph Exploration",category:"XR / Unity / Immersive",tags:["XR","VR","Data","ML","Personal"],description:"VR system for exploring graphs and datasets in 3D space with grab/drag/move interaction.",github:"https://github.com/RabiatS/VR-Interactive-Data-Visualization-with-AIML",caseStudy:null,status:"complete",images:[],year:"2024"},
-    {id:"hand-controlled-visuals",title:"Hand-Controlled Visuals",subtitle:"OpenCV MediaPipe Visualizer",category:"XR / Unity / Immersive",tags:["CV","XR","Personal"],description:"Python hand-tracking visualizer with four effects controlled by finger gestures.",github:"https://github.com/RabiatS/Hand-Controlled-Visuals-OpenCV-MediaPipe-",caseStudy:null,status:"complete",images:[],year:"2024"},
-    {id:"vr-content-analysis",title:"VR Content Analysis",subtitle:"AI-Empowered Safety Research",category:"Research / HCI",tags:["Research","HCI","XR","ML"],description:"Research on AI-empowered VR content analysis to address harassment and safety issues.",github:null,caseStudy:null,status:"complete",images:[],year:"2023-2024"},
-    {id:"talky-talky",title:"Talky Talky",subtitle:"Audio-Responsive App",category:"Software",tags:["Software","HCI"],description:"Audio-responsive app for non-verbal kids with Google Text-to-Speech integration.",github:"https://github.com/RabiatS/software-product-sprint-2022",caseStudy:null,status:"complete",images:[],year:"2022"},
-    {id:"apple-nacme-projects",title:"Apple NACME AIML Intensive",subtitle:"35 Projects — 8-Week Bootcamp",category:"Early Work / Learning",tags:["ML","Early","Learning"],description:"Completed 35 projects covering Python, data analysis, ML, deep learning, and advanced ML topics.",github:"https://github.com/RabiatS",caseStudy:null,status:"complete",images:[],year:"2024"},
-    {id:"task-manager",title:"Task Manager App",subtitle:"Android Journaling & Cloud Sync",category:"Software",tags:["Software"],description:"Android app with Firebase and SQLite; journaling, authentication, cloud sync.",github:"https://github.com/RabiatS/TaskManager-CS3443",caseStudy:null,status:"complete",images:[],year:"2023"},
-    {id:"titanic-ml",title:"Titanic Survival Prediction",subtitle:"Classic ML Analysis",category:"Early Work / Learning",tags:["ML","Early","Learning"],description:"ML analysis predicting Titanic passenger survival with logistic regression and ensemble methods.",github:"https://github.com/RabiatS/titanic_survivers_ml",caseStudy:null,status:"complete",images:[],year:"2024"}
+    {id:"amazon-music-capstone",title:"Amazon Music Adaptive UI",subtitle:"CMU MHCI Capstone · Jan – Jul 2026",category:"Research / HCI",tags:["HCI", "UX", "Research", "Product", "Industry"],description:"Seven-month Amazon Music–sponsored MHCI capstone: Adaptive UI that reshapes the artist page by listening loyalty so fans feel recognized without being asked to broadcast.",github:null,demo:"files/amazon-music/amazon-music-case-study.pdf",caseStudy:"case-studies/case-study-amazon-music.html",status:"complete",images:["assets/img/projects/amazon-music.png"],year:"2026"},
+    {id:"cmu-mhci-sticky-counter",title:"CMU MHCI Sticky Note Counter",subtitle:"Interactive Physics Observatory",category:"Web / Full-Stack / Product",tags:["Web", "HCI", "Research", "Personal"],description:"A live-updating observatory estimating the total sticky notes used by every CMU MHCI cohort since 2012, complete with physics-based animations, year-by-year breakdowns, and a real-time counter.",github:null,demo:"sticky-counter.html",caseStudy:null,status:"complete",images:["assets/img/stickyobservatory.png"],year:"2026"},
+    {id:"perspective",title:"Perspective",subtitle:"A Spatial Canvas for Your Data",category:"Web / Full-Stack / Product",tags:["Web", "Data", "AI", "3D", "Personal"],description:"Most data visualization tools default to 2D because it's the safe, familiar option. But a lot of data—geographic distributions, network graphs, frequency analysis, surface topologies—actually lives in three dimensions, and flattening it means losing information. Drag in a file (CSV, JSON, GeoJSON, or audio), an AI agent classifies it and maps it to the right 3D chart type, and you're immediately in a navigable scene you can orbit, zoom, and explore.",github:"https://github.com/RabiatS/PERSPECTIVE",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/perspective.png"],year:"2026"},
+    {id:"true-to-hue",title:"True to Hue",subtitle:"AI-assisted color design system starter",category:"Web / Full-Stack / Product",tags:["Web", "Software", "HCI", "Personal"],description:"Web app that turns product context, color preferences, light/dark mode, and optional reference images into a structured brand color system—then refine in a studio with live CSS variables, handoff exports, and accessibility checks.",github:"https://github.com/RabiatS/True-to-hue",demo:"https://rabiats.github.io/True-to-hue/",caseStudy:null,status:"complete",images:["assets/img/projects/truetohue.png"],year:"2026"},
+    {id:"ctrl-alt-elite",title:"Semi-Autonomous E-Scooter Control System",subtitle:"IXD — Interaction Design Fundamentals · Fall 2025",category:"Research / HCI",tags:["HCI", "UX", "Product", "Hardware", "Design"],description:"End-to-end interaction design for Hyundai’s Level 2 semi-autonomous electric scooter: research-driven physical controls, a child-facing rider dashboard, and a parent oversight app (geofencing, speed limits, walkie-talkie)—plus CAD handlebar concepts and a functional prototype.",github:null,demo:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pdf",ppt:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pptx",caseStudy:null,status:"complete",images:["assets/img/projects/scooter-parental-control-ui.png", "assets/img/projects/scooter-prototype.png", "assets/img/projects/scooter-handlebar-cad-1.png", "assets/img/projects/scooter-handlebar-cad-2.png"],year:"2025"},
+    {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 — XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR", "VR", "Research", "HCI", "Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/gazeflow image.png"],year:"2025"},
+    {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML", "Data", "Streaming", "CV", "Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps for validation and downstream analytics.",github:null,demo:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:["assets/img/ps.PNG"],year:"2025"},
+    {id:"multimodal-pipeline",title:"Multimodal Unstructured Data Pipeline",subtitle:"Production-Ready Video/Audio/Sensor Processing",category:"Applied ML / CV / Video",tags:["ML", "Data", "CV", "Audio", "Personal"],description:"A modular pipeline that converts unstructured video, audio, and sensor/time-series data into structured, timestamped events with metadata.",github:"https://github.com/RabiatS",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/Multimodalstructred pipleiline.png"],year:"2024"},
+    {id:"yolov5-car-detection",title:"YOLOv5 Car Detection",subtitle:"Real-Time Vehicle Detection from Video",category:"Applied ML / CV / Video",tags:["ML", "CV", "Personal"],description:"Built vehicle detection from video using YOLOv5 with real-time inference using OpenCV.",github:"https://github.com/RabiatS/Pytorch_car_detection_model",demo:null,caseStudy:null,status:"complete",images:[],year:"2024"},
+    {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves",category:"XR / Unity / Immersive",tags:["XR", "Hardware", "Unity", "Research"],description:"Led cross-functional team to build affordable haptic glove with flex sensors and electromagnetic braking; integrated real-time interaction in Unity/C#.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",demo:null,caseStudy:"case-studies/case-study.html",status:"complete",images:["assets/img/mm.png"],year:"2024"},
+    {id:"vr-music-visualizer",title:"VR Music Visualizer",subtitle:"Audio-Reactive 3D Environments",category:"XR / Unity / Immersive",tags:["XR", "Unity", "VR", "Personal"],description:"Reactive 3D visuals that respond to audio (bass/treble/mid/vocals) with planned hand tracking interactions.",github:"https://github.com/RabiatS/VR-music-visualizer",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/VR Mussic Viz.webp"],year:"2024"},
+    {id:"weeping-angel-vr",title:"Weeping Angel VR",subtitle:"Don't Blink Experience",category:"XR / Unity / Immersive",tags:["XR", "Unity", "VR", "Personal"],description:"VR experience where objects/characters move closer when not directly observed, implementing the 'weeping angel' mechanic.",github:"https://github.com/RabiatS/Weeping_angel_VR",demo:null,caseStudy:null,status:"complete",images:[],year:"2024"},
+    {id:"ar-guided-journeys",title:"AR Guided Journeys",subtitle:"Quest 3 Mixed Reality Navigation",category:"XR / Unity / Immersive",tags:["XR", "AR", "Unity", "Personal"],description:"Quest 3 mixed reality indoor navigation and learning app where users follow AR paths and get informative content along the way.",github:"https://github.com/RabiatS/AR-Guided-Journeys-Interactive-Learning",demo:null,caseStudy:null,status:"complete",images:[],year:"2024"},
+    {id:"vr-data-visualization",title:"VR Interactive Data Visualization",subtitle:"3D Graph Exploration with AIML",category:"XR / Unity / Immersive",tags:["XR", "VR", "Data", "ML", "Personal"],description:"VR system for exploring graphs and datasets in 3D space, aiming for immersive and collaborative data analysis.",github:"https://github.com/RabiatS/VR-Interactive-Data-Visualization-with-AIML",demo:null,caseStudy:null,status:"complete",images:[],year:"2024"},
+    {id:"hand-controlled-visuals",title:"Hand-Controlled Visuals",subtitle:"OpenCV MediaPipe Visualizer",category:"XR / Unity / Immersive",tags:["CV", "XR", "Personal"],description:"Python hand-tracking visualizer with four effects (kaleidoscope particles, aurora, ripple rings, animated EKG) controlled by finger openness per hand.",github:"https://github.com/RabiatS/Hand-Controlled-Visuals-OpenCV-MediaPipe-",demo:null,caseStudy:null,status:"complete",images:[],year:"2024"},
+    {id:"xr-pain-perception",title:"XR Pain Augmentation Research",subtitle:"CMU Augmented Perception Lab",category:"XR / Unity / Immersive",tags:["XR", "Research", "HCI", "Perception"],description:"Multimodal XR prototypes to study pain perception; goal includes later ML integration for personalization and analysis.",github:null,demo:null,caseStudy:"case-studies/case-study-pain-xr.html",status:"complete",images:["assets/img/projects/vr-pain-augmentation-research.png"],year:"2025"},
+    {id:"assuage",title:"Assuage",subtitle:"ML Distress Prediction (iOS + HealthKit)",category:"iOS / Health / ML Deployment",tags:["ML", "iOS", "Health", "Research"],description:"Logistic regression to predict distress level from HealthKit biometrics; 82% test accuracy.",github:"https://github.com/RabiatS/final-project-aimleaders",demo:null,caseStudy:"case-studies/case-study-assuage.html",status:"complete",images:["assets/img/projects/assuage-logo.png"],year:"2024"},
+    {id:"spotify-research",title:"Spotify vs AI Research Study",subtitle:"UX Research & Design",category:"Web / Full-Stack / Product",tags:["HCI", "Research", "UX", "Web"],description:"A UX research and design project exploring how Spotify listeners perceive AI-generated music, and how clearer labeling and controls can build trust in the listening experience.",github:"https://github.com/RabiatS/spotify-vs-ai-research-study",demo:"https://spotify-vs-ai-research-study.vercel.app/",caseStudy:"case-studies/case-study-spotify.html",status:"complete",images:["assets/img/projects/spotify-vs-ai-research.png"],year:"2024"},
+    {id:"talky-talky",title:"Talky Talky",subtitle:"Audio-Responsive Web App",category:"Web / Full-Stack / Product",tags:["Web", "Early", "Product"],description:"Audio-responsive web app for non-verbal kids; Google Text-to-Speech integration.",github:"https://github.com/RabiatS/software-product-sprint-2022",demo:null,caseStudy:null,status:"complete",images:[],year:"2022"},
+    {id:"applied-stem",title:"Applied STEM Platform",subtitle:"Co-founder / AI & Full-Stack Engineer",category:"Web / Full-Stack / Product",tags:["Web", "ML", "Product", "Industry"],description:"Built an AI-powered technical interview platform where users design circuits on an interactive React/TypeScript canvas with a FastAPI backend for simulation and analysis.",github:null,demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/appliedSTEM_img.png"],year:"2024"},
+    {id:"task-manager",title:"Task Manager App",subtitle:"Android Journaling & Cloud Sync",category:"Web / Full-Stack / Product",tags:["Android", "Web", "Early"],description:"Android app in Java using Firebase and SQLite; journaling, authentication, cloud sync; team project with Jira/Confluence.",github:"https://github.com/RabiatS/TaskManager-CS3443",demo:null,caseStudy:null,status:"complete",images:[],year:"2023"},
+    {id:"vr-content-analysis",title:"VR Content Analysis",subtitle:"AI-Empowered Safety Research",category:"Research / HCI",tags:["Research", "HCI", "XR", "ML"],description:"Conducted research on AI-empowered VR content analysis to address harassment and safety issues across social VR platforms.",github:null,demo:null,caseStudy:null,status:"complete",images:[],year:"2023-2024"},
+    {id:"apple-nacme-projects",title:"Apple NACME AIML Intensive",subtitle:"35 Projects — 8-Week Bootcamp",category:"Early Work / Learning",tags:["ML", "Early", "Learning"],description:"Completed 35 projects during 8-week intensive covering Python fundamentals, data analysis, ML foundations, regression, classification, deep learning, and advanced ML topics.",github:"https://github.com/RabiatS",demo:null,caseStudy:null,status:"complete",images:[],year:"2024"},
+    {id:"titanic-ml",title:"Titanic Survival Prediction",subtitle:"Classic ML Analysis",category:"Early Work / Learning",tags:["ML", "Early", "Learning"],description:"Machine learning analysis predicting Titanic passenger survival using logistic regression, decision trees, or ensemble methods.",github:"https://github.com/RabiatS/titanic_survivers_ml",demo:null,caseStudy:null,status:"complete",images:[],year:"2024"}
   ];
 
   // Get DOM elements
@@ -1187,22 +1282,32 @@ document.addEventListener('DOMContentLoaded', () => {
     return !!grid; // Return true if grid exists
   }
 
-  // Load projects - use embedded data (always works)
+  // assets/projects.json is the source of truth. Fetching it means adding a
+  // project only requires editing the JSON. Over file:// the fetch fails, so we
+  // fall back to EMBEDDED_PROJECTS, which is generated from the same JSON.
   async function loadProjects(){
     if (!getElements()) return; // Exit if not on projects page
-    
+
+    allProjects = EMBEDDED_PROJECTS;
     try {
-      // Use embedded projects directly - no fetch needed
-      allProjects = EMBEDDED_PROJECTS;
-      filteredProjects = allProjects;
-      renderProjects();
-      if (projectCountEl) projectCountEl.textContent = allProjects.length;
-      if (loadingEl) loadingEl.style.display = 'none';
-      if (grid) grid.style.display = 'grid';
+      const res = await fetch('assets/projects.json', { cache: 'no-cache' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.projects) && data.projects.length) {
+          // `template` entries are placeholders with no real write-up yet.
+          allProjects = data.projects.filter((p) => p.status !== 'template');
+        }
+      }
     } catch (error) {
-      console.error('Error loading projects:', error);
-      if (loadingEl) loadingEl.textContent = 'Error loading projects';
+      // file:// or offline — the embedded copy already covers us.
+      console.info('projects.json unavailable, using embedded copy.', error);
     }
+
+    filteredProjects = allProjects;
+    renderProjects();
+    if (projectCountEl) projectCountEl.textContent = allProjects.length;
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (grid) grid.style.display = 'grid';
   }
 
   // Render project cards

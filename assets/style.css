@@ -13,6 +13,16 @@
   --accent-light: #f472b6;
   --success: #10b981;
   --warning: #f59e0b;
+
+  /* Contrast-safe companions to --primary / --accent.
+     Recomputed per color scheme and per theme in assets/script.js
+     (applyReadableTokens). The values here are the light-mode defaults so the
+     page is correct before JS runs and if JS never runs at all.
+       --primary-readable / --accent-readable : brand hue used as TEXT
+       --on-primary                           : text placed ON a brand fill */
+  --primary-readable: #6d28d9;
+  --accent-readable: #be185d;
+  --on-primary: #ffffff;
   
   /* Light mode - warmer, more personal */
   --bg: #fefefe;
@@ -69,6 +79,8 @@
   --glass-shine-soft: rgba(255, 255, 255, 0.06);
   --glass-shadow: rgba(0, 0, 0, 0.32);
   --glass-pill: rgba(255, 255, 255, 0.05);
+  --primary-readable: #a78bfa;
+  --accent-readable: #f472b6;
   color-scheme: dark;
 }
 
@@ -1863,10 +1875,13 @@ h3 {
 }
 
 /* Hero Section - soft ambient color field */
+/* The hero is a deep "night sky" in BOTH themes. Every element inside it
+   (headline, .grad, lead, glass tag pills, nav links, scroll cue) is painted
+   white, so a light backdrop here made the whole hero unreadable. */
 .hero--fullscreen {
-  --hero-base: color-mix(in srgb, var(--primary) 5%, var(--flow-base));
-  --hero-wash: color-mix(in srgb, var(--primary) 18%, var(--hero-base));
-  --hero-wash-2: color-mix(in srgb, var(--accent) 14%, var(--hero-base));
+  --hero-base: #151416;
+  --hero-wash: color-mix(in srgb, var(--primary) 24%, var(--hero-base));
+  --hero-wash-2: color-mix(in srgb, var(--accent) 20%, var(--hero-base));
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -1920,9 +1935,8 @@ h3 {
 }
 
 .dark .hero--fullscreen {
-  --hero-base: #151416;
-  --hero-wash: color-mix(in srgb, var(--primary) 12%, var(--hero-base));
-  --hero-wash-2: color-mix(in srgb, var(--accent) 10%, var(--hero-base));
+  --hero-wash: color-mix(in srgb, var(--primary) 14%, var(--hero-base));
+  --hero-wash-2: color-mix(in srgb, var(--accent) 12%, var(--hero-base));
 }
 
 /* Drifting color orbs & streaks (theme colors via --primary / --accent) */
@@ -2287,6 +2301,9 @@ h3 {
   margin: 16px 0;
 }
 
+/* Default tag reads against the PAGE, not against a dark image.
+   The white-on-glass variants live under .hero--fullscreen / .img-card / .cs-hero,
+   which are the only places guaranteed to have a dark backdrop. */
 .tag {
   display: inline-flex;
   align-items: center;
@@ -2294,16 +2311,26 @@ h3 {
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--primary) 9%, var(--bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border));
+  color: var(--text);
   transition: all 0.2s ease;
 }
 
 .tag:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: color-mix(in srgb, var(--primary) 16%, var(--bg-elevated));
   transform: translateY(-2px);
+}
+
+/* Tags sitting on the case-study gradient banner */
+.cs-hero .tag {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #ffffff;
+}
+
+.cs-hero .tag:hover {
+  background: rgba(255, 255, 255, 0.28);
 }
 
 /* Hero + skills: subtle liquid-glass chips */
@@ -2393,7 +2420,7 @@ h3 {
 
 .btn:not(.secondary) {
   background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: #ffffff;
+  color: var(--on-primary);
   box-shadow: var(--shadow-lg);
 }
 
@@ -2599,7 +2626,7 @@ body:not(.on-hero) main .btn.secondary:hover {
 }
 
 .link {
-  color: var(--primary);
+  color: var(--primary-readable);
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -2607,7 +2634,7 @@ body:not(.on-hero) main .btn.secondary:hover {
 }
 
 .link:hover {
-  color: var(--accent);
+  color: var(--accent-readable);
   gap: 8px;
 }
 
@@ -2740,23 +2767,115 @@ body:not(.on-hero) main .btn.secondary:hover {
 
 .pill.is-active {
   background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: #ffffff;
+  color: var(--on-primary);
   border: none;
   box-shadow: var(--shadow-md);
 }
 
-/* Case Study */
+/* Contact form — two columns on desktop, one on anything narrow.
+   Previously inline `grid-template-columns:1fr 1fr`, which no media query
+   could override, so Name/Email stayed side by side down to 320px. */
+.contact-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.contact-form .field--full,
+.contact-form .contact-actions {
+  grid-column: 1 / -1;
+}
+
+.contact-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  min-width: 0;
+}
+
+.contact-form input:focus-visible,
+.contact-form textarea:focus-visible {
+  outline: 2px solid var(--primary-readable);
+  outline-offset: 2px;
+  border-color: var(--primary-readable);
+}
+
+.contact-form textarea {
+  resize: vertical;
+}
+
+.contact-form .honeypot {
+  display: none;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.contact-joke {
+  opacity: 0.7;
+}
+
+@media (max-width: 640px) {
+  .contact-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .contact-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Case Study
+   The header is position:fixed, and these pages had no top offset, so the
+   banner slid underneath it. */
+.cs-page {
+  padding-top: calc(var(--header-height) + 40px);
+  padding-bottom: 40px;
+}
+
 .cs-hero {
   background: linear-gradient(135deg, var(--primary), var(--accent));
   color: #ffffff;
-  padding: 64px;
+  padding: clamp(24px, 5vw, 64px);
   border-radius: var(--radius-lg);
   margin-bottom: 48px;
   box-shadow: var(--shadow-xl);
 }
 
-.cs-hero .lead {
+/* Headings carry `color: var(--text)`, which beats the inherited white above
+   and left the banner text near-black on purple in light mode. */
+.cs-hero h1,
+.cs-hero h2,
+.cs-hero h3,
+.cs-hero p,
+.cs-hero strong,
+.cs-hero a {
+  color: #ffffff;
+}
+
+.cs-hero .lead,
+.cs-hero .muted {
   color: rgba(255, 255, 255, 0.9);
+}
+
+.cs-hero .eyebrow {
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .cs-section {
@@ -2814,7 +2933,7 @@ body:not(.on-hero) main .btn.secondary:hover {
 .footer .footer-tagline {
   margin-top: 8px;
   font-style: italic;
-  color: var(--text-light);
+  color: var(--text-muted);
 }
 
 .footer .footer-links {
@@ -3204,6 +3323,11 @@ input[type="search"]:focus {
     display: flex;
   }
 
+  /* Hamburger is the only way into the nav below 900px */
+  .nav-toggle {
+    display: flex;
+  }
+
   .nav-pill {
     padding: 12px 16px;
     font-size: 15px;
@@ -3248,10 +3372,6 @@ input[type="search"]:focus {
 
   #nebula {
     opacity: 0.55;
-  }
-
-  .hero--fullscreen {
-    --hero-base: var(--bg);
   }
 
   .hero-inner {
