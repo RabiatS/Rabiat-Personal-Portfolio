@@ -21,7 +21,15 @@
   <script>
     (function(){
       var g = localStorage.getItem('glassLevel');
-      if (g === 'clear' || g === 'frosted') { document.documentElement.setAttribute('data-glass', g); }
+      var legacy = { clear: 0, 'default': 50, frosted: 100 };
+      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
+      if (!isFinite(t)) t = 50;
+      t = Math.min(100, Math.max(0, t)) / 100;
+      var st = document.documentElement.style;
+      st.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+      st.setProperty('--glass-lens', (1 - t).toFixed(3));
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -42,6 +50,7 @@
 
 <link rel="stylesheet" href="../assets/style.css">
 <script src="../assets/script.js" defer></script>
+  <script src="../assets/music.js" defer></script>
 </head>
 <body data-tilt-mode="desktop">
 <header class="header">

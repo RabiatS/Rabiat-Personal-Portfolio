@@ -24,48 +24,73 @@
     return h;
   }
 
+  /* A record in its sleeve. Clicking slides the disc out and spins it; clicking
+     again puts it back. The sleeve is a button so it works from the keyboard;
+     the "open in Spotify" link is separate so the click does not fight it. */
   function tile(track) {
-    const item = document.createElement(track.url ? 'a' : 'div');
-    item.className = 'listen-card';
-    if (track.url) {
-      item.href = track.url;
-      item.target = '_blank';
-      item.rel = 'noopener';
-    }
+    const item = document.createElement('div');
+    item.className = 'vinyl';
 
-    const art = document.createElement('div');
-    art.className = 'listen-art';
-    if (track.cover) {
-      art.style.backgroundImage = `url("${track.cover}")`;
-      art.classList.add('has-cover');
-    } else {
-      const h = hueFor(track.title + track.artist);
-      art.style.background =
-        `linear-gradient(140deg, hsl(${h} 62% 42%), hsl(${(h + 48) % 360} 58% 26%))`;
-      const initials = document.createElement('span');
-      initials.className = 'listen-initials';
-      initials.textContent = track.title.trim().charAt(0).toUpperCase();
-      art.appendChild(initials);
-    }
+    const hue = hueFor(track.title + track.artist);
+    const sleeveArt = track.cover
+      ? `background-image:url("${track.cover}");background-size:cover;background-position:center`
+      : `background:linear-gradient(140deg, hsl(${hue} 62% 42%), hsl(${(hue + 48) % 360} 58% 26%))`;
+    const labelArt = track.cover
+      ? `background-image:url("${track.cover}");background-size:cover;background-position:center`
+      : `background:hsl(${hue} 58% 38%)`;
+
+    const stage = document.createElement('button');
+    stage.type = 'button';
+    stage.className = 'vinyl-stage';
+    stage.setAttribute('aria-pressed', 'false');
+    stage.setAttribute('aria-label', `${track.title} by ${track.artist}. Show the record.`);
+    stage.innerHTML = `
+      <span class="vinyl-disc" aria-hidden="true">
+        <span class="vinyl-label" style="${labelArt}"></span>
+      </span>
+      <span class="vinyl-sleeve" style="${sleeveArt}">
+        ${track.cover ? '' : `<span class="vinyl-initial">${track.title.trim().charAt(0).toUpperCase()}</span>`}
+      </span>
+    `;
+
+    stage.addEventListener('click', () => {
+      const open = item.classList.toggle('is-out');
+      stage.setAttribute('aria-pressed', String(open));
+      stage.setAttribute(
+        'aria-label',
+        `${track.title} by ${track.artist}. ${open ? 'Hide' : 'Show'} the record.`
+      );
+    });
 
     const meta = document.createElement('div');
-    meta.className = 'listen-meta';
+    meta.className = 'vinyl-meta';
+
     const title = document.createElement('p');
-    title.className = 'listen-title';
-    title.textContent = track.title;
+    title.className = 'vinyl-title';
+    if (track.url) {
+      const a = document.createElement('a');
+      a.href = track.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = track.title;
+      title.appendChild(a);
+    } else {
+      title.textContent = track.title;
+    }
+
     const artist = document.createElement('p');
-    artist.className = 'listen-artist muted';
+    artist.className = 'vinyl-artist muted';
     artist.textContent = track.artist;
     meta.append(title, artist);
 
     if (track.note) {
       const note = document.createElement('p');
-      note.className = 'listen-note muted';
+      note.className = 'vinyl-note muted';
       note.textContent = track.note;
       meta.appendChild(note);
     }
 
-    item.append(art, meta);
+    item.append(stage, meta);
     return item;
   }
 
@@ -86,6 +111,62 @@
     .catch(() => {
       /* file:// or offline: leave the shelf hidden. */
     });
+})();
+
+/* ── 1b. Hero headphone peek ────────────────────────────────────────────── */
+(function () {
+  const np = document.getElementById('nowPlaying');
+  if (!np) return;
+
+  const btn = np.querySelector('.np-btn');
+  const card = np.querySelector('.np-card');
+  const img = card.querySelector('img[data-src]');
+  let loaded = false;
+
+  // Only call the third-party service once the visitor actually asks for it.
+  function load() {
+    if (loaded || !img) return;
+    loaded = true;
+    img.src = img.dataset.src;
+    img.removeAttribute('data-src');
+    img.addEventListener('error', () => np.remove());
+  }
+
+  np.addEventListener('pointerenter', load);
+  np.addEventListener('focusin', load);
+
+  // Touch has no hover, so the button toggles the card open.
+  btn.addEventListener('click', () => {
+    load();
+    const open = card.classList.toggle('is-open');
+    btn.setAttribute('aria-expanded', String(open));
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!np.contains(e.target) && card.classList.contains('is-open')) {
+      card.classList.remove('is-open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && card.classList.contains('is-open')) {
+      card.classList.remove('is-open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.focus();
+    }
+  });
+})();
+
+/* ── 1c. Now-playing card spin (no navigation) ──────────────────────────── */
+(function () {
+  const card = document.getElementById('musicNow');
+  if (!card) return;
+  card.addEventListener('click', () => {
+    if (card.classList.contains('is-spinning')) return;
+    card.classList.add('is-spinning');
+    card.addEventListener('animationend', () => card.classList.remove('is-spinning'), { once: true });
+  });
 })();
 
 /* ── 2. Ambient soundtrack ──────────────────────────────────────────────── */

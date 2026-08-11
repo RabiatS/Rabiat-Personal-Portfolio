@@ -1,3 +1,21 @@
+// ============================================
+// GLASS LEVEL — one continuous control, 0 (plain glass) to 100 (heavy frost).
+// Defined early so the settings popover and the pre-paint inline script in each
+// page head agree on the same mapping.
+// ============================================
+window.applyGlassLevel = function (value) {
+  const t = Math.min(100, Math.max(0, Number(value) || 0)) / 100;
+  const r = document.documentElement.style;
+  // At t=0 this is the css.glass "plain pane" recipe: barely any blur, no fill,
+  // just a hairline edge. At t=1 it is a heavy frosted panel.
+  r.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+  r.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+  r.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+  // Drives the specular rim: strongest when clear, where a real pane would
+  // catch light on its edges instead of diffusing it.
+  r.setProperty('--glass-lens', (1 - t).toFixed(3));
+};
+
 // THEME TOGGLE with SECRET RAINBOW MODE
 (function(){
   const btn = document.getElementById('themeToggle');
@@ -1834,7 +1852,6 @@ window.resetPlainMode = function() {
   const controls = document.querySelector('.header .header-controls');
   if (!controls || controls.querySelector('.settings-wrap')) return;
 
-  const GLASS_LEVELS = ['clear', 'default', 'frosted'];
   const TILT_MODES = ['off', 'desktop', 'all'];
 
   const wrap = document.createElement('div');
@@ -1853,12 +1870,18 @@ window.resetPlainMode = function() {
       </div>
       <div class="settings-group">
         <span class="settings-label" id="glassLabel">Glass</span>
-        <div class="settings-seg" role="group" aria-labelledby="glassLabel" data-seg="glass">
-          <button type="button" data-value="clear">Clear</button>
-          <button type="button" data-value="default">Default</button>
-          <button type="button" data-value="frosted">Frosted</button>
-        </div>
+        <input type="range" class="glass-slider" id="glassSlider" min="0" max="100" step="1"
+               aria-labelledby="glassLabel" aria-valuetext="Default">
+        <div class="settings-scale" aria-hidden="true"><span>Clear</span><span>Frosted</span></div>
         <p class="settings-hint">How frosted the nav and header panels look.</p>
+      </div>
+      <div class="settings-group">
+        <span class="settings-label" id="soundLabel">Ambient sound</span>
+        <div class="settings-seg settings-seg--two" role="group" aria-labelledby="soundLabel" data-seg="sound">
+          <button type="button" data-value="off">Off</button>
+          <button type="button" data-value="on">On</button>
+        </div>
+        <p class="settings-hint">A quiet synth pad. Off unless you ask for it.</p>
       </div>
     </div>
   `;
@@ -1881,16 +1904,18 @@ window.resetPlainMode = function() {
     });
   }
 
+  // Stored as 0-100. Older builds stored 'clear' | 'default' | 'frosted'.
   function currentGlass() {
     const saved = localStorage.getItem('glassLevel');
-    return GLASS_LEVELS.includes(saved) ? saved : 'default';
+    const legacy = { clear: 0, default: 50, frosted: 100 };
+    if (saved in legacy) return legacy[saved];
+    const n = parseInt(saved, 10);
+    return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 50;
   }
 
-  function applyGlass(level) {
-    if (level === 'default') document.documentElement.removeAttribute('data-glass');
-    else document.documentElement.setAttribute('data-glass', level);
-    localStorage.setItem('glassLevel', level);
-    paint('glass', level);
+  function applyGlass(value) {
+    window.applyGlassLevel(value);
+    localStorage.setItem('glassLevel', String(value));
   }
 
   function currentTilt() {
@@ -1901,7 +1926,16 @@ window.resetPlainMode = function() {
   }
 
   paint('tilt', currentTilt());
-  paint('glass', currentGlass());
+
+  const slider = wrap.querySelector('#glassSlider');
+  slider.value = String(currentGlass());
+  const describe = (v) => (v < 20 ? 'Clear' : v < 45 ? 'Light' : v < 70 ? 'Default' : v < 88 ? 'Frosted' : 'Heavy frost');
+  slider.setAttribute('aria-valuetext', describe(Number(slider.value)));
+  slider.addEventListener('input', () => {
+    const v = Number(slider.value);
+    applyGlass(v);
+    slider.setAttribute('aria-valuetext', describe(v));
+  });
 
   wrap.querySelectorAll('[data-seg="tilt"] button').forEach((b) => {
     b.addEventListener('click', () => {
@@ -1917,9 +1951,21 @@ window.resetPlainMode = function() {
     });
   });
 
-  wrap.querySelectorAll('[data-seg="glass"] button').forEach((b) => {
-    b.addEventListener('click', () => applyGlass(b.dataset.value));
-  });
+  // Ambient sound lives in assets/music.js. If that file is not on the page,
+  // hide the control rather than showing one that does nothing.
+  const soundGroup = wrap.querySelector('[data-seg="sound"]').closest('.settings-group');
+  if (!window.AmbientSound) {
+    soundGroup.hidden = true;
+  } else {
+    paint('sound', window.AmbientSound.enabled() ? 'on' : 'off');
+    wrap.querySelectorAll('[data-seg="sound"] button').forEach((b) => {
+      b.addEventListener('click', () => {
+        const wantOn = b.dataset.value === 'on';
+        if (wantOn !== window.AmbientSound.isOn()) window.AmbientSound.toggle();
+        paint('sound', window.AmbientSound.isOn() ? 'on' : 'off');
+      });
+    });
+  }
 
   function open() {
     panel.classList.add('is-open');
@@ -2179,19 +2225,20 @@ window.resetPlainMode = function() {
   const tips = card.querySelector('[data-vr-tips]');
   const cta = card.querySelector('[data-vr-cta]');
 
+  // Short on purpose: this is the Cool page, not a manual. The long setup
+  // instructions live in vr.html itself.
   function setRegularDevice() {
     if (hint) {
-      hint.innerHTML =
-        'This portfolio has an immersive WebXR room: the same hero, featured projects, and nav, rebuilt in 3D. On a phone or laptop you cannot enter VR here; open this site on any <strong>XR headset browser</strong> (Meta Quest, Pico, etc.) over <strong>HTTPS</strong>, then tap <strong>View in VR</strong> in the header or open the VR space from the headset.';
+      hint.textContent =
+        "The whole portfolio, rebuilt in 3D. Open it on a headset browser to step inside, or take the 3D preview here.";
     }
-    if (tips) tips.hidden = false;
-    if (cta) cta.textContent = '▶ Open VR space (3D preview) ↗';
+    if (tips) tips.hidden = true;
+    if (cta) cta.textContent = '▶ Open VR space ↗';
   }
 
   function setXrDevice() {
     if (hint) {
-      hint.textContent =
-        'This browser supports immersive VR. Step inside the portfolio hero. Use hand tracking or controllers to point, pinch, and grab project cards.';
+      hint.textContent = 'Your browser can do this. Step inside and grab things.';
     }
     if (tips) tips.hidden = true;
     if (cta) cta.textContent = '▶ Enter VR ↗';

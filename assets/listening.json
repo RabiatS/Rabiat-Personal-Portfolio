@@ -1,14 +1,6 @@
 {
-  "_readme": "Edit this file to change the 'On repeat' shelf on cool.html. Each entry needs title + artist; everything else is optional. 'cover' is a path to an image in assets/img/music/ (if omitted, a generated gradient tile is used). 'url' makes the tile clickable. 'note' is your one-liner about it.",
+  "_readme": "Dormant. The vinyl shelf on cool.html renders only if 'tracks' has entries. Spotify does not expose a recently-played list to a static page, so any albums here have to be added by hand (with square cover art in assets/img/music/). Left empty on purpose: the live 'now playing' card is the music feature.",
   "heading": "On repeat",
-  "blurb": "What has been in my ears while building all of this.",
-  "tracks": [
-    {
-      "title": "Replace me",
-      "artist": "Your artist",
-      "note": "Edit assets/listening.json to put your actual music here.",
-      "cover": null,
-      "url": null
-    }
-  ]
+  "blurb": "Click a sleeve to pull the record out.",
+  "tracks": []
 }

@@ -22,7 +22,15 @@
   <script>
     (function(){
       var g = localStorage.getItem('glassLevel');
-      if (g === 'clear' || g === 'frosted') { document.documentElement.setAttribute('data-glass', g); }
+      var legacy = { clear: 0, 'default': 50, frosted: 100 };
+      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
+      if (!isFinite(t)) t = 50;
+      t = Math.min(100, Math.max(0, t)) / 100;
+      var st = document.documentElement.style;
+      st.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+      st.setProperty('--glass-lens', (1 - t).toFixed(3));
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -43,6 +51,7 @@
 
   <link rel="stylesheet" href="assets/style.css" />
   <script src="assets/script.js" defer></script>
+  <script src="assets/music.js" defer></script>
 </head>
 <body data-tilt-mode="desktop">
   <header class="header">
@@ -88,8 +97,30 @@
         </div>
       </div>
 
-      <h2 style="font-size: 1.25rem; margin-bottom: 20px;">My tools</h2>
-      <div class="grid cards-3" style="margin-bottom: 56px;">
+      <!-- Two columns: the live Spotify card holds the left rail, the tools
+           flow beside it instead of leaving the row half empty. -->
+      <div class="cool-top">
+        <aside class="cool-music">
+          <h2 class="cool-h2">What I'm listening to</h2>
+          <p class="muted cool-sub">Pulled live from Spotify. Usually something loud while I am debugging.</p>
+          <!-- Third-party service: onerror hides the block rather than leaving a
+               broken image behind. -->
+          <div id="musicStrip" data-listening-section>
+            <button type="button" class="music-now" id="musicNow"
+                    aria-label="What Rabiat is listening to on Spotify. Click to flip the card.">
+              <img src="https://spotify-github-profile.kittinanx.com/api/view?uid=227cg7ehrjpmdh54zp7epu7wq&cover_image=true&theme=default&show_offline=false&background_color=121212&interchange=false&profanity=false&hide_remaster=false&bar_color_cover=true"
+                   alt="Now playing on Spotify" width="320" height="380"
+                   loading="lazy" decoding="async"
+                   onerror="document.getElementById('musicStrip')?.remove()">
+            </button>
+          </div>
+          <!-- Dormant vinyl shelf: renders only if assets/listening.json has tracks. -->
+          <div class="listen-shelf" id="listeningShelf"></div>
+        </aside>
+
+        <div class="cool-tools">
+          <h2 class="cool-h2">My tools</h2>
+          <div class="grid cool-tools-grid">
         <article class="card">
           <h3><a href="hq-daily-planner.html" style="color:inherit">HQ Daily Planner</a></h3>
           <p class="muted">Terminal-style daily planner. Also hidden behind the VR headset on the homepage, or open it directly here.</p>
@@ -114,18 +145,14 @@
         <article class="card" id="vrSiteCard">
           <h3><a href="vr.html" style="color:inherit">View this site in VR</a></h3>
           <p class="muted" data-vr-hint>
-            This portfolio has an immersive WebXR room: the same hero, featured projects, and nav, rebuilt in 3D. On a phone or laptop you cannot enter VR here; open this site on any XR headset browser (Meta Quest, Pico, etc.) over HTTPS, then tap <strong>View in VR</strong> in the header or use the link below on the headset.
+            The whole portfolio, rebuilt in 3D. Open it on a headset browser to step inside, or take the 3D preview here.
           </p>
-          <ul class="vr-site-tips muted" data-vr-tips>
-            <li>Quest: open the site in the built-in Browser app</li>
-            <li>Use the live HTTPS URL (not a local file)</li>
-            <li>On the VR page, tap <strong>Enter VR</strong></li>
-            <li>Enable <strong>hand tracking</strong> in Quest settings, then point, pinch, or grab project cards in VR</li>
-          </ul>
-          <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
-            <a href="vr.html" data-vr-cta style="font-size: 13px; color: inherit; opacity: 0.9; font-weight: 600;">▶ Open VR space (3D preview) ↗</a>
+          <div style="margin-top: 10px;">
+            <a href="vr.html" data-vr-cta style="font-size: 13px; color: inherit; opacity: 0.9; font-weight: 600;">▶ Open VR space ↗</a>
           </div>
         </article>
+          </div>
+        </div>
       </div>
 
       <h2 style="font-size: 1.25rem; margin-bottom: 20px;">Cool websites I like</h2>

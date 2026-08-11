@@ -22,7 +22,15 @@
   <script>
     (function(){
       var g = localStorage.getItem('glassLevel');
-      if (g === 'clear' || g === 'frosted') { document.documentElement.setAttribute('data-glass', g); }
+      var legacy = { clear: 0, 'default': 50, frosted: 100 };
+      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
+      if (!isFinite(t)) t = 50;
+      t = Math.min(100, Math.max(0, t)) / 100;
+      var st = document.documentElement.style;
+      st.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+      st.setProperty('--glass-lens', (1 - t).toFixed(3));
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -44,6 +52,7 @@
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="stylesheet" href="assets/discovery.css" />
   <script src="assets/script.js" defer></script>
+  <script src="assets/music.js" defer></script>
 </head>
 <body data-tilt-mode="desktop" class="on-hero page-home">
   <header class="header">
@@ -75,6 +84,20 @@
       </a>
     </nav>
     <div class="header-controls">
+      <!-- Now-playing peek. The Spotify image is only requested on first hover
+           or tap, so an ordinary page load never calls the third party. -->
+      <div class="np" id="nowPlaying">
+        <button type="button" class="toggle np-btn" aria-expanded="false"
+                aria-controls="npCard" title="What I'm listening to"
+                aria-label="What I'm listening to">
+          <span class="np-ico" aria-hidden="true">🎧</span>
+          <span class="np-notes" aria-hidden="true"><i>♪</i><i>♫</i><i>♪</i></span>
+        </button>
+        <div class="np-card" id="npCard" role="status">
+          <img alt="Now playing on Spotify" width="230" height="273"
+               data-src="https://spotify-github-profile.kittinanx.com/api/view?uid=227cg7ehrjpmdh54zp7epu7wq&cover_image=true&theme=default&show_offline=false&background_color=121212&interchange=false&profanity=false&hide_remaster=false&bar_color_cover=true">
+        </div>
+      </div>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
@@ -540,7 +563,8 @@
   <script type="module" src="assets/timeline-scroll.js"></script>
   <script src="assets/spotlight.js" defer></script>
   <script src="assets/discovery.js" defer></script>
-  <!-- The builder cube (Three.js + GSAP) now lives on sandbox.html, which keeps
-       roughly 300KB of 3D libraries off the landing page. -->
+  <!-- Builder cube stays here until sandbox.html exists; it moves there later so
+       the landing page stops paying for Three.js + GSAP. -->
+  <script type="module" src="assets/builder-cube.js"></script>
 </body>
 </html>
