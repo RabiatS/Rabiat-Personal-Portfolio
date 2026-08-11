@@ -170,9 +170,11 @@ function initExperienceTimeline() {
 /* ── Section reveal — once, settles quickly ── */
 function initSectionReveals() {
   const sections = gsap.utils.toArray('main > section.container');
+  const tweens = [];
+
   sections.forEach((section) => {
     if (section.id === 'experience') return;
-    gsap.from(section, {
+    const tween = gsap.from(section, {
       y: 28,
       opacity: 0,
       duration: 0.75,
@@ -184,7 +186,58 @@ function initSectionReveals() {
         onEnter: () => section.classList.add('section-revealed'),
       },
     });
+    tweens.push({ section, tween });
   });
+
+  initRevealSafetyNet(tweens);
+}
+
+/* gsap.from() parks each section at opacity:0 and only animates it back when
+   its ScrollTrigger fires. If a trigger never fires (restored scroll position,
+   an anchor jump, a refresh that mis-measures, GSAP failing to load at all)
+   the section stays invisible and the page looks empty below the hero.
+   This watchdog reveals anything that is already on screen but still hidden.
+   In the normal case the trigger wins first and this never does anything. */
+function initRevealSafetyNet(tweens) {
+  const reveal = ({ section, tween }) => {
+    if (tween.progress() > 0) return;
+    // Jump the tween to its end state. Clearing the inline styles instead
+    // would just get overwritten the next time the tween re-renders.
+    tween.progress(1);
+    section.classList.add('section-revealed');
+  };
+
+  // "Its top has crossed the trigger line" — true for sections on screen and
+  // for ones already scrolled past, which must not be left blank if the
+  // visitor scrolls back up.
+  const sweep = () =>
+    tweens.forEach((record) => {
+      if (record.section.getBoundingClientRect().top < window.innerHeight * 0.95) {
+        reveal(record);
+      }
+    });
+
+  // Three independent triggers, because each can be defeated on its own:
+  // IntersectionObserver and scroll events both need frames the browser may
+  // not produce (anchor jumps, restored scroll positions, background tabs),
+  // while the timed sweeps always run.
+  if (typeof IntersectionObserver === 'function') {
+    const bySection = new Map(tweens.map((t) => [t.section, t]));
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const record = bySection.get(entry.target);
+          if (record) reveal(record);
+        });
+      },
+      { rootMargin: '0px 0px -5% 0px' }
+    );
+    tweens.forEach(({ section }) => io.observe(section));
+  }
+
+  window.addEventListener('scroll', sweep, { passive: true });
+  [1200, 2500, 4000].forEach((delay) => setTimeout(sweep, delay));
 }
 
 /* ── Chapter labels on section headings ── */

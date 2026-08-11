@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CMU MHCI Sticky Note Counter</title>
-  <meta name="description" content="A live observatory estimating every sticky note used by CMU MHCI cohorts since 2012 — physics pile, per-year breakdowns, running total." />
+  <meta name="description" content="A live observatory estimating every sticky note used by CMU MHCI cohorts since 2012 · physics pile, per-year breakdowns, running total." />
   <link rel="canonical" href="https://www.rabiatsadiq.com/sticky-counter.html" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Rabiat Sadiq" />
   <meta property="og:title" content="CMU MHCI Sticky Note Counter" />
-  <meta property="og:description" content="A live observatory estimating every sticky note used by CMU MHCI cohorts since 2012 — physics pile, per-year breakdowns, running total." />
+  <meta property="og:description" content="A live observatory estimating every sticky note used by CMU MHCI cohorts since 2012 · physics pile, per-year breakdowns, running total." />
   <meta property="og:url" content="https://www.rabiatsadiq.com/sticky-counter.html" />
   <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/stickyobservatory.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="CMU MHCI Sticky Note Counter" />
-  <meta name="twitter:description" content="A live observatory estimating every sticky note used by CMU MHCI cohorts since 2012 — physics pile, per-year breakdowns, running total." />
+  <meta name="twitter:description" content="A live observatory estimating every sticky note used by CMU MHCI cohorts since 2012 · physics pile, per-year breakdowns, running total." />
   <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/stickyobservatory.png" />
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
@@ -28,7 +28,7 @@
     --yellow-shadow: #c9b840;
     --bg: #F5F3EE;
     --text: #1a1a1a;
-    --gray: #888;
+    --gray: #63615c; /* was #888: below 4.5:1 on the cream background */
   }
 
   body {
@@ -680,7 +680,7 @@
     <div class="quote-mark">"</div>
     <div>
       <div class="personal-note-quote">
-        Every time we use sticky notes in class, or cover a wall doing affinity diagrams, I can't help but wonder — how many sticky notes have been used across the <em>entirety</em> of this program? So I built this: not an official count, but an estimation observatory. A love letter to the humble sticky note, and to every MHCI cohort that covered the studio walls with them.
+        Every time we use sticky notes in class, or cover a wall doing affinity diagrams, I can't help but wonder · how many sticky notes have been used across the <em>entirety</em> of this program? So I built this: not an official count, but an estimation observatory. A love letter to the humble sticky note, and to every MHCI cohort that covered the studio walls with them.
       </div>
       <div class="personal-note-sig">— @Rabiat Sadiq · MHCI 2025–2026</div>
     </div>
@@ -690,15 +690,15 @@
     <div class="model-disclosure-body">
       <strong>These are modeled estimates, not official CMU counts.</strong> No public source lists exact sticky-note usage or year-by-year MHCI enrollment. This model is built from:<br><br>
       <strong>Cohort sizes:</strong> HCII states "1,000+ graduates" since founding → ~40/yr long-run avg. A 2024–25 HCI program guide lists recent CMU MHCI cohorts at ~58. Pre-2015 cohorts estimated 38–54 (inferred, not confirmed). <em>⚠️ Update pending: @Rabiat Sadiq to confirm with program coordinator.</em><br><br>
-      <strong>Per-student estimate (~1,100/year):</strong> 3 confirmed courses (05-660, 05-661, 05-671/672) × ~3 affinity/ideation sessions × "one fact per sticky note" method (documented in MHCI/METALS capstone reports) = ~840 studio notes. Plus <strong>+30% for personal use</strong> — dorm rooms, late-night sessions, user interview prep, apartment walls — a well-known part of MHCI culture.<br><br>
+      <strong>Per-student estimate (~1,100/year):</strong> 3 confirmed courses (05-660, 05-661, 05-671/672) × ~3 affinity/ideation sessions × "one fact per sticky note" method (documented in MHCI/METALS capstone reports) = ~840 studio notes. Plus <strong>+30% for personal use</strong> · dorm rooms, late-night sessions, user interview prep, apartment walls · a well-known part of MHCI culture.<br><br>
       <strong>COVID timeline:</strong> CMU went remote Mar 11–19, 2020 (provost mandate). Physical studio use = ~0 from that date. Personal use dropped sharply too (students went home). Jan 2022: return to mostly in-person.<br><br>
       <ul class="source-list">
         <li>hcii.cmu.edu/academics/mhci/curriculum</li>
         <li>cmu.edu/leadership/the-provost/campus-comms/2020/2020-03-19.html</li>
-        <li>dvividconsultant.com — 2024–25 HCI program guide</li>
-        <li>anthonyteo.com/blog — 2025 MHCI admission analysis</li>
-        <li>russellcornwell.com — 2012 GE Healthcare MHCI capstone report</li>
-        <li>metals.hcii.cmu.edu — METALS affinity diagramming documentation</li>
+        <li>dvividconsultant.com · 2024–25 HCI program guide</li>
+        <li>anthonyteo.com/blog · 2025 MHCI admission analysis</li>
+        <li>russellcornwell.com · 2012 GE Healthcare MHCI capstone report</li>
+        <li>metals.hcii.cmu.edu · METALS affinity diagramming documentation</li>
       </ul>
       To improve accuracy: get official HCII enrollment data + count notes in a live studio session.
     </div>
@@ -760,12 +760,12 @@ const NOTE_COLORS_WEIGHTED = [
 ];
 const NOTE_COLORS = NOTE_COLORS_WEIGHTED;
 
-// Main landing page uses yellows only — the iconic classic sticky note look
+// Main landing page uses yellows only · the iconic classic sticky note look
 const YELLOW_COLORS = ['#FFEC6E','#FFEC6E','#FFEC6E','#FFE040','#FFF176','#FFD54F','#FFE566'];
 const SEC_PER_YEAR = 365.25 * 24 * 3600;
 
 // Per-year rates (notes/sec) derived from annual counts
-// These are defined after YEARS but we need them here — so we define them inline
+// These are defined after YEARS but we need them here · so we define them inline
 // as a parallel structure to avoid forward-reference issues.
 const YEAR_RATES = [
   { start: new Date('2012-09-01T00:00:00Z'), end: new Date('2013-09-01T00:00:00Z'), count: 42000 },
@@ -781,7 +781,7 @@ const YEAR_RATES = [
   { start: new Date('2022-09-01T00:00:00Z'), end: new Date('2023-09-01T00:00:00Z'), count: 64000 },
   { start: new Date('2023-09-01T00:00:00Z'), end: new Date('2024-09-01T00:00:00Z'), count: 64000 },
   { start: new Date('2024-09-01T00:00:00Z'), end: new Date('2025-09-01T00:00:00Z'), count: 64000 },
-  { start: new Date('2025-09-01T00:00:00Z'), end: new Date('2026-09-01T00:00:00Z'), count: 64000 }, // current year — live
+  { start: new Date('2025-09-01T00:00:00Z'), end: new Date('2026-09-01T00:00:00Z'), count: 64000 }, // current year · live
 ];
 
 // Compute rate (notes/sec) for each segment
@@ -968,7 +968,7 @@ function drawStickyNote(ctx, body) {
   ctx.fillRect(-hw, -hh, w, h);
   ctx.shadowColor = 'transparent';
 
-  // ── Main body (clean, flat — no lines) ──
+  // ── Main body (clean, flat · no lines) ──
   ctx.fillStyle = color;
   ctx.fillRect(-hw, -hh, w, h);
 
@@ -992,7 +992,7 @@ function drawStickyNote(ctx, body) {
   ctx.fill();
   ctx.restore();
 
-  // ── Fold face — gradient curl ──
+  // ── Fold face · gradient curl ──
   ctx.save();
   ctx.beginPath();
   ctx.moveTo(hw - foldSize, hh);
@@ -1129,7 +1129,7 @@ function initDetailPhysics(noteCount) {
     detailBodies.forEach(b => drawStickyNote(ctx, b));
   });
 
-  // Spawn stickies in waves — scale visually to note count (max 120, min 15)
+  // Spawn stickies in waves · scale visually to note count (max 120, min 15)
   const VISUAL_COUNT = Math.round(15 + (Math.min(noteCount, 85000) / 85000) * 105);
   let spawned = 0;
   function spawnBatch() {
@@ -1158,7 +1158,7 @@ function initDetailPhysics(noteCount) {
 // MODEL METHODOLOGY (updated with deep research, Feb 2026)
 // ═══════════════════════════════════════════════════════════════════════════════
 //
-// COHORT SIZES — sourced from:
+// COHORT SIZES · sourced from:
 //   • HCII: "1,000+ graduates" since founding → ~40/yr long-run avg
 //   • 2024–25 HCI program guide (dvividconsultant.com): ~58 recent cohorts
 //   • 2025 admission analysis (anthonyteo.com): stable ~55–58, 2022–25
@@ -1166,12 +1166,12 @@ function initDetailPhysics(noteCount) {
 //
 // PER-STUDENT NOTE ESTIMATE (~1,100/student/year):
 //   STUDIO (confirmed by capstone reports + HCII curriculum):
-//     05-660, 05-661, 05-671/672 — "one fact per sticky note" method
+//     05-660, 05-661, 05-671/672 · "one fact per sticky note" method
 //     ~3 sessions × 3 courses × ~60 notes = ~540 structured
 //     + ideation/critique/sketching workshops → ~300
 //     = ~840 studio notes/student
 //   PERSONAL USE (dorm rooms, late-night sessions, user interview prep,
-//     apartment walls, reading annotations — well-known MHCI culture):
+//     apartment walls, reading annotations · well-known MHCI culture):
 //     +~30% multiplier → 840 × 1.30 ≈ 1,100 notes/student/year
 //
 // COVID: Mar 11–19 2020 fully remote (CMU provost mandate); Jan 2022 return
@@ -1183,7 +1183,7 @@ const YEARS = [
     cohort: 38,
     count: 42000, // 38 × ~1,100 notes/student (studio + personal use)
     confidence: 'low',
-    note: '📊 Est. cohort ~38 — inferred from HCII "1,000+ graduates" total; no official count published'
+    note: '📊 Est. cohort ~38 · inferred from HCII "1,000+ graduates" total; no official count published'
   },
   {
     start: 2013, end: 2014,
@@ -1235,16 +1235,16 @@ const YEARS = [
     // 57 × 1,100 × 0.59 ≈ 37,000
     count: 37000,
     confidence: 'high',
-    note: '⚠️ CMU went remote Mar 11, 2020 (provost mandate Mar 19) — last ~4½ months: near-zero physical notes'
+    note: '⚠️ CMU went remote Mar 11, 2020 (provost mandate Mar 19) · last ~4½ months: near-zero physical notes'
   },
   {
     start: 2020, end: 2021,
     cohort: 57,
-    // Fully remote all year — studio use ~0; a small number of students
+    // Fully remote all year · studio use ~0; a small number of students
     // may have used sticky notes personally at home (not captured in studio count)
     count: 1500,
     confidence: 'high',
-    note: '🏠 Fully remote all year per CMU mandate — studio ~zero; minimal personal home use only'
+    note: '🏠 Fully remote all year per CMU mandate · studio ~zero; minimal personal home use only'
   },
   {
     start: 2021, end: 2022,
@@ -1261,14 +1261,14 @@ const YEARS = [
     cohort: 58,
     count: 64000, // 58 × ~1,100 (full studio + full personal use restored)
     confidence: 'medium',
-    note: '🎉 Full in-person return — studio + personal use fully restored; cohort ~58'
+    note: '🎉 Full in-person return · studio + personal use fully restored; cohort ~58'
   },
   {
     start: 2023, end: 2024,
     cohort: 58,
     count: 64000,
     confidence: 'medium',
-    note: '📌 Cohort stable ~58 — per admission analysis (anthonyteo.com, 2025)'
+    note: '📌 Cohort stable ~58 · per admission analysis (anthonyteo.com, 2025)'
   },
   {
     start: 2024, end: 2025,
@@ -1283,7 +1283,7 @@ const YEARS = [
 const CURRENT_YEAR = {
   start: 2025, end: 2026, cohort: 58,
   live: true,
-  note: '✨ Rabiat\'s cohort — you are here'
+  note: '✨ Rabiat\'s cohort · you are here'
 };
 const CURRENT_YEAR_START = new Date('2025-09-01T00:00:00Z');
 
@@ -1322,7 +1322,7 @@ function buildYearsGrid() {
     <div class="year-year">2025–2026</div>
     <div class="year-count" id="live-card-count">counting...</div>
     <div style="font-size:0.68rem;color:#aaa;margin-top:3px;">~58 students · Rabiat's cohort</div>
-    <div class="year-note">✨ This year is still happening — click to watch it live</div>
+    <div class="year-note">✨ This year is still happening · click to watch it live</div>
   `;
   liveCard.addEventListener('mouseenter', () => cursor.classList.add('big'));
   liveCard.addEventListener('mouseleave', () => cursor.classList.remove('big'));
@@ -1353,7 +1353,7 @@ document.getElementById('detail-back-btn').addEventListener('click', () => {
   }
 });
 
-// Back to live from prev page — add a button
+// Back to live from prev page · add a button
 const backToLiveBtn = document.createElement('button');
 backToLiveBtn.textContent = '← Back to Live Counter';
 backToLiveBtn.style.cssText = `
@@ -1397,7 +1397,7 @@ let liveDetailInterval = null;
 function openLiveYearDetail() {
   document.getElementById('detail-year-label').innerHTML = '2025–2026 &nbsp;<span style="font-size:0.65em;color:var(--cmu-red);letter-spacing:0.15em;font-family:\'DM Mono\',monospace">● LIVE</span>';
   const noteEl = document.getElementById('detail-note');
-  noteEl.innerHTML = `✨ Rabiat's cohort — ~58 students · still counting<br>
+  noteEl.innerHTML = `✨ Rabiat's cohort · ~58 students · still counting<br>
     <span style="opacity:0.7">~${Math.round(64000/58).toLocaleString()} notes/student projected (studio + personal use)</span>`;
   noteEl.style.display = 'block';
 

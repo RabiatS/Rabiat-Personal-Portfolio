@@ -8,12 +8,12 @@
   <link rel="canonical" href="https://www.rabiatsadiq.com/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Rabiat Sadiq" />
-  <meta property="og:title" content="Rabiat Sadiq — Applied ML, XR & HCI" />
+  <meta property="og:title" content="Rabiat Sadiq · Applied ML, XR & HCI" />
   <meta property="og:description" content="Rabiat Sadiq builds systems that sense and respond to people: ML pipelines, XR interactions, and human-centered research. CMU MHCI." />
   <meta property="og:url" content="https://www.rabiatsadiq.com/" />
   <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/projects/amazon-music.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Rabiat Sadiq — Applied ML, XR & HCI" />
+  <meta name="twitter:title" content="Rabiat Sadiq · Applied ML, XR & HCI" />
   <meta name="twitter:description" content="Rabiat Sadiq builds systems that sense and respond to people: ML pipelines, XR interactions, and human-centered research. CMU MHCI." />
   <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/projects/amazon-music.png" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
@@ -21,6 +21,8 @@
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var g = localStorage.getItem('glassLevel');
+      if (g === 'clear' || g === 'frosted') { document.documentElement.setAttribute('data-glass', g); }
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -73,12 +75,6 @@
       </a>
     </nav>
     <div class="header-controls">
-      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
-      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
-        <option value="off">Tilt: Off</option>
-        <option value="desktop" selected>Tilt: Desktop</option>
-        <option value="all">Tilt: All</option>
-      </select>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
@@ -121,11 +117,11 @@
         
         <p class="eyebrow">Hey there! 👋🏾</p>
         <h1>
-          I'm <span class="grad">Rabiat</span> - I Build<br>
-          <span class="grad">what the Problem</span> Demands
+          I'm Rabiat.<br>
+          <span class="grad">Professional mad scientist.</span>
         </h1>
         <p class="lead">
-          Problem solver first. I solve problems the way nature does, study how things actually work, then engineer from there. I focus on systems that sense and respond to people: physical signals, spatial computing, and human perception turned into ML pipelines, XR interactions, and analytics you can actually feel. I learn by building and implement as I go. My background mixes Computer Engineering, MHCI at CMU, research, and hands-on prototyping across XR, iOS, and ML-driven systems.
+          I work in the space between engineering, research, and design, building things that sense and respond to people. The discipline changes, the curiosity doesn't.
         </p>
 
 
@@ -164,11 +160,11 @@
       </div>
 
       <div class="grid cards-3">
-        <article class="card img-card" data-tags="HCI UX Research Product Industry"
+        <article class="card img-card" data-font="ember" data-tags="HCI UX Research Product Industry"
                  style="--img:url('assets/img/projects/amazon-music.png')">
           <div class="card-body">
             <h3><a href="case-studies/case-study-amazon-music.html" style="color:inherit">Amazon Music Adaptive UI</a></h3>
-            <p class="muted">CMU MHCI capstone with Amazon Music: Adaptive UI that recognizes listening loyalty across three fan tiers — without asking fans to broadcast.</p>
+            <p class="muted">CMU MHCI capstone with Amazon Music: Adaptive UI that recognizes listening loyalty across three fan tiers, without asking fans to broadcast.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
               <span class="tag">HCI</span>
               <span class="tag">UX</span>
@@ -180,29 +176,11 @@
             </div>
           </div>
         </article>
-
-        <article class="card img-card" data-tags="Web Software HCI"
-                 style="--img:url('assets/img/projects/truetohue.png')">
-          <div class="card-body">
-            <h3><a href="https://rabiats.github.io/True-to-hue/" target="_blank" rel="noopener" style="color:inherit">True to Hue</a></h3>
-            <p class="muted">AI-assisted design system starter for color: from product context and references to a live theme, CSS variables, token/PDF exports, and accessibility reporting.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag">Web</span>
-              <span class="tag">AI</span>
-              <span class="tag">HCI</span>
-            </div>
-            <div style="margin-top: 10px; display: flex; gap: 12px; flex-wrap: wrap;">
-              <a href="https://rabiats.github.io/True-to-hue/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.9; font-weight: 600;">▶ Launch ↗</a>
-              <a href="https://github.com/RabiatS/True-to-hue" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8;">GitHub ↗</a>
-            </div>
-          </div>
-        </article>
-
         <article class="card img-card" data-tags="Web Data AI 3D"
                  style="--img:url('assets/img/projects/perspective.png')">
           <div class="card-body">
             <h3><a href="https://github.com/RabiatS/PERSPECTIVE" target="_blank" rel="noopener" style="color:inherit">Perspective</a></h3>
-            <p class="muted">Drag in any dataset — CSV, JSON, GeoJSON, or audio — and an AI agent maps it to the right 3D view. Orbit, explore, and get anomaly pins dropped directly into the scene.</p>
+            <p class="muted">Drag in any dataset (CSV, JSON, GeoJSON, or audio) and an AI agent maps it to the right 3D view. Orbit, explore, and get anomaly pins dropped directly into the scene.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
               <span class="tag">3D / R3F</span>
               <span class="tag">AI</span>
@@ -213,7 +191,6 @@
             </div>
           </div>
         </article>
-
         <article class="card img-card" data-tags="XR Hardware Unity"
                  style="--img:url('assets/img/mm.png')">
           <div class="card-body">
@@ -229,40 +206,10 @@
             </div>
           </div>
         </article>
-
-        <article class="card img-card" data-tags="ML Data CV Audio"
-                 style="--img:url('assets/img/projects/Multimodalstructred pipleiline.png')">
-          <div class="card-body">
-            <h3><a href="projects.html#multimodal-pipeline" style="color:inherit">Multimodal Unstructured Data Pipeline</a></h3>
-            <p class="muted">Modular pipeline converting unstructured video, audio, and sensor data into structured, timestamped events. Production-ready processing with Ray, FFmpeg, and MLflow.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag">ML</span>
-              <span class="tag">Data</span>
-              <span class="tag">CV</span>
-            </div>
-            <div style="margin-top: 10px;">
-              <a href="https://github.com/RabiatS" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8;">GitHub ↗</a>
-            </div>
-          </div>
-        </article>
-
-        <article class="card img-card" data-tags="HCI Research UX"
-                 style="--img:url('assets/img/projects/spotify-vs-ai-research.png')">
-          <div class="card-body">
-            <h3><a href="https://spotify-vs-ai-research-study.vercel.app/" target="_blank" rel="noopener" style="color:inherit">Spotify vs AI Research</a></h3>
-            <p class="muted">UX research exploring how listeners perceive AI-generated music and build trust through transparent labeling.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag">HCI</span>
-              <span class="tag">Research</span>
-              <span class="tag">UX</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="card img-card" data-tags="ML iOS Health"
+        <article class="card img-card" data-font="apple" data-tags="ML iOS Health"
                  style="--img:url('assets/img/projects/assuage-logo.png')">
           <div class="card-body">
-            <h3><a href="case-studies/case-study-assuage.html" style="color:inherit">Assuage — Health ML</a></h3>
+            <h3><a href="case-studies/case-study-assuage.html" style="color:inherit">Assuage · Health ML</a></h3>
             <p class="muted">Distress prediction from HealthKit biometrics using logistic regression. 82% test accuracy with CoreML on-device inference.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
               <span class="tag">ML</span>
@@ -271,7 +218,6 @@
             </div>
           </div>
         </article>
-
         <article class="card img-card" data-tags="XR Unity VR"
                  style="--img:url('assets/img/projects/VR Mussic Viz.webp')">
           <div class="card-body">
@@ -284,7 +230,6 @@
             </div>
           </div>
         </article>
-
         <article class="card img-card" data-tags="XR Research Perception"
                  style="--img:url('assets/img/projects/vr-pain-augmentation-research.png')">
           <div class="card-body">
@@ -298,6 +243,21 @@
           </div>
         </article>
       </div>
+
+      <!-- Rotating spotlight: gives projects outside the featured six some airtime.
+           Populated by assets/spotlight.js from projects.json. -->
+      <a class="spotlight" id="spotlight" href="projects.html" hidden>
+        <div class="spotlight-media">
+          <img class="spotlight-img" id="spotlightImg" alt="" decoding="async">
+        </div>
+        <div class="spotlight-body">
+          <span class="spotlight-kicker">Also in the lab</span>
+          <h3 class="spotlight-title" id="spotlightTitle"></h3>
+          <p class="spotlight-desc muted" id="spotlightDesc"></p>
+          <span class="spotlight-cta">See the project →</span>
+        </div>
+        <div class="spotlight-dots" id="spotlightDots" aria-hidden="true"></div>
+      </a>
     </section>
 
     <!-- Experience Timeline -->
@@ -312,7 +272,7 @@
         <li class="t-item">
           <div class="t-dot"></div>
           <div class="t-card">
-            <h3><a href="case-studies/case-study-amazon-music.html" style="color:inherit;text-decoration:none">Project Manager &amp; Engineer — Amazon Music Capstone</a></h3>
+            <h3><a href="case-studies/case-study-amazon-music.html" style="color:inherit;text-decoration:none">Project Manager &amp; Engineer · Amazon Music Capstone</a></h3>
             <p class="muted"><strong>Jan 2026 – Jul 2026</strong></p>
             <p class="muted" style="margin-top: 8px;">Led Adaptive UI research and product vision for Amazon Music: recognizing long-term fan loyalty across three listening tiers without requiring public performance.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
@@ -329,7 +289,7 @@
         <li class="t-item">
           <div class="t-dot"></div>
           <div class="t-card">
-            <h3>AI Research Engineer — Xbox</h3>
+            <h3>AI Research Engineer · Xbox</h3>
             <p class="muted"><strong>Spring 2026 – Present</strong></p>
             <p class="muted" style="margin-top: 8px;">Xbox x CMU Measuring Social: Research collaboration with Xbox exploring AI-driven approaches to measure and understand social interactions in gaming environments.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
@@ -342,7 +302,7 @@
         <li class="t-item">
           <div class="t-dot"></div>
           <div class="t-card">
-            <h3>Research Assistant — CMU Augmented Perception Lab</h3>
+            <h3>Research Assistant · CMU Augmented Perception Lab</h3>
             <p class="muted"><strong>Sep 2025 – Present</strong></p>
             <p class="muted" style="margin-top: 8px;">Building multimodal XR prototypes to study pain perception. Unity/C# development with structured logging for future ML-driven personalization.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
@@ -355,7 +315,7 @@
         <li class="t-item">
           <div class="t-dot"></div>
           <div class="t-card">
-            <h3>Applied ML Intern — PlayStation (SIE)</h3>
+            <h3>Applied ML Intern · PlayStation (SIE)</h3>
             <p class="muted"><strong>Summer 2025</strong></p>
             <p class="muted" style="margin-top: 8px;">Built end-to-end pipeline for gameplay score extraction from streaming videos. Parallel cloud ingestion (Ray), FFmpeg clipping, OpenCV processing, Databricks workflows (PySpark, MLflow). 60%+ faster processing.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
@@ -368,7 +328,7 @@
         <li class="t-item">
           <div class="t-dot"></div>
           <div class="t-card">
-            <h3>Co-founder / AI & Full-Stack Engineer — Applied STEM</h3>
+            <h3>Co-founder / AI & Full-Stack Engineer · Applied STEM</h3>
             <p class="muted"><strong>2024</strong></p>
             <p class="muted" style="margin-top: 8px;">Built AI-powered technical interview platform with React/TypeScript canvas and FastAPI backend. Integrated LLMs with circuit topology for adaptive technical interviewer.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
@@ -381,7 +341,7 @@
         <li class="t-item">
           <div class="t-dot"></div>
           <div class="t-card">
-            <h3>AI/VR Research Assistant — UTSA</h3>
+            <h3>AI/VR Research Assistant · UTSA</h3>
             <p class="muted"><strong>Aug 2023 – Dec 2024</strong></p>
             <p class="muted" style="margin-top: 8px;">Research on AI-empowered VR content analysis addressing harassment and safety issues. Built Unity/C# prototypes and explored supervised learning/LLM methods for behavior classification.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
@@ -394,7 +354,7 @@
         <li class="t-item">
           <div class="t-dot"></div>
           <div class="t-card">
-            <h3>Apple NACME AIML Intensive — USC</h3>
+            <h3>Apple NACME AIML Intensive · USC</h3>
             <p class="muted"><strong>Jun – Aug 2024</strong></p>
             <p class="muted" style="margin-top: 8px;">8-week intensive covering EDA, feature engineering, model training/evaluation, deployment. Completed 35 projects including Health ML (Assuage), image classification, and CoreML deployment.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
@@ -553,7 +513,7 @@
       </div>
       <div class="grid cards-3">
         <article class="card">
-          <h3>1st Place — UTSA Tech Symposium</h3>
+          <h3>1st Place · UTSA Tech Symposium</h3>
           <p class="muted" style="margin-top: 12px;">Magic Mitts haptic VR glove project won top prize out of 89 teams. Recognized for innovation in affordable haptics and human-centered design.</p>
         </article>
         <article class="card">
@@ -578,7 +538,9 @@
     </div>
   </footer>
   <script type="module" src="assets/timeline-scroll.js"></script>
-  <script type="module" src="assets/builder-cube.js"></script>
+  <script src="assets/spotlight.js" defer></script>
   <script src="assets/discovery.js" defer></script>
+  <!-- The builder cube (Three.js + GSAP) now lives on sandbox.html, which keeps
+       roughly 300KB of 3D libraries off the landing page. -->
 </body>
 </html>

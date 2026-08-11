@@ -20,6 +20,8 @@
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var g = localStorage.getItem('glassLevel');
+      if (g === 'clear' || g === 'frosted') { document.documentElement.setAttribute('data-glass', g); }
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -73,12 +75,6 @@
     </nav>
 
     <div class="header-controls">
-      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
-      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
-        <option value="off" selected>Tilt: Off</option>
-        <option value="desktop">Tilt: Desktop</option>
-        <option value="all">Tilt: All</option>
-      </select>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
@@ -114,9 +110,10 @@
 
         <div class="field--full contact-actions">
           <button class="btn" type="submit">Send</button>
-          <a class="btn secondary"
-             href="mailto:robbiahsadiq@gmail.com?subject=Portfolio%20Contact&body=Hi%20Rabiat%2C%0D%0A%0D%0A"
-             >Email instead</a>
+          <!-- "Email instead" used to open the same mailto: as Send, just empty.
+               Copying the address is the genuinely different option. -->
+          <button class="btn secondary" type="button" id="copyEmail"
+                  data-email="robbiahsadiq@gmail.com">Copy my email</button>
           <a class="btn secondary contact-joke" href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank" rel="noopener">🎁 Don't click</a>
           <span id="formStatus" class="muted" aria-live="polite"></span>
         </div>
@@ -152,6 +149,34 @@
         window.location.href = mailtoLink;
         status.textContent = 'Opening email client...';
       });
+
+      // Copy-address button: useful when you would rather paste it somewhere
+      // else than hand off to a mail client.
+      const copyBtn = document.getElementById('copyEmail');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const address = copyBtn.dataset.email;
+          const done = () => {
+            const original = copyBtn.textContent;
+            copyBtn.textContent = 'Copied ✓';
+            if (status) status.textContent = address;
+            setTimeout(() => { copyBtn.textContent = original; }, 1800);
+          };
+          try {
+            await navigator.clipboard.writeText(address);
+            done();
+          } catch (err) {
+            // Clipboard API needs a secure context; fall back to selection.
+            const tmp = document.createElement('textarea');
+            tmp.value = address;
+            document.body.appendChild(tmp);
+            tmp.select();
+            try { document.execCommand('copy'); done(); }
+            catch (e2) { if (status) status.textContent = address; }
+            tmp.remove();
+          }
+        });
+      }
     })();
   </script>
 </body>

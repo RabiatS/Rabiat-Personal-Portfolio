@@ -1342,7 +1342,7 @@
 
     <hr class="auth-divider">
 
-    <span class="auth-guest-label">// GUEST ACCESS — ENTER YOUR NAME</span>
+    <span class="auth-guest-label">// GUEST ACCESS · ENTER YOUR NAME</span>
     <div class="auth-guest-row">
       <input class="auth-guest-input" id="guest-name-input" type="text"
         placeholder="CODENAME..." maxlength="20"
@@ -1476,7 +1476,7 @@
 
 <script>
 // ── Auth & Session ─────────────────────────────────────────
-// The PIN shows 4 dots but is actually 5 digits — security through misdirection
+// The PIN shows 4 dots but is actually 5 digits · security through misdirection
 const OWNER_PIN = '51275';   // Your 5-digit PIN
 const OWNER_KEY = 'rabiat';  // localStorage namespace for owner
 
@@ -1555,7 +1555,7 @@ function saveState() {
     localStorage.setItem(storageKey('counter'),  String(idCounter));
   } catch(err) {
     console.error('[saveState] Failed:', err);
-    // Storage full — attempt to slim down by dropping done tasks
+    // Storage full · attempt to slim down by dropping done tasks
     try {
       localStorage.setItem(storageKey('tasks'), JSON.stringify(tasks.filter(t => t.col !== 'done')));
     } catch(e2) {
@@ -1632,7 +1632,7 @@ function showAuthScreen() {
 
 function updateDots() {
   const len = pinBuffer.length;
-  // Show 4 dots regardless — the 5th digit is invisible
+  // Show 4 dots regardless · the 5th digit is invisible
   for (let i = 0; i < 4; i++) {
     const dot = document.getElementById('dot-' + i);
     dot.classList.toggle('filled', i < len);
@@ -1686,7 +1686,7 @@ function authFail() {
     dot.classList.add('error');
     dot.textContent = '✕';
   }
-  setHint('// ACCESS DENIED — INCORRECT CODE', 'err');
+  setHint('// ACCESS DENIED · INCORRECT CODE', 'err');
   setTimeout(() => {
     pinBuffer = '';
     updateDots();
@@ -1695,7 +1695,7 @@ function authFail() {
 }
 
 function authSuccess(type) {
-  setHint('// ACCESS GRANTED — LOADING...', 'ok');
+  setHint('// ACCESS GRANTED · LOADING...', 'ok');
   playSound('login');
   for (let i = 0; i < 4; i++) {
     const dot = document.getElementById('dot-' + i);
@@ -2360,7 +2360,7 @@ function playSound(type) {
   try {
     const ctx = getAudioCtx();
     switch(type) {
-      case 'click':   // soft blip — uncheck
+      case 'click':   // soft blip · uncheck
         playTone(440, 'sine', 0.08, 0.06);
         break;
       case 'done':    // satisfying two-tone confirm
@@ -2371,10 +2371,10 @@ function playSound(type) {
         playTone(880, 'square', 0.06, 0.04);
         setTimeout(() => playTone(660, 'square', 0.08, 0.04), 70);
         break;
-      case 'pick':    // drag pick-up — low thud
+      case 'pick':    // drag pick-up · low thud
         playTone(120, 'sine', 0.08, 0.08);
         break;
-      case 'move':    // drag drop — mid click
+      case 'move':    // drag drop · mid click
         playTone(330, 'sine', 0.1, 0.06);
         break;
       case 'error':   // wrong PIN buzz
@@ -2415,7 +2415,7 @@ function triggerEasterEgg() {
     { t:'', c:'', d:5000 },
     { t:'██████████████████████████████████████', c:'#F72585', d:5200 },
     { t:'  MISSION: STAY FOCUSED. SHIP THE THING.', c:'#FFE033', d:5500 },
-    { t:'  AGENT RABIAT — YOU KNOW WHAT TO DO.', c:'#00F5D4', d:6000 },
+    { t:'  AGENT RABIAT · YOU KNOW WHAT TO DO.', c:'#00F5D4', d:6000 },
     { t:'██████████████████████████████████████', c:'#F72585', d:6400 },
     { t:'', c:'', d:7000 },
     { t:'> SELF-DESTRUCT SEQUENCE INITIATED...', c:'#F72585', d:7200 },
@@ -2612,7 +2612,7 @@ function timerStop() {
   document.getElementById('timer-display-wrap').classList.remove('running');
   document.getElementById('timer-display').classList.remove('running');
   document.getElementById('timer-ms').classList.remove('running');
-  document.getElementById('timer-status').textContent = '// PAUSED — PRESS START TO RESUME';
+  document.getElementById('timer-status').textContent = '// PAUSED · PRESS START TO RESUME';
 
   document.getElementById('timer-start-btn').disabled = false;
   document.getElementById('timer-stop-btn').disabled  = true;

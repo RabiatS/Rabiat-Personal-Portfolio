@@ -9,10 +9,10 @@
   },
   "hero": {
     "eyebrow": "Hey there!",
-    "headlineLine1": "I'm Rabiat - I Build",
-    "headlineLine2": "What the Problem Demands",
-    "headlineAccent": "Rabiat",
-    "lead": "Problem solver first. I focus on systems that sense and respond to people: spatial computing, XR, and human perception turned into ML pipelines you can actually feel. MHCI at CMU — building across research and hands-on prototyping."
+    "headlineLine1": "I'm Rabiat.",
+    "headlineLine2": "Professional mad scientist.",
+    "headlineAccent": "Professional mad scientist.",
+    "lead": "Machine learning, spatial intelligence, hardware, and how it actually feels to use. The discipline changes, the curiosity doesn't."
   },
   "tags": [
     "Applied ML",
@@ -23,10 +23,26 @@
     "Prototyping"
   ],
   "ctas": [
-    { "label": "Explore Projects", "href": "projects.html", "primary": true },
-    { "label": "Resume", "href": "assets/Rabiat_Sadiq_Resume.pdf", "external": true },
-    { "label": "GitHub", "href": "https://github.com/RabiatS", "external": true },
-    { "label": "Get in Touch", "href": "contact.html", "primary": false }
+    {
+      "label": "Explore Projects",
+      "href": "projects.html",
+      "primary": true
+    },
+    {
+      "label": "Resume",
+      "href": "assets/Rabiat_Sadiq_Resume.pdf",
+      "external": true
+    },
+    {
+      "label": "GitHub",
+      "href": "https://github.com/RabiatS",
+      "external": true
+    },
+    {
+      "label": "Get in Touch",
+      "href": "contact.html",
+      "primary": false
+    }
   ],
   "galleryTitle": "Featured Projects",
   "gallerySubtitle": "A selection of my most impactful work",
@@ -50,7 +66,7 @@
     {
       "id": "perspective-vr",
       "title": "Perspective",
-      "description": "Drag in any dataset — AI maps it to the right 3D view with anomaly pins in the scene.",
+      "description": "Drag in any dataset. AI maps it to the right 3D view with anomaly pins in the scene.",
       "image": "assets/img/projects/perspective.png",
       "href": "https://github.com/RabiatS/PERSPECTIVE",
       "external": true
@@ -58,7 +74,7 @@
     {
       "id": "magic-mitts-vr",
       "title": "Magic Mitts",
-      "description": "1st Place UTSA Tech Symposium — affordable haptic VR glove with electromagnetic braking.",
+      "description": "1st Place UTSA Tech Symposium · affordable haptic VR glove with electromagnetic braking.",
       "image": "assets/img/mm.png",
       "href": "case-studies/case-study.html",
       "external": false
@@ -81,7 +97,7 @@
     },
     {
       "id": "assuage-vr",
-      "title": "Assuage — Health ML",
+      "title": "Assuage · Health ML",
       "description": "Distress prediction from HealthKit biometrics. 82% accuracy with CoreML on-device.",
       "image": "assets/img/projects/assuage-logo.png",
       "href": "case-studies/case-study-assuage.html",
@@ -89,12 +105,38 @@
     }
   ],
   "nav": [
-    { "label": "Home", "href": "vr.html", "icon": "🏠", "current": true },
-    { "label": "Projects", "href": "projects.html", "icon": "🚀" },
-    { "label": "Coursework", "href": "coursework.html", "icon": "🎓" },
-    { "label": "Cool", "href": "cool.html", "icon": "✨" },
-    { "label": "Contact", "href": "contact.html", "icon": "📧" },
-    { "label": "LinkedIn", "href": "https://www.linkedin.com/in/rabiat-sadiq/", "icon": "🔗", "external": true }
+    {
+      "label": "Home",
+      "href": "vr.html",
+      "icon": "🏠",
+      "current": true
+    },
+    {
+      "label": "Projects",
+      "href": "projects.html",
+      "icon": "🚀"
+    },
+    {
+      "label": "Coursework",
+      "href": "coursework.html",
+      "icon": "🎓"
+    },
+    {
+      "label": "Cool",
+      "href": "cool.html",
+      "icon": "✨"
+    },
+    {
+      "label": "Contact",
+      "href": "contact.html",
+      "icon": "📧"
+    },
+    {
+      "label": "LinkedIn",
+      "href": "https://www.linkedin.com/in/rabiat-sadiq/",
+      "icon": "🔗",
+      "external": true
+    }
   ],
   "layout": {
     "spawnY": 1.6,

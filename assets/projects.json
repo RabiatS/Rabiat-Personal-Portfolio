@@ -13,7 +13,7 @@
         "Industry"
       ],
       "description": "Seven-month Amazon Music–sponsored MHCI capstone: Adaptive UI that reshapes the artist page by listening loyalty so fans feel recognized without being asked to broadcast.",
-      "longDescription": "Streaming holds years of history between a listener and an artist and reflects almost none of it back. Through 85 survey responses, 22 interviews, staged experiments, and evaluation against the live Amazon Music app, the team designed three listener tiers (new, returning, longtime fan) that progressively unlock recognition, milestones, and belonging—reframing personalization as recognition rather than recommendation. Role: Project Manager & Engineer.",
+      "longDescription": "Streaming holds years of history between a listener and an artist and reflects almost none of it back. Through 85 survey responses, 22 interviews, staged experiments, and evaluation against the live Amazon Music app, the team designed three listener tiers (new, returning, longtime fan) that progressively unlock recognition, milestones, and belonging, reframing personalization as recognition rather than recommendation. Role: Project Manager & Engineer.",
       "technologies": [
         "UX Research",
         "Product Design",
@@ -78,8 +78,8 @@
         "3D",
         "Personal"
       ],
-      "description": "Most data visualization tools default to 2D because it's the safe, familiar option. But a lot of data—geographic distributions, network graphs, frequency analysis, surface topologies—actually lives in three dimensions, and flattening it means losing information. Drag in a file (CSV, JSON, GeoJSON, or audio), an AI agent classifies it and maps it to the right 3D chart type, and you're immediately in a navigable scene you can orbit, zoom, and explore.",
-      "longDescription": "A second agent runs anomaly detection and drops insight pins directly into the scene. There's also a workflow for isolating and comparing data slices, shareable URLs that encode your exact view, and a snapshot export. Everything runs in the browser—no coding required, no software to install. The goal was to make spatial data exploration accessible to people who have meaningful data but no path into 3D tooling. Ideation and research in Perplexity and Claude, then fully designed and built in Cursor.",
+      "description": "Most data visualization tools default to 2D because it's the safe, familiar option. But a lot of data (geographic distributions, network graphs, frequency analysis, surface topologies) actually lives in three dimensions, and flattening it means losing information. Drag in a file (CSV, JSON, GeoJSON, or audio), an AI agent classifies it and maps it to the right 3D chart type, and you're immediately in a navigable scene you can orbit, zoom, and explore.",
+      "longDescription": "A second agent runs anomaly detection and drops insight pins directly into the scene. There's also a workflow for isolating and comparing data slices, shareable URLs that encode your exact view, and a snapshot export. Everything runs in the browser, no coding required, no software to install. The goal was to make spatial data exploration accessible to people who have meaningful data but no path into 3D tooling. Ideation and research in Perplexity and Claude, then fully designed and built in Cursor.",
       "technologies": [
         "React",
         "TypeScript",
@@ -113,7 +113,7 @@
         "HCI",
         "Personal"
       ],
-      "description": "Web app that turns product context, color preferences, light/dark mode, and optional reference images into a structured brand color system—then refine in a studio with live CSS variables, handoff exports, and accessibility checks.",
+      "description": "Web app that turns product context, color preferences, light/dark mode, and optional reference images into a structured brand color system, then refine in a studio with live CSS variables, handoff exports, and accessibility checks.",
       "longDescription": "Landing and input capture product name, description, color direction, mode, and reference uploads or camera. AI generation (structured JSON) produces named roles, accent variations with related shades, and preview content. Studio picks primary/secondary variations, pairs display and body fonts, previews the theme as real CSS variables, with copy/download for CSS. Exports include PDF and token/zip-style bundles plus an accessibility report for contrast and usability.",
       "technologies": [
         "TypeScript",
@@ -137,7 +137,7 @@
     {
       "id": "ctrl-alt-elite",
       "title": "Semi-Autonomous E-Scooter Control System",
-      "subtitle": "IXD — Interaction Design Fundamentals · Fall 2025",
+      "subtitle": "IXD · Interaction Design Fundamentals · Fall 2025",
       "category": "Research / HCI",
       "tags": [
         "HCI",
@@ -146,7 +146,7 @@
         "Hardware",
         "Design"
       ],
-      "description": "End-to-end interaction design for Hyundai’s Level 2 semi-autonomous electric scooter: research-driven physical controls, a child-facing rider dashboard, and a parent oversight app (geofencing, speed limits, walkie-talkie)—plus CAD handlebar concepts and a functional prototype.",
+      "description": "End-to-end interaction design for Hyundai’s Level 2 semi-autonomous electric scooter: research-driven physical controls, a child-facing rider dashboard, and a parent oversight app (geofencing, speed limits, walkie-talkie), plus CAD handlebar concepts and a functional prototype.",
       "longDescription": "CMU Interaction Design Fundamentals (IXD) team project (Ctrl + Alt + Elite). Centered on a young-rider persona: simplified reachability, clear Auto/Manual mode, under-2-second safety tasks, and non-intrusive parental monitoring. Process spanned contextual research, think-aloud testing, Figma UI flows, hardware CAD, and a built prototype with LED signaling and onboard display.",
       "technologies": [
         "Figma",
@@ -174,7 +174,7 @@
     {
       "id": "gazeflow",
       "title": "GazeFlow – Mosaic of Attention",
-      "subtitle": "Tartan Hacks 2025 — XR Eye-Tracking Experience",
+      "subtitle": "Tartan Hacks 2025 · XR Eye-Tracking Experience",
       "category": "XR / Unity / Immersive",
       "tags": [
         "XR",
@@ -206,7 +206,7 @@
     {
       "id": "playstation-internship",
       "title": "Gameplay Video Score Extraction Pipeline",
-      "subtitle": "Applied ML Intern — PlayStation (SIE)",
+      "subtitle": "Applied ML Intern · PlayStation (SIE)",
       "category": "Applied ML / CV / Video",
       "tags": [
         "ML",
@@ -460,7 +460,7 @@
         "Personal"
       ],
       "description": "VR experience where objects/characters move closer when not directly observed, implementing the 'weeping angel' mechanic.",
-      "longDescription": "Unity VR mini-experience inspired by 'don't blink' mechanics—focuses on presence, timing, and tension.",
+      "longDescription": "Unity VR mini-experience inspired by 'don't blink' mechanics. Focuses on presence, timing, and tension.",
       "technologies": [
         "Unity",
         "C#",
@@ -795,7 +795,7 @@
     {
       "id": "apple-nacme-projects",
       "title": "Apple NACME AIML Intensive",
-      "subtitle": "35 Projects — 8-Week Bootcamp",
+      "subtitle": "35 Projects · 8-Week Bootcamp",
       "category": "Early Work / Learning",
       "tags": [
         "ML",
@@ -816,7 +816,9 @@
       "demo": null,
       "caseStudy": null,
       "status": "complete",
-      "images": [],
+      "images": [
+        "assets/img/projects/apple-nacme.png"
+      ],
       "videos": [],
       "year": "2024",
       "type": "Early"

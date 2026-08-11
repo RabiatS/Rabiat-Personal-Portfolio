@@ -3,23 +3,25 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Case Study | Assuage: Health ML Distress Prediction | Rabiat Sadiq</title>
-  <meta name="description" content="Predicting distress from HealthKit biometrics with logistic regression — 82% test accuracy, on-device Core ML inference." />
+  <meta name="description" content="Predicting distress from HealthKit biometrics with logistic regression · 82% test accuracy, on-device Core ML inference." />
   <link rel="canonical" href="https://www.rabiatsadiq.com/case-studies/case-study-assuage.html" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Rabiat Sadiq" />
   <meta property="og:title" content="Case Study | Assuage: Health ML Distress Prediction | Rabiat Sadiq" />
-  <meta property="og:description" content="Predicting distress from HealthKit biometrics with logistic regression — 82% test accuracy, on-device Core ML inference." />
+  <meta property="og:description" content="Predicting distress from HealthKit biometrics with logistic regression · 82% test accuracy, on-device Core ML inference." />
   <meta property="og:url" content="https://www.rabiatsadiq.com/case-studies/case-study-assuage.html" />
   <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/projects/assuage-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Case Study | Assuage: Health ML Distress Prediction | Rabiat Sadiq" />
-  <meta name="twitter:description" content="Predicting distress from HealthKit biometrics with logistic regression — 82% test accuracy, on-device Core ML inference." />
+  <meta name="twitter:description" content="Predicting distress from HealthKit biometrics with logistic regression · 82% test accuracy, on-device Core ML inference." />
   <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/projects/assuage-logo.png" />
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var g = localStorage.getItem('glassLevel');
+      if (g === 'clear' || g === 'frosted') { document.documentElement.setAttribute('data-glass', g); }
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -71,12 +73,6 @@
       </a>
     </nav>
     <div class="header-controls">
-      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
-      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
-        <option value="off">Tilt: Off</option>
-        <option value="desktop" selected>Tilt: Desktop</option>
-        <option value="all">Tilt: All</option>
-      </select>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
@@ -117,7 +113,7 @@
         <li><strong>Feature Engineering:</strong> Explored and engineered features from HealthKit data</li>
         <li><strong>Model Evaluation:</strong> Achieved 82% test accuracy with proper train/test split</li>
         <li><strong>iOS Integration:</strong> Converted model to Core ML format for on-device inference</li>
-        <li><strong>Privacy:</strong> All processing happens on-device—no data leaves the user's phone</li>
+        <li><strong>Privacy:</strong> All processing happens on-device, so no data leaves the user's phone</li>
       </ul>
     </section>
 
@@ -217,7 +213,7 @@ let distressLevel = prediction.distressLevel</pre>
 
 
   <footer class="container footer">
-    © <span id="year"></span> Rabiat Sadiq — Case study excerpt. Contact for details.
+    © <span id="year"></span> Rabiat Sadiq · Case study excerpt. Contact for details.
   </footer>
 </body>
 </html>

@@ -4,23 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Coursework | Rabiat Sadiq</title>
-  <meta name="description" content="Coursework across CMU MHCI, UTSA Computer Engineering, and USC — HCI, machine learning, XR, and systems." />
+  <meta name="description" content="Coursework across CMU MHCI, UTSA Computer Engineering, and USC: HCI, machine learning, XR, and systems." />
   <link rel="canonical" href="https://www.rabiatsadiq.com/coursework.html" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Rabiat Sadiq" />
   <meta property="og:title" content="Coursework | Rabiat Sadiq" />
-  <meta property="og:description" content="Coursework across CMU MHCI, UTSA Computer Engineering, and USC — HCI, machine learning, XR, and systems." />
+  <meta property="og:description" content="Coursework across CMU MHCI, UTSA Computer Engineering, and USC: HCI, machine learning, XR, and systems." />
   <meta property="og:url" content="https://www.rabiatsadiq.com/coursework.html" />
   <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/projects/amazon-music.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Coursework | Rabiat Sadiq" />
-  <meta name="twitter:description" content="Coursework across CMU MHCI, UTSA Computer Engineering, and USC — HCI, machine learning, XR, and systems." />
+  <meta name="twitter:description" content="Coursework across CMU MHCI, UTSA Computer Engineering, and USC: HCI, machine learning, XR, and systems." />
   <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/projects/amazon-music.png" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var g = localStorage.getItem('glassLevel');
+      if (g === 'clear' || g === 'frosted') { document.documentElement.setAttribute('data-glass', g); }
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -195,12 +197,6 @@
       </a>
     </nav>
     <div class="header-controls">
-      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
-      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
-        <option value="off">Tilt: Off</option>
-        <option value="desktop" selected>Tilt: Desktop</option>
-        <option value="all">Tilt: All</option>
-      </select>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
@@ -227,7 +223,7 @@
           <span class="semester-icon">🌸</span>
           <div>
             <div class="semester-title">Spring 2026</div>
-            <div class="semester-subtitle">Carnegie Mellon University — MHCI</div>
+            <div class="semester-subtitle">Carnegie Mellon University · MHCI</div>
           </div>
         </div>
         <div class="course-list">
@@ -262,7 +258,7 @@
             <span class="semester-icon">🍂</span>
             <div>
               <div class="semester-title">Fall 2025</div>
-              <div class="semester-subtitle">Carnegie Mellon University — MHCI</div>
+              <div class="semester-subtitle">Carnegie Mellon University · MHCI</div>
             </div>
           </div>
           <div class="course-list">
@@ -294,7 +290,7 @@
             <span class="semester-icon">🌸</span>
             <div>
               <div class="semester-title">Spring 2024</div>
-              <div class="semester-subtitle">UTSA — Senior Year</div>
+              <div class="semester-subtitle">UTSA · Senior Year</div>
             </div>
           </div>
           <div class="course-list">
@@ -323,7 +319,7 @@
         <div class="semester-header">
           <span class="semester-icon">🍎</span>
           <div>
-            <div class="semester-title">Summer 2024 — Apple AIML Intensive</div>
+            <div class="semester-title">Summer 2024 · Apple AIML Intensive</div>
             <div class="semester-subtitle">USC / Apple Scholar Program</div>
           </div>
         </div>
@@ -367,7 +363,7 @@
             <span class="semester-icon">🌸</span>
             <div>
               <div class="semester-title">Spring 2024</div>
-              <div class="semester-subtitle">UTSA — Senior Year</div>
+              <div class="semester-subtitle">UTSA · Senior Year</div>
             </div>
           </div>
           <div class="course-list">
@@ -399,7 +395,7 @@
             <span class="semester-icon">🍂</span>
             <div>
               <div class="semester-title">Fall 2023</div>
-              <div class="semester-subtitle">UTSA — Junior Year</div>
+              <div class="semester-subtitle">UTSA · Junior Year</div>
             </div>
           </div>
           <div class="course-list">
@@ -455,7 +451,7 @@
             <span class="semester-icon">🌸</span>
             <div>
               <div class="semester-title">Spring 2023</div>
-              <div class="semester-subtitle">UTSA — Sophomore Year</div>
+              <div class="semester-subtitle">UTSA · Sophomore Year</div>
             </div>
           </div>
           <div class="course-list">
@@ -499,7 +495,7 @@
             <span class="semester-icon">🍂</span>
             <div>
               <div class="semester-title">Fall 2022</div>
-              <div class="semester-subtitle">UTSA — Sophomore Year</div>
+              <div class="semester-subtitle">UTSA · Sophomore Year</div>
             </div>
           </div>
           <div class="course-list">
@@ -558,7 +554,7 @@
             <span class="semester-icon">🌸</span>
             <div>
               <div class="semester-title">Spring 2022</div>
-              <div class="semester-subtitle">UTSA — Freshman Year</div>
+              <div class="semester-subtitle">UTSA · Freshman Year</div>
             </div>
           </div>
           <div class="course-list">
@@ -607,7 +603,7 @@
             <span class="semester-icon">🍂</span>
             <div>
               <div class="semester-title">Fall 2021</div>
-              <div class="semester-subtitle">UTSA — Freshman Year</div>
+              <div class="semester-subtitle">UTSA · Freshman Year</div>
             </div>
           </div>
           <div class="course-list">

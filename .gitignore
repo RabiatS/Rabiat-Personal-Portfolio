@@ -9,6 +9,19 @@ Thumbs.db
 
 # Local tooling / notes (not part of the deployed site)
 ARCHITECTURE.md
+PLAN.md
+
+# Licensed typefaces: Amazon Ember / Ember Modern are proprietary and must not
+# be committed or redistributed. The source bundle lives at the repo root for
+# local use only; assets/fonts/ holds the two web weights the Amazon Music card
+# asks for. Because these are ignored, the deployed site falls back to the
+# stack in style.css. See assets/fonts/README.md.
+Amazon Fonts/
+assets/fonts/*.woff2
+assets/fonts/*.woff
+assets/fonts/*.otf
+assets/fonts/*.ttf
+assets/fonts/*.eot
 .local/
 *.local.*
 

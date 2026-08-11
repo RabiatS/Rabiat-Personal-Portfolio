@@ -20,6 +20,8 @@
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var g = localStorage.getItem('glassLevel');
+      if (g === 'clear' || g === 'frosted') { document.documentElement.setAttribute('data-glass', g); }
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -71,12 +73,6 @@
       </a>
     </nav>
     <div class="header-controls">
-      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
-      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
-        <option value="off">Tilt: Off</option>
-        <option value="desktop" selected>Tilt: Desktop</option>
-        <option value="all">Tilt: All</option>
-      </select>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
@@ -125,7 +121,7 @@
         <li>Users value transparency but don't want AI labels to dominate the interface</li>
         <li>Clear, unobtrusive labeling can build trust without reducing enjoyment</li>
         <li>User controls (filtering, preferences) are important for user agency</li>
-        <li>Context matters—different labeling approaches work better in different parts of the app</li>
+        <li>Context matters: different labeling approaches work better in different parts of the app</li>
       </ul>
     </section>
 
@@ -200,7 +196,7 @@ function MusicComparison({ trackA, trackB }: Props) {
 
 
   <footer class="container footer">
-    © <span id="year"></span> Rabiat Sadiq — Case study excerpt. Contact for details.
+    © <span id="year"></span> Rabiat Sadiq · Case study excerpt. Contact for details.
   </footer>
 </body>
 </html>

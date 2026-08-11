@@ -4,23 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cool | Rabiat Sadiq</title>
-  <meta name="description" content="Small HTML tools and experiments — a terminal daily planner, an em-dash editor, a sticky note observatory — plus sites worth a look." />
+  <meta name="description" content="Small HTML tools and experiments: a terminal daily planner, an em-dash editor, a sticky note observatory, plus sites worth a look." />
   <link rel="canonical" href="https://www.rabiatsadiq.com/cool.html" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Rabiat Sadiq" />
   <meta property="og:title" content="Cool | Rabiat Sadiq" />
-  <meta property="og:description" content="Small HTML tools and experiments — a terminal daily planner, an em-dash editor, a sticky note observatory — plus sites worth a look." />
+  <meta property="og:description" content="Small HTML tools and experiments: a terminal daily planner, an em-dash editor, a sticky note observatory, plus sites worth a look." />
   <meta property="og:url" content="https://www.rabiatsadiq.com/cool.html" />
   <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/stickyobservatory.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Cool | Rabiat Sadiq" />
-  <meta name="twitter:description" content="Small HTML tools and experiments — a terminal daily planner, an em-dash editor, a sticky note observatory — plus sites worth a look." />
+  <meta name="twitter:description" content="Small HTML tools and experiments: a terminal daily planner, an em-dash editor, a sticky note observatory, plus sites worth a look." />
   <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/stickyobservatory.png" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var g = localStorage.getItem('glassLevel');
+      if (g === 'clear' || g === 'frosted') { document.documentElement.setAttribute('data-glass', g); }
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -72,12 +74,6 @@
       </a>
     </nav>
     <div class="header-controls">
-      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
-      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
-        <option value="off">Tilt: Off</option>
-        <option value="desktop" selected>Tilt: Desktop</option>
-        <option value="all">Tilt: All</option>
-      </select>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
@@ -88,7 +84,7 @@
       <div class="section-head">
         <div>
           <h1>Cool</h1>
-          <p class="lead" style="margin-top: 16px;">Small HTML tools and experiments—plus a few sites I actually like.</p>
+          <p class="lead" style="margin-top: 16px;">Small HTML tools and experiments, plus a few sites I actually like.</p>
         </div>
       </div>
 
@@ -96,21 +92,21 @@
       <div class="grid cards-3" style="margin-bottom: 56px;">
         <article class="card">
           <h3><a href="hq-daily-planner.html" style="color:inherit">HQ Daily Planner</a></h3>
-          <p class="muted">Terminal-style daily planner. Also hidden behind the VR headset on the homepage—or open it directly here.</p>
+          <p class="muted">Terminal-style daily planner. Also hidden behind the VR headset on the homepage, or open it directly here.</p>
           <div style="margin-top: 10px;">
             <a href="hq-daily-planner.html" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Launch ↗</a>
           </div>
         </article>
         <article class="card">
           <h3><a href="em-dash-remover.html" style="color:inherit">Em-dash editor</a></h3>
-          <p class="muted">Paste AI-generated text and clean em dashes, en dashes, and double hyphens—with a live preview of every change. Small tool for a common AI writing tic.</p>
+          <p class="muted">Paste AI-generated text and clean em dashes, en dashes, and double hyphens, with a live preview of every change. Small tool for a common AI writing tic.</p>
           <div style="margin-top: 10px;">
             <a href="em-dash-remover.html" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Launch ↗</a>
           </div>
         </article>
         <article class="card">
           <h3><a href="sticky-counter.html" style="color:inherit">CMU MHCI Sticky Note Counter</a></h3>
-          <p class="muted">Live observatory for sticky notes used by CMU MHCI cohorts since 2012—physics pile, year-by-year breakdowns, and a running total.</p>
+          <p class="muted">Live observatory for sticky notes used by CMU MHCI cohorts since 2012: physics pile, year-by-year breakdowns, and a running total.</p>
           <div style="margin-top: 10px;">
             <a href="sticky-counter.html" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Launch ↗</a>
           </div>
@@ -118,7 +114,7 @@
         <article class="card" id="vrSiteCard">
           <h3><a href="vr.html" style="color:inherit">View this site in VR</a></h3>
           <p class="muted" data-vr-hint>
-            This portfolio has an immersive WebXR room—the same hero, featured projects, and nav, rebuilt in 3D. On a phone or laptop you cannot enter VR here; open this site on any XR headset browser (Meta Quest, Pico, etc.) over HTTPS, then tap <strong>View in VR</strong> in the header or use the link below on the headset.
+            This portfolio has an immersive WebXR room: the same hero, featured projects, and nav, rebuilt in 3D. On a phone or laptop you cannot enter VR here; open this site on any XR headset browser (Meta Quest, Pico, etc.) over HTTPS, then tap <strong>View in VR</strong> in the header or use the link below on the headset.
           </p>
           <ul class="vr-site-tips muted" data-vr-tips>
             <li>Quest: open the site in the built-in Browser app</li>

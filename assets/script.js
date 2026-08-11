@@ -375,9 +375,8 @@
       // Remove cursor trail
       removeCursorTrail();
       
-      // Remove exit button
-      const exitBtn = document.getElementById('exitPlainMode');
-      if (exitBtn) exitBtn.remove();
+      // Re-enable the header controls that plain mode greys out
+      setPlainModeControls(false);
       
       // Restore eyebrow emoji (reload page or restore from original)
       const eyebrow = document.querySelector('.eyebrow');
@@ -433,7 +432,7 @@
     plainModePopup.innerHTML = `
       <div class="plain-mode-popup-content">
         <p style="margin-bottom: 8px; font-size: 14px; font-weight: 600;">Minimalist Mode</p>
-        <p style="margin-bottom: 14px; font-size: 12px; color: #444; line-height: 1.4;">Pick a look — both stay minimal (no galaxy, no VR hero).</p>
+        <p style="margin-bottom: 14px; font-size: 12px; color: #444; line-height: 1.4;">Pick a look. Both stay minimal (no galaxy, no VR hero).</p>
         <button type="button" id="activatePlainClassic" class="plain-mode-btn" style="
           background: #000;
           color: #fff;
@@ -575,54 +574,58 @@
     initCursorTrail();
     
     // Add exit button to header
-    createExitButton();
+    setPlainModeControls(true);
     
     removePlainModePopup();
   }
   
-  function createExitButton() {
-    // Remove existing exit button if any
-    const existing = document.getElementById('exitPlainMode');
-    if (existing) existing.remove();
-    
-    const exitBtn = document.createElement('button');
-    exitBtn.id = 'exitPlainMode';
-    exitBtn.textContent = 'Exit Minimalist Mode';
-    exitBtn.className = 'exit-plain-mode-btn';
-    exitBtn.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #000000;
-      color: #ffffff;
-      border: 1px solid #000000;
-      padding: 10px 20px;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      cursor: pointer;
-      z-index: 10001;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      transition: all 0.2s ease;
-    `;
-    
-    exitBtn.addEventListener('mouseenter', () => {
-      exitBtn.style.background = '#333333';
-    });
-    
-    exitBtn.addEventListener('mouseleave', () => {
-      exitBtn.style.background = '#000000';
-    });
-    
-    exitBtn.addEventListener('click', () => {
+  /* Plain mode used to drop a fixed "Exit Minimalist Mode" button at top-right,
+     which sat directly on top of the header controls and blocked them. Instead
+     we grey out the controls that genuinely do not apply (the theme toggle is
+     already a no-op in plain mode) and leave the palette button, which is what
+     exits, fully usable. */
+  function setPlainModeControls(active) {
+    // Clear any button left over from a previously cached session.
+    const stale = document.getElementById('exitPlainMode');
+    if (stale) stale.remove();
+
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+      themeBtn.setAttribute('data-disabled', String(active));
+      themeBtn.setAttribute('aria-disabled', String(active));
+      themeBtn.title = active ? 'Theme locked in minimalist mode' : '';
+    }
+
+    const funBtn = document.getElementById('funToggle');
+    if (funBtn) {
+      funBtn.title = active ? 'Exit minimalist mode' : 'Fun colors';
+    }
+
+    // A visible way out that does not sit on top of anything: a low-profile
+    // chip in the bottom-left, away from the header controls and the nav.
+    const existing = document.getElementById('plainExitChip');
+    if (!active) {
+      if (existing) existing.remove();
+      return;
+    }
+    if (existing) return;
+
+    const chip = document.createElement('button');
+    chip.id = 'plainExitChip';
+    chip.type = 'button';
+    chip.className = 'plain-exit-chip';
+    chip.innerHTML = '<span aria-hidden="true">←</span> Exit minimalist mode';
+    chip.addEventListener('click', () => {
       currentScheme = 0;
+      isPlainMode = false;
+      localStorage.setItem('plainMode', 'false');
+      localStorage.removeItem('plainModeVariant');
       applyScheme(currentScheme);
-      exitBtn.remove();
+      chip.remove();
     });
-    
-    document.body.appendChild(exitBtn);
+    document.body.appendChild(chip);
   }
-  
+
   // Cursor trail effect for plain mode
   let trailParticles = [];
   let trailMouseMoveHandler = null;
@@ -767,7 +770,7 @@
     initCursorTrail();
     
     // Add exit button
-    createExitButton();
+    setPlainModeControls(true);
   } else {
     applyScheme(currentScheme);
   }
@@ -784,9 +787,7 @@
       localStorage.setItem('plainMode', 'false');
       applyScheme(currentScheme);
       
-      // Remove exit button if it exists
-      const exitBtn = document.getElementById('exitPlainMode');
-      if (exitBtn) exitBtn.remove();
+      setPlainModeControls(false);
       
       // Fun animation on button
       btn.style.transform = 'scale(1.2) rotate(180deg)';
@@ -1242,17 +1243,16 @@ document.addEventListener('DOMContentLoaded', () => {
   let allProjects = [];
   let filteredProjects = [];
 
-  // Embedded projects data (works without server)
-  // Generated from assets/projects.json — do not hand-edit.
-  // Offline/file:// fallback for when fetch() of the JSON is unavailable.
+  // GENERATED from assets/projects.json - do not hand-edit.
+  // Offline/file:// fallback used when fetch() of the JSON is unavailable.
   const EMBEDDED_PROJECTS = [
     {id:"amazon-music-capstone",title:"Amazon Music Adaptive UI",subtitle:"CMU MHCI Capstone · Jan – Jul 2026",category:"Research / HCI",tags:["HCI", "UX", "Research", "Product", "Industry"],description:"Seven-month Amazon Music–sponsored MHCI capstone: Adaptive UI that reshapes the artist page by listening loyalty so fans feel recognized without being asked to broadcast.",github:null,demo:"files/amazon-music/amazon-music-case-study.pdf",caseStudy:"case-studies/case-study-amazon-music.html",status:"complete",images:["assets/img/projects/amazon-music.png"],year:"2026"},
     {id:"cmu-mhci-sticky-counter",title:"CMU MHCI Sticky Note Counter",subtitle:"Interactive Physics Observatory",category:"Web / Full-Stack / Product",tags:["Web", "HCI", "Research", "Personal"],description:"A live-updating observatory estimating the total sticky notes used by every CMU MHCI cohort since 2012, complete with physics-based animations, year-by-year breakdowns, and a real-time counter.",github:null,demo:"sticky-counter.html",caseStudy:null,status:"complete",images:["assets/img/stickyobservatory.png"],year:"2026"},
-    {id:"perspective",title:"Perspective",subtitle:"A Spatial Canvas for Your Data",category:"Web / Full-Stack / Product",tags:["Web", "Data", "AI", "3D", "Personal"],description:"Most data visualization tools default to 2D because it's the safe, familiar option. But a lot of data—geographic distributions, network graphs, frequency analysis, surface topologies—actually lives in three dimensions, and flattening it means losing information. Drag in a file (CSV, JSON, GeoJSON, or audio), an AI agent classifies it and maps it to the right 3D chart type, and you're immediately in a navigable scene you can orbit, zoom, and explore.",github:"https://github.com/RabiatS/PERSPECTIVE",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/perspective.png"],year:"2026"},
-    {id:"true-to-hue",title:"True to Hue",subtitle:"AI-assisted color design system starter",category:"Web / Full-Stack / Product",tags:["Web", "Software", "HCI", "Personal"],description:"Web app that turns product context, color preferences, light/dark mode, and optional reference images into a structured brand color system—then refine in a studio with live CSS variables, handoff exports, and accessibility checks.",github:"https://github.com/RabiatS/True-to-hue",demo:"https://rabiats.github.io/True-to-hue/",caseStudy:null,status:"complete",images:["assets/img/projects/truetohue.png"],year:"2026"},
-    {id:"ctrl-alt-elite",title:"Semi-Autonomous E-Scooter Control System",subtitle:"IXD — Interaction Design Fundamentals · Fall 2025",category:"Research / HCI",tags:["HCI", "UX", "Product", "Hardware", "Design"],description:"End-to-end interaction design for Hyundai’s Level 2 semi-autonomous electric scooter: research-driven physical controls, a child-facing rider dashboard, and a parent oversight app (geofencing, speed limits, walkie-talkie)—plus CAD handlebar concepts and a functional prototype.",github:null,demo:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pdf",ppt:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pptx",caseStudy:null,status:"complete",images:["assets/img/projects/scooter-parental-control-ui.png", "assets/img/projects/scooter-prototype.png", "assets/img/projects/scooter-handlebar-cad-1.png", "assets/img/projects/scooter-handlebar-cad-2.png"],year:"2025"},
-    {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 — XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR", "VR", "Research", "HCI", "Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/gazeflow image.png"],year:"2025"},
-    {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML", "Data", "Streaming", "CV", "Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps for validation and downstream analytics.",github:null,demo:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:["assets/img/ps.PNG"],year:"2025"},
+    {id:"perspective",title:"Perspective",subtitle:"A Spatial Canvas for Your Data",category:"Web / Full-Stack / Product",tags:["Web", "Data", "AI", "3D", "Personal"],description:"Most data visualization tools default to 2D because it's the safe, familiar option. But a lot of data (geographic distributions, network graphs, frequency analysis, surface topologies) actually lives in three dimensions, and flattening it means losing information. Drag in a file (CSV, JSON, GeoJSON, or audio), an AI agent classifies it and maps it to the right 3D chart type, and you're immediately in a navigable scene you can orbit, zoom, and explore.",github:"https://github.com/RabiatS/PERSPECTIVE",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/perspective.png"],year:"2026"},
+    {id:"true-to-hue",title:"True to Hue",subtitle:"AI-assisted color design system starter",category:"Web / Full-Stack / Product",tags:["Web", "Software", "HCI", "Personal"],description:"Web app that turns product context, color preferences, light/dark mode, and optional reference images into a structured brand color system, then refine in a studio with live CSS variables, handoff exports, and accessibility checks.",github:"https://github.com/RabiatS/True-to-hue",demo:"https://rabiats.github.io/True-to-hue/",caseStudy:null,status:"complete",images:["assets/img/projects/truetohue.png"],year:"2026"},
+    {id:"ctrl-alt-elite",title:"Semi-Autonomous E-Scooter Control System",subtitle:"IXD · Interaction Design Fundamentals · Fall 2025",category:"Research / HCI",tags:["HCI", "UX", "Product", "Hardware", "Design"],description:"End-to-end interaction design for Hyundai’s Level 2 semi-autonomous electric scooter: research-driven physical controls, a child-facing rider dashboard, and a parent oversight app (geofencing, speed limits, walkie-talkie), plus CAD handlebar concepts and a functional prototype.",github:null,demo:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pdf",ppt:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pptx",caseStudy:null,status:"complete",images:["assets/img/projects/scooter-parental-control-ui.png", "assets/img/projects/scooter-prototype.png", "assets/img/projects/scooter-handlebar-cad-1.png", "assets/img/projects/scooter-handlebar-cad-2.png"],year:"2025"},
+    {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 · XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR", "VR", "Research", "HCI", "Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/gazeflow image.png"],year:"2025"},
+    {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern · PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML", "Data", "Streaming", "CV", "Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps for validation and downstream analytics.",github:null,demo:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:["assets/img/ps.PNG"],year:"2025"},
     {id:"multimodal-pipeline",title:"Multimodal Unstructured Data Pipeline",subtitle:"Production-Ready Video/Audio/Sensor Processing",category:"Applied ML / CV / Video",tags:["ML", "Data", "CV", "Audio", "Personal"],description:"A modular pipeline that converts unstructured video, audio, and sensor/time-series data into structured, timestamped events with metadata.",github:"https://github.com/RabiatS",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/Multimodalstructred pipleiline.png"],year:"2024"},
     {id:"yolov5-car-detection",title:"YOLOv5 Car Detection",subtitle:"Real-Time Vehicle Detection from Video",category:"Applied ML / CV / Video",tags:["ML", "CV", "Personal"],description:"Built vehicle detection from video using YOLOv5 with real-time inference using OpenCV.",github:"https://github.com/RabiatS/Pytorch_car_detection_model",demo:null,caseStudy:null,status:"complete",images:[],year:"2024"},
     {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves",category:"XR / Unity / Immersive",tags:["XR", "Hardware", "Unity", "Research"],description:"Led cross-functional team to build affordable haptic glove with flex sensors and electromagnetic braking; integrated real-time interaction in Unity/C#.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",demo:null,caseStudy:"case-studies/case-study.html",status:"complete",images:["assets/img/mm.png"],year:"2024"},
@@ -1268,7 +1268,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {id:"applied-stem",title:"Applied STEM Platform",subtitle:"Co-founder / AI & Full-Stack Engineer",category:"Web / Full-Stack / Product",tags:["Web", "ML", "Product", "Industry"],description:"Built an AI-powered technical interview platform where users design circuits on an interactive React/TypeScript canvas with a FastAPI backend for simulation and analysis.",github:null,demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/appliedSTEM_img.png"],year:"2024"},
     {id:"task-manager",title:"Task Manager App",subtitle:"Android Journaling & Cloud Sync",category:"Web / Full-Stack / Product",tags:["Android", "Web", "Early"],description:"Android app in Java using Firebase and SQLite; journaling, authentication, cloud sync; team project with Jira/Confluence.",github:"https://github.com/RabiatS/TaskManager-CS3443",demo:null,caseStudy:null,status:"complete",images:[],year:"2023"},
     {id:"vr-content-analysis",title:"VR Content Analysis",subtitle:"AI-Empowered Safety Research",category:"Research / HCI",tags:["Research", "HCI", "XR", "ML"],description:"Conducted research on AI-empowered VR content analysis to address harassment and safety issues across social VR platforms.",github:null,demo:null,caseStudy:null,status:"complete",images:[],year:"2023-2024"},
-    {id:"apple-nacme-projects",title:"Apple NACME AIML Intensive",subtitle:"35 Projects — 8-Week Bootcamp",category:"Early Work / Learning",tags:["ML", "Early", "Learning"],description:"Completed 35 projects during 8-week intensive covering Python fundamentals, data analysis, ML foundations, regression, classification, deep learning, and advanced ML topics.",github:"https://github.com/RabiatS",demo:null,caseStudy:null,status:"complete",images:[],year:"2024"},
+    {id:"apple-nacme-projects",title:"Apple NACME AIML Intensive",subtitle:"35 Projects · 8-Week Bootcamp",category:"Early Work / Learning",tags:["ML", "Early", "Learning"],description:"Completed 35 projects during 8-week intensive covering Python fundamentals, data analysis, ML foundations, regression, classification, deep learning, and advanced ML topics.",github:"https://github.com/RabiatS",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/apple-nacme.png"],year:"2024"},
     {id:"titanic-ml",title:"Titanic Survival Prediction",subtitle:"Classic ML Analysis",category:"Early Work / Learning",tags:["ML", "Early", "Learning"],description:"Machine learning analysis predicting Titanic passenger survival using logistic regression, decision trees, or ensemble methods.",github:"https://github.com/RabiatS/titanic_survivers_ml",demo:null,caseStudy:null,status:"complete",images:[],year:"2024"}
   ];
 
@@ -1351,6 +1351,10 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         card.style.setProperty('--grad', catStyle.gradient);
       }
+
+      // Two cards borrow the type of the product they were built for.
+      const BRAND_FONTS = { 'amazon-music-capstone': 'ember', assuage: 'apple' };
+      if (BRAND_FONTS[project.id]) card.setAttribute('data-font', BRAND_FONTS[project.id]);
 
       const cardBody = document.createElement('div');
       cardBody.className = 'card-body';
@@ -1632,16 +1636,31 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTilt(()=> init(mode==='all' && isTouch));
   }
 
-  const initialMode = (body?.dataset?.tiltMode || 'desktop').toLowerCase();
+  // Saved preference wins over the per-page data-tilt-mode default, so the
+  // choice sticks as you move between pages.
+  const savedMode = localStorage.getItem('tiltMode');
+  const initialMode = (savedMode || body?.dataset?.tiltMode || 'desktop').toLowerCase();
+  body.dataset.tiltMode = initialMode;
+
+  // Legacy <select> kept working in case a page still ships one.
   if (selectEl){
     selectEl.value = initialMode;
     selectEl.addEventListener('change', ()=>{
       const mode = selectEl.value;
       body.dataset.tiltMode = mode;
+      localStorage.setItem('tiltMode', mode);
       apply(mode);
     }, {passive:true});
   }
-  document.addEventListener('DOMContentLoaded', ()=> apply(initialMode));
+
+  window.setTiltMode = (mode) => {
+    body.dataset.tiltMode = mode;
+    localStorage.setItem('tiltMode', mode);
+    if (selectEl) selectEl.value = mode;
+    apply(mode);
+  };
+
+  document.addEventListener('DOMContentLoaded', ()=> apply(body.dataset.tiltMode || initialMode));
 
   // Helpers if you add cards dynamically
   window.enableTilt   = (mode)=>{ if(mode) body.dataset.tiltMode=mode; apply(body.dataset.tiltMode||'desktop'); };
@@ -1807,6 +1826,128 @@ window.resetPlainMode = function() {
   });
 })();
 
+// ============================================
+// SETTINGS POPOVER — tilt mode + glass level
+// Replaces the old always-visible "Tilt: ..." <select> in the header.
+// ============================================
+(function () {
+  const controls = document.querySelector('.header .header-controls');
+  if (!controls || controls.querySelector('.settings-wrap')) return;
+
+  const GLASS_LEVELS = ['clear', 'default', 'frosted'];
+  const TILT_MODES = ['off', 'desktop', 'all'];
+
+  const wrap = document.createElement('div');
+  wrap.className = 'settings-wrap';
+  wrap.innerHTML = `
+    <button type="button" class="toggle settings-btn" id="settingsBtn"
+            aria-expanded="false" aria-haspopup="dialog" title="Settings" aria-label="Settings">⚙</button>
+    <div class="settings-panel" role="dialog" aria-label="Display settings">
+      <div class="settings-group">
+        <span class="settings-label" id="tiltLabel">Card tilt</span>
+        <div class="settings-seg" role="group" aria-labelledby="tiltLabel" data-seg="tilt">
+          <button type="button" data-value="off">Off</button>
+          <button type="button" data-value="desktop">Desktop</button>
+          <button type="button" data-value="all">All</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <span class="settings-label" id="glassLabel">Glass</span>
+        <div class="settings-seg" role="group" aria-labelledby="glassLabel" data-seg="glass">
+          <button type="button" data-value="clear">Clear</button>
+          <button type="button" data-value="default">Default</button>
+          <button type="button" data-value="frosted">Frosted</button>
+        </div>
+        <p class="settings-hint">How frosted the nav and header panels look.</p>
+      </div>
+    </div>
+  `;
+
+  // Retire the old select if the page still has one.
+  const legacySelect = controls.querySelector('.tilt-select');
+  const legacyLabel = controls.querySelector('label[for="tiltModeSelect"]');
+  if (legacyLabel) legacyLabel.remove();
+  if (legacySelect) legacySelect.style.display = 'none';
+
+  const themeToggle = controls.querySelector('#themeToggle');
+  controls.insertBefore(wrap, themeToggle || null);
+
+  const btn = wrap.querySelector('.settings-btn');
+  const panel = wrap.querySelector('.settings-panel');
+
+  function paint(seg, value) {
+    wrap.querySelectorAll(`[data-seg="${seg}"] button`).forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.value === value));
+    });
+  }
+
+  function currentGlass() {
+    const saved = localStorage.getItem('glassLevel');
+    return GLASS_LEVELS.includes(saved) ? saved : 'default';
+  }
+
+  function applyGlass(level) {
+    if (level === 'default') document.documentElement.removeAttribute('data-glass');
+    else document.documentElement.setAttribute('data-glass', level);
+    localStorage.setItem('glassLevel', level);
+    paint('glass', level);
+  }
+
+  function currentTilt() {
+    const saved = localStorage.getItem('tiltMode');
+    if (TILT_MODES.includes(saved)) return saved;
+    const attr = (document.body.dataset.tiltMode || 'desktop').toLowerCase();
+    return TILT_MODES.includes(attr) ? attr : 'desktop';
+  }
+
+  paint('tilt', currentTilt());
+  paint('glass', currentGlass());
+
+  wrap.querySelectorAll('[data-seg="tilt"] button').forEach((b) => {
+    b.addEventListener('click', () => {
+      const mode = b.dataset.value;
+      paint('tilt', mode);
+      // setTiltMode is defined by the tilt loader; fall back to storage only
+      // when reduced-motion made that block bail out early.
+      if (typeof window.setTiltMode === 'function') window.setTiltMode(mode);
+      else {
+        localStorage.setItem('tiltMode', mode);
+        document.body.dataset.tiltMode = mode;
+      }
+    });
+  });
+
+  wrap.querySelectorAll('[data-seg="glass"] button').forEach((b) => {
+    b.addEventListener('click', () => applyGlass(b.dataset.value));
+  });
+
+  function open() {
+    panel.classList.add('is-open');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+
+  function close() {
+    panel.classList.remove('is-open');
+    btn.setAttribute('aria-expanded', 'false');
+  }
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    panel.classList.contains('is-open') ? close() : open();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (panel.classList.contains('is-open') && !wrap.contains(e.target)) close();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+      close();
+      btn.focus();
+    }
+  });
+})();
+
 // Mobile navigation menu
 (function () {
   const header = document.querySelector('.header');
@@ -1942,7 +2083,9 @@ window.resetPlainMode = function() {
 
   initGlider();
 
-  internalPills.forEach((pill) => {
+  // Every pill gets the glider on hover, external links included. LinkedIn is
+  // still an outbound link, but it should light up like the rest of the nav.
+  pills.forEach((pill) => {
     pill.addEventListener('mouseenter', () => moveGlider(pill, true));
     pill.addEventListener('focus', () => moveGlider(pill, true));
   });
@@ -2039,7 +2182,7 @@ window.resetPlainMode = function() {
   function setRegularDevice() {
     if (hint) {
       hint.innerHTML =
-        'This portfolio has an immersive WebXR room—the same hero, featured projects, and nav, rebuilt in 3D. On a phone or laptop you cannot enter VR here; open this site on any <strong>XR headset browser</strong> (Meta Quest, Pico, etc.) over <strong>HTTPS</strong>, then tap <strong>View in VR</strong> in the header or open the VR space from the headset.';
+        'This portfolio has an immersive WebXR room: the same hero, featured projects, and nav, rebuilt in 3D. On a phone or laptop you cannot enter VR here; open this site on any <strong>XR headset browser</strong> (Meta Quest, Pico, etc.) over <strong>HTTPS</strong>, then tap <strong>View in VR</strong> in the header or open the VR space from the headset.';
     }
     if (tips) tips.hidden = false;
     if (cta) cta.textContent = '▶ Open VR space (3D preview) ↗';
@@ -2048,7 +2191,7 @@ window.resetPlainMode = function() {
   function setXrDevice() {
     if (hint) {
       hint.textContent =
-        'This browser supports immersive VR. Step inside the portfolio hero—use hand tracking or controllers to point, pinch, and grab project cards.';
+        'This browser supports immersive VR. Step inside the portfolio hero. Use hand tracking or controllers to point, pinch, and grab project cards.';
     }
     if (tips) tips.hidden = true;
     if (cta) cta.textContent = '▶ Enter VR ↗';

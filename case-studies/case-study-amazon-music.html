@@ -20,6 +20,8 @@
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var g = localStorage.getItem('glassLevel');
+      if (g === 'clear' || g === 'frosted') { document.documentElement.setAttribute('data-glass', g); }
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -93,12 +95,6 @@
       </a>
     </nav>
     <div class="header-controls">
-      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
-      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
-        <option value="off">Tilt: Off</option>
-        <option value="desktop" selected>Tilt: Desktop</option>
-        <option value="all">Tilt: All</option>
-      </select>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
@@ -109,7 +105,7 @@
       <p class="eyebrow">Amazon Music • CMU MHCI Capstone • Jan – Jul 2026</p>
       <h1>From Curiosity to Belonging</h1>
       <p class="lead">
-        Seven months on why streaming makes fans invisible — and an Adaptive UI that reshapes the
+        Seven months on why streaming makes fans invisible · and an Adaptive UI that reshapes the
         artist page so loyal listeners feel recognized without being asked to perform.
       </p>
       <div class="cs-metrics">
@@ -126,7 +122,7 @@
     <section class="cs-section" id="concept-video">
       <h2>Concept Video</h2>
       <p>
-        A product vision walkthrough of Adaptive UI across listener tiers — recognition earned by
+        A product vision walkthrough of Adaptive UI across listener tiers · recognition earned by
         listening, not by broadcasting.
       </p>
       <div class="cs-media">
@@ -143,7 +139,7 @@
       <p>
         Amazon Music sponsored a five-person Carnegie Mellon MHCI team to reimagine the
         artist–listener relationship. Streaming holds years of history between a listener and an
-        artist — and reflects almost none of it back. A fan with 3,200 plays sees the same artist
+        artist · and reflects almost none of it back. A fan with 3,200 plays sees the same artist
         page as someone hearing the song for the first time.
       </p>
       <p style="margin-top:16px">
@@ -168,22 +164,22 @@
       <h2>Key Insights</h2>
       <ul>
         <li><strong>Fans reject the stage, not the recognition.</strong> Private visibility was accepted by 80% of participants; public posting fell to 20%. Social features became inbound rather than broadcast.</li>
-        <li><strong>Trust tracks explanation, not data type.</strong> The same data felt intrusive without explanation but helpful when its purpose was clear — every adaptation had to explain itself and remain reversible.</li>
+        <li><strong>Trust tracks explanation, not data type.</strong> The same data felt intrusive without explanation but helpful when its purpose was clear · every adaptation had to explain itself and remain reversible.</li>
         <li><strong>The wall is audience, not visibility.</strong> Being seen is fine. Being asked to broadcast is not.</li>
       </ul>
     </section>
 
     <section class="cs-section">
-      <h2>Solution — Adaptive UI</h2>
+      <h2>Solution · Adaptive UI</h2>
       <p>
         Same artist, different page for every fan. The catalog stays identical; what changes is how
         much of that listening history the interface admits to knowing, across three tiers earned by
         listening alone:
       </p>
       <ul>
-        <li><strong>Tier 1 — New here:</strong> The deterministic artist record, unchanged. What any listener sees.</li>
-        <li><strong>Tier 2 — Returning:</strong> Recognition emerges — ambient signals that the listener is seen, not just a visitor.</li>
-        <li><strong>Tier 3 — Longtime fan:</strong> Community, shame-free return framing, and eras of their journey with the artist.</li>
+        <li><strong>Tier 1 · New here:</strong> The deterministic artist record, unchanged. What any listener sees.</li>
+        <li><strong>Tier 2 · Returning:</strong> Recognition emerges · ambient signals that the listener is seen, not just a visitor.</li>
+        <li><strong>Tier 3 · Longtime fan:</strong> Community, shame-free return framing, and eras of their journey with the artist.</li>
       </ul>
       <p style="margin-top:16px">
         Across three core surfaces, the interface progressively recognizes loyalty through listening
@@ -196,7 +192,7 @@
       <ul>
         <li><strong>User:</strong> Showed how Amazon Music could recognize long-term loyalty without requiring public participation, ranking, or self-promotion</li>
         <li><strong>Organizational:</strong> Turned debate about social features into measurable design criteria and eliminated weak directions before engineering</li>
-        <li><strong>Long-term:</strong> Delivered reusable principles, tiers, and test protocols for evaluating future personalization concepts — reframing personalization as recognition rather than recommendation</li>
+        <li><strong>Long-term:</strong> Delivered reusable principles, tiers, and test protocols for evaluating future personalization concepts · reframing personalization as recognition rather than recommendation</li>
       </ul>
     </section>
 
@@ -239,7 +235,7 @@
 
 
   <footer class="container footer">
-    © <span id="year"></span> Rabiat Sadiq — Case study excerpt. Contact for details.
+    © <span id="year"></span> Rabiat Sadiq · Case study excerpt. Contact for details.
   </footer>
 </body>
 </html>
