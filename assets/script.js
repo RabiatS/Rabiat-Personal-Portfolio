@@ -23,14 +23,27 @@ window.applyGlassLevel = function (value) {
   let secretTooltip = null;
   let isRainbowMode = localStorage.getItem('rainbowMode') === 'true';
   
+  // Party mode is desktop-only: the stained-glass panels and the animated
+  // gradients are heavy on phones and the effect is not readable at that size.
+  const isSmallViewport = () => window.matchMedia('(max-width: 900px)').matches;
+
   const setTheme = (mode) => {
     // Check if plain mode is active - disable dark mode toggle
     const isPlainMode = document.documentElement.classList.contains('plain-mode');
     if (isPlainMode && mode !== 'rainbow') {
       return;
     }
-    
+
+    // A rainbow preference saved on desktop must not follow you onto a phone.
+    if (mode === 'rainbow' && isSmallViewport()) {
+      mode = localStorage.getItem('themeBeforeRainbow') === 'light' ? 'light' : 'dark';
+    }
+
     if (mode === 'rainbow') {
+      const prior = localStorage.getItem('theme');
+      if (prior === 'dark' || prior === 'light') {
+        localStorage.setItem('themeBeforeRainbow', prior);
+      }
       document.documentElement.classList.add('rainbow-mode');
       document.body.classList.add('rainbow-mode');
       isRainbowMode = true;
@@ -144,7 +157,7 @@ window.applyGlassLevel = function (value) {
     setTheme(initial);
   }
   
-  if (btn){
+  if (btn && !isSmallViewport()){
     // Long hover detection (3 seconds)
     btn.addEventListener('mouseenter', () => {
       hoverTimeout = setTimeout(() => {

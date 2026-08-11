@@ -3150,9 +3150,11 @@ body:not(.on-hero) main .btn.secondary:hover {
   border-radius: 9px;
 }
 
-@media (max-width: 380px) {
-  .np-card {
-    width: min(230px, calc(100vw - 32px));
+/* Desktop only. On a phone the header is already tight, there is no hover to
+   preview with, and the card competes with the nav for the same corner. */
+@media (max-width: 900px) {
+  .np {
+    display: none;
   }
 }
 
