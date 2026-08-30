@@ -1,6 +1,28 @@
 {
   "projects": [
     {
+      "id": "amazon-music-adaptive-ui",
+      "title": "Amazon Music Adaptive UI",
+      "subtitle": "CMU MHCI Capstone — Amazon Music",
+      "category": "Research / HCI",
+      "tags": ["HCI", "UX", "Product", "Research", "Industry"],
+      "description": "Research-led adaptive discovery experience for Amazon Music: a high-fidelity mobile prototype that reshapes home-screen content from listener personas and fandom themes.",
+      "longDescription": "CMU MHCI capstone partnership with Amazon Music (team DERBC). Combined user research, interaction design, and engineering to prototype Adaptive UI — thematic home experiences, persona-driven filtering, and hand-tuned superfan artist journeys — in an Expo / React Native clone of the Amazon Music client.",
+      "technologies": ["React Native", "Expo", "TypeScript", "UX Research", "Interaction Design", "Prototyping"],
+      "github": "https://github.com/RabiatS/Amazon-Music-Adaptive-UI---DERBC",
+      "demo": "files/amazon-music/amazon-music-summer-report.pdf",
+      "caseStudy": null,
+      "status": "complete",
+      "images": [],
+      "brandStack": {
+        "bg": "#25d1da",
+        "logo": "assets/img/projects/amazon-music-logo.png"
+      },
+      "videos": [],
+      "year": "2026",
+      "type": "Industry"
+    },
+    {
       "id": "cmu-mhci-sticky-counter",
       "title": "CMU MHCI Sticky Note Counter",
       "subtitle": "Interactive Physics Observatory",
@@ -193,7 +215,7 @@
       "category": "XR / Unity / Immersive",
       "tags": ["XR", "Hardware", "Unity", "Research"],
       "description": "Led cross-functional team to build affordable haptic glove with flex sensors and electromagnetic braking; integrated real-time interaction in Unity/C#.",
-      "longDescription": "Won 1st place UTSA Tech Symposium (1 of 89 teams). Demonstrated reliable grasp feedback with lower latency (~18% vs baseline) and improved comfort (+24% SUS comfort score). Cost-effective prototype under $50 BOM.",
+      "longDescription": "Won 1st place UTSA Tech Symposium (1 of 89 teams). An electromagnetic braking system stops the hand at a virtual object's surface, delivering roughly 50N of pullback force in a soft, low-mass glove -- markedly more comfortable to wear than the exoskeletal force-feedback gloves on the market. Cost-effective prototype under $50 BOM.",
       "technologies": ["Unity", "C#", "Arduino", "Sensors", "Embedded Hardware", "Electromagnetic Braking"],
       "github": "https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",
       "demo": null,

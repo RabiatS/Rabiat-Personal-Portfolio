@@ -1151,13 +1151,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Embedded projects data (works without server)
   const EMBEDDED_PROJECTS = [
+    {id:"amazon-music-adaptive-ui",title:"Amazon Music Adaptive UI",subtitle:"CMU MHCI Capstone — Amazon Music",category:"Research / HCI",tags:["HCI","UX","Product","Research","Industry"],description:"Research-led adaptive discovery experience for Amazon Music: a high-fidelity mobile prototype that reshapes home-screen content from listener personas and fandom themes.",github:"https://github.com/RabiatS/Amazon-Music-Adaptive-UI---DERBC",demo:"files/amazon-music/amazon-music-summer-report.pdf",caseStudy:null,status:"complete",images:[],brandStack:{bg:"#25d1da",logo:"assets/img/projects/amazon-music-logo.png"},year:"2026"},
     {id:"cmu-mhci-sticky-counter",title:"CMU MHCI Sticky Note Counter",subtitle:"Interactive Physics Observatory",category:"Web / Full-Stack / Product",tags:["Web","HCI","Research","Personal"],description:"A live-updating observatory estimating the total sticky notes used by every CMU MHCI cohort since 2012. Physics-based animations, year-by-year breakdowns, and a real-time counter.",github:null,demo:"sticky-counter.html",caseStudy:null,status:"complete",images:["assets/img/stickyobservatory.png"],year:"2026"},
     {id:"true-to-hue",title:"True to Hue",subtitle:"AI-assisted color design system starter",category:"Web / Full-Stack / Product",tags:["Web","Software","HCI","Personal"],description:"Turns product context, color preferences, light/dark mode, and optional reference images into a structured brand palette—then refine in a live studio with CSS variables, exports (CSS, tokens, PDF), and accessibility reporting.",github:"https://github.com/RabiatS/True-to-hue",demo:"https://rabiats.github.io/True-to-hue/",caseStudy:null,status:"complete",images:["assets/img/projects/truetohue.png"],year:"2026"},
     {id:"perspective",title:"Perspective",subtitle:"A Spatial Canvas for Your Data",category:"Web / Full-Stack / Product",tags:["Web","Data","AI","3D","Personal"],description:"Most data visualization tools default to 2D because it's the safe, familiar option. But a lot of data—geographic distributions, network graphs, frequency analysis, surface topologies—actually lives in three dimensions, and flattening it means losing information. Drag in a file (CSV, JSON, GeoJSON, or audio), an AI agent classifies it and maps it to the right 3D chart type, and you're immediately in a navigable scene you can orbit, zoom, and explore. A second agent runs anomaly detection and drops insight pins directly into the scene. Shareable URLs encode your exact view; snapshot export included. Everything runs in the browser—no coding required, no software to install. Ideation and research in Perplexity and Claude, then fully designed and built in Cursor.",github:"https://github.com/RabiatS/PERSPECTIVE",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/perspective.png"],year:"2026"},
     {id:"ctrl-alt-elite",title:"Semi-Autonomous E-Scooter Control System",subtitle:"IXD — Interaction Design Fundamentals · Fall 2025",category:"Research / HCI",tags:["HCI","UX","Product","Hardware","Design"],description:"End-to-end interaction design for Hyundai’s Level 2 semi-autonomous e-scooter: research-driven physical controls, child rider dashboard, parent oversight app, CAD handlebar concepts, and a functional prototype.",github:null,demo:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pdf",ppt:"files/ctrl-alt-elite/ctrl-alt-elite-deliverables.pptx",caseStudy:null,status:"complete",images:["assets/img/projects/scooter-parental-control-ui.png"],year:"2025"},
     {id:"gazeflow",title:"GazeFlow – Mosaic of Attention",subtitle:"Tartan Hacks 2025 — XR Eye-Tracking Experience",category:"XR / Unity / Immersive",tags:["XR","VR","Research","HCI","Hackathon"],description:"XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",github:"https://github.com/RabiatS/GazeFlow",caseStudy:null,status:"complete",images:["assets/img/projects/gazeflow image.png"],year:"2025"},
     {id:"playstation-internship",title:"Gameplay Video Score Extraction Pipeline",subtitle:"Applied ML Intern — PlayStation (SIE)",category:"Applied ML / CV / Video",tags:["ML","Data","Streaming","CV","Industry"],description:"Built an end-to-end pipeline to extract on-screen gameplay scores from long-form streaming videos and align scores to timestamps.",github:null,caseStudy:"case-studies/case-study-ps.html",status:"complete",images:["assets/img/ps.PNG"],year:"2025"},
-    {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves — 1st Place UTSA",category:"XR / Unity / Immersive",tags:["XR","Hardware","Unity","Research"],description:"Led team to build affordable haptic glove with flex sensors and EM braking. 18% latency reduction, 24% comfort improvement.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",caseStudy:"case-studies/case-study.html",status:"complete",images:["assets/img/mm.png"],year:"2024"},
+    {id:"magic-mitts",title:"Magic Mitts",subtitle:"Affordable Haptic VR Gloves — 1st Place UTSA",category:"XR / Unity / Immersive",tags:["XR","Hardware","Unity","Research"],description:"Led team to build an affordable haptic glove using flex sensors and an electromagnetic braking system that stops the hand at a virtual object's surface. Under $50 BOM.",github:"https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves",caseStudy:"case-studies/case-study.html",status:"complete",images:["assets/img/mm.png"],year:"2024"},
     {id:"xr-pain-perception",title:"XR Pain Augmentation Research",subtitle:"CMU Augmented Perception Lab",category:"XR / Unity / Immersive",tags:["XR","Research","HCI","Perception"],description:"Multimodal XR prototypes to study pain perception; building adaptive interfaces with structured logging for ML personalization.",github:null,caseStudy:"case-studies/case-study-pain-xr.html",status:"complete",images:["assets/img/projects/vr-pain-augmentation-research.png"],year:"2025"},
     {id:"assuage",title:"Assuage",subtitle:"ML Distress Prediction",category:"Applied ML / CV / Video",tags:["ML","Research","HCI"],description:"Logistic regression to predict distress level from HealthKit biometrics; 82% test accuracy with on-device CoreML inference.",github:"https://github.com/RabiatS/final-project-aimleaders",caseStudy:"case-study-assuage.html",status:"complete",images:["assets/img/projects/assuage-logo.png"],year:"2024"},
     {id:"spotify-research",title:"Spotify vs AI Research Study",subtitle:"UX Research & Design",category:"Research / HCI",tags:["HCI","Research"],description:"UX research exploring how Spotify listeners perceive AI-generated music, and how clearer labeling can build trust.",github:"https://github.com/RabiatS/spotify-vs-ai-research-study",demo:"https://spotify-vs-ai-research-study.vercel.app/",caseStudy:"case-studies/case-study-spotify.html",status:"complete",images:["assets/img/projects/spotify-vs-ai-research.png"],year:"2024"},
@@ -1224,7 +1225,8 @@ document.addEventListener('DOMContentLoaded', () => {
       card.setAttribute('data-tags', project.tags.join(' '));
       card.setAttribute('id', project.id);
       
-      const hasImage = project.images && project.images.length > 0 && project.images[0];
+      const hasBrandStack = !!(project.brandStack && project.brandStack.logo);
+      const hasImage = !hasBrandStack && project.images && project.images.length > 0 && project.images[0];
 
       // Category gradients for cards without real images
       const categoryStyles = {
@@ -1238,7 +1240,24 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       const catStyle = categoryStyles[project.category] || { gradient: 'linear-gradient(135deg,#6366f1,#8b5cf6)', icon: '💻' };
 
-      if (hasImage) {
+      if (hasBrandStack) {
+        card.classList.add('img-card--brand-stack');
+        card.style.setProperty('--brand-bg', project.brandStack.bg || '#25d1da');
+        const stack = document.createElement('div');
+        stack.className = 'brand-stack';
+        stack.setAttribute('aria-hidden', 'true');
+        const plate = document.createElement('div');
+        plate.className = 'brand-stack__plate';
+        const logo = document.createElement('img');
+        logo.className = 'brand-stack__logo';
+        logo.src = project.brandStack.logo;
+        logo.alt = '';
+        logo.loading = 'lazy';
+        logo.decoding = 'async';
+        stack.appendChild(plate);
+        stack.appendChild(logo);
+        card.appendChild(stack);
+      } else if (hasImage) {
         const src = project.images[0];
         const resolved = new URL(src, document.baseURI).href;
         card.style.setProperty('--img', `url("${resolved}")`);
@@ -1361,7 +1380,13 @@ document.addEventListener('DOMContentLoaded', () => {
           demoLink.target = '_blank';
           demoLink.rel = 'noopener';
           const isPdf = /\.pdf$/i.test(project.demo);
-          demoLink.textContent = isPdf && !project.github ? 'View Slides (PDF) ↗' : '▶ Launch';
+          if (isPdf) {
+            demoLink.textContent = /report|case-study|case_study/i.test(project.demo)
+              ? 'View Report (PDF) ↗'
+              : 'View Slides (PDF) ↗';
+          } else {
+            demoLink.textContent = '▶ Launch';
+          }
           demoLink.style.fontSize = '13px';
           demoLink.style.color = 'inherit';
           demoLink.style.opacity = '0.9';
@@ -1923,24 +1948,21 @@ window.resetPlainMode = function() {
   if (!card) return;
 
   const hint = card.querySelector('[data-vr-hint]');
-  const tips = card.querySelector('[data-vr-tips]');
   const cta = card.querySelector('[data-vr-cta]');
 
   function setRegularDevice() {
     if (hint) {
-      hint.innerHTML =
-        'This portfolio has an immersive WebXR room—the same hero, featured projects, and nav, rebuilt in 3D. On a phone or laptop you cannot enter VR here; open this site on any <strong>XR headset browser</strong> (Meta Quest, Pico, etc.) over <strong>HTTPS</strong>, then tap <strong>View in VR</strong> in the header or open the VR space from the headset.';
+      hint.textContent =
+        'Immersive WebXR version of this portfolio—hero, projects, and nav in 3D. Preview here; enter VR from a headset browser on the live site.';
     }
-    if (tips) tips.hidden = false;
-    if (cta) cta.textContent = '▶ Open VR space (3D preview) ↗';
+    if (cta) cta.textContent = '▶ Open VR space ↗';
   }
 
   function setXrDevice() {
     if (hint) {
       hint.textContent =
-        'This browser supports immersive VR. Step inside the portfolio hero—use hand tracking or controllers to point, pinch, and grab project cards.';
+        'Your browser supports VR—step inside and explore with hands or controllers.';
     }
-    if (tips) tips.hidden = true;
     if (cta) cta.textContent = '▶ Enter VR ↗';
   }
 
