@@ -32,7 +32,23 @@
 
   <style>
     /* Long-form essay layout, scoped to this page. Uses the site palette. */
-    .essay { max-width: 720px; margin: 0 auto; }
+    /* Full container width. Prose keeps a readable measure; every figure,
+       image, table and swatch grid spans the whole width. */
+    .essay { max-width: 100%; margin: 0; }
+    .essay > p,
+    .essay > h2,
+    .essay > h3,
+    .essay > ul,
+    .essay > ol,
+    .essay > .sidenote,
+    .essay > .pull,
+    .essay > .refs,
+    .essay > .drop { max-width: 900px; }
+    .essay > figure,
+    .essay > .phones,
+    .essay > .swatches,
+    .essay > .table-wrap,
+    .essay > .specimen { max-width: 100%; }
     /* Full container width, matching the other case study heroes on the site. */
     .essay-hero { margin: 56px 0 48px; }
     .essay-hero .lead { max-width: 860px; }
@@ -125,8 +141,8 @@
     .table-wrap { overflow-x: auto; }
 
 
-    .phones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 40px 0; }
-    .phones.two { grid-template-columns: repeat(2, 1fr); max-width: 520px; }
+    .phones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin: 48px 0; }
+    .phones.two { grid-template-columns: repeat(2, 1fr); max-width: 760px; margin-left: auto; margin-right: auto; }
     .phones figure { margin: 0; }
     .phones img {
       width: 100%; height: auto; display: block; border-radius: 22px;

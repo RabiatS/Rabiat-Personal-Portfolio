@@ -1,35 +1,14 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Case Study | Magic Mitts | Rabiat Sadiq</title>
-  <meta name="description" content="Magic Mitts: an affordable haptic VR glove using electromagnetic braking. 1st place out of 89 teams at the UTSA Tech Symposium." />
-  <link rel="canonical" href="https://www.rabiatsadiq.com/case-studies/case-study.html" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Rabiat Sadiq" />
-  <meta property="og:title" content="Case Study | Magic Mitts | Rabiat Sadiq" />
-  <meta property="og:description" content="Magic Mitts: an affordable haptic VR glove using electromagnetic braking. 1st place out of 89 teams at the UTSA Tech Symposium." />
-  <meta property="og:url" content="https://www.rabiatsadiq.com/case-studies/case-study.html" />
-  <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/mm.png" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Case Study | Magic Mitts | Rabiat Sadiq" />
-  <meta name="twitter:description" content="Magic Mitts: an affordable haptic VR glove using electromagnetic braking. 1st place out of 89 teams at the UTSA Tech Symposium." />
-  <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/mm.png" />
-<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Magic Mitts | Rabiat Sadiq</title>
+  <meta name="description" content="Magic Mitts: an electromagnetic haptic VR glove that stops your hand at the surface of a virtual object, built for under fifty dollars. First of 89 teams at the UTSA Tech Symposium." />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
-      var g = localStorage.getItem('glassLevel');
-      var legacy = { clear: 0, 'default': 50, frosted: 100 };
-      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
-      if (!isFinite(t)) t = 50;
-      t = Math.min(100, Math.max(0, t)) / 100;
-      var st = document.documentElement.style;
-      st.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
-      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
-      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
-      st.setProperty('--glass-lens', (1 - t).toFixed(3));
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -48,18 +27,187 @@
     })();
   </script>
 
-<link rel="stylesheet" href="../assets/style.css">
-<script src="../assets/script.js" defer></script>
-  <script src="../assets/music.js" defer></script>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+
+  <style>
+    /* Long-form essay layout, scoped to this page. Uses the site palette. */
+    /* Full container width. Prose keeps a readable measure; every figure,
+       image, table and swatch grid spans the whole width. */
+    .essay { max-width: 100%; margin: 0; }
+    .essay > p,
+    .essay > h2,
+    .essay > h3,
+    .essay > ul,
+    .essay > ol,
+    .essay > .sidenote,
+    .essay > .pull,
+    .essay > .refs,
+    .essay > .drop { max-width: 900px; }
+    .essay > figure,
+    .essay > .phones,
+    .essay > .swatches,
+    .essay > .table-wrap,
+    .essay > .specimen { max-width: 100%; }
+    /* Full container width, matching the other case study heroes on the site. */
+    .essay-hero { margin: 56px 0 48px; }
+    .essay-hero .lead { max-width: 860px; }
+    .essay-hero .byline { max-width: 860px; }
+    .essay-hero .eyebrow { color: rgba(255,255,255,0.92); }
+    .essay-hero h1 { color: #fff; }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+      margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);
+      color: var(--text-muted); font-size: 15px;
+    }
+    .byline strong { color: var(--text); font-weight: 600; }
+    .essay-hero .byline { color: rgba(255,255,255,0.88); border-top-color: rgba(255,255,255,0.28); }
+    .essay-hero .byline strong { color: #fff; }
+    .essay p {
+      font-size: 18px; line-height: 1.75; color: var(--text);
+      margin: 0 0 24px;
+    }
+    .essay h2 {
+      font-size: 28px; line-height: 1.3; margin: 56px 0 20px;
+      letter-spacing: -0.01em;
+    }
+    .essay h3 { font-size: 21px; margin: 40px 0 14px; }
+    .essay ul, .essay ol { margin: 0 0 24px; padding-left: 22px; }
+    .essay li { font-size: 18px; line-height: 1.7; margin-bottom: 12px; color: var(--text); }
+    .essay a { color: var(--primary); }
+
+    .drop { font-size: 21px; }
+
+    .sidenote {
+      border-left: 3px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      padding: 16px 20px; border-radius: 0 12px 12px 0;
+      margin: 0 0 28px;
+    }
+    .sidenote p { font-size: 16px; line-height: 1.65; margin: 0; color: var(--text-muted); }
+    .sidenote p + p { margin-top: 12px; }
+    .sidenote .label {
+      display: block; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700; margin-bottom: 8px;
+    }
+
+    .pull {
+      margin: 40px 0; padding: 0 0 0 24px;
+      border-left: 4px solid var(--primary);
+      font-size: 24px; line-height: 1.45; font-weight: 600;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+
+    figure.fig { margin: 44px 0; }
+    figure.fig svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+    figure.fig figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6;
+      margin-top: 14px; padding-left: 2px;
+    }
+    figure.fig figcaption b { color: var(--text); }
+
+    /* Figure palette, theme aware */
+    .fig svg { --f-ink: #1a1a1a; --f-mute: #6b7280; --f-line: #d1d5db;
+               --f-panel: #ffffff; --f-grid: #eceaf2; }
+    .dark .fig svg { --f-ink: #f3f4f6; --f-mute: #9ca3af; --f-line: #4b5563;
+                     --f-panel: #14141a; --f-grid: #26262f; }
+
+    figure.shot { margin: 40px 0; }
+    figure.shot img {
+      width: 100%; height: auto; display: block;
+      border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: var(--shadow-md); background: var(--surface);
+    }
+    figure.shot figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-top: 14px;
+    }
+    figure.shot figcaption b { color: var(--text); }
+    .shot-2up { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .shot-2up .cap {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); margin: 0 0 8px;
+    }
+    .shot-2up .cap.on { color: var(--primary); }
+    @media (max-width: 640px) { .shot-2up { grid-template-columns: 1fr; } }
+
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+    .table-wrap { overflow-x: auto; }
+
+
+    .phones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin: 48px 0; }
+    .phones.two { grid-template-columns: repeat(2, 1fr); max-width: 760px; margin-left: auto; margin-right: auto; }
+    .phones figure { margin: 0; }
+    .phones img {
+      width: 100%; height: auto; display: block; border-radius: 22px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+    }
+    .phones figcaption { font-size: 14px; color: var(--text-muted); margin-top: 10px; line-height: 1.5; }
+    @media (max-width: 700px) { .phones, .phones.two { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 440px) { .phones, .phones.two { grid-template-columns: 1fr; } }
+
+    .layers { list-style: none; padding: 0; counter-reset: layer; margin: 0 0 28px; }
+    .layers li {
+      position: relative; padding: 16px 18px 16px 60px; margin-bottom: 12px;
+      border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+      font-size: 16.5px; line-height: 1.6;
+    }
+    .layers li::before {
+      counter-increment: layer; content: counter(layer);
+      position: absolute; left: 18px; top: 16px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--primary); color: #fff; font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .layers li b { color: var(--text); }
+
+    .table-wrap { overflow-x: auto; }
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+
+    .table-wrap { overflow-x: auto; }
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.55; }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+    .pass { color: var(--success); font-weight: 700; }
+    .refs { margin-top: 16px; }
+    .refs li { font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin-bottom: 14px; }
+    .refs li b { color: var(--text); font-weight: 600; }
+
+    .essay-foot {
+      margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .essay p, .essay li { font-size: 17px; }
+      .essay h2 { font-size: 24px; }
+      .pull { font-size: 20px; }
+    }
+  </style>
 </head>
 <body data-tilt-mode="desktop">
-<header class="header">
-  <a class="brand" href="../index.html">Rabiat Sadiq</a>
-  <nav class="nav" aria-label="Primary">
-    <a href="../index.html" class="nav-pill">
-      <span class="nav-icon">🏠</span>
-      <span class="nav-text">Home</span>
-    </a>
+  <header class="header container">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
       <a href="../projects.html" class="nav-pill">
         <span class="nav-icon">🚀</span>
         <span class="nav-text">Projects</span>
@@ -68,64 +216,278 @@
         <span class="nav-icon">🎓</span>
         <span class="nav-text">Coursework</span>
       </a>
-    <a href="../cool.html" class="nav-pill">
-      <span class="nav-icon">✨</span>
-      <span class="nav-text">Cool</span>
-    </a>
-    <a href="../contact.html" class="nav-pill">
-      <span class="nav-icon">📧</span>
-      <span class="nav-text">Contact</span>
-    </a>
-    <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" class="nav-pill nav-external">
-      <span class="nav-icon">🔗</span>
-      <span class="nav-text">LinkedIn</span>
-    </a>
-  </nav>
-  <div class="header-controls">
-    <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
-    <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
-  </div>
-</header>
-
-<main class="container cs-page">
-  <section class="cs-hero">
-    <h1>Magic Mitts · Programmable Haptic VR Glove</h1>
-    <p class="lead">Goal: affordable, human-centered haptics for XR. I led interaction design, Unity integration, and embedded control.</p>
-    <div class="cs-metrics">
-      <div class="metric"><h3>↓ Latency</h3><p>~18% vs baseline</p></div>
-      <div class="metric"><h3>Comfort</h3><p>+24% SUS comfort score</p></div>
-      <div class="metric"><h3>Cost</h3><p>&lt; $50 BOM prototype</p></div>
+      <a href="../cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" class="nav-pill nav-external">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-text">LinkedIn</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off">Tilt: Off</option>
+        <option value="desktop" selected>Tilt: Desktop</option>
+        <option value="all">Tilt: Mobile & Desktop</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
-  </section>
+  </header>
 
-  <section class="cs-section">
-    <h2>Problem</h2>
-    <p>Haptics are either expensive or impractical. We needed a glove that is affordable, safe, and responsive with intuitive controls.</p>
-  </section>
+  <main class="container" style="padding-top: var(--header-height);">
+    <section class="cs-hero essay-hero">
+      <p class="eyebrow">Case study • Senior design • UTSA, 2024</p>
+      <h1>Magic Mitts</h1>
+      <p class="lead">
+        A haptic VR glove that physically stops your hand when it reaches the surface of something
+        that is not there. The comprehensive gloves on the market start around four thousand dollars.
+        Ours came in under fifty in parts, and took first place out of 89 teams.
+      </p>
+      <div class="byline">
+        <span><strong>Rabiat Sadiq</strong></span>
+        <span>2024</span>
+        <span>Team of four, two semesters</span>
+      </div>
+      <div class="cs-metrics" style="margin-top:32px">
+        <div class="metric"><h3>Result</h3><p>1st of 89 teams</p></div>
+        <div class="metric"><h3>Brake force</h3><p>~50N pullback</p></div>
+        <div class="metric"><h3>Cost</h3><p>Under $50 BOM</p></div>
+      </div>
+    </section>
 
-  <section class="cs-section">
-    <h2>Approach</h2>
-    <ul>
-      <li>Rapid prototyping (paper → Arduino → Unity)</li>
-      <li>Human-centered testing loops (n=8 usability sessions)</li>
-      <li>Data-driven iteration: measured latency, comfort, task completion</li>
-    </ul>
-  </section>
+    <article class="essay">
 
-  <section class="cs-section">
-    <h2>Technical Notes</h2>
-    <pre class="code">// Unity (C#) pseudo for force feedback trigger
-void OnGrab(GameObject obj) { 
-    float intensity = Mathf.Clamp01(obj.Mass / 3f);
-    Haptics.Emit(intensity); 
-}</pre>
-  </section>
+      <p class="drop">
+        Almost every VR interaction ends the same way. Your hand closes through the object. Nothing
+        stops it, because nothing is there. Everything else about the illusion can be excellent and
+        that one moment still gives it away.
+      </p>
 
-  <section class="cs-section">
-    <h2>Outcomes</h2>
-    <p>We demonstrated reliable grasp feedback with lower latency and improved comfort. The form factor supports future ML-based gesture detection.</p>
-  </section>
-</main>
+      <h2>The gap we were aiming at</h2>
+
+      <p>
+        Consumer VR had, and largely still has, no affordable accessory that offers both haptic
+        feedback and finger pullback. The comprehensive solutions that do exist, like HaptX, command
+        prices upwards of four thousand dollars, which puts them out of reach of essentially everyone
+        outside a research lab. Some of them need an air compressor worn as a backpack.
+      </p>
+
+      <p>
+        That cost barrier is not just an inconvenience. It decides who gets to develop for deeply
+        immersive VR at all, and therefore what gets built.
+      </p>
+
+      <p class="pull">
+        If only labs can afford to feel things, only labs will build things worth feeling.
+      </p>
+
+      <p>
+        So the constraint we set was a price, not a feature list: build something that delivers real
+        resistive force, in a glove a person would actually wear, for a bill of materials under fifty
+        dollars.
+      </p>
+
+      <h2>How it stops your hand</h2>
+
+      <p>
+        The core of it is an electromagnetic braking system rather than a motor or an exoskeleton.
+        When your finger reaches a virtual surface, the brake engages and resists further closing,
+        delivering roughly <b>50N of pullback force</b>. You do not feel a buzz telling you that you
+        touched something. Your hand stops.
+      </p>
+
+      <p>
+        The reason that approach mattered is what it let us leave out. Exoskeletal force feedback
+        gloves carry rigid linkages along every finger, which is most of their cost, most of their
+        weight and most of the reason they are unpleasant after twenty minutes. An electromagnetic
+        brake is small and sits close to the hand, so the glove stays soft and low-mass and feels
+        markedly more comfortable to wear than the exoskeletal alternatives.
+      </p>
+
+      <p>
+        Alongside the braking, vibrating actuators at the fingertips handle the lighter half of the
+        vocabulary: contact, texture, the moment of touch as distinct from the moment of resistance.
+        Flex-sensitive resistors along the fingers do the tracking, running through a hardware driver
+        we wrote ourselves rather than an off-the-shelf one.
+      </p>
+
+      <figure class="shot" style="max-width:640px;margin:44px auto">
+        <img src="../assets/img/projects/magic-mitts/glove.jpg" alt="The Magic Mitts glove prototype" loading="lazy" />
+        <figcaption style="text-align:center">
+          <b>The prototype.</b> Soft glove, electromagnetic brakes, fingertip actuators, flex sensors,
+          and a custom board, all of it wireless and battery powered.
+        </figcaption>
+      </figure>
+
+      <h2>The electronics</h2>
+
+      <p>
+        We built the PCB from scratch rather than stacking dev boards, which is the part of this
+        project I would point at if someone asked what senior design actually taught me.
+      </p>
+
+      <p>
+        An ESP32 acts as the glove controller and talks to the VR system over Bluetooth. The board
+        carries a dual rechargeable battery system running from two Li-ion cells, USB-C charging,
+        integrated sensor processing for the flex resistors, the wireless module, isolated signal
+        and boost converters to run the 5V brakes and 3.3V actuators off the same pack, and an
+        overpower protection circuit.
+      </p>
+
+      <p>
+        That last one is not a footnote. This is a device that pulls current through electromagnets
+        strapped to a person's hand, so protection is a safety requirement rather than a nicety.
+      </p>
+
+      <div class="table-wrap">
+        <table class="collect">
+          <thead><tr><th>Subsystem</th><th>Rail</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td>Electromagnetic brakes</td><td>5V</td><td>Resist finger closing at a virtual surface, roughly 50N</td></tr>
+            <tr><td>Haptic actuators</td><td>3.3V</td><td>Fingertip contact and texture cues, pulsed at 100ms</td></tr>
+            <tr><td>Flex resistors</td><td>3.3V</td><td>Per-finger position and movement tracking</td></tr>
+            <tr><td>Physical buttons</td><td>3.3V</td><td>In-world actions and calibration entry</td></tr>
+            <tr><td>ESP32 controller</td><td>3.6V pack</td><td>Sensor processing and Bluetooth link to the VR system</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>The software side</h2>
+
+      <p>
+        The loop is deliberately simple, because a haptic system that is late is worse than one that
+        is quiet. The glove connects, calibrates against the wearer's own range of motion, then
+        streams finger positions to the VR system. When the VR side detects an interaction, it
+        identifies the finger involved and sends back one of two things: engage the braking system
+        and hold until a new response arrives, or fire an actuator for 100ms.
+      </p>
+
+      <p>
+        Calibration per wearer turned out to matter more than we expected. Flex resistors do not
+        agree with each other, hands are different sizes, and a glove that assumes an average hand is
+        wrong for almost everybody. Calibrating on connect is a small piece of engineering that does
+        a large amount of the work of making the thing feel accurate.
+      </p>
+
+      <figure class="shot">
+        <img src="../assets/img/projects/magic-mitts/poster.jpg" alt="Research poster showing the hardware and software block diagrams, product description, verification testing table and budget" loading="lazy" />
+        <figcaption>
+          <b>The research poster.</b> Hardware and software block diagrams, the finger tracking maps,
+          and the verification results. Presented at the UTSA Tech Symposium, where the project took
+          first place out of 89 teams.
+        </figcaption>
+      </figure>
+
+      <h2>Verification, and what we actually proved</h2>
+
+      <p>
+        We ran a formal verification and validation plan against the glove's core functions rather
+        than demoing it and calling it done. Six test cases, all passed.
+      </p>
+
+      <div class="table-wrap">
+        <table class="collect">
+          <thead><tr><th>ID</th><th>What it verifies</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>TS-01</td><td>The electromagnetic system consistently applies force to restrict finger movement</td><td class="pass">Pass</td></tr>
+            <tr><td>TS-02</td><td>Haptic feedback provides accurate tactile feedback when virtual objects are touched</td><td class="pass">Pass</td></tr>
+            <tr><td>TS-03</td><td>Flex sensors accurately track the position and movement of each finger in real time</td><td class="pass">Pass</td></tr>
+            <tr><td>TS-04</td><td>The Bluetooth connection maintains stability, range and latency</td><td class="pass">Pass</td></tr>
+            <tr><td>TS-05</td><td>Battery provides adequate usage time and remains operational during recharging</td><td class="pass">Pass</td></tr>
+            <tr><td>TS-06</td><td>The glove remains comfortable during prolonged wear and repeated use without significant damage</td><td class="pass">Pass</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        I want to be careful about what that table does and does not claim. It says the glove does
+        what we designed it to do, repeatably, under test. It is not a controlled user study, and I
+        am not going to dress it up as one. Comfort in TS-06 means it survived prolonged wear without
+        damage or complaint from the people testing it, not a validated comfort score against a
+        control.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          An earlier version of this page carried percentage improvements for latency and comfort. I
+          pulled them, because I could not stand behind how they were measured. The numbers that are
+          left are the ones I can defend: the force, the cost, the test results and the placement.
+        </p>
+      </div>
+
+      <h2>Engineering inside real constraints</h2>
+
+      <p>
+        The part of senior design that stuck with me was that the constraints document came before
+        the fun part, and it was not busywork.
+      </p>
+
+      <ul>
+        <li><b>Economic.</b> The fifty dollar target was the whole thesis, so every component choice
+          was a tradeoff against it. A decision matrix, not taste.</li>
+        <li><b>Manufacturing.</b> Assembling the glove requires sewing, which is not a widely held
+          skillset in the US, so a design that assumed easy assembly would not have survived contact
+          with production.</li>
+        <li><b>Environmental.</b> Material choices were weighed for sustainability rather than picked
+          purely on performance.</li>
+        <li><b>Schedule.</b> Two semesters, fixed design reviews, and suppliers who do not care about
+          your timeline.</li>
+      </ul>
+
+      <p>
+        None of that is glamorous and all of it is why the thing existed by the deadline.
+      </p>
+
+      <h2>My part in it</h2>
+
+      <p>
+        Four of us: two electrical engineers, two computer engineers. I led the team, and my hands-on
+        work was the software and integration half, the Unity side and the embedded control, plus the
+        interaction design decisions about what a given event should feel like and when.
+      </p>
+
+      <p>
+        The integration seam is where most of the difficulty lived. A virtual collision has to become
+        a decision about which finger, which response, and how long, and it has to arrive fast enough
+        that a person reads it as the same event rather than as a consequence of one. Most of what I
+        learned on this project was about that seam.
+      </p>
+
+      <h2>What I would do differently</h2>
+
+      <ul>
+        <li>Measure properly, and pre-register what counts as success. The reason I had to pull two
+          numbers off this page later is that we measured casually and wrote confidently. I would
+          rather have three defensible numbers than six impressive ones.</li>
+        <li>Run a real user study with a control condition. We had the hardware to do it and ran out
+          of semester.</li>
+        <li>Revisit the brake resolution. Fifty newtons of stop is a binary that convinces you a
+          surface is there. Communicating how <em>hard</em> something is, rather than only that it
+          exists, is the next problem and a much more interesting one.</li>
+      </ul>
+
+      <p>
+        This project is also the direct ancestor of
+        <a href="visionpro-wrist-haptics.html">the Vision Pro work I did two years later</a>. Same
+        question about touch in immersive systems, opposite approach: instead of building hardware to
+        put on the hand, use the hardware somebody is already wearing.
+      </p>
+
+      <div class="essay-foot">
+        <a class="btn" href="../projects.html">← All projects</a>
+        <a class="btn btn-primary" href="https://github.com/RabiatS/MagicMitts---Smart-VR-Gloves" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+
+    </article>
+  </main>
 
   <footer class="footer container">
     <p>© <span id="year"></span> Rabiat Sadiq</p>
@@ -136,7 +498,5 @@ void OnGrab(GameObject obj) {
       <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
     </div>
   </footer>
-
-
-<footer class="container footer">© <span id="year"></span> Rabiat Sadiq · Case study excerpt. Contact for full report.</footer>
-</body></html>
+</body>
+</html>
