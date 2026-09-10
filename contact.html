@@ -3,11 +3,33 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Contact | Rabiat Sadiq</title>
+  <meta name="description" content="Get in touch with Rabiat Sadiq about collaboration, research, or work." />
+  <link rel="canonical" href="https://www.rabiatsadiq.com/contact.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Rabiat Sadiq" />
+  <meta property="og:title" content="Contact | Rabiat Sadiq" />
+  <meta property="og:description" content="Get in touch with Rabiat Sadiq about collaboration, research, or work." />
+  <meta property="og:url" content="https://www.rabiatsadiq.com/contact.html" />
+  <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/projects/amazon-music.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Contact | Rabiat Sadiq" />
+  <meta name="twitter:description" content="Get in touch with Rabiat Sadiq about collaboration, research, or work." />
+  <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/projects/amazon-music.png" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var g = localStorage.getItem('glassLevel');
+      var legacy = { clear: 0, 'default': 50, frosted: 100 };
+      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
+      if (!isFinite(t)) t = 50;
+      t = Math.min(100, Math.max(0, t)) / 100;
+      var st = document.documentElement.style;
+      st.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+      st.setProperty('--glass-lens', (1 - t).toFixed(3));
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -28,6 +50,7 @@
 
   <link rel="stylesheet" href="assets/style.css" />
   <script src="assets/script.js" defer></script>
+  <script src="assets/music.js" defer></script>
 </head>
 <body data-tilt-mode="off" style="min-height:100vh;overflow-y:auto;">
   <!-- Shared header -->
@@ -61,12 +84,6 @@
     </nav>
 
     <div class="header-controls">
-      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
-      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
-        <option value="off" selected>Tilt: Off</option>
-        <option value="desktop">Tilt: Desktop</option>
-        <option value="all">Tilt: All</option>
-      </select>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
@@ -79,39 +96,34 @@
     </section>
 
     <section class="card" style="max-width:720px;margin:0 auto">
-      <form id="contactForm" class="grid" style="grid-template-columns:1fr 1fr; gap:16px"
-            action="#" method="GET">
-        <div style="grid-column:1 / span 1">
+      <form id="contactForm" class="contact-form" action="#" method="GET">
+        <div class="field">
           <label for="name">Name</label>
-          <input id="name" name="name" required placeholder="Your name"
-                 style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)">
+          <input id="name" name="name" required placeholder="Your name" autocomplete="name">
         </div>
-        <div style="grid-column:2 / span 1">
+        <div class="field">
           <label for="email">Email</label>
-          <input id="email" name="_replyto" type="email" required placeholder="you@example.com"
-                 style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)">
+          <input id="email" name="_replyto" type="email" required placeholder="you@example.com" autocomplete="email">
         </div>
-        <div style="grid-column:1 / -1">
+        <div class="field field--full">
           <label for="subject">Subject</label>
-          <input id="subject" name="subject" required placeholder="Collaboration / Question / Just saying hi"
-                 style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)">
+          <input id="subject" name="subject" required placeholder="Collaboration / Question / Just saying hi">
         </div>
-        <div style="grid-column:1 / -1">
+        <div class="field field--full">
           <label for="message">Message</label>
-          <textarea id="message" name="message" required rows="6" placeholder="What's on your mind?"
-                    style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)"></textarea>
+          <textarea id="message" name="message" required rows="6" placeholder="What's on your mind?"></textarea>
         </div>
 
         <!-- Honeypot -->
-        <input type="text" name="_gotcha" style="display:none">
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="honeypot">
 
-        <div style="grid-column:1 / -1;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <div class="field--full contact-actions">
           <button class="btn" type="submit">Send</button>
-          <a class="btn secondary"
-             href="mailto:robbiahsadiq@gmail.com?subject=Portfolio%20Contact&body=Hi%20Rabiat%2C%0D%0A%0D%0A"
-             >Email instead</a>
-          <a class="btn secondary" href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank" rel="noopener"
-             style="opacity:0.7">🎁 Don't click</a>
+          <!-- "Email instead" used to open the same mailto: as Send, just empty.
+               Copying the address is the genuinely different option. -->
+          <button class="btn secondary" type="button" id="copyEmail"
+                  data-email="robbiahsadiq@gmail.com">Copy my email</button>
+          <a class="btn secondary contact-joke" href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank" rel="noopener">🎁 Don't click</a>
           <span id="formStatus" class="muted" aria-live="polite"></span>
         </div>
       </form>
@@ -146,6 +158,34 @@
         window.location.href = mailtoLink;
         status.textContent = 'Opening email client...';
       });
+
+      // Copy-address button: useful when you would rather paste it somewhere
+      // else than hand off to a mail client.
+      const copyBtn = document.getElementById('copyEmail');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const address = copyBtn.dataset.email;
+          const done = () => {
+            const original = copyBtn.textContent;
+            copyBtn.textContent = 'Copied ✓';
+            if (status) status.textContent = address;
+            setTimeout(() => { copyBtn.textContent = original; }, 1800);
+          };
+          try {
+            await navigator.clipboard.writeText(address);
+            done();
+          } catch (err) {
+            // Clipboard API needs a secure context; fall back to selection.
+            const tmp = document.createElement('textarea');
+            tmp.value = address;
+            document.body.appendChild(tmp);
+            tmp.select();
+            try { document.execCommand('copy'); done(); }
+            catch (e2) { if (status) status.textContent = address; }
+            tmp.remove();
+          }
+        });
+      }
     })();
   </script>
 </body>

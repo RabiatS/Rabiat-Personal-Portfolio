@@ -1,230 +1,37 @@
 {
   "projects": [
     {
-      "id": "ember",
-      "title": "Ember",
-      "subtitle": "Photos for a small circle, gone in a week",
-      "category": "Mobile / Product",
-      "tags": [
-        "Software",
-        "HCI",
-        "Product",
-        "Personal"
-      ],
-      "description": "A private photo app for a handful of friends. A drop lasts a week, loses resolution as it ages, then lifts away into drifting light and is gone. Every drop is sealed under its own key before it leaves the phone, and expiry destroys that key, so whatever bytes survive anywhere are noise.",
-      "longDescription": "Built iOS (SwiftUI) and Android (Expo) clients against one backend, with the architecture done first and the interface designed on top of it. Deletion runs on three independent layers so no single failure keeps a photo past its week: an object storage TTL, a server sweeper that revokes wrapped keys, and the phone destroying the drop key outright. Each drop is sealed with AES-256-GCM, wrapped per member with X25519, and the server only ever holds ciphertext it cannot open. There is a test that seals a photo, shreds the key, and reads again to confirm nothing comes out. Storage is deliberate rather than incidental: every photo becomes three renditions and the app fetches the smallest one that will do, so six friends browsing a ten photo drop move about 1.5 MB instead of 50 MB, and the larger renditions are deleted first as a drop ages. The design goal was the opposite of an archive that happens to be social: rituals instead of streaks, a standing day per circle rather than an obligation, and keeping made an explicit social act so screenshots do not turn the promise into a fiction.",
-      "technologies": [
-        "Swift",
-        "SwiftUI",
-        "Expo",
-        "React Native",
-        "Supabase",
-        "AES-256-GCM",
-        "X25519",
-        "XCTest"
-      ],
-      "github": "https://github.com/RabiatS/ember",
-      "demo": null,
-      "caseStudy": "case-studies/ember.html",
-      "status": "complete",
-      "images": [
-        "assets/img/projects/ember/wordmark-ember.jpg"
-      ],
-      "videos": [],
-      "year": "2026",
-      "type": "Personal"
-    },
-    {
-      "id": "visionpro-wrist-haptics",
-      "title": "VisionPro Wrist Spatial Feedback",
-      "subtitle": "Apple Watch haptics for Vision Pro interactions",
-      "category": "XR / Unity / Immersive",
-      "tags": [
-        "XR",
-        "HCI",
-        "UX",
-        "Spatial Intelligence",
-        "Research",
-        "Software"
-      ],
-      "description": "Spatial interfaces tell you what happened by showing you. That fails the moment you are looking somewhere else. This turns Vision Pro interaction events into brief, semantic Apple Watch haptics, so you can feel selection, progress, success and failure instead of having to watch for them.",
-      "longDescription": "I have always been drawn to haptics and to the research on why feedback exists at all, so this started from a simple question: the Watch is already on the wrist, it already has a good haptic engine, and Vision Pro has no wrist-worn tactile channel of its own. People like feeling things. What happens if you connect the two? Three targets working together: visionOS detects the interaction and emits a semantic event, an iPhone relay bridges it over WatchConnectivity, and watchOS decides how that meaning should feel. The important design decision is that visionOS sends meaning rather than waveforms, so the Watch owns the mapping and the vocabulary can change without touching the spatial app. A shared rate limiter keeps rapid interactions from building a backlog of buzzing: click-class events throttle at 200 ms and target re-entry has its own 300 ms cooldown, while outcome events like a successful grab or a scored basket always get through. Built as a research prototype for testing which spatial events actually benefit from tactile confirmation, not as a shipping app.",
-      "technologies": [
-        "visionOS",
-        "watchOS",
-        "iOS",
-        "SwiftUI",
-        "Haptics"
-      ],
-      "github": "https://github.com/RabiatS/VisionProWristSpatialFeedback",
-      "demo": null,
-      "caseStudy": "case-studies/visionpro-wrist-haptics.html",
-      "status": "complete",
-      "images": [
-        "assets/img/projects/visionpro/debug-panel.jpg"
-      ],
-      "videos": [],
-      "year": "2026",
-      "type": "Personal"
-    },
-    {
-      "id": "ai-deployment-gap",
-      "title": "The AI Deployment Gap",
-      "subtitle": "Essay and study prototype on task-embedded affordances",
-      "category": "Research / HCI",
-      "tags": [
-        "Research",
-        "HCI",
-        "Software",
-        "Personal"
-      ],
-      "description": "We ship new models faster than anyone learns what the last ones could already do. A long essay on why that gap is an interface problem rather than a capability one, plus a two-condition study prototype that tests a task-first alternative to the blank chat box.",
-      "longDescription": "Winter break research that turned into a written argument and a working prototype. The essay traces the gap between what models can do and what people know to ask for, ties it to the older productivity paradox literature, and then takes a turn into why knowing more can make both people and models worse: the expertise reversal effect, the difference between novice mistakes and expert slips, and the fact that larger models can be less truthful on questions where humans hold common misconceptions. The prototype is a two-condition study, a guided task-first interface against a chat control, built to measure whether the guided version leaves people knowing more about what the system can do afterwards rather than whether they liked it more in the moment. Consent, reflection survey and a frozen design-principles screen are all part of the build. Not yet run with participants. It was also my first real use of Figma Make, and getting the export from a generated prototype into a running repo was its own piece of work.",
-      "technologies": [
-        "React",
-        "TypeScript",
-        "Vite",
-        "Tailwind CSS",
-        "Figma Make",
-        "Study Design"
-      ],
-      "github": null,
-      "demo": null,
-      "caseStudy": "case-studies/ai-deployment-gap.html",
-      "status": "in-progress",
-      "images": [
-        "assets/img/projects/ai-deployment-gap/task-picker.jpg"
-      ],
-      "videos": [],
-      "year": "2026",
-      "type": "Personal"
-    },
-    {
-      "id": "text-to-braille",
-      "title": "Text to Braille",
-      "subtitle": "Adaptive refreshable braille display",
-      "category": "Hardware / Embedded",
-      "tags": [
-        "Hardware",
-        "ML",
-        "Research",
-        "Personal"
-      ],
-      "description": "Text to braille translation is already solved. The unsolved problem is bandwidth: braille reads at about 125 wpm through a 20 to 40 character slit while speech arrives at about 150 wpm, so a deafblind reader in a live conversation falls behind and never catches up. Deciding what deserves the cells is the part worth building.",
-      "longDescription": "A low-cost refreshable braille cell prototype paired with an adaptive rendering layer that decides what to put on the display rather than only how to encode it. The translation layer sits on liblouis, which already does that job well. The interesting work is above it: compressing, chunking, ranking and restructuring incoming text so the limited cell budget carries the most useful part of a live conversation. Currently Phase 0 with the software foundation working and no hardware built yet, with the vision, hardware analysis and phase gates written down as explicit gates rather than intentions.",
-      "technologies": [
-        "Python",
-        "liblouis",
-        "Embedded C",
-        "Hardware Prototyping",
-        "ML"
-      ],
-      "github": "https://github.com/RabiatS/text-to-physical-adaptive-braille",
-      "demo": null,
-      "caseStudy": null,
-      "status": "in-progress",
-      "images": [
-        "assets/img/projects/text-to-braille/hero.jpg"
-      ],
-      "videos": [],
-      "year": "2026",
-      "type": "Personal"
-    },
-    {
-      "id": "eyeswipe",
-      "title": "EyeSwipe",
-      "subtitle": "On-device gaze navigation for short-form video",
-      "category": "iOS / Health / ML Deployment",
-      "tags": [
-        "CV",
-        "HCI",
-        "Software",
-        "Personal"
-      ],
-      "description": "Auto-scroll is fine for passive watching, but that is not how people actually move through short-form content. Most of the time we skip, and skipping is still manual. EyeSwipe maps a short gaze hold on a screen region to the next action, so navigation is hands free.",
-      "longDescription": "Everything runs on the phone. Gaze direction is estimated from ARKit face tracking and Vision, with no external eye tracker, no calibration hardware and no camera frames leaving the device, which matters given the input is a continuous video feed of someone's face. The interaction model is a dwell: look at a screen zone such as top right, hold briefly, and the hold triggers the action. The design problem underneath it is the one every gaze interface has, which is separating looking from choosing without making the dwell so long that it is slower than a thumb.",
-      "technologies": [
-        "Swift",
-        "ARKit",
-        "Vision",
-        "SwiftUI",
-        "iOS"
-      ],
-      "github": "https://github.com/RabiatS/Eye_tracking_auto_Scroll_navigation",
-      "demo": null,
-      "caseStudy": null,
-      "status": "in-progress",
-      "images": [],
-      "videos": [],
-      "year": "2026",
-      "type": "Personal"
-    },
-    {
-      "id": "local-multimodal-memory",
-      "title": "Local Multimodal Memory Explorer",
-      "subtitle": "Private on-device semantic photo search",
-      "category": "iOS / Health / ML Deployment",
-      "tags": [
-        "ML",
-        "HCI",
-        "Research",
-        "Personal"
-      ],
-      "description": "Can a private, on-device multimodal index help people rediscover their own moments more naturally than albums and folders, while still letting them see and correct what the AI inferred? A native SwiftUI prototype that indexes photos and written reflections locally and shows why each result came back.",
-      "longDescription": "The research question is about rediscovery rather than retrieval accuracy. Manual albums and folders make you do the organising work up front, at the exact moment you care least, and search only helps if you already remember the right words. This indexes photos and optional short reflections on device, generates and stores image and text embeddings locally, and answers natural language queries with the top matching memory cards. The part I care most about is explainability: every result shows what it was matched on, so the inference is inspectable and correctable rather than something you either trust or do not.",
-      "technologies": [
-        "Swift",
-        "SwiftUI",
-        "Core ML",
-        "Embeddings",
-        "Vision",
-        "iOS"
-      ],
-      "github": "https://github.com/RabiatS/LocalMultimodalMemoryExplorer",
-      "demo": null,
-      "caseStudy": null,
-      "status": "in-progress",
-      "images": [],
-      "videos": [],
-      "year": "2026",
-      "type": "Personal"
-    },
-    {
-      "id": "amazon-music-adaptive-ui",
+      "id": "amazon-music-capstone",
       "title": "Amazon Music Adaptive UI",
-      "subtitle": "CMU MHCI Capstone with Amazon Music",
+      "subtitle": "CMU MHCI Capstone · Jan – Jul 2026",
       "category": "Research / HCI",
       "tags": [
         "HCI",
         "UX",
-        "Product",
         "Research",
+        "Product",
         "Industry"
       ],
-      "description": "Eight-month applied engagement with Amazon Music through CMU's MHCI capstone. Led research synthesis, then translated it into an adaptive discovery prototype that reshapes the home experience around listener personas and fandom themes.",
-      "longDescription": "CMU MHCI capstone partnership with Amazon Music (team DERBC), January to August 2026. Ran mixed-methods research spanning 22 in-depth interviews, a 74-response survey, and field intercepts at open mics and record stores, including retrospective relationship mapping, co-creation sessions and an anti-problem workshop. Authored 620 interpreted research findings, the largest individual contribution on the team, and built a 2,965-item affinity structure on top of them. The central tension the research surfaced: listeners want social, human-feeling discovery, but a substantial minority actively refuse to broadcast their taste, so 78.8% discover through social catchiness while 39% reject public broadcasting. Resolving that contradiction became the design constraint. Led a dedicated thread on interpretability in recommendation systems, arguing for explainable recommendation reasoning paired with user-facing exit controls so listeners can understand and escape a loop rather than only receive it. Delivered three fully specified product directions with feasibility-versus-impact assessments and a recommended convergence strategy, prototyped as thematic home experiences, persona-driven filtering and superfan artist journeys in an Expo and React Native clone of the Amazon Music client.",
+      "description": "Seven-month Amazon Music–sponsored MHCI capstone: Adaptive UI that reshapes the artist page by listening loyalty so fans feel recognized without being asked to broadcast.",
+      "longDescription": "Streaming holds years of history between a listener and an artist and reflects almost none of it back. Through 85 survey responses, 22 interviews, staged experiments, and evaluation against the live Amazon Music app, the team designed three listener tiers (new, returning, longtime fan) that progressively unlock recognition, milestones, and belonging, reframing personalization as recognition rather than recommendation. Role: Project Manager & Engineer.",
       "technologies": [
-        "React Native",
-        "Expo",
-        "TypeScript",
-        "Mixed-Methods Research",
-        "Affinity Diagramming",
-        "Interaction Design",
+        "UX Research",
+        "Product Design",
         "Prototyping",
-        "PESTLE Analysis"
+        "Figma",
+        "User Testing",
+        "HCI"
       ],
-      "github": "https://github.com/RabiatS/Amazon-Music-Adaptive-UI---DERBC",
-      "demo": "files/amazon-music/amazon-music-summer-report.pdf",
-      "caseStudy": "files/amazon-music/amazon-music-case-study.pdf",
+      "github": null,
+      "demo": "files/amazon-music/amazon-music-case-study.pdf",
+      "caseStudy": "case-studies/case-study-amazon-music.html",
       "status": "complete",
       "images": [
-        "assets/img/projects/amazon-music-card.png"
+        "assets/img/projects/amazon-music.png"
       ],
-      "brandStack": {
-        "bg": "#25d1da",
-        "logo": "assets/img/projects/amazon-music-logo.png"
-      },
-      "videos": [],
+      "videos": [
+        "files/amazon-music/concept-video.mp4"
+      ],
       "year": "2026",
       "type": "Industry"
     },
@@ -363,6 +170,38 @@
       "videos": [],
       "year": "2025",
       "type": "Research"
+    },
+    {
+      "id": "gazeflow",
+      "title": "GazeFlow – Mosaic of Attention",
+      "subtitle": "Tartan Hacks 2025 · XR Eye-Tracking Experience",
+      "category": "XR / Unity / Immersive",
+      "tags": [
+        "XR",
+        "VR",
+        "Research",
+        "HCI",
+        "Hackathon"
+      ],
+      "description": "XR eye-tracking experience that turns scattered glances into a living mosaic of light. Explores how fragmented visual moments can be measured and re-shaped into clearer pictures in virtual space.",
+      "longDescription": "Built at Tartan Hacks 2025. Eye-tracking data from the headset is treated as raw material rather than telemetry: each fixation contributes a tile to a mosaic that only resolves into a coherent image once a viewer has looked broadly enough. The piece asks what attention looks like when it is made visible, and how fragmented viewing habits can be re-composed into something legible.",
+      "technologies": [
+        "Unity",
+        "C#",
+        "Eye Tracking",
+        "XR",
+        "Shader Graph"
+      ],
+      "github": "https://github.com/RabiatS/GazeFlow",
+      "demo": null,
+      "caseStudy": null,
+      "status": "complete",
+      "images": [
+        "assets/img/projects/gazeflow image.png"
+      ],
+      "videos": [],
+      "year": "2025",
+      "type": "Personal"
     },
     {
       "id": "playstation-internship",
@@ -556,7 +395,7 @@
         "Research"
       ],
       "description": "Led cross-functional team to build affordable haptic glove with flex sensors and electromagnetic braking; integrated real-time interaction in Unity/C#.",
-      "longDescription": "Won 1st place UTSA Tech Symposium (1 of 89 teams). An electromagnetic braking system stops the hand at a virtual object's surface, delivering roughly 50N of pullback force in a soft, low-mass glove -- markedly more comfortable to wear than the exoskeletal force-feedback gloves on the market. Cost-effective prototype under $50 BOM.",
+      "longDescription": "Won 1st place UTSA Tech Symposium (1 of 89 teams). Demonstrated reliable grasp feedback with lower latency (~18% vs baseline) and improved comfort (+24% SUS comfort score). Cost-effective prototype under $50 BOM.",
       "technologies": [
         "Unity",
         "C#",
@@ -621,7 +460,7 @@
         "Personal"
       ],
       "description": "VR experience where objects/characters move closer when not directly observed, implementing the 'weeping angel' mechanic.",
-      "longDescription": "Unity VR mini-experience inspired by 'don't blink' mechanics, focusing on presence, timing, and tension.",
+      "longDescription": "Unity VR mini-experience inspired by 'don't blink' mechanics. Focuses on presence, timing, and tension.",
       "technologies": [
         "Unity",
         "C#",
@@ -772,7 +611,7 @@
       ],
       "github": "https://github.com/RabiatS/final-project-aimleaders",
       "demo": null,
-      "caseStudy": "case-study-assuage.html",
+      "caseStudy": "case-studies/case-study-assuage.html",
       "status": "complete",
       "images": [
         "assets/img/projects/assuage-logo.png"
@@ -977,7 +816,9 @@
       "demo": null,
       "caseStudy": null,
       "status": "complete",
-      "images": [],
+      "images": [
+        "assets/img/projects/apple-nacme.png"
+      ],
       "videos": [],
       "year": "2024",
       "type": "Early"
@@ -1014,7 +855,6 @@
     "Applied ML / CV / Video",
     "XR / Unity / Immersive",
     "iOS / Health / ML Deployment",
-    "Mobile / Product",
     "Web / Full-Stack / Product",
     "Research / HCI",
     "Hardware / Embedded",

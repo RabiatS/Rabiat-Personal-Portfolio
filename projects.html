@@ -4,11 +4,33 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Projects | Rabiat Sadiq</title>
+  <meta name="description" content="Every project in one place: Applied ML, XR, HCI research, hardware and web, filterable by tag and searchable." />
+  <link rel="canonical" href="https://www.rabiatsadiq.com/projects.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Rabiat Sadiq" />
+  <meta property="og:title" content="Projects | Rabiat Sadiq" />
+  <meta property="og:description" content="Every project in one place: Applied ML, XR, HCI research, hardware and web, filterable by tag and searchable." />
+  <meta property="og:url" content="https://www.rabiatsadiq.com/projects.html" />
+  <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/projects/perspective.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Projects | Rabiat Sadiq" />
+  <meta name="twitter:description" content="Every project in one place: Applied ML, XR, HCI research, hardware and web, filterable by tag and searchable." />
+  <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/projects/perspective.png" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var g = localStorage.getItem('glassLevel');
+      var legacy = { clear: 0, 'default': 50, frosted: 100 };
+      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
+      if (!isFinite(t)) t = 50;
+      t = Math.min(100, Math.max(0, t)) / 100;
+      var st = document.documentElement.style;
+      st.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+      st.setProperty('--glass-lens', (1 - t).toFixed(3));
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -29,6 +51,7 @@
 
   <link rel="stylesheet" href="assets/style.css" />
   <script src="assets/script.js" defer></script>
+  <script src="assets/music.js" defer></script>
 </head>
 <body data-tilt-mode="desktop">
   <header class="header">
@@ -60,12 +83,6 @@
       </a>
     </nav>
     <div class="header-controls">
-      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
-      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
-        <option value="off">Tilt: Off</option>
-        <option value="desktop" selected>Tilt: Desktop</option>
-        <option value="all">Tilt: All</option>
-      </select>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
@@ -77,7 +94,7 @@
         <div>
           <h1>Projects</h1>
           <p class="lead" style="margin-top: 16px;">
-            <strong id="projectCount" style="color: var(--primary);">Loading...</strong> projects across multiple disciplines
+            <strong id="projectCount" style="color: var(--primary-readable);">Loading...</strong> projects across multiple disciplines
           </p>
         </div>
       </div>

@@ -1,0 +1,6 @@
+{
+  "_readme": "Dormant. The vinyl shelf on cool.html renders only if 'tracks' has entries. Spotify does not expose a recently-played list to a static page, so any albums here have to be added by hand (with square cover art in assets/img/music/). Left empty on purpose: the live 'now playing' card is the music feature.",
+  "heading": "On repeat",
+  "blurb": "Click a sleeve to pull the record out.",
+  "tracks": []
+}

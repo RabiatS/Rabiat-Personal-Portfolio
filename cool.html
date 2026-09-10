@@ -4,11 +4,33 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cool | Rabiat Sadiq</title>
+  <meta name="description" content="Small HTML tools and experiments: a terminal daily planner, an em-dash editor, a sticky note observatory, plus sites worth a look." />
+  <link rel="canonical" href="https://www.rabiatsadiq.com/cool.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Rabiat Sadiq" />
+  <meta property="og:title" content="Cool | Rabiat Sadiq" />
+  <meta property="og:description" content="Small HTML tools and experiments: a terminal daily planner, an em-dash editor, a sticky note observatory, plus sites worth a look." />
+  <meta property="og:url" content="https://www.rabiatsadiq.com/cool.html" />
+  <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/stickyobservatory.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Cool | Rabiat Sadiq" />
+  <meta name="twitter:description" content="Small HTML tools and experiments: a terminal daily planner, an em-dash editor, a sticky note observatory, plus sites worth a look." />
+  <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/stickyobservatory.png" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var g = localStorage.getItem('glassLevel');
+      var legacy = { clear: 0, 'default': 50, frosted: 100 };
+      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
+      if (!isFinite(t)) t = 50;
+      t = Math.min(100, Math.max(0, t)) / 100;
+      var st = document.documentElement.style;
+      st.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+      st.setProperty('--glass-lens', (1 - t).toFixed(3));
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -29,6 +51,7 @@
 
   <link rel="stylesheet" href="assets/style.css" />
   <script src="assets/script.js" defer></script>
+  <script src="assets/music.js" defer></script>
 </head>
 <body data-tilt-mode="desktop">
   <header class="header">
@@ -60,12 +83,6 @@
       </a>
     </nav>
     <div class="header-controls">
-      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
-      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
-        <option value="off">Tilt: Off</option>
-        <option value="desktop" selected>Tilt: Desktop</option>
-        <option value="all">Tilt: All</option>
-      </select>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
@@ -80,8 +97,30 @@
         </div>
       </div>
 
-      <h2 style="font-size: 1.25rem; margin-bottom: 20px;">My tools</h2>
-      <div class="grid cards-3" style="margin-bottom: 56px;">
+      <!-- Two columns: the live Spotify card holds the left rail, the tools
+           flow beside it instead of leaving the row half empty. -->
+      <div class="cool-top">
+        <aside class="cool-music">
+          <h2 class="cool-h2">What I'm listening to</h2>
+          <p class="muted cool-sub">Pulled live from Spotify. Usually something loud while I am debugging.</p>
+          <!-- Third-party service: onerror hides the block rather than leaving a
+               broken image behind. -->
+          <div id="musicStrip" data-listening-section>
+            <button type="button" class="music-now" id="musicNow"
+                    aria-label="What Rabiat is listening to on Spotify. Click to flip the card.">
+              <img src="https://spotify-github-profile.kittinanx.com/api/view?uid=227cg7ehrjpmdh54zp7epu7wq&cover_image=true&theme=default&show_offline=false&background_color=121212&interchange=false&profanity=false&hide_remaster=false&bar_color_cover=true"
+                   alt="Now playing on Spotify" width="320" height="380"
+                   loading="lazy" decoding="async"
+                   onerror="document.getElementById('musicStrip')?.remove()">
+            </button>
+          </div>
+          <!-- Dormant vinyl shelf: renders only if assets/listening.json has tracks. -->
+          <div class="listen-shelf" id="listeningShelf"></div>
+        </aside>
+
+        <div class="cool-tools">
+          <h2 class="cool-h2">My tools</h2>
+          <div class="grid cool-tools-grid">
         <article class="card">
           <h3><a href="hq-daily-planner.html" style="color:inherit">HQ Daily Planner</a></h3>
           <p class="muted">Terminal-style daily planner. Also hidden behind the VR headset on the homepage, or open it directly here.</p>
@@ -105,73 +144,41 @@
         </article>
         <article class="card" id="vrSiteCard">
           <h3><a href="vr.html" style="color:inherit">View this site in VR</a></h3>
-          <p class="muted" data-vr-hint>Immersive WebXR version of this portfolio: hero, projects, and nav in 3D.</p>
+          <p class="muted" data-vr-hint>
+            The whole portfolio, rebuilt in 3D. Open it on a headset browser to step inside, or take the 3D preview here.
+          </p>
           <div style="margin-top: 10px;">
-            <a href="vr.html" data-vr-cta style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Open VR space ↗</a>
+            <a href="vr.html" data-vr-cta style="font-size: 13px; color: inherit; opacity: 0.9; font-weight: 600;">▶ Open VR space ↗</a>
           </div>
         </article>
+          </div>
+        </div>
       </div>
 
       <h2 style="font-size: 1.25rem; margin-bottom: 20px;">Cool websites I like</h2>
       <div class="grid cards-3">
         <article class="card">
-          <h3><a href="https://openai.com/index/dall-e-3/" target="_blank" rel="noopener" style="color:inherit">AI Image Playground</a></h3>
-          <p class="muted">Create realistic images from text (DALL·E 3).</p>
-          <div style="margin-top: 10px;">
-            <a href="https://openai.com/index/dall-e-3/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Visit ↗</a>
-          </div>
-        </article>
-        <article class="card">
-          <h3><a href="https://findtheinvisiblecow.com/" target="_blank" rel="noopener" style="color:inherit">Invisible Cow</a></h3>
+          <h3><a href="https://findtheinvisiblecow.com/" target="_blank" rel="noopener">Invisible Cow</a></h3>
           <p class="muted">Silly sound-based hide-and-seek.</p>
-          <div style="margin-top: 10px;">
-            <a href="https://findtheinvisiblecow.com/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Visit ↗</a>
-          </div>
         </article>
         <article class="card">
-          <h3><a href="https://lifeat.io/explore" target="_blank" rel="noopener" style="color:inherit">Virtual Study Rooms</a></h3>
+          <h3><a href="https://studytogether.com/" target="_blank" rel="noopener">Virtual Study Rooms</a></h3>
           <p class="muted">Study in cozy digital spaces.</p>
-          <div style="margin-top: 10px;">
-            <a href="https://lifeat.io/explore" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Visit ↗</a>
-          </div>
         </article>
         <article class="card">
-          <h3><a href="https://pudding.cool/2021/10/judge-my-music/" target="_blank" rel="noopener" style="color:inherit">Music Taste Checker</a></h3>
-          <p class="muted">How bad is your streaming music?</p>
-          <div style="margin-top: 10px;">
-            <a href="https://pudding.cool/2021/10/judge-my-music/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Visit ↗</a>
-          </div>
+          <h3><a href="https://obscurifymusic.com/" target="_blank" rel="noopener">Music Taste Checker</a></h3>
+          <p class="muted">Analyze your Spotify vibes.</p>
         </article>
         <article class="card">
-          <h3><a href="https://stars.chromeexperiments.com/" target="_blank" rel="noopener" style="color:inherit">100,000 Stars</a></h3>
-          <p class="muted">Fly through a map of the galaxy.</p>
-          <div style="margin-top: 10px;">
-            <a href="https://stars.chromeexperiments.com/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Visit ↗</a>
-          </div>
-        </article>
-        <article class="card">
-          <h3><a href="https://this-person-does-not-exist.com/en" target="_blank" rel="noopener" style="color:inherit">This Person Does Not Exist</a></h3>
-          <p class="muted">AI-generated faces that look real.</p>
-          <div style="margin-top: 10px;">
-            <a href="https://this-person-does-not-exist.com/en" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Visit ↗</a>
-          </div>
-        </article>
-        <article class="card">
-          <h3><a href="https://theuselessweb.com/" target="_blank" rel="noopener" style="color:inherit">Random Website</a></h3>
+          <h3><a href="https://theuselessweb.com/" target="_blank" rel="noopener">Random Website Button</a></h3>
           <p class="muted">Serendipity machine.</p>
-          <div style="margin-top: 10px;">
-            <a href="https://theuselessweb.com/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Visit ↗</a>
-          </div>
         </article>
         <article class="card">
-          <h3><a href="https://asoftmurmur.com/" target="_blank" rel="noopener" style="color:inherit">A Soft Murmur</a></h3>
-          <p class="muted">Blend ambient loops for focus.</p>
-          <div style="margin-top: 10px;">
-            <a href="https://asoftmurmur.com/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Visit ↗</a>
-          </div>
+          <h3><a href="https://mynoise.net/" target="_blank" rel="noopener">Custom White Noise</a></h3>
+          <p class="muted">Blend ambient loops.</p>
         </article>
         <article class="card">
-          <h3>Ripple Effect</h3>
+          <h3><a href="https://ripple-effect.vercel.app/" target="_blank" rel="noopener">Ripple Effect</a></h3>
           <p class="muted">Play around with different ripple effects.</p>
         </article>
       </div>

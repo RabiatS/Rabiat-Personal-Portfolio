@@ -3,11 +3,33 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Case Study | Spotify vs AI Research Study | Rabiat Sadiq</title>
+  <meta name="description" content="UX research on how listeners perceive AI-generated music, and how transparent labeling builds trust." />
+  <link rel="canonical" href="https://www.rabiatsadiq.com/case-studies/case-study-spotify.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Rabiat Sadiq" />
+  <meta property="og:title" content="Case Study | Spotify vs AI Research Study | Rabiat Sadiq" />
+  <meta property="og:description" content="UX research on how listeners perceive AI-generated music, and how transparent labeling builds trust." />
+  <meta property="og:url" content="https://www.rabiatsadiq.com/case-studies/case-study-spotify.html" />
+  <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/projects/spotify-vs-ai-research.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Case Study | Spotify vs AI Research Study | Rabiat Sadiq" />
+  <meta name="twitter:description" content="UX research on how listeners perceive AI-generated music, and how transparent labeling builds trust." />
+  <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/projects/spotify-vs-ai-research.png" />
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 
   <!-- Prevent theme flash & minimalist Rabiat -->
   <script>
     (function(){
+      var g = localStorage.getItem('glassLevel');
+      var legacy = { clear: 0, 'default': 50, frosted: 100 };
+      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
+      if (!isFinite(t)) t = 50;
+      t = Math.min(100, Math.max(0, t)) / 100;
+      var st = document.documentElement.style;
+      st.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+      st.setProperty('--glass-lens', (1 - t).toFixed(3));
       var plain = localStorage.getItem('plainMode') === 'true';
       var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
       if (plain && rabiat) {
@@ -28,9 +50,10 @@
 
   <link rel="stylesheet" href="../assets/style.css" />
   <script src="../assets/script.js" defer></script>
+  <script src="../assets/music.js" defer></script>
 </head>
 <body data-tilt-mode="desktop">
-  <header class="header container">
+  <header class="header">
     <a class="brand" href="../index.html">Rabiat Sadiq</a>
     <nav class="nav" aria-label="Primary">
       <a href="../index.html" class="nav-pill">
@@ -59,18 +82,12 @@
       </a>
     </nav>
     <div class="header-controls">
-      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
-      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
-        <option value="off">Tilt: Off</option>
-        <option value="desktop" selected>Tilt: Desktop</option>
-        <option value="all">Tilt: Mobile & Desktop</option>
-      </select>
       <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
   </header>
 
-  <main class="container">
+  <main class="container cs-page">
     <section class="cs-hero">
       <p class="eyebrow">HCI Research • UX Design • User Research</p>
       <h1>Spotify vs AI Research Study</h1>
@@ -113,7 +130,7 @@
         <li>Users value transparency but don't want AI labels to dominate the interface</li>
         <li>Clear, unobtrusive labeling can build trust without reducing enjoyment</li>
         <li>User controls (filtering, preferences) are important for user agency</li>
-        <li>Context matters, different labeling approaches work better in different parts of the app</li>
+        <li>Context matters: different labeling approaches work better in different parts of the app</li>
       </ul>
     </section>
 
@@ -175,6 +192,17 @@ function MusicComparison({ trackA, trackB }: Props) {
       <a class="btn secondary" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
     </section>
   </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+
 
   <footer class="container footer">
     © <span id="year"></span> Rabiat Sadiq · Case study excerpt. Contact for details.
