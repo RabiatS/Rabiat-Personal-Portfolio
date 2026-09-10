@@ -33,7 +33,10 @@
   <style>
     /* Long-form essay layout, scoped to this page. Uses the site palette. */
     .essay { max-width: 720px; margin: 0 auto; }
-    .essay-hero { max-width: 780px; margin: 56px auto 48px; }
+    /* Full container width, matching the other case study heroes on the site. */
+    .essay-hero { margin: 56px 0 48px; }
+    .essay-hero .lead { max-width: 860px; }
+    .essay-hero .byline { max-width: 860px; }
     .essay-hero .eyebrow { color: rgba(255,255,255,0.92); }
     .essay-hero h1 { color: #fff; }
     .byline {
@@ -350,30 +353,96 @@
       <h2>The design system</h2>
 
       <p>
-        This was my first real UI project, and the thing I am proudest of is that it has an actual
-        system underneath it rather than a set of decisions I made one screen at a time.
+        This was my first real UI project, and I built it the year I was finishing MHCI, so it is
+        also the place where I got to find out what I actually think about design rather than what I
+        could recite. Everything below is a decision with a reason attached. If the code and the
+        reason ever disagree, the code is wrong.
       </p>
 
       <p>
         The feeling I was aiming for is coming home. Not a product, a room. You are flipping through
-        a family album with people who were there, and when one of them is good you say so, and if
-        one of them matters you keep it. Everything else follows from wanting that to feel warm
-        rather than efficient.
+        an album with people who were there, and when one of them is good you say so, and if one of
+        them matters you keep it. Warmth is not decoration here, it is the brief.
+      </p>
+
+      <h3>Five principles the whole thing hangs off</h3>
+
+      <ol class="layers">
+        <li><b>The photograph is the interface.</b> Chrome sits on top of images inside glass, never
+          stacked above and below them. Where a shape can carry meaning it does: the countdown is a
+          ring, the frame count is a stacked edge, a reaction is the sticker itself.</li>
+        <li><b>Say it once, in as few words as possible.</b> All interface copy is lowercase, under
+          six words, and appears once. Recognition is faster than reading, and a small closed group
+          does not need instructing, because a friend handed them the app.</li>
+        <li><b>Time is a colour before it is a number.</b> Mint means days, butter means the last
+          fifth, coral means hours. The numeral is still there for anyone who wants it.</li>
+        <li><b>Warm, not neutral.</b> The background is #FDF8F4, not white. Ink is #1B1620, not
+          black.</li>
+        <li><b>The promise is visible.</b> Storage, expiry and deletion are not settings screens.
+          A claim you can watch working beats a paragraph in a privacy policy.</li>
+      </ol>
+
+      <h3>Information hierarchy: the drop card</h3>
+
+      <p>
+        The single most important layout in the app, and the one I would put in front of a design
+        review first.
+      </p>
+
+      <p>
+        A typical photo-feed row spends about 90pt on metadata stacked above and below the image.
+        Ember spends about <b>34pt, placed on the photo itself</b>, behind glass. That difference is
+        not a detail. It is the difference between seeing one card on screen and seeing two.
+      </p>
+
+      <p>
+        Everything on that card is ranked. The photograph is the content, so it keeps its own aspect
+        ratio, clamped between 0.8 and 1.9 and capped at 380pt tall. The things you need at a glance,
+        who posted and how long is left, sit on a glass bar over the bottom of the image. The caption
+        is capped at two lines and truncates on purpose, because the card must not grow unbounded to
+        accommodate someone who wrote an essay. Reactions and comment count sit outside the frame,
+        below, because they are about the photo rather than part of it.
+      </p>
+
+      <p class="pull">
+        Hierarchy is mostly deciding what is allowed to push everything else down the screen.
+      </p>
+
+      <h3>White space, and having very few legal values</h3>
+
+      <p>
+        Spacing runs on a 4pt base with a deliberately short scale: 4, 8, 12, 16, 24, 32, and a
+        screen margin of 20 that never changes on any screen, ever. Nothing is edge to edge except a
+        photograph in the viewer.
+      </p>
+
+      <p>
+        Seven values is the entire vocabulary, and the shortness is the point. Most of what makes an
+        interface feel untidy is one-off padding, someone nudging a thing four points to make one
+        screen look right. You cannot write a one-off padding if the only values in scope are these
+        seven. Constraint does the tidying so discipline does not have to.
+      </p>
+
+      <p>
+        Corners are continuous rather than the default circular, at four sizes: 12 for chips, 18 for
+        controls, 28 for cards, 36 for sheets. Card radius is large deliberately. A big soft
+        rectangle reads as a <em>photographic object</em> rather than a UI panel, and that is most of
+        why the feed feels like a stack of prints instead of a list of posts.
       </p>
 
       <h3>A palette in two halves</h3>
 
       <p>
-        This is the decision I would defend hardest, because it is the thing that stops a pastel
-        interface from becoming unusable. The palette is split, and the two halves have different
-        jobs and different rules.
+        This is the decision I would defend hardest, because it is what stops a pastel interface from
+        becoming unusable. The palette is split, and the halves have different jobs and different
+        rules.
       </p>
 
       <p>
-        <b>Hue</b> is the pastel half, and it is only ever used for fills: backgrounds, gradients,
-        avatar ramps, banner washes. These are large, low contrast and decorative, chosen purely for
-        how they sit underneath a photograph. They carry no meaning, so they carry no contrast
-        obligation.
+        <b>Hue</b> is the pastel half, used only for fills: backgrounds, gradients, avatar ramps,
+        banner washes. Large, low contrast, decorative, chosen purely for how they sit underneath a
+        photograph. They carry no meaning, so they carry no contrast obligation. Every one is
+        desaturated enough to sit under an image without competing with it.
       </p>
 
       <div class="swatches">
@@ -388,9 +457,9 @@
       </div>
 
       <p>
-        <b>Signal</b> is the deeper half, and it is only ever used for meaning: the countdown ring,
-        urgency, the kept state. Every one of these is held to a 3:1 contrast minimum, because if you
-        cannot tell mint from coral then you cannot tell four days from four hours.
+        <b>Signal</b> is the deeper half, used only for meaning: the countdown ring, urgency, the
+        kept state. Every one is held to a 3:1 contrast minimum, because if you cannot tell mint from
+        coral then you cannot tell four days from four hours.
       </p>
 
       <div class="swatches">
@@ -403,8 +472,13 @@
       <p>
         The example that made the rule concrete: pastel mint measures 1.40:1. As a background wash
         that is completely fine. As the colour telling you how long a memory has left, it is
-        unusable. So the two halves are separated in code, and nothing in the app is allowed to use
-        a colour that is not a token.
+        unusable. So the halves are separated in code, and nothing in the app may use a colour that
+        is not a token.
+      </p>
+
+      <p>
+        The ground is warm for a reason too. Pure neutrals next to peach read as holes punched in the
+        page, and warm off-whites flatter skin tones, which is most of what gets photographed here.
       </p>
 
       <h3>One typeface, and no custom font</h3>
@@ -418,11 +492,9 @@
         <li><b>Weight.</b> A usable custom family runs 200 to 400 KB across its weights. On an app
           whose entire pitch is not hoarding bytes, that is an awkward first impression.</li>
         <li><b>Dynamic Type.</b> iOS reflows the system faces correctly across the full accessibility
-          size range, in every script. Custom faces need per-size optical work that almost never gets
-          done, and the first place it breaks is the largest sizes, which is exactly where it matters
-          most.</li>
-        <li><b>Coverage.</b> SF ships every script the app could ever need. A boutique face ships
-          Latin.</li>
+          range, in every script. Custom faces need per-size optical work that almost never gets
+          done, and it breaks first at the largest sizes, which is exactly where it matters most.</li>
+        <li><b>Coverage.</b> SF ships every script the app could need. A boutique face ships Latin.</li>
         <li><b>It is not where the brand lives.</b> Ember is recognisable from the cursive mark, the
           pastel-on-paper palette, the countdown ring and the way it moves. None of that depends on
           the body face, so none of it breaks when Apple ships a new SF revision.</li>
@@ -430,9 +502,53 @@
 
       <p>
         So: SF Pro Rounded everywhere, with Snell Roundhand reserved for the wordmark. Rounded
-        specifically, because the softened terminals read as friendly without reading as childish,
-        and they sit correctly next to a cursive letterform that is also soft-terminalled.
+        specifically, because softened terminals read as friendly without reading as childish, and
+        they sit correctly beside a cursive letterform that is also soft-terminalled.
       </p>
+
+      <p>
+        Eight size tokens, all on <code>Font.system</code> so they scale automatically. I wrote down
+        where it breaks under stress rather than pretending it does not: tab bar labels crowd first
+        and should drop to symbols above AX2, and the expiry ring drops its numeral at accessibility
+        sizes and lets the ring carry the meaning alone, with the full sentence still read aloud by
+        VoiceOver.
+      </p>
+
+      <h3>Icons, and shapes instead of icons</h3>
+
+      <p>
+        SF Symbols, for the same reason as the type: they are on every device, they align optically
+        to the text baseline for free, they inherit weight from the surrounding font, and they are
+        what an iOS user already knows. A custom set would cost drawing time, add weight, and be
+        <em>less</em> legible on day one.
+      </p>
+
+      <p>
+        The set is small, and every symbol earns its place by appearing in more than one context or
+        by having no shape alternative. Where a shape is a better answer than a symbol, the shape
+        wins: the countdown is a ring, not a clock glyph, and the frame count is a stacked edge on
+        the card, not a number in a badge.
+      </p>
+
+      <h3>Voice</h3>
+
+      <p>
+        Lowercase, short, and never explaining itself. This is the part people skip and it is half
+        of how an interface feels.
+      </p>
+
+      <div class="table-wrap">
+        <table class="collect">
+          <thead><tr><th>Ember says</th><th>Not</th></tr></thead>
+          <tbody>
+            <tr><td>gone in</td><td>Select an expiration duration</td></tr>
+            <tr><td>add yours</td><td>Participate in today's prompt</td></tr>
+            <tr><td>nothing burning</td><td>You have no active posts</td></tr>
+            <tr><td>say something before it goes</td><td>Be the first to comment!</td></tr>
+            <tr><td>kept. maya will see.</td><td>Photo saved to your library</td></tr>
+          </tbody>
+        </table>
+      </div>
 
       <h3>Motion has one rule</h3>
 
@@ -451,8 +567,8 @@
         <b>Settle</b> is springs, for anything a finger caused, tuned so the element arrives just
         after the finger leaves. That small lag is what makes an interface feel physical instead of
         laggy. <b>Reveal</b> is eased curves, for anything the app did on its own. Exactly one curve
-        in the system overshoots, and it is reserved for stickers and reactions, where a bit of
-        bounce is the entire emotional payload. Using it anywhere else would spend the effect.
+        overshoots, reserved for stickers and reactions, where a bit of bounce is the entire
+        emotional payload. Using it anywhere else would spend the effect.
       </p>
 
       <div class="phones">
@@ -466,16 +582,19 @@
         </figure>
         <figure>
           <img src="../assets/img/projects/ember/feed.jpg" alt="The feed showing a live ritual, circle filters, and drops with their remaining time" loading="lazy" />
-          <figcaption>The feed, with a live ritual up top and every drop wearing its clock.</figcaption>
+          <figcaption>The feed. Chrome on the photo, not stacked around it.</figcaption>
         </figure>
       </div>
 
+      <h3>Accessibility is in the system, not bolted on</h3>
+
       <p>
-        Accessibility is in the system rather than bolted on afterwards. Anything interactive is at
-        least 44 by 44 points regardless of how small the glyph inside it looks. Dynamic Type is
-        supported across the full accessibility range, which is most of why there is no custom font.
-        And meaningful colour is held to a contrast floor while decorative colour is not, which is
-        the whole reason the palette is split in two.
+        Anything interactive is at least 44 by 44 points regardless of how small the glyph inside it
+        looks. Dynamic Type is supported across the full accessibility range, which is most of why
+        there is no custom font. Meaningful colour is held to a contrast floor while decorative
+        colour is not, which is the whole reason the palette is split. And anywhere colour carries
+        state, a number or a spoken sentence carries it too, so the ring is never the only way to
+        know how long you have.
       </p>
 
       <h2>The backend, and why I pushed on it so hard</h2>
@@ -568,7 +687,6 @@
           <text x="540" y="263" font-size="14" font-weight="700" fill="var(--f-ink)">The phone</text>
           <text x="508" y="288" font-size="12.5" fill="var(--f-mute)">Deletes the cached bytes</text>
           <text x="508" y="307" font-size="12.5" fill="var(--f-mute)">and destroys the drop key.</text>
-          <text x="508" y="322" font-size="12.5" font-weight="700" fill="#ec4899">This is the load bearing one.</text>
 
           <rect x="0" y="356" width="720" height="50" rx="12" fill="none" stroke="var(--f-line)" stroke-width="1.5" stroke-dasharray="5 5"/>
           <text x="360" y="378" font-size="13.5" fill="var(--f-mute)" text-anchor="middle">

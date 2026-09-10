@@ -33,7 +33,10 @@
   <style>
     /* Long-form essay layout, scoped to this page. Uses the site palette. */
     .essay { max-width: 720px; margin: 0 auto; }
-    .essay-hero { max-width: 780px; margin: 56px auto 48px; }
+    /* Full container width, matching the other case study heroes on the site. */
+    .essay-hero { margin: 56px 0 48px; }
+    .essay-hero .lead { max-width: 860px; }
+    .essay-hero .byline { max-width: 860px; }
     .essay-hero .eyebrow { color: rgba(255,255,255,0.92); }
     .essay-hero h1 { color: #fff; }
     .byline {
@@ -238,6 +241,15 @@
 
     <article class="essay">
 
+      <figure class="shot" style="margin-top:0">
+        <img src="../assets/img/projects/visionpro/hero-pinch.jpg"
+             alt="A pinch gesture in front of the Vision Pro debug panel, with concentric haptic rings radiating from the Apple Watch on the wrist" loading="lazy" />
+        <figcaption>
+          <b>The whole idea in one frame.</b> A pinch on a virtual object, and the confirmation
+          arriving at the wrist instead of the eye.
+        </figcaption>
+      </figure>
+
       <h2>Where this started</h2>
 
       <p>
@@ -392,11 +404,12 @@
         going to be discarded anyway.
       </p>
 
-      <h2>Four scenarios to feel</h2>
+      <h2>Three scenarios to feel</h2>
 
       <p>
-        I needed situations that produce genuinely different kinds of events, so the vocabulary gets
-        exercised rather than just demonstrated.
+        Alongside the debug panel above, which is a harness rather than an experience, there are
+        three built scenarios. Each produces a genuinely different kind of event, so the vocabulary
+        gets exercised rather than just demonstrated.
       </p>
 
       <figure class="shot">
