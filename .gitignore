@@ -28,3 +28,14 @@ assets/fonts/*.eot
 # Logs
 *.log
 npm-debug.log*
+
+# Private career material: strategy docs and target lists. These live here for
+# local use and must never be published from this public repo.
+Rabiat_Sadiq_Companies_and_Role_Targets.md
+Rabiat_Sadiq_Resume_Strategy_and_Content.md
+Rabiat_Sadiq_Interaction_Engineer_Capability_Map.md
+Rabiat_Sadiq_T_Shaped_Interaction_Engineer.md
+
+# Local working files
+.archive/
+.cursor/

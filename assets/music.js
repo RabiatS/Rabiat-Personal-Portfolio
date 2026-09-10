@@ -1,12 +1,12 @@
 /**
  * Music bits.
  *
- *  1. "On repeat" shelf  — reads assets/listening.json and renders tiles into
+ *  1. "On repeat" shelf : reads assets/listening.json and renders tiles into
  *     #listeningShelf (cool.html). Covers are optional: without one, the tile
  *     draws a gradient derived from the title so every album still looks
  *     deliberate and no image files are required.
  *
- *  2. Ambient soundtrack — a slow synthesised pad built with the Web Audio API,
+ *  2. Ambient soundtrack: a slow synthesised pad built with the Web Audio API,
  *     so there is no audio file to download. Off by default, opt-in only, and
  *     started from a click so no browser ever blocks it as autoplay. The toggle
  *     lives in the header settings popover (see script.js).

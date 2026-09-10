@@ -3002,7 +3002,7 @@ body:not(.on-hero) main .btn.secondary:hover {
 }
 
 /* ============================================
-   SPOTLIGHT — rotating wide card above the featured grid
+   SPOTLIGHT: rotating wide card above the featured grid
    ============================================ */
 .spotlight {
   position: relative;
@@ -3139,7 +3139,7 @@ body:not(.on-hero) main .btn.secondary:hover {
 }
 
 /* ============================================
-   NOW PLAYING — headphone peek in the header
+   NOW PLAYING: headphone peek in the header
    ============================================ */
 .np {
   position: relative;
@@ -3241,7 +3241,7 @@ body:not(.on-hero) main .btn.secondary:hover {
 }
 
 /* ============================================
-   MUSIC — live Spotify card + optional curated shelf
+   MUSIC: live Spotify card + optional curated shelf
    ============================================ */
 /* Cool page top: music rail on the left, tools flowing beside it. */
 .cool-top {
@@ -3664,7 +3664,7 @@ body:not(.on-hero) main .btn.secondary:hover {
   box-shadow: var(--shadow-md);
 }
 
-/* Contact form — two columns on desktop, one on anything narrow.
+/* Contact form: two columns on desktop, one on anything narrow.
    Previously inline `grid-template-columns:1fr 1fr`, which no media query
    could override, so Name/Email stayed side by side down to 320px. */
 .contact-form {

@@ -1,5 +1,5 @@
 // ============================================
-// GLASS LEVEL — one continuous control, 0 (plain glass) to 100 (heavy frost).
+// GLASS LEVEL: one continuous control, 0 (plain glass) to 100 (heavy frost).
 // Defined early so the settings popover and the pre-paint inline script in each
 // page head agree on the same mapping.
 // ============================================
@@ -65,7 +65,7 @@ window.applyGlassLevel = function (value) {
     document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
     localStorage.setItem('theme', dark ? 'dark' : 'light');
     window.dispatchEvent(new CustomEvent('rainbowMode', { detail: { enabled: false } }));
-    // Readable brand tokens depend on the page background — re-derive them.
+    // Readable brand tokens depend on the page background, re-derive them.
     window.dispatchEvent(new CustomEvent('themechange', { detail: { dark } }));
   };
   
@@ -1277,6 +1277,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // GENERATED from assets/projects.json - do not hand-edit.
   // Offline/file:// fallback used when fetch() of the JSON is unavailable.
   const EMBEDDED_PROJECTS = [
+    {id:"ember",title:"Ember",subtitle:"Photos for a small circle, gone in a week",category:"Mobile / Product",tags:["Software", "HCI", "Product", "Personal"],description:"A private photo app for a handful of friends. A drop lasts a week, loses resolution as it ages, then lifts away into drifting light and is gone. Every drop is sealed under its own key before it leaves the phone, and expiry destroys that key, so whatever bytes survive anywhere are noise.",technologies:["Swift", "SwiftUI", "Expo", "React Native", "Supabase", "AES-256-GCM", "X25519", "XCTest"],github:"https://github.com/RabiatS/ember",demo:null,caseStudy:"case-studies/ember.html",status:"complete",images:["assets/img/projects/ember/wordmark-ember.jpg"],year:"2026"},
+    {id:"visionpro-wrist-haptics",title:"VisionPro Wrist Spatial Feedback",subtitle:"Apple Watch haptics for Vision Pro interactions",category:"XR / Unity / Immersive",tags:["XR", "HCI", "UX", "Spatial Intelligence", "Research", "Software"],description:"Spatial interfaces tell you what happened by showing you. That fails the moment you are looking somewhere else. This turns Vision Pro interaction events into brief, semantic Apple Watch haptics, so you can feel selection, progress, success and failure instead of having to watch for them.",technologies:["visionOS", "watchOS", "iOS", "SwiftUI", "Haptics"],github:"https://github.com/RabiatS/VisionProWristSpatialFeedback",demo:null,caseStudy:"case-studies/visionpro-wrist-haptics.html",status:"complete",images:["assets/img/projects/visionpro/debug-panel.jpg"],year:"2026"},
+    {id:"ai-deployment-gap",title:"The AI Deployment Gap",subtitle:"Essay and study prototype on task-embedded affordances",category:"Research / HCI",tags:["Research", "HCI", "Software", "Personal"],description:"We ship new models faster than anyone learns what the last ones could already do. A long essay on why that gap is an interface problem rather than a capability one, plus a two-condition study prototype that tests a task-first alternative to the blank chat box.",technologies:["React", "TypeScript", "Vite", "Tailwind CSS", "Figma Make", "Study Design"],github:null,demo:null,caseStudy:"case-studies/ai-deployment-gap.html",status:"in-progress",images:["assets/img/projects/ai-deployment-gap/task-picker.jpg"],year:"2026"},
+    {id:"text-to-braille",title:"Text to Braille",subtitle:"Adaptive refreshable braille display",category:"Hardware / Embedded",tags:["Hardware", "ML", "Research", "Personal"],description:"Text to braille translation is already solved. The unsolved problem is bandwidth: braille reads at about 125 wpm through a 20 to 40 character slit while speech arrives at about 150 wpm, so a deafblind reader in a live conversation falls behind and never catches up. Deciding what deserves the cells is the part worth building.",technologies:["Python", "liblouis", "Embedded C", "Hardware Prototyping", "ML"],github:"https://github.com/RabiatS/text-to-physical-adaptive-braille",demo:null,caseStudy:null,status:"in-progress",images:["assets/img/projects/text-to-braille/hero.jpg"],year:"2026"},
+    {id:"eyeswipe",title:"EyeSwipe",subtitle:"On-device gaze navigation for short-form video",category:"iOS / Health / ML Deployment",tags:["CV", "HCI", "Software", "Personal"],description:"Auto-scroll is fine for passive watching, but that is not how people actually move through short-form content. Most of the time we skip, and skipping is still manual. EyeSwipe maps a short gaze hold on a screen region to the next action, so navigation is hands free.",technologies:["Swift", "ARKit", "Vision", "SwiftUI", "iOS"],github:"https://github.com/RabiatS/Eye_tracking_auto_Scroll_navigation",demo:null,caseStudy:null,status:"in-progress",images:[],year:"2026"},
+    {id:"local-multimodal-memory",title:"Local Multimodal Memory Explorer",subtitle:"Private on-device semantic photo search",category:"iOS / Health / ML Deployment",tags:["ML", "HCI", "Research", "Personal"],description:"Can a private, on-device multimodal index help people rediscover their own moments more naturally than albums and folders, while still letting them see and correct what the AI inferred? A native SwiftUI prototype that indexes photos and written reflections locally and shows why each result came back.",technologies:["Swift", "SwiftUI", "Core ML", "Embeddings", "Vision", "iOS"],github:"https://github.com/RabiatS/LocalMultimodalMemoryExplorer",demo:null,caseStudy:null,status:"in-progress",images:[],year:"2026"},
     {id:"amazon-music-capstone",title:"Amazon Music Adaptive UI",subtitle:"CMU MHCI Capstone · Jan – Jul 2026",category:"Research / HCI",tags:["HCI", "UX", "Research", "Product", "Industry"],description:"Seven-month Amazon Music–sponsored MHCI capstone: Adaptive UI that reshapes the artist page by listening loyalty so fans feel recognized without being asked to broadcast.",github:null,demo:"files/amazon-music/amazon-music-case-study.pdf",caseStudy:"case-studies/case-study-amazon-music.html",status:"complete",images:["assets/img/projects/amazon-music.png"],year:"2026"},
     {id:"cmu-mhci-sticky-counter",title:"CMU MHCI Sticky Note Counter",subtitle:"Interactive Physics Observatory",category:"Web / Full-Stack / Product",tags:["Web", "HCI", "Research", "Personal"],description:"A live-updating observatory estimating the total sticky notes used by every CMU MHCI cohort since 2012, complete with physics-based animations, year-by-year breakdowns, and a real-time counter.",github:null,demo:"sticky-counter.html",caseStudy:null,status:"complete",images:["assets/img/stickyobservatory.png"],year:"2026"},
     {id:"perspective",title:"Perspective",subtitle:"A Spatial Canvas for Your Data",category:"Web / Full-Stack / Product",tags:["Web", "Data", "AI", "3D", "Personal"],description:"Most data visualization tools default to 2D because it's the safe, familiar option. But a lot of data (geographic distributions, network graphs, frequency analysis, surface topologies) actually lives in three dimensions, and flattening it means losing information. Drag in a file (CSV, JSON, GeoJSON, or audio), an AI agent classifies it and maps it to the right 3D chart type, and you're immediately in a navigable scene you can orbit, zoom, and explore.",github:"https://github.com/RabiatS/PERSPECTIVE",demo:null,caseStudy:null,status:"complete",images:["assets/img/projects/perspective.png"],year:"2026"},
@@ -1330,7 +1336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     } catch (error) {
-      // file:// or offline — the embedded copy already covers us.
+      // file:// or offline, the embedded copy already covers us.
       console.info('projects.json unavailable, using embedded copy.', error);
     }
 
@@ -1777,7 +1783,7 @@ window.resetPlainMode = function() {
   location.reload();
 };
 
-// AI chat placeholder — double-click footer tagline to open
+// AI chat placeholder, double-click footer tagline to open
 (function initAiChatPlaceholder() {
   const tagline = document.querySelector('.footer-tagline');
   if (!tagline) return;
@@ -1858,7 +1864,7 @@ window.resetPlainMode = function() {
 })();
 
 // ============================================
-// SETTINGS POPOVER — tilt mode + glass level
+// SETTINGS POPOVER: tilt mode + glass level
 // Replaces the old always-visible "Tilt: ..." <select> in the header.
 // ============================================
 (function () {
@@ -2207,7 +2213,7 @@ window.resetPlainMode = function() {
   updateScrollBlend();
 })();
 
-// View in VR — header entry when immersive WebXR is available
+// View in VR, header entry when immersive WebXR is available
 (function () {
   const controls = document.querySelector('.header .header-controls');
   if (!controls || controls.querySelector('.btn-view-vr')) return;
@@ -2229,7 +2235,7 @@ window.resetPlainMode = function() {
   }).catch(() => {});
 })();
 
-// Cool page — VR site card copy for XR vs regular browsers
+// Cool page, VR site card copy for XR vs regular browsers
 (function () {
   const card = document.getElementById('vrSiteCard');
   if (!card) return;

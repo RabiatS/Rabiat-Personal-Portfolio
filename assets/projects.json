@@ -1,6 +1,195 @@
 {
   "projects": [
     {
+      "id": "ember",
+      "title": "Ember",
+      "subtitle": "Photos for a small circle, gone in a week",
+      "category": "Mobile / Product",
+      "tags": [
+        "Software",
+        "HCI",
+        "Product",
+        "Personal"
+      ],
+      "description": "A private photo app for a handful of friends. A drop lasts a week, loses resolution as it ages, then lifts away into drifting light and is gone. Every drop is sealed under its own key before it leaves the phone, and expiry destroys that key, so whatever bytes survive anywhere are noise.",
+      "longDescription": "Built iOS (SwiftUI) and Android (Expo) clients against one backend, with the architecture done first and the interface designed on top of it. Deletion runs on three independent layers so no single failure keeps a photo past its week: an object storage TTL, a server sweeper that revokes wrapped keys, and the phone destroying the drop key outright. Each drop is sealed with AES-256-GCM, wrapped per member with X25519, and the server only ever holds ciphertext it cannot open. Storage is deliberate rather than incidental: every photo becomes three renditions and the app fetches the smallest one that will do, so six friends browsing a ten photo drop move about 1.5 MB instead of 50 MB. My first project with a real design system underneath it: a palette split into pastel fills with no contrast obligation and deeper signal colours held to 3:1, one typeface, and a rule that motion explains where something came from or it does not happen.",
+      "technologies": [
+        "Swift",
+        "SwiftUI",
+        "Expo",
+        "React Native",
+        "Supabase",
+        "AES-256-GCM",
+        "X25519",
+        "XCTest"
+      ],
+      "github": "https://github.com/RabiatS/ember",
+      "demo": null,
+      "caseStudy": "case-studies/ember.html",
+      "status": "complete",
+      "images": [
+        "assets/img/projects/ember/wordmark-ember.jpg"
+      ],
+      "videos": [],
+      "year": "2026",
+      "type": "Personal"
+    },
+    {
+      "id": "visionpro-wrist-haptics",
+      "title": "VisionPro Wrist Spatial Feedback",
+      "subtitle": "Apple Watch haptics for Vision Pro interactions",
+      "category": "XR / Unity / Immersive",
+      "tags": [
+        "XR",
+        "HCI",
+        "UX",
+        "Spatial Intelligence",
+        "Research",
+        "Software"
+      ],
+      "description": "Spatial interfaces tell you what happened by showing you. That fails the moment you are looking somewhere else. This turns Vision Pro interaction events into brief, semantic Apple Watch haptics, so you can feel selection, progress, success and failure instead of having to watch for them.",
+      "longDescription": "My undergrad capstone was a pair of haptic VR gloves, so when I started spending time with Vision Pro the thing I kept circling was that it has no controllers and no gloves. I did not want to fix that by adding a peripheral, because the appeal of the headset is that it is just the headset. The Apple Watch has an excellent haptic engine and is already on the wrist of a huge number of people who would wear this thing, already paired to their phone. Three targets: visionOS detects the interaction and emits a semantic event, an iPhone relays it, and watchOS decides how that meaning should feel. The visionOS layer sends meaning rather than waveforms, so the haptic vocabulary can be retuned without touching the spatial app. A shared rate limiter keeps rapid interactions from flooding the wrist: click-class events throttle at 200 ms with a 300 ms cooldown on target re-entry, while outcome events like a successful grab always get through. A confirmation you can miss is only annoying; an outcome you miss is a bug.",
+      "technologies": [
+        "visionOS",
+        "watchOS",
+        "iOS",
+        "SwiftUI",
+        "Haptics"
+      ],
+      "github": "https://github.com/RabiatS/VisionProWristSpatialFeedback",
+      "demo": null,
+      "caseStudy": "case-studies/visionpro-wrist-haptics.html",
+      "status": "complete",
+      "images": [
+        "assets/img/projects/visionpro/debug-panel.jpg"
+      ],
+      "videos": [],
+      "year": "2026",
+      "type": "Personal"
+    },
+    {
+      "id": "ai-deployment-gap",
+      "title": "The AI Deployment Gap",
+      "subtitle": "Essay and study prototype on task-embedded affordances",
+      "category": "Research / HCI",
+      "tags": [
+        "Research",
+        "HCI",
+        "Software",
+        "Personal"
+      ],
+      "description": "We ship new models faster than anyone learns what the last ones could already do. A long essay on why that gap is an interface problem rather than a capability one, plus a two-condition study prototype that tests a task-first alternative to the blank chat box.",
+      "longDescription": "Winter break research that turned into a written argument and a working prototype. The essay traces the gap between what models can do and what people know to ask for, ties it to the older productivity paradox literature, and then turns to why knowing more can make both people and models worse: the expertise reversal effect, the difference between novice mistakes and expert slips, and the finding that larger models can be less truthful on questions where humans hold common misconceptions. The prototype is a two-condition study, a guided task-first interface against a chat control, built to measure whether the guided version leaves people knowing more about what the system can do afterwards rather than whether they liked it more in the moment. Consent, reflection survey and a frozen design-principles screen are part of the build. Not yet run with participants.",
+      "technologies": [
+        "React",
+        "TypeScript",
+        "Vite",
+        "Tailwind CSS",
+        "Figma Make",
+        "Study Design"
+      ],
+      "github": null,
+      "demo": null,
+      "caseStudy": "case-studies/ai-deployment-gap.html",
+      "status": "in-progress",
+      "images": [
+        "assets/img/projects/ai-deployment-gap/task-picker.jpg"
+      ],
+      "videos": [],
+      "year": "2026",
+      "type": "Personal"
+    },
+    {
+      "id": "text-to-braille",
+      "title": "Text to Braille",
+      "subtitle": "Adaptive refreshable braille display",
+      "category": "Hardware / Embedded",
+      "tags": [
+        "Hardware",
+        "ML",
+        "Research",
+        "Personal"
+      ],
+      "description": "Text to braille translation is already solved. The unsolved problem is bandwidth: braille reads at about 125 wpm through a 20 to 40 character slit while speech arrives at about 150 wpm, so a deafblind reader in a live conversation falls behind and never catches up. Deciding what deserves the cells is the part worth building.",
+      "longDescription": "A low-cost refreshable braille cell prototype paired with an adaptive rendering layer that decides what to put on the display rather than only how to encode it. The translation layer sits on liblouis, which already does that job well. The interesting work is above it: compressing, chunking, ranking and restructuring incoming text so the limited cell budget carries the most useful part of a live conversation. Currently Phase 0 with the software foundation working and no hardware built yet, with the vision, hardware analysis and phase gates written down as explicit gates rather than intentions.",
+      "technologies": [
+        "Python",
+        "liblouis",
+        "Embedded C",
+        "Hardware Prototyping",
+        "ML"
+      ],
+      "github": "https://github.com/RabiatS/text-to-physical-adaptive-braille",
+      "demo": null,
+      "caseStudy": null,
+      "status": "in-progress",
+      "images": [
+        "assets/img/projects/text-to-braille/hero.jpg"
+      ],
+      "videos": [],
+      "year": "2026",
+      "type": "Personal"
+    },
+    {
+      "id": "eyeswipe",
+      "title": "EyeSwipe",
+      "subtitle": "On-device gaze navigation for short-form video",
+      "category": "iOS / Health / ML Deployment",
+      "tags": [
+        "CV",
+        "HCI",
+        "Software",
+        "Personal"
+      ],
+      "description": "Auto-scroll is fine for passive watching, but that is not how people actually move through short-form content. Most of the time we skip, and skipping is still manual. EyeSwipe maps a short gaze hold on a screen region to the next action, so navigation is hands free.",
+      "longDescription": "Everything runs on the phone. Gaze direction is estimated from ARKit face tracking and Vision, with no external eye tracker, no calibration hardware and no camera frames leaving the device, which matters given the input is a continuous video feed of someone's face. The interaction model is a dwell: look at a screen zone such as top right, hold briefly, and the hold triggers the action. The design problem underneath it is the one every gaze interface has, which is separating looking from choosing without making the dwell so long that it is slower than a thumb.",
+      "technologies": [
+        "Swift",
+        "ARKit",
+        "Vision",
+        "SwiftUI",
+        "iOS"
+      ],
+      "github": "https://github.com/RabiatS/Eye_tracking_auto_Scroll_navigation",
+      "demo": null,
+      "caseStudy": null,
+      "status": "in-progress",
+      "images": [],
+      "videos": [],
+      "year": "2026",
+      "type": "Personal"
+    },
+    {
+      "id": "local-multimodal-memory",
+      "title": "Local Multimodal Memory Explorer",
+      "subtitle": "Private on-device semantic photo search",
+      "category": "iOS / Health / ML Deployment",
+      "tags": [
+        "ML",
+        "HCI",
+        "Research",
+        "Personal"
+      ],
+      "description": "Can a private, on-device multimodal index help people rediscover their own moments more naturally than albums and folders, while still letting them see and correct what the AI inferred? A native SwiftUI prototype that indexes photos and written reflections locally and shows why each result came back.",
+      "longDescription": "The research question is about rediscovery rather than retrieval accuracy. Manual albums and folders make you do the organising work up front, at the exact moment you care least, and search only helps if you already remember the right words. This indexes photos and optional short reflections on device, generates and stores image and text embeddings locally, and answers natural language queries with the top matching memory cards. The part I care most about is explainability: every result shows what it was matched on, so the inference is inspectable and correctable rather than something you either trust or do not.",
+      "technologies": [
+        "Swift",
+        "SwiftUI",
+        "Core ML",
+        "Embeddings",
+        "Vision",
+        "iOS"
+      ],
+      "github": "https://github.com/RabiatS/LocalMultimodalMemoryExplorer",
+      "demo": null,
+      "caseStudy": null,
+      "status": "in-progress",
+      "images": [],
+      "videos": [],
+      "year": "2026",
+      "type": "Personal"
+    },
+    {
       "id": "amazon-music-capstone",
       "title": "Amazon Music Adaptive UI",
       "subtitle": "CMU MHCI Capstone · Jan – Jul 2026",
@@ -855,6 +1044,7 @@
     "Applied ML / CV / Video",
     "XR / Unity / Immersive",
     "iOS / Health / ML Deployment",
+    "Mobile / Product",
     "Web / Full-Stack / Product",
     "Research / HCI",
     "Hardware / Embedded",

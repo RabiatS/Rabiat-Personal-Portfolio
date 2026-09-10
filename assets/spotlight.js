@@ -1,5 +1,5 @@
 /**
- * Spotlight rotator — homepage only.
+ * Spotlight rotator: homepage only.
  *
  * Cycles a wide card above the featured grid through projects that have an
  * image but did not make the featured six, so work like the Multimodal Pipeline
@@ -116,6 +116,6 @@
       if (data && Array.isArray(data.projects)) build(data.projects);
     })
     .catch(() => {
-      /* file:// or offline — leave the spotlight hidden. */
+      /* file:// or offline, leave the spotlight hidden. */
     });
 })();

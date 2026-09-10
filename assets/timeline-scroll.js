@@ -207,7 +207,7 @@ function initRevealSafetyNet(tweens) {
     section.classList.add('section-revealed');
   };
 
-  // "Its top has crossed the trigger line" — true for sections on screen and
+  // "Its top has crossed the trigger line": true for sections on screen and
   // for ones already scrolled past, which must not be left blank if the
   // visitor scrolls back up.
   const sweep = () =>
