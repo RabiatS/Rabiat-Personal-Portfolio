@@ -51,7 +51,7 @@
   --glass-pill: rgba(255, 255, 255, 0.45);
 }
 
-/* Dark mode — warm neutral charcoal, not blue-purple */
+/* Dark mode: warm neutral charcoal, not blue-purple */
 .dark {
   --flow-base: #111011;
   --flow-mid: #171618;
@@ -920,7 +920,7 @@ html.dark {
 }
 
 /* --------------------------------------------------------------------------
-   Minimalist mode — RabiatTheme (brand guide: void, bloodline red, teal)
+   Minimalist mode: RabiatTheme (brand guide: void, bloodline red, teal)
    -------------------------------------------------------------------------- */
 .plain-mode.plain-mode--rabiat {
   --rabiat-void: #0a0a0f;
@@ -1479,7 +1479,7 @@ img {
   transform: scale(1.05);
 }
 
-/* Nav pill tray — liquid glass (matches header controls) */
+/* Nav pill tray: liquid glass (matches header controls) */
 .nav {
   position: relative;
   isolation: isolate;
@@ -1514,7 +1514,7 @@ img {
   z-index: 0;
 }
 
-/* Sliding glass “drop” — only one visible pill at a time */
+/* Sliding glass “drop”: only one visible pill at a time */
 .nav-glider {
   position: absolute;
   top: 0;
@@ -1889,7 +1889,7 @@ h3 {
   animation: heroBreath 24s ease-in-out infinite;
 }
 
-/* Soft blend into page body — no hard horizontal cut */
+/* Soft blend into page body: no hard horizontal cut */
 .hero--fullscreen::after {
   content: '';
   position: absolute;
@@ -2525,6 +2525,82 @@ body:not(.on-hero) main .btn.secondary:hover {
   transform: scale(1.05);
 }
 
+/* Brand-stack cards: solid color plate + logo (rest = one image; hover lifts logo) */
+.img-card--brand-stack::before {
+  display: none !important;
+  content: none !important;
+}
+
+.img-card--brand-stack .brand-stack {
+  position: relative;
+  flex-shrink: 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  perspective: 900px;
+  perspective-origin: 50% 45%;
+  background: var(--brand-bg, #25d1da);
+  transform-style: preserve-3d;
+}
+
+.img-card--brand-stack .brand-stack__plate {
+  position: absolute;
+  inset: 0;
+  background: var(--brand-bg, #25d1da);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.img-card--brand-stack .brand-stack__logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(46%, 220px);
+  height: auto;
+  object-fit: contain;
+  transform: translate(-50%, -50%) translateZ(0);
+  transform-style: preserve-3d;
+  transition:
+    transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1),
+    filter 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.04));
+  pointer-events: none;
+  user-select: none;
+  will-change: transform, filter;
+}
+
+.img-card--brand-stack:hover .brand-stack__plate {
+  transform: scale(1.04);
+}
+
+.img-card--brand-stack:hover .brand-stack__logo {
+  transform:
+    translate(-50%, -52%)
+    translateZ(48px)
+    scale(1.08)
+    rotateX(10deg)
+    rotateY(-8deg);
+  filter: drop-shadow(0 22px 28px rgba(0, 0, 0, 0.38));
+}
+
+.plain-mode #work .img-card--brand-stack[style*="--img:"]::before,
+.plain-mode .img-card--brand-stack[style*="--img:"]::before {
+  display: none !important;
+  content: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .img-card--brand-stack .brand-stack__plate,
+  .img-card--brand-stack .brand-stack__logo {
+    transition: none;
+  }
+
+  .img-card--brand-stack:hover .brand-stack__plate,
+  .img-card--brand-stack:hover .brand-stack__logo {
+    transform: none;
+    filter: none;
+  }
+}
+
 /* Card body sits below the image with its own dark background */
 .img-card .card-body {
   position: relative !important;
@@ -2829,7 +2905,7 @@ body:not(.on-hero) main .btn.secondary:hover {
   color: var(--text-muted);
 }
 
-/* Liquid glass header on hero (subtle — inspired by glass UI patterns) */
+/* Liquid glass header on hero (subtle, inspired by glass UI patterns) */
 .page-home .header {
   transition:
     background 0.5s cubic-bezier(0.4, 0, 0.2, 1),
@@ -3412,7 +3488,7 @@ input[type="search"]:focus {
 }
 
 /* ============================================
-   AI CHAT PLACEHOLDER (hidden — footer tagline ×2)
+   AI CHAT PLACEHOLDER (hidden, footer tagline ×2)
    ============================================ */
 
 .footer-tagline--ai-trigger {
@@ -3765,7 +3841,7 @@ input[type="search"]:focus {
   }
 }
 
-/* Builder cube — scroll companion (desktop, index only) */
+/* Builder cube: scroll companion (desktop, index only) */
 .builder-cube-host {
   position: fixed;
   top: var(--header-height);
@@ -3797,7 +3873,7 @@ html.builder-mode .builder-cube-host {
   }
 }
 
-/* ── Builder mode — extra scroll polish (desktop only, unlocked) ── */
+/* ── Builder mode: extra scroll polish (desktop only, unlocked) ── */
 @media (min-width: 1024px) {
   html.builder-mode {
     scroll-behavior: auto;
@@ -3819,7 +3895,7 @@ html.builder-mode .builder-cube-host {
   }
 }
 
-/* Builder cube — fall state */
+/* Builder cube: fall state */
 .builder-cube-host--falling {
   z-index: 60;
   pointer-events: none;

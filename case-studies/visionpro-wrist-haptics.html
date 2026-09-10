@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Feeling the Interface | Rabiat Sadiq</title>
+  <meta name="description" content="VisionPro Wrist Spatial Feedback: turning Apple Vision Pro interaction events into semantic Apple Watch haptics, so spatial interfaces can be felt instead of watched." />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+  <!-- Prevent theme flash & minimalist Rabiat -->
+  <script>
+    (function(){
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+
+  <style>
+    /* Long-form essay layout, scoped to this page. Uses the site palette. */
+    .essay { max-width: 720px; margin: 0 auto; }
+    .essay-hero { max-width: 780px; margin: 56px auto 48px; }
+    .essay-hero .eyebrow { color: rgba(255,255,255,0.92); }
+    .essay-hero h1 { color: #fff; }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+      margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);
+      color: var(--text-muted); font-size: 15px;
+    }
+    .byline strong { color: var(--text); font-weight: 600; }
+    .essay-hero .byline { color: rgba(255,255,255,0.88); border-top-color: rgba(255,255,255,0.28); }
+    .essay-hero .byline strong { color: #fff; }
+    .essay p {
+      font-size: 18px; line-height: 1.75; color: var(--text);
+      margin: 0 0 24px;
+    }
+    .essay h2 {
+      font-size: 28px; line-height: 1.3; margin: 56px 0 20px;
+      letter-spacing: -0.01em;
+    }
+    .essay h3 { font-size: 21px; margin: 40px 0 14px; }
+    .essay ul, .essay ol { margin: 0 0 24px; padding-left: 22px; }
+    .essay li { font-size: 18px; line-height: 1.7; margin-bottom: 12px; color: var(--text); }
+    .essay a { color: var(--primary); }
+
+    .drop { font-size: 21px; }
+
+    .sidenote {
+      border-left: 3px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      padding: 16px 20px; border-radius: 0 12px 12px 0;
+      margin: 0 0 28px;
+    }
+    .sidenote p { font-size: 16px; line-height: 1.65; margin: 0; color: var(--text-muted); }
+    .sidenote p + p { margin-top: 12px; }
+    .sidenote .label {
+      display: block; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700; margin-bottom: 8px;
+    }
+
+    .pull {
+      margin: 40px 0; padding: 0 0 0 24px;
+      border-left: 4px solid var(--primary);
+      font-size: 24px; line-height: 1.45; font-weight: 600;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+
+    figure.fig { margin: 44px 0; }
+    figure.fig svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+    figure.fig figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6;
+      margin-top: 14px; padding-left: 2px;
+    }
+    figure.fig figcaption b { color: var(--text); }
+
+    /* Figure palette, theme aware */
+    .fig svg { --f-ink: #1a1a1a; --f-mute: #6b7280; --f-line: #d1d5db;
+               --f-panel: #ffffff; --f-grid: #eceaf2; }
+    .dark .fig svg { --f-ink: #f3f4f6; --f-mute: #9ca3af; --f-line: #4b5563;
+                     --f-panel: #14141a; --f-grid: #26262f; }
+
+    figure.shot { margin: 40px 0; }
+    figure.shot img {
+      width: 100%; height: auto; display: block;
+      border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: var(--shadow-md); background: var(--surface);
+    }
+    figure.shot figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-top: 14px;
+    }
+    figure.shot figcaption b { color: var(--text); }
+    .shot-2up { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .shot-2up .cap {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); margin: 0 0 8px;
+    }
+    .shot-2up .cap.on { color: var(--primary); }
+    @media (max-width: 640px) { .shot-2up { grid-template-columns: 1fr; } }
+
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+    .table-wrap { overflow-x: auto; }
+
+
+    .phones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 40px 0; }
+    .phones.two { grid-template-columns: repeat(2, 1fr); max-width: 520px; }
+    .phones figure { margin: 0; }
+    .phones img {
+      width: 100%; height: auto; display: block; border-radius: 22px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+    }
+    .phones figcaption { font-size: 14px; color: var(--text-muted); margin-top: 10px; line-height: 1.5; }
+    @media (max-width: 700px) { .phones, .phones.two { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 440px) { .phones, .phones.two { grid-template-columns: 1fr; } }
+
+    .layers { list-style: none; padding: 0; counter-reset: layer; margin: 0 0 28px; }
+    .layers li {
+      position: relative; padding: 16px 18px 16px 60px; margin-bottom: 12px;
+      border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+      font-size: 16.5px; line-height: 1.6;
+    }
+    .layers li::before {
+      counter-increment: layer; content: counter(layer);
+      position: absolute; left: 18px; top: 16px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--primary); color: #fff; font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .layers li b { color: var(--text); }
+
+    .table-wrap { overflow-x: auto; }
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+
+    .refs { margin-top: 16px; }
+    .refs li { font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin-bottom: 14px; }
+    .refs li b { color: var(--text); font-weight: 600; }
+
+    .essay-foot {
+      margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .essay p, .essay li { font-size: 17px; }
+      .essay h2 { font-size: 24px; }
+      .pull { font-size: 20px; }
+    }
+  </style>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header container">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="../projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="../coursework.html" class="nav-pill">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="../cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" class="nav-pill nav-external">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-text">LinkedIn</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off">Tilt: Off</option>
+        <option value="desktop" selected>Tilt: Desktop</option>
+        <option value="all">Tilt: Mobile & Desktop</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: var(--header-height);">
+    <section class="cs-hero essay-hero">
+      <p class="eyebrow">Case study • visionOS, iOS, watchOS • Research prototype</p>
+      <h1>Feeling the Interface</h1>
+      <p class="lead">
+        Spatial interfaces tell you what happened by showing you. A highlight, a colour change, a
+        number ticking up. All of it fails the moment you are looking somewhere else. This puts the
+        feedback on your wrist instead, where you do not have to look at anything to notice it.
+      </p>
+      <div class="byline">
+        <span><strong>Rabiat Sadiq</strong></span>
+        <span>2026</span>
+        <span>Three connected apps</span>
+      </div>
+      <div class="cs-metrics" style="margin-top:32px">
+        <div class="metric"><h3>Targets</h3><p>visionOS, iOS, watchOS</p></div>
+        <div class="metric"><h3>Vocabulary</h3><p>8 semantic events</p></div>
+        <div class="metric"><h3>Throttle</h3><p>200 ms, outcomes exempt</p></div>
+      </div>
+    </section>
+
+    <article class="essay">
+
+      <h2>Where this started</h2>
+
+      <p>
+        My undergrad capstone was a pair of haptic VR gloves. We called them
+        <a href="case-study.html">Magic Mitts</a>: flex sensors for tracking, and an electromagnetic
+        braking system that physically stops your hand when it reaches the surface of a virtual
+        object, so you can feel yourself grasp something that is not there. Under fifty dollars of
+        parts. It won first place at UTSA.
+      </p>
+
+      <p>
+        I spent a long time on that problem, and I came out of it convinced that touch is the sense
+        we underuse in immersive systems. So when I started spending time with Vision Pro, the thing
+        I kept circling was that it has no controllers and no gloves. Nothing in your hands at all.
+      </p>
+
+      <p>
+        And I did not want to fix that by adding something. The whole appeal of Vision Pro is that it
+        is just the headset. The moment you tell someone they also need to strap on a peripheral to
+        get feedback, you have taken away the thing that makes it feel light, and you have added one
+        more device to charge, one more thing to put on, one more barrier for anyone who finds
+        putting things on their hands difficult in the first place.
+      </p>
+
+      <p>
+        That constraint is the part I keep coming back to across my work. Make it natural. Make it
+        work with what a person already has and already does, rather than asking them to adapt to
+        the machine.
+      </p>
+
+      <p>
+        Which reframed the question entirely. Not "how do I give Vision Pro haptics," but: the parts
+        are already here. The Apple Watch has an excellent haptic engine and it is already on the
+        wrist of a huge number of the people who would put on this headset. It is already paired to
+        their phone. Nobody has to buy, charge, or wear anything new.
+      </p>
+
+      <p class="pull">
+        What happens if the feedback device is one somebody is already wearing?
+      </p>
+
+      <h2>The problem with looking</h2>
+
+      <p>
+        Spatial interfaces communicate state visually almost exclusively. An object highlights when
+        your focus enters it. A timer shows a number. A success message appears. Each of those is a
+        perfectly good signal, and each of them has the same failure mode: it requires you to be
+        looking at the thing at the moment it changes.
+      </p>
+
+      <p>
+        Which, in a spatial interface, is exactly when you often are not. You are visually busy. You
+        are looking at your hand, or past the object, or at something else in the room. You are
+        moving fast and interacting faster than you can visually confirm. In a headset your visual
+        attention is the scarcest resource in the system, and we keep spending it on confirmations.
+      </p>
+
+      <p>
+        Touch does not have that problem. You do not have to aim your skin at something.
+      </p>
+
+      <h2>Send meaning, not waveforms</h2>
+
+      <p>
+        The core architectural decision, and the one I would defend hardest, is that the Vision Pro
+        app never says what the Watch should feel like. It says what happened.
+      </p>
+
+      <p>
+        There are eight semantic events in the vocabulary: a focus entering an interactive object, a
+        timer incrementing, a timer crossing a major threshold, a timer starting, a timer finishing,
+        a grab succeeding, a drop failing, and a basket being scored. The visionOS layer emits one of
+        those. The Watch owns the entire question of how each one should feel.
+      </p>
+
+      <p>
+        That split matters more than it looks. It means the haptic vocabulary can be retuned, or
+        completely rewritten, without touching the spatial app at all. It means the same event can
+        feel different on different hardware. And during a study, it means I can change what a
+        success feels like between participants without changing a line of interaction code, which
+        is the whole point of building it as a research prototype rather than a demo.
+      </p>
+
+      <figure class="shot">
+        <img src="../assets/img/projects/visionpro/debug-panel.jpg"
+             alt="The debug panel running in the visionOS simulator, showing all eight semantic events as buttons, a connection status of searching for iPhone, an event log, and counters for events sent and rate limited" loading="lazy" />
+        <figcaption>
+          <b>The debug panel, running in the visionOS simulator.</b> Every event in the vocabulary is
+          fireable by hand, with a live event log and running counts of what was sent versus what got
+          rate limited. This screen exists so that during a session I can trigger any event on demand
+          without having to reproduce the interaction that normally causes it.
+        </figcaption>
+      </figure>
+
+      <h3>The chain</h3>
+
+      <p>
+        Three apps, in a line. visionOS detects the interaction and produces a semantic event. An
+        iPhone sits in the middle as a relay, because the headset does not talk to the Watch
+        directly, and passes the event along over WatchConnectivity. The Watch receives it, applies
+        its rate limits, and plays a system haptic.
+      </p>
+
+      <figure class="fig">
+        <img src="../assets/img/projects/visionpro/hero.jpg"
+             alt="Diagram of the three device chain: visionOS emits a semantic event, iOS relays it, watchOS rate limits and plays the haptic" loading="lazy"
+             style="width:100%;border-radius:12px;display:block" />
+        <figcaption>
+          <b>Figure 1.</b> The payload is deliberately tiny: an event name, the scenario it came
+          from, and a timestamp. Small enough that the link is never the bottleneck.
+        </figcaption>
+      </figure>
+
+      <h2>The rate limiting is the design</h2>
+
+      <p>
+        Apple already solved the hard part here, and it is worth being clear about that. The Watch
+        has an excellent haptic engine, and more importantly its vocabulary is already legible to
+        people. We all already understand a small tap for every increment of a value, the way a timer
+        picker on your phone clicks as you spin it past each minute. Nobody needs that explained.
+      </p>
+
+      <p>
+        What breaks is quantity. A spatial interface can fire a focus-entered event dozens of times a
+        second while your hand drifts across a boundary, and if every one of those becomes a tap, the
+        Watch turns into a wasp. Good taps, far too many of them.
+      </p>
+
+      <p>
+        So there is a shared throttle, and the important part is that it is not uniform. Events are
+        split into two classes.
+      </p>
+
+      <ol class="layers">
+        <li><b>Click-class events get throttled.</b> Focus entering a target and timer increments are
+          repeatable by nature. Clicks are limited to one every 200 ms, and re-entering a target has
+          its own 300 ms cooldown on top of that.</li>
+        <li><b>Outcome events always pass.</b> A grab succeeding, a drop failing, a threshold being
+          crossed, a timer finishing, a basket scoring. These are things that happened once and
+          matter. They bypass the throttle entirely.</li>
+      </ol>
+
+      <p>
+        That distinction is the actual product thinking in this project. A confirmation you can miss
+        is only annoying. An outcome you miss is a bug. So the system is allowed to drop the former
+        and never the latter.
+      </p>
+
+      <p>
+        The limiter is shared code that runs in two places: on the Watch, where it is authoritative,
+        and on visionOS, where it exists purely to avoid flooding the link with events that are
+        going to be discarded anyway.
+      </p>
+
+      <h2>Four scenarios to feel</h2>
+
+      <p>
+        I needed situations that produce genuinely different kinds of events, so the vocabulary gets
+        exercised rather than just demonstrated.
+      </p>
+
+      <figure class="shot">
+        <img src="../assets/img/projects/visionpro/timer.jpg"
+             alt="The timer scenario showing 05:00 with adjustment controls and a note that thresholds at 5, 10, 15, 30 and 60 minutes send a distinct wrist tap" loading="lazy" />
+        <figcaption>
+          <b>Timer: continuous adjustment against meaningful landmarks.</b> Every increment is a small
+          throttled tap, but crossing 5, 10, 15, 30 or 60 minutes sends a distinct one. This is the
+          scenario that tests whether you can set a value without looking at the number, which is
+          something you genuinely cannot do with a purely visual control.
+        </figcaption>
+      </figure>
+
+      <figure class="shot">
+        <img src="../assets/img/projects/visionpro/objects.jpg"
+             alt="The object interaction scenario: a cyan cube floating beside a green target zone, with the instruction pinch and drag the cube into the green zone" loading="lazy" />
+        <figcaption>
+          <b>Objects: encounter, grab, and failure.</b> Entering the cube's active region fires one
+          tap. Actually moving it past a small distance threshold counts as a real grab rather than a
+          twitch, and confirms. Dropping it outside the zone fails, and failure gets its own feel.
+          Three different states in one gesture, none of which you have to look at.
+        </figcaption>
+      </figure>
+
+      <figure class="shot">
+        <img src="../assets/img/projects/visionpro/basketball.jpg"
+             alt="The basketball scenario showing a score of zero, an orange ball, a red hoop, and the instruction drag the ball down through the hoop" loading="lazy" />
+        <figcaption>
+          <b>Basketball: the pure outcome.</b> One event, one moment, no ambiguity. This is the
+          control case. If a scored basket does not feel unmistakable on the wrist, the whole premise
+          is in trouble.
+        </figcaption>
+      </figure>
+
+      <h2>The part I keep thinking about</h2>
+
+      <p>
+        Building this made me notice something about feedback generally, and it lands on biomimicry,
+        which is where a lot of my thinking ends up. Anyone who has worked with me knows I will get
+        there eventually.
+      </p>
+
+      <p>
+        Proprioception, the sense that tells you where your own hand is without looking at it, is
+        doing constant, silent, unglamorous confirmation work. You do not notice it until it is
+        gone. Nobody has ever thought "what a satisfying proprioceptive response" while picking up a
+        cup. The feedback is good precisely because it does not ask for attention.
+      </p>
+
+      <p>
+        That is a hard standard for an interface, because every incentive pushes the other way. A
+        haptic that announces itself demos well. A haptic that quietly keeps you oriented does not
+        demo at all. But the second one is what a body actually does, and I think it is the right
+        target.
+      </p>
+
+      <p>
+        Which is also why the Watch decides how things feel rather than the headset. In a body, the
+        limb reports its own state. It does not wait for the brain to specify a waveform.
+      </p>
+
+      <h2>Status and what I would test</h2>
+
+      <p>
+        This is a working research prototype, not a shipping app, and it was scoped that way on
+        purpose. It is not a production timer, it does not do continuous frame-by-frame vibration
+        from hand tracking, it does not build custom haptic waveforms, and it does not do multi-user
+        anything.
+      </p>
+
+      <p>
+        What I want to find out with it:
+      </p>
+
+      <ul>
+        <li>Which spatial events actually benefit from tactile confirmation, and which ones are just
+          noise on the wrist. My guess is that outcomes benefit far more than encounters, but that is
+          a guess and the prototype exists to check it.</li>
+        <li>Whether the 200 ms throttle is anywhere near right. It is a starting number, not a
+          finding. It may well be too aggressive for slow deliberate interactions and too permissive
+          for fast ones, in which case it should adapt to interaction speed rather than being fixed.</li>
+        <li>Whether people can distinguish the semantic events from each other at all without being
+          told, or whether the vocabulary needs to be much smaller than eight.</li>
+        <li>Whether the wrist is even the right place. It is the convenient place, because that is
+          where the hardware already is, and convenient and correct are not the same thing.</li>
+      </ul>
+
+      <div class="essay-foot">
+        <a class="btn" href="../projects.html">← All projects</a>
+        <a class="btn btn-primary" href="https://github.com/RabiatS/VisionProWristSpatialFeedback" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+
+    </article>
+  </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+</body>
+</html>

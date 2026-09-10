@@ -12,7 +12,7 @@
     "headlineLine1": "I'm Rabiat - I Build",
     "headlineLine2": "What the Problem Demands",
     "headlineAccent": "Rabiat",
-    "lead": "Problem solver first. I focus on systems that sense and respond to people: spatial computing, XR, and human perception turned into ML pipelines you can actually feel. MHCI at CMU — building across research and hands-on prototyping."
+    "lead": "Problem solver first. I focus on systems that sense and respond to people: spatial computing, XR, and human perception turned into ML pipelines you can actually feel. MHCI at CMU, building across research and hands-on prototyping."
   },
   "tags": [
     "Applied ML",
@@ -31,14 +31,22 @@
   "galleryTitle": "Featured Projects",
   "gallerySubtitle": "A selection of my most impactful work",
   "featuredProjectIds": [
+    "amazon-music-vr",
     "true-to-hue-vr",
     "perspective-vr",
     "magic-mitts-vr",
     "xr-pain-vr",
-    "vr-music-vr",
-    "assuage-vr"
+    "vr-music-vr"
   ],
   "projects": [
+    {
+      "id": "amazon-music-vr",
+      "title": "Amazon Music Adaptive UI",
+      "description": "CMU MHCI capstone, adaptive discovery UI that reshapes Amazon Music around listener personas.",
+      "image": "assets/img/projects/amazon-music-card.png",
+      "href": "https://github.com/RabiatS/Amazon-Music-Adaptive-UI---DERBC",
+      "external": true
+    },
     {
       "id": "true-to-hue-vr",
       "title": "True to Hue",
@@ -50,7 +58,7 @@
     {
       "id": "perspective-vr",
       "title": "Perspective",
-      "description": "Drag in any dataset — AI maps it to the right 3D view with anomaly pins in the scene.",
+      "description": "Drag in any dataset, AI maps it to the right 3D view with anomaly pins in the scene.",
       "image": "assets/img/projects/perspective.png",
       "href": "https://github.com/RabiatS/PERSPECTIVE",
       "external": true
@@ -58,7 +66,7 @@
     {
       "id": "magic-mitts-vr",
       "title": "Magic Mitts",
-      "description": "1st Place UTSA Tech Symposium — affordable haptic VR glove with electromagnetic braking.",
+      "description": "1st Place UTSA Tech Symposium, affordable haptic VR glove with electromagnetic braking.",
       "image": "assets/img/mm.png",
       "href": "case-studies/case-study.html",
       "external": false
@@ -77,14 +85,6 @@
       "description": "Audio-reactive 3D environments with gesture input. Quest 2 + Meta XR SDK.",
       "image": "assets/img/projects/VR Mussic Viz.webp",
       "href": "projects.html#vr-music-visualizer",
-      "external": false
-    },
-    {
-      "id": "assuage-vr",
-      "title": "Assuage — Health ML",
-      "description": "Distress prediction from HealthKit biometrics. 82% accuracy with CoreML on-device.",
-      "image": "assets/img/projects/assuage-logo.png",
-      "href": "case-studies/case-study-assuage.html",
       "external": false
     }
   ],

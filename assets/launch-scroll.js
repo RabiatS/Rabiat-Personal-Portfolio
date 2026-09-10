@@ -1,5 +1,5 @@
 /**
- * Builder-mode scroll extras — toned down (homepage desktop)
+ * Builder-mode scroll extras: toned down (homepage desktop)
  */
 import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js';
 import ScrollTrigger from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js';
@@ -41,7 +41,7 @@ export function destroyLaunchScroll() {
   }
 }
 
-/* ── Featured Projects — quick staggered settle (no flying parallax) ── */
+/* ── Featured Projects: quick staggered settle (no flying parallax) ── */
 function initWorkGallery() {
   const section = document.querySelector('#work');
   if (!section) return;
@@ -84,7 +84,7 @@ function initWorkGallery() {
   });
 }
 
-/* ── Education — simple fade stagger (3D tilt retired) ── */
+/* ── Education: simple fade stagger (3D tilt retired) ── */
 function initEducationCards() {
   const section = document.querySelector('#education');
   if (!section) return;
@@ -127,7 +127,7 @@ function initEducationCards() {
   });
 }
 
-/* ── Skills — gentle grid fade (scatter retired) ── */
+/* ── Skills: gentle grid fade (scatter retired) ── */
 function initSkillsReveal() {
   const section = document.querySelector('#skills');
   if (!section) return;

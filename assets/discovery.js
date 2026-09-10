@@ -1,5 +1,5 @@
 /**
- * Signal Lab — hidden discovery on index.html
+ * Signal Lab: hidden discovery on index.html
  * Discovery: type "build" on homepage, or triple-tap scroll cue on mobile
  * Unlock URL: ?lab=1
  * Persist: localStorage signalLabUnlocked

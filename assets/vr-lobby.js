@@ -1,5 +1,5 @@
 /**
- * VR portfolio — inside the website hero + featured work (A-Frame / WebXR)
+ * VR portfolio: inside the website hero + featured work (A-Frame / WebXR)
  */
 (function () {
   'use strict';
@@ -129,7 +129,7 @@
     if (r.xr) r.xr.enabled = true;
   }
 
-  /* ——— A-Frame components ——— */
+  /* --- A-Frame components --- */
 
   AFRAME.registerComponent('open-link', {
     schema: {
@@ -342,7 +342,7 @@
     },
   });
 
-  /* ——— DOM helpers ——— */
+  /* --- DOM helpers --- */
 
   function el(tag, attrs, children) {
     const node = document.createElement(tag);
@@ -465,7 +465,7 @@
     return group;
   }
 
-  /* ——— Scene builders ——— */
+  /* --- Scene builders --- */
 
   function buildAtmosphere(data, rainbow) {
     const root = document.getElementById('vrAtmosphere');
@@ -942,14 +942,14 @@
       navigator.xr.isSessionSupported('immersive-vr').then((ok) => {
         if (!ok && hint) {
           hint.textContent =
-            'Immersive VR not available — explore in 3D with mouse, or use Quest Browser on HTTPS';
+            'Immersive VR not available, explore in 3D with mouse, or use Quest Browser on HTTPS';
         }
         if (!ok && enterBtn) enterBtn.hidden = true;
         if (!ok) setTimeout(hideOverlay, 700);
       });
     } else {
       if (enterBtn) enterBtn.hidden = true;
-      if (hint) hint.textContent = 'WebXR not supported in this browser — use mouse to look around';
+      if (hint) hint.textContent = 'WebXR not supported in this browser, use mouse to look around';
       setTimeout(hideOverlay, 700);
     }
 
@@ -960,7 +960,7 @@
         return;
       }
       scene.enterVR().catch(() => {
-        if (hint) hint.textContent = 'Could not enter VR — try from Quest Browser on HTTPS';
+        if (hint) hint.textContent = 'Could not enter VR, try from Quest Browser on HTTPS';
       });
     });
 

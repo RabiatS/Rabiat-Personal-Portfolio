@@ -1,0 +1,1018 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nobody Knows What The Last One Did | Rabiat Sadiq</title>
+  <meta name="description" content="An essay on the AI deployment gap: models ship faster than people learn what the previous ones could already do, and why knowing more can make both people and models worse." />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+  <!-- Prevent theme flash & minimalist Rabiat -->
+  <script>
+    (function(){
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+
+  <style>
+    /* Long-form essay layout, scoped to this page. Uses the site palette. */
+    .essay { max-width: 720px; margin: 0 auto; }
+    .essay-hero { max-width: 780px; margin: 56px auto 48px; }
+    .essay-hero .eyebrow { color: rgba(255,255,255,0.92); }
+    .essay-hero h1 { color: #fff; }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+      margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);
+      color: var(--text-muted); font-size: 15px;
+    }
+    .byline strong { color: var(--text); font-weight: 600; }
+    .essay-hero .byline { color: rgba(255,255,255,0.88); border-top-color: rgba(255,255,255,0.28); }
+    .essay-hero .byline strong { color: #fff; }
+    .essay p {
+      font-size: 18px; line-height: 1.75; color: var(--text);
+      margin: 0 0 24px;
+    }
+    .essay h2 {
+      font-size: 28px; line-height: 1.3; margin: 56px 0 20px;
+      letter-spacing: -0.01em;
+    }
+    .essay h3 { font-size: 21px; margin: 40px 0 14px; }
+    .essay ul, .essay ol { margin: 0 0 24px; padding-left: 22px; }
+    .essay li { font-size: 18px; line-height: 1.7; margin-bottom: 12px; color: var(--text); }
+    .essay a { color: var(--primary); }
+
+    .drop { font-size: 21px; }
+
+    .sidenote {
+      border-left: 3px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      padding: 16px 20px; border-radius: 0 12px 12px 0;
+      margin: 0 0 28px;
+    }
+    .sidenote p { font-size: 16px; line-height: 1.65; margin: 0; color: var(--text-muted); }
+    .sidenote p + p { margin-top: 12px; }
+    .sidenote .label {
+      display: block; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700; margin-bottom: 8px;
+    }
+
+    .pull {
+      margin: 40px 0; padding: 0 0 0 24px;
+      border-left: 4px solid var(--primary);
+      font-size: 24px; line-height: 1.45; font-weight: 600;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+
+    figure.fig { margin: 44px 0; }
+    figure.fig svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+    figure.fig figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6;
+      margin-top: 14px; padding-left: 2px;
+    }
+    figure.fig figcaption b { color: var(--text); }
+
+    /* Figure palette, theme aware */
+    .fig svg { --f-ink: #1a1a1a; --f-mute: #6b7280; --f-line: #d1d5db;
+               --f-panel: #ffffff; --f-grid: #eceaf2; }
+    .dark .fig svg { --f-ink: #f3f4f6; --f-mute: #9ca3af; --f-line: #4b5563;
+                     --f-panel: #14141a; --f-grid: #26262f; }
+
+    figure.shot { margin: 40px 0; }
+    figure.shot img {
+      width: 100%; height: auto; display: block;
+      border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: var(--shadow-md); background: var(--surface);
+    }
+    figure.shot figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-top: 14px;
+    }
+    figure.shot figcaption b { color: var(--text); }
+    .shot-2up { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .shot-2up .cap {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); margin: 0 0 8px;
+    }
+    .shot-2up .cap.on { color: var(--primary); }
+    @media (max-width: 640px) { .shot-2up { grid-template-columns: 1fr; } }
+
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+    .table-wrap { overflow-x: auto; }
+
+    .refs { margin-top: 16px; }
+    .refs li { font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin-bottom: 14px; }
+    .refs li b { color: var(--text); font-weight: 600; }
+
+    .essay-foot {
+      margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .essay p, .essay li { font-size: 17px; }
+      .essay h2 { font-size: 24px; }
+      .pull { font-size: 20px; }
+    }
+  </style>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header container">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="../projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="../coursework.html" class="nav-pill">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="../cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" class="nav-pill nav-external">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-text">LinkedIn</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off">Tilt: Off</option>
+        <option value="desktop" selected>Tilt: Desktop</option>
+        <option value="all">Tilt: Mobile & Desktop</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: var(--header-height);">
+    <section class="cs-hero essay-hero">
+      <p class="eyebrow">Essay • AI Deployment Gap • Winter break research</p>
+      <h1>Nobody Knows What The Last One Did</h1>
+      <p class="lead">
+        We keep shipping new models faster than anyone learns what the old ones could already do.
+        I do not think the problem is capability anymore. I think it is fluency, and I think we are
+        designing for the wrong one.
+      </p>
+      <div class="byline">
+        <span><strong>Rabiat Sadiq</strong></span>
+        <span>January 9, 2026</span>
+        <span>About a 15 minute read</span>
+      </div>
+    </section>
+
+    <article class="essay">
+
+      <p class="drop">
+        I want to start with the thing I keep noticing, because this whole piece is really just
+        that one observation stretched out until it turns into an argument.
+      </p>
+
+      <p>
+        Every few weeks there is a new model. Better benchmarks, longer context, new modality,
+        faster, cheaper. And every few weeks I watch someone I know open it up and use it like a
+        slightly chattier Google. They paste a question in. They get a paragraph back. They close
+        the tab. That is the whole interaction.
+      </p>
+
+      <p>
+        Meanwhile the model they just closed could have read their spreadsheet, rewritten their
+        cover letter in their own voice, walked them through the thing they were scared to ask
+        about, or looked at a photo of the error on their screen. They did not know. Nobody told
+        them. And by the time anyone might have told them, there is a new one.
+      </p>
+
+      <p>
+        That is the gap I care about. Not the gap between what models score and what they should
+        score. The gap between what a model can do and what any given person actually knows how to
+        get out of it.
+      </p>
+
+      <h2>The gap is not capability. It is fluency.</h2>
+
+      <p>
+        Here is the shape of it. Capability is going up fast and roughly continuously. Fluency, by
+        which I mean the average person's working knowledge of what to ask for, goes up slowly, in
+        steps, and mostly by accident. Somebody shows you a thing at work. You see a video. You
+        stumble into it. That is basically the whole distribution channel.
+      </p>
+
+      <p>
+        So the two lines separate. And the interesting part is that the gap does not just grow, it
+        compounds, because each new release resets a little bit of what you thought you knew. The
+        thing that did not work six months ago works now. You already filed it under "cannot do
+        that" and you are not going back to check.
+      </p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 720 380" role="img" aria-labelledby="fig1title fig1desc" xmlns="http://www.w3.org/2000/svg">
+          <title id="fig1title">Capability rising faster than fluency, with the gap widening over time</title>
+          <desc id="fig1desc">Two curves over time. Model capability rises smoothly and steeply. Everyday fluency rises slowly in small steps. The shaded area between them, labelled the deployment gap, gets wider each year.</desc>
+
+          <defs>
+            <linearGradient id="gapfill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.26"/>
+              <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.03"/>
+            </linearGradient>
+          </defs>
+
+          <!-- grid -->
+          <g stroke="var(--f-grid)" stroke-width="1">
+            <line x1="70" y1="60"  x2="680" y2="60"/>
+            <line x1="70" y1="130" x2="680" y2="130"/>
+            <line x1="70" y1="200" x2="680" y2="200"/>
+            <line x1="70" y1="270" x2="680" y2="270"/>
+          </g>
+
+          <!-- axes -->
+          <line x1="70" y1="310" x2="680" y2="310" stroke="var(--f-line)" stroke-width="1.5"/>
+          <line x1="70" y1="46"  x2="70"  y2="310" stroke="var(--f-line)" stroke-width="1.5"/>
+
+          <!-- the gap -->
+          <path d="M70,296 C220,274 330,232 440,168 C540,112 610,84 680,66
+                   L680,250 C610,254 540,258 440,266 C330,275 220,286 70,296 Z"
+                fill="url(#gapfill)"/>
+
+          <!-- capability -->
+          <path d="M70,296 C220,274 330,232 440,168 C540,112 610,84 680,66"
+                fill="none" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round"/>
+
+          <!-- fluency: slow steps -->
+          <path d="M70,296 L150,296 L150,289 L240,289 L240,281 L330,281 L330,274
+                   L430,274 L430,266 L530,266 L530,258 L610,258 L610,250 L680,250"
+                fill="none" stroke="var(--f-mute)" stroke-width="3" stroke-linecap="round"
+                stroke-linejoin="round" stroke-dasharray="1 0"/>
+
+          <!-- gap arrow -->
+          <line x1="612" y1="86" x2="612" y2="248" stroke="var(--f-ink)" stroke-width="1.5"
+                stroke-dasharray="4 4"/>
+          <path d="M612,80 l-5,10 h10 z" fill="var(--f-ink)"/>
+          <path d="M612,254 l-5,-10 h10 z" fill="var(--f-ink)"/>
+
+          <!-- labels -->
+          <text x="676" y="46" font-size="15" font-weight="700" fill="#7c3aed"
+                text-anchor="end">what the model can do</text>
+          <text x="676" y="292" font-size="15" font-weight="600" fill="var(--f-mute)"
+                text-anchor="end">what people know to ask for</text>
+          <text x="624" y="172" font-size="14" font-weight="700" fill="var(--f-ink)">the gap</text>
+
+          <text x="70"  y="326" font-size="13" fill="var(--f-mute)">2022</text>
+          <text x="375" y="326" font-size="13" fill="var(--f-mute)" text-anchor="middle">2024</text>
+          <text x="680" y="326" font-size="13" fill="var(--f-mute)" text-anchor="end">2026</text>
+
+          <text x="70" y="360" font-size="13" fill="var(--f-mute)">
+            Release cadence keeps rising. Learning cadence does not.
+          </text>
+        </svg>
+        <figcaption>
+          <b>Figure 1.</b> The shape of the problem as I understand it. The top line is roughly
+          continuous. The bottom line moves when somebody happens to show you something. Every
+          release widens the shaded part, and the shaded part is where all the wasted value sits.
+        </figcaption>
+      </figure>
+
+      <p>
+        None of this is new, which is the part I found reassuring. Economists have been describing
+        this exact shape for forty years, just about a different technology each time. Robert Solow
+        said in 1987 that you could see the computer age everywhere except in the productivity
+        statistics. Paul David's answer to that, in a paper about electric dynamos, is the one that
+        stuck with me: factories had electricity for decades before they got the productivity out
+        of it, because the gain did not come from swapping the steam engine for a motor. It came
+        from rearranging the entire factory floor around what motors made possible, and that took a
+        generation of people who thought in motors rather than in belts and shafts.
+      </p>
+
+      <p>
+        So the lag is not stupidity. The lag is that the complementary knowledge takes time to
+        build, and right now the technology is moving faster than the knowledge can settle.
+        Brynjolfsson, Rock and Syverson call the same idea a productivity J-curve: things look flat
+        or worse before they look better, because everyone is busy building the invisible
+        scaffolding first.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          I find this genuinely comforting, honestly. It means the current moment is not a failure
+          of the technology and it is not a failure of people being lazy. It is just what the middle
+          of an adoption curve feels like from the inside. The uncomfortable part is that we usually
+          only recognise the middle in hindsight.
+        </p>
+      </div>
+
+      <h2>The calculator problem</h2>
+
+      <p>
+        The analogy I keep coming back to is a phone.
+      </p>
+
+      <p>
+        You are holding a device that can do a genuinely absurd number of things. It can measure
+        the height of a wall, identify a plant, translate a menu in real time through the camera,
+        isolate a voice out of a noisy recording, and tell you which of your screenshots has the
+        wifi password in it. And most days you use it as a calculator, a messenger, and a
+        rectangle to look at.
+      </p>
+
+      <p class="pull">
+        The capability is sitting right there. You are just not aware that the question is
+        askable.
+      </p>
+
+      <p>
+        That last bit is the important framing for me, and it is where the HCI literature actually
+        has language for this. Don Norman calls it the gulf of execution: the distance between what
+        you want and what you can figure out how to express to the system. When there is nothing on
+        screen suggesting an action exists, the gulf is not hard to cross, it is invisible. You do
+        not know you are standing at the edge of anything.
+      </p>
+
+      <p>
+        And there is an older, meaner finding underneath it. Carroll and Rosson wrote about the
+        paradox of the active user back in 1987: people will not stop to learn a system, even when
+        stopping to learn it would obviously save them time. They are trying to get the actual task
+        done. Reading the manual is not the task. So they stay on the small set of moves they
+        already know, forever, and the rest of the software might as well not exist.
+      </p>
+
+      <p>
+        Which describes basically every AI product I have used. There is a text box. The text box
+        is infinite. Nothing about it tells you what is on the other side. So people do the thing
+        they already know how to do, which is type a question like it is a search engine, and then
+        conclude that is what the thing is.
+      </p>
+
+      <h2>The blank box is a cold start problem</h2>
+
+      <p>
+        I want to be specific about why the blank box is bad, because "add suggestions" sounds like
+        a small UI nitpick and I think it is actually the whole thing.
+      </p>
+
+      <p>
+        A blank input is a request for the user to already know two things at once: what the system
+        is capable of, and how to phrase it in a way that gets that capability out. Those are
+        separate skills and most people have neither. There is a CHI paper from 2023 by
+        Zamfirescu-Pereira and colleagues with the very honest title "Why Johnny Can't Prompt",
+        where they watched non-experts try to design prompts. People did not systematically explore.
+        They over-generalised from single successes and single failures. They mapped their
+        conversational instincts onto the model and were surprised when the model did not behave
+        like a person who understood context.
+      </p>
+
+      <p>
+        That matches what I see constantly. Someone tries a thing once, it comes out badly, and the
+        conclusion is not "my prompt was underspecified", it is "it cannot do that". One sample.
+        Filed permanently. And a blank box gives you no way to recover from a wrong conclusion,
+        because it never volunteers anything.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          I catch myself doing this too, which is the annoying part. I have a set of maybe eight
+          things I ask for, and I mostly rotate through them. Every so often I try something outside
+          the set and it works and I think, how long has that been available. Usually the answer is
+          months.
+        </p>
+      </div>
+
+      <h2>The part I did not expect: knowing more can make you worse</h2>
+
+      <p>
+        This is the section I actually got interested in, and it is where the research took a turn
+        I was not planning on.
+      </p>
+
+      <p>
+        My starting intuition was that expertise straightforwardly helps. You know more, you ask
+        better, you get more out. And that is true up to a point. But there is a well documented
+        effect in the learning sciences called the expertise reversal effect, from Kalyuga, Ayres,
+        Chandler and Sweller, where instructional support that helps a beginner actively hurts an
+        expert. The scaffolding that gets a novice through the task becomes redundant information
+        the expert has to process and discard, and that processing costs them. The same guidance,
+        opposite sign, depending on who is reading it.
+      </p>
+
+      <p>
+        Then there is James Reason's work on human error, which splits mistakes into different
+        species. Novices make knowledge based mistakes: they do not know the rule. Experts make
+        slips and lapses: they know the rule perfectly and their well practised automatic routine
+        fires at the wrong moment. Experts do not make fewer errors so much as they make
+        <em>different</em> errors, and the expert ones are harder to catch because they come
+        wrapped in confidence.
+      </p>
+
+      <p>
+        And this is exactly the thing I was trying to describe to myself before I had words for it.
+        When you know more, you are not wrong because you are ignorant. You are wrong because you
+        have a specific, well developed idea of what something means, and that idea does not match
+        the one in the room.
+      </p>
+
+      <h3>Say the word recursion out loud</h3>
+
+      <p>
+        Here is my favourite example, because it happens to me constantly.
+      </p>
+
+      <p>
+        Say the word "recursion" in a room with a designer, a software developer, and a systems
+        engineer. Three people will nod. Three different things just happened.
+      </p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 720 330" role="img" aria-labelledby="fig2title fig2desc" xmlns="http://www.w3.org/2000/svg">
+          <title id="fig2title">One word splitting into three different meanings</title>
+          <desc id="fig2desc">The word recursion at the left branches into three panels: a designer hears nested repeating visual structure, a developer hears a function calling itself with a base case, and a systems engineer hears a feedback loop that can run away. Everyone nodded.</desc>
+
+          <!-- source token -->
+          <rect x="18" y="130" width="150" height="62" rx="14"
+                fill="none" stroke="#7c3aed" stroke-width="2.5"/>
+          <text x="93" y="158" font-size="17" font-weight="700" fill="#7c3aed" text-anchor="middle">“recursion”</text>
+          <text x="93" y="178" font-size="12" fill="var(--f-mute)" text-anchor="middle">one word, said once</text>
+
+          <!-- connectors -->
+          <g fill="none" stroke="var(--f-line)" stroke-width="2">
+            <path d="M168,150 C215,150 215,58 258,58"/>
+            <path d="M168,161 C215,161 215,161 258,161"/>
+            <path d="M168,172 C215,172 215,264 258,264"/>
+          </g>
+          <g fill="var(--f-line)">
+            <path d="M264,58 l-9,-5 v10 z"/><path d="M264,161 l-9,-5 v10 z"/><path d="M264,264 l-9,-5 v10 z"/>
+          </g>
+
+          <!-- panel 1 -->
+          <rect x="268" y="24" width="436" height="68" rx="12"
+                fill="var(--f-panel)" stroke="var(--f-line)" stroke-width="1.5"/>
+          <text x="288" y="49" font-size="14" font-weight="700" fill="var(--f-ink)">Designer</text>
+          <text x="288" y="71" font-size="14" fill="var(--f-mute)">a visual pattern nested inside itself, repeating inward</text>
+
+          <!-- panel 2 -->
+          <rect x="268" y="127" width="436" height="68" rx="12"
+                fill="var(--f-panel)" stroke="var(--f-line)" stroke-width="1.5"/>
+          <text x="288" y="152" font-size="14" font-weight="700" fill="var(--f-ink)">Developer</text>
+          <text x="288" y="174" font-size="14" fill="var(--f-mute)">a function calling itself, and please have a base case</text>
+
+          <!-- panel 3 -->
+          <rect x="268" y="230" width="436" height="68" rx="12"
+                fill="var(--f-panel)" stroke="var(--f-line)" stroke-width="1.5"/>
+          <text x="288" y="255" font-size="14" font-weight="700" fill="var(--f-ink)">Systems engineer</text>
+          <text x="288" y="277" font-size="14" fill="var(--f-mute)">a feedback loop, and the risk that it runs away</text>
+
+          <text x="360" y="322" font-size="13.5" font-style="italic" fill="var(--f-mute)">
+            Everyone nodded. Nobody noticed. The meeting continued.
+          </text>
+        </svg>
+        <figcaption>
+          <b>Figure 2.</b> The failure mode is not disagreement. Disagreement is loud and you can
+          fix it. This is agreement, which is silent, and you find out three weeks later when the
+          thing that got built is not the thing anyone described.
+        </figcaption>
+      </figure>
+
+      <p>
+        The organisational research has a good name for the objects that sit in the middle of this.
+        Star and Griesemer called them boundary objects: things that are concrete enough for
+        different communities to use, and loose enough that each community can read its own meaning
+        into them. That looseness is a feature, it is how groups collaborate without collapsing into
+        one vocabulary. It is also exactly how you get three weeks into a project pointed in three
+        directions. Paul Carlile's framing is that the hard boundary is not the syntactic one, where
+        you lack shared words, it is the semantic one, where you share the words and not the
+        meanings.
+      </p>
+
+      <p>
+        So here is the thing about expertise that I actually believe now. The reason I ask more
+        clarifying questions than I used to is not that I am more careful. It is that I know enough
+        fields to know a word is ambiguous. Depth does not give you certainty. Depth gives you a
+        longer list of things a sentence could have meant, and the discipline to stop and ask which
+        one.
+      </p>
+
+      <p class="pull">
+        Knowing more does not make you surer. It makes you slower on purpose.
+      </p>
+
+      <h2>And the same thing is happening to the models</h2>
+
+      <p>
+        This is where it loops back, and this is the part I think is under-discussed.
+      </p>
+
+      <p>
+        We assume a bigger, better model is monotonically more correct. Mostly it is. But there is
+        an empirical result I keep thinking about: Lin, Hilton and Evans built TruthfulQA around
+        questions where humans hold common misconceptions, and found that on those questions the
+        larger models were <em>less</em> truthful than the smaller ones. Not because the big model
+        knew less. Because it had absorbed the human pattern more thoroughly, including the wrong
+        parts, and could produce the confident, fluent, plausible version of the misconception.
+      </p>
+
+      <p>
+        That is the same shape as the human thing. The error does not come from a blank spot. It
+        comes from a well formed idea that happens not to be the right one for this context, stated
+        with the fluency of something that has done this a thousand times.
+      </p>
+
+      <p>
+        Biomimicry is the lens I reach for most often, in my work and just generally in how I think
+        about problems, and it is the one that fits here. We trained these systems on us. We should
+        expect them to fail in the shapes we fail in. More knowledge means more available interpretations,
+        more available interpretations means more ways to confidently pick the wrong one. In humans
+        we manage this with clarifying questions. In models we mostly do not manage it at all: the
+        model picks a reading of your ambiguous sentence and commits, silently, and you find out
+        later.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          The bit that unsettles me: a model that asks "which kind of recursion do you mean" would
+          feel worse to use in a demo. It would look hesitant. It would add a turn. Every incentive
+          in how these things get evaluated pushes toward the confident single answer, which is
+          exactly the expert failure mode.
+        </p>
+      </div>
+
+      <h2>So what would actually help</h2>
+
+      <p>
+        I do not think the fix is more capability, and I do not think it is teaching everyone to
+        prompt. Teaching everyone to prompt is a losing strategy for the same reason the manual is
+        a losing strategy: learning is not the task. The interface has to carry the knowledge.
+      </p>
+
+      <p>
+        Here is what I would build, roughly in the order I believe in them.
+      </p>
+
+      <h3>1. Never show a blank box first</h3>
+
+      <p>
+        Lead with what you can do, not with a cursor. Task tiles, action cards, verb-first labels.
+        "Rewrite this so it is shorter." "Turn these notes into a checklist." "Find the risks in
+        this plan." The input appears <em>after</em> the choice, because by then the person knows
+        what they are filling in and why. This is just Norman's signifiers applied to a chat
+        product, and it is the single change I would make first.
+      </p>
+
+      <h3>2. Put the suggestions after the answer, not only before</h3>
+
+      <p>
+        This is the one I care most about and the one I see least. The moment you have the most
+        context about what somebody is trying to do is the moment right after you answered them.
+        That is when a system should say: here are three things you could do with this now. Tighten
+        it. Turn it into slides. Check it against the document you gave me earlier.
+      </p>
+
+      <p>
+        Suggestions before the fact are guesses. Suggestions after the fact are informed, and they
+        teach. Every time someone takes one, they have learned a capability they did not know
+        existed, in context, at the exact moment it was useful, without reading anything.
+      </p>
+
+      <h3>3. Ship a changelog for humans, not for engineers</h3>
+
+      <p>
+        Right now a release note says the benchmark went up. That is not usable information. What I
+        want is: here are four things that did not work in the last one and now work. Fifteen second
+        clips. No jargon. Specifically framed as "you probably tried this and gave up, try it
+        again."
+      </p>
+
+      <p>
+        Because that stale "cannot do that" belief is the real inventory problem. People are
+        carrying around a mental model of a model from eighteen months ago and nothing ever
+        invalidates it.
+      </p>
+
+      <h3>4. Short sample videos, in the product, at the point of use</h3>
+
+      <p>
+        Not a docs site. Nobody is going to the docs site. Ten to twenty seconds, showing an actual
+        person doing an actual small task, sitting inside the empty state where the person already
+        is. Demonstration beats description for this, and it always has.
+      </p>
+
+      <h3>5. Make the model ask which recursion I meant</h3>
+
+      <p>
+        When an input is genuinely ambiguous across domains, the system should surface the readings
+        rather than silently choosing one. Two or three options, one line each, pick one. This costs
+        a turn and saves the entire wrong answer that would otherwise follow.
+      </p>
+
+      <p>
+        And it does something else, which is that it teaches you the ambiguity was there. That is
+        the expert skill I described earlier, handed over for free.
+      </p>
+
+      <h3>6. Build in the friction where it matters</h3>
+
+      <p>
+        The overreliance problem is the mirror image of the discovery problem, and it needs the
+        opposite treatment. Buçinca, Malaya and Gajos showed that cognitive forcing functions,
+        small deliberate interruptions that make you actually engage rather than accept, reduce
+        overreliance on AI. They also found people liked them less. That tradeoff seems worth taking
+        for anything consequential: a checklist before you send, a "what would make this wrong"
+        prompt, a moment of friction placed exactly where a confident wrong answer would do damage.
+      </p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 720 300" role="img" aria-labelledby="fig3title fig3desc" xmlns="http://www.w3.org/2000/svg">
+          <title id="fig3title">Blank box loop versus a loop that teaches</title>
+          <desc id="fig3desc">Left: a blank box leads to a guessed prompt, a mediocre answer, and the conclusion that it cannot do that, which loops back to a smaller set of things the user will try. Right: visible actions lead to a scoped ask, an answer, and follow-on suggestions, which loop back into a larger set of things the user knows to try.</desc>
+
+          <!-- LEFT -->
+          <text x="30" y="28" font-size="14" font-weight="700" fill="var(--f-mute)">WHAT WE SHIP NOW</text>
+          <g>
+            <rect x="30" y="44" width="290" height="42" rx="10" fill="var(--f-panel)" stroke="var(--f-line)" stroke-width="1.5"/>
+            <text x="46" y="70" font-size="14" fill="var(--f-ink)">blank box, no signal</text>
+
+            <rect x="30" y="102" width="290" height="42" rx="10" fill="var(--f-panel)" stroke="var(--f-line)" stroke-width="1.5"/>
+            <text x="46" y="128" font-size="14" fill="var(--f-ink)">guessed, underspecified ask</text>
+
+            <rect x="30" y="160" width="290" height="42" rx="10" fill="var(--f-panel)" stroke="var(--f-line)" stroke-width="1.5"/>
+            <text x="46" y="186" font-size="14" fill="var(--f-ink)">mediocre answer</text>
+
+            <rect x="30" y="218" width="290" height="42" rx="10" fill="none" stroke="#ec4899" stroke-width="2"/>
+            <text x="46" y="244" font-size="14" font-weight="600" fill="#ec4899">“it cannot do that.” set shrinks</text>
+
+            <g fill="none" stroke="var(--f-line)" stroke-width="2">
+              <path d="M175,86 v10"/><path d="M175,144 v10"/><path d="M175,202 v10"/>
+            </g>
+            <g fill="var(--f-line)">
+              <path d="M175,100 l-5,-9 h10 z"/><path d="M175,158 l-5,-9 h10 z"/><path d="M175,216 l-5,-9 h10 z"/>
+            </g>
+            <path d="M30,239 C10,239 10,65 30,65" fill="none" stroke="#ec4899" stroke-width="2" stroke-dasharray="5 4"/>
+            <path d="M34,65 l-9,-5 v10 z" fill="#ec4899"/>
+          </g>
+
+          <!-- RIGHT -->
+          <text x="400" y="28" font-size="14" font-weight="700" fill="#7c3aed">WHAT I WOULD SHIP</text>
+          <g>
+            <rect x="400" y="44" width="290" height="42" rx="10" fill="var(--f-panel)" stroke="var(--f-line)" stroke-width="1.5"/>
+            <text x="416" y="70" font-size="14" fill="var(--f-ink)">visible actions, verb first</text>
+
+            <rect x="400" y="102" width="290" height="42" rx="10" fill="var(--f-panel)" stroke="var(--f-line)" stroke-width="1.5"/>
+            <text x="416" y="128" font-size="14" fill="var(--f-ink)">scoped ask, ambiguity surfaced</text>
+
+            <rect x="400" y="160" width="290" height="42" rx="10" fill="var(--f-panel)" stroke="var(--f-line)" stroke-width="1.5"/>
+            <text x="416" y="186" font-size="14" fill="var(--f-ink)">answer, plus a review step</text>
+
+            <rect x="400" y="218" width="290" height="42" rx="10" fill="none" stroke="#7c3aed" stroke-width="2"/>
+            <text x="416" y="244" font-size="14" font-weight="600" fill="#7c3aed">“you could also…” set grows</text>
+
+            <g fill="none" stroke="var(--f-line)" stroke-width="2">
+              <path d="M545,86 v10"/><path d="M545,144 v10"/><path d="M545,202 v10"/>
+            </g>
+            <g fill="var(--f-line)">
+              <path d="M545,100 l-5,-9 h10 z"/><path d="M545,158 l-5,-9 h10 z"/><path d="M545,216 l-5,-9 h10 z"/>
+            </g>
+            <path d="M690,239 C712,239 712,65 690,65" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5 4"/>
+            <path d="M686,65 l9,-5 v10 z" fill="#7c3aed"/>
+          </g>
+        </svg>
+        <figcaption>
+          <b>Figure 3.</b> Both are loops. The difference is which direction the loop points. One
+          teaches the user that the system is small. The other teaches the user that it is bigger
+          than they thought, one follow-on at a time.
+        </figcaption>
+      </figure>
+
+      <h2>What I built, and what I wanted to find out</h2>
+
+      <p>
+        I turned the argument into something clickable, because I wanted to know whether the
+        task-first version actually feels different or whether I just like it on paper. It is easy
+        to write a confident essay about affordances. It is harder to sit with the thing and find
+        out it is annoying.
+      </p>
+
+      <p>
+        So it is set up as a study with two conditions, same tasks, same underlying outputs,
+        different front door.
+      </p>
+
+      <figure class="shot">
+        <div class="shot-2up">
+          <div>
+            <p class="cap">Control: chat mode</p>
+            <img src="../assets/img/projects/ai-deployment-gap/workspace-chat.jpg"
+                 alt="Chat condition: a text input with a few suggested prompts above it" loading="lazy" />
+          </div>
+          <div>
+            <p class="cap on">Treatment: guided mode</p>
+            <img src="../assets/img/projects/ai-deployment-gap/workspace-guided.jpg"
+                 alt="Guided condition: four labelled action cards, Rewrite Clearer, Adjust Tone, Generate Response, Shorten Message" loading="lazy" />
+          </div>
+        </div>
+        <figcaption>
+          <b>The comparison.</b> On the left, what basically every product ships: a box, and you
+          bring the knowledge. On the right, the same capabilities made visible as verb-first
+          actions, where the input only appears after you have picked one. Note that even the
+          control is a generous version of chat, since it shows suggested prompts. I did not want to
+          win by building a strawman.
+        </figcaption>
+      </figure>
+
+      <p>
+        The entry flow is deliberately inverted from the usual one. Instead of box first, you pick
+        what you are working on, and the actions follow from that.
+      </p>
+
+      <figure class="shot">
+        <img src="../assets/img/projects/ai-deployment-gap/task-picker.jpg"
+             alt="Task picker with four tiles: Email, Weekly Plan, Meeting Prep, Decision Support, each showing three example actions" loading="lazy" />
+        <figcaption>
+          <b>Task first, then action, then input.</b> Every tile shows concrete example actions
+          before you commit to anything, so the capability is legible from the outside. This is the
+          part I would defend hardest: you should be able to learn what the system does without
+          typing a single thing.
+        </figcaption>
+      </figure>
+
+      <p>
+        Expanding an action card shows what it does and, more importantly, why it helps, plus any
+        options worth setting. That "why this helps" line is doing the teaching work. It is the
+        thing that turns a button into an explanation of a capability you did not know you had.
+      </p>
+
+      <h3>What the study is actually trying to measure</h3>
+
+      <p>
+        The outcome I care about is not satisfaction. People will tell you they liked the pretty
+        one. The outcome I care about is whether guided mode leaves you knowing more about what the
+        system can do <em>after</em> you close it.
+      </p>
+
+      <p>
+        So the questions are roughly:
+      </p>
+
+      <ul>
+        <li>
+          Do people in the guided condition attempt a wider range of actions than people in chat
+          mode, given identical underlying capability?
+        </li>
+        <li>
+          Afterwards, can they name more things the system can do? This is the fluency measure, and
+          it is the one that maps to the gap in Figure 1.
+        </li>
+        <li>
+          Does the guided condition reduce the abandon-after-one-bad-try pattern that Johnny
+          Can't Prompt describes?
+        </li>
+        <li>
+          Does the review step change how much people actually check the output, or do they click
+          through it the way we all click through terms of service?
+        </li>
+      </ul>
+
+      <h3>What gets collected, and what does not</h3>
+
+      <p>
+        I wrote the consent screen before I wrote most of the app, which I would recommend to
+        anyone, because it forces you to decide what you actually need. The answer for this study is
+        interaction shape, not content.
+      </p>
+
+      <figure class="shot">
+        <img src="../assets/img/projects/ai-deployment-gap/consent.jpg"
+             alt="Consent screen listing what is collected, what is not collected, and participant rights" loading="lazy" />
+        <figcaption>
+          <b>The consent screen.</b> Written first, on purpose. If you cannot explain the collection
+          in plain language on one screen, the study design is probably wrong.
+        </figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table class="collect">
+          <thead>
+            <tr><th>Collected</th><th>Why it is needed</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Task type chosen</td>
+              <td>Tells me whether certain kinds of work draw people in more than others, and lets me compare like with like across the two conditions.</td>
+            </tr>
+            <tr>
+              <td>Which actions were used</td>
+              <td>The core measure. Breadth of actions attempted is the closest proxy I have for discovered capability.</td>
+            </tr>
+            <tr>
+              <td>Interaction patterns and timing</td>
+              <td>Time to first action separates hesitation from fluency. Long pauses in front of a blank box are exactly the cold start I am describing.</td>
+            </tr>
+            <tr>
+              <td>Accept, retry or abandon</td>
+              <td>Distinguishes a bad output from a bad entry point. Abandoning after one try is the pattern I most want to see move.</td>
+            </tr>
+            <tr>
+              <td>Reflection survey answers</td>
+              <td>Self-reported clarity and confidence, and the free-text answer about what they would ask for next time.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        And deliberately not collected: no personally identifying information, no account
+        credentials, and none of the actual content people type. That last one matters. The whole
+        point is that participants bring real work, an actual email they are stuck on, and they will
+        not do that if they think I am reading it. I do not need to read it. I need to know which
+        button they pressed.
+      </p>
+
+      <p>
+        Every session ends with a short reflection, which is where the interesting free text comes
+        from. "What would you ask for next time" is the question I expect to learn the most from,
+        because it is the fluency measure in disguise.
+      </p>
+
+      <figure class="shot">
+        <img src="../assets/img/projects/ai-deployment-gap/reflection.jpg"
+             alt="Reflection screen with rating questions and free text fields" loading="lazy" />
+        <figcaption>
+          <b>Post-task reflection.</b> Short on purpose. A long survey after a two minute task
+          gets you politeness, not data.
+        </figcaption>
+      </figure>
+
+      <p>
+        The design principles are also frozen and documented inside the app itself, on a screen you
+        can open at any time. That was not decoration. If I change the action card wording halfway
+        through, the two conditions stop being comparable and the whole thing is worthless, so I
+        wrote down exactly which elements are locked and why each one traces back to a finding.
+      </p>
+
+      <figure class="shot">
+        <img src="../assets/img/projects/ai-deployment-gap/principles.jpg"
+             alt="Design principles screen mapping each research finding to its UI implementation and locked elements" loading="lazy" />
+        <figcaption>
+          <b>Research to design, written down.</b> Each principle lists the finding, how it shows up
+          in the interface, and which elements cannot change mid-study. Doing this early is the only
+          reason I can still tell you why any given button is worded the way it is.
+        </figcaption>
+      </figure>
+
+      <p>
+        Status, honestly: I have not run it with participants yet. It is a working prototype and a
+        frozen design, not a result. I did not want to write this up as though I had findings I do
+        not have.
+      </p>
+
+      <h3>A note on how it got made</h3>
+
+      <p>
+        This was my first time ever using Figma Make for something real, and I want to say that
+        plainly because it changed how fast the idea got out of my head.
+      </p>
+
+      <p>
+        I have had the thought behind this essay for a long time. What I did not have was a way to
+        get from "people do not know what these things can do" to something I could actually put in
+        front of a person, quickly enough that I still cared by the time it existed. Being able to
+        go from a description to a clickable multi-screen flow in an afternoon is a genuinely
+        different working mode. It meant the design questions arrived early, while I was still
+        interested, instead of three weeks later when I had lost the thread.
+      </p>
+
+      <p>
+        I learned a lot from it, and I learned more from watching what other people were doing with
+        it. That is honestly part of why I got intrigued enough to build this and then write the
+        whole thing up. Which, I notice, is itself an example of the argument: I did not learn the
+        tool by reading about the tool. I learned it because I saw someone do something with it that
+        I did not know was possible.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          The export needed real work to become a running app. There was no entry point, no build
+          setup, and about forty dependencies for a component library that none of the screens
+          actually used. I stripped it back to React and one icon package, wired up the build, and
+          fixed a dead end where the principles screen had no way back to the task list. Worth
+          knowing if you are planning to take something from a prototype tool into an actual repo.
+          The generated thing is a real starting point, not a finished one.
+        </p>
+      </div>
+
+      <h2>What I am still not sure about</h2>
+
+      <p>
+        A few things I have not resolved, and I would rather write them down than pretend the
+        argument is closed.
+      </p>
+
+      <ul>
+        <li>
+          Guided interfaces might just relocate the ceiling. If I show you eight action cards, do
+          you learn that the system is bigger than you thought, or do you learn that the system has
+          exactly eight actions? That is an empirical question and I genuinely do not know which way
+          it goes.
+        </li>
+        <li>
+          The expertise reversal effect suggests everything I proposed will annoy expert users. The
+          scaffolding that teaches a newcomer is noise to somebody fluent. So this probably has to
+          fade as you get better at it, and adaptive fading is much harder to get right than it
+          sounds.
+        </li>
+        <li>
+          I do not know whether the follow-on suggestions teach or just steer. There is a version of
+          this where people only ever do the three things the product suggested, and the suggestion
+          rail becomes the new ceiling rather than a door.
+        </li>
+      </ul>
+
+      <p>
+        But I am fairly confident about the core claim, which is this. We are pouring enormous
+        effort into the top line of Figure 1 and almost none into the bottom one. The bottom line is
+        where all the unrealised value is sitting. And it is an interface problem, which means it is
+        solvable now, with the models we already have, without waiting for the next one.
+      </p>
+
+      <p>
+        Which is convenient, because the next one is out in a couple of weeks anyway, and most
+        people still will not know what this one did.
+      </p>
+
+      <h2>Notes and sources</h2>
+
+      <p>
+        These are the works I leaned on. A few I read in full, a few I know through summaries and
+        want to go back to properly.
+      </p>
+
+      <ol class="refs">
+        <li><b>Robert Solow (1987).</b> Review in the New York Times Book Review, source of the line about seeing the computer age everywhere except the productivity statistics.</li>
+        <li><b>Paul A. David (1990).</b> "The Dynamo and the Computer: An Historical Perspective on the Modern Productivity Paradox." <i>American Economic Review</i> 80(2).</li>
+        <li><b>Erik Brynjolfsson, Daniel Rock, Chad Syverson (2021).</b> "The Productivity J-Curve: How Intangibles Complement General Purpose Technologies." <i>American Economic Journal: Macroeconomics</i>.</li>
+        <li><b>John M. Carroll and Mary Beth Rosson (1987).</b> "Paradox of the Active User," in <i>Interfacing Thought: Cognitive Aspects of Human-Computer Interaction</i>.</li>
+        <li><b>Donald A. Norman (2013).</b> <i>The Design of Everyday Things</i>, revised edition. Affordances, signifiers, and the gulfs of execution and evaluation.</li>
+        <li><b>J.D. Zamfirescu-Pereira, Richmond Y. Wong, Bjoern Hartmann, Qian Yang (2023).</b> "Why Johnny Can't Prompt: How Non-AI Experts Try (and Fail) to Design LLM Prompts." <i>CHI 2023</i>.</li>
+        <li><b>Saul Amershi et al. (2019).</b> "Guidelines for Human-AI Interaction." <i>CHI 2019</i>.</li>
+        <li><b>Slava Kalyuga, Paul Ayres, Paul Chandler, John Sweller (2003).</b> "The Expertise Reversal Effect." <i>Educational Psychologist</i> 38(1).</li>
+        <li><b>James Reason (1990).</b> <i>Human Error</i>. Cambridge University Press. The distinction between slips, lapses and knowledge based mistakes.</li>
+        <li><b>Colin Camerer, George Loewenstein, Martin Weber (1989).</b> "The Curse of Knowledge in Economic Settings." <i>Journal of Political Economy</i>.</li>
+        <li><b>Susan Leigh Star and James R. Griesemer (1989).</b> "Institutional Ecology, 'Translations' and Boundary Objects." <i>Social Studies of Science</i> 19(3).</li>
+        <li><b>Paul R. Carlile (2002).</b> "A Pragmatic View of Knowledge and Boundaries." <i>Organization Science</i> 13(4).</li>
+        <li><b>Stephanie Lin, Jacob Hilton, Owain Evans (2022).</b> "TruthfulQA: Measuring How Models Mimic Human Falsehoods." <i>ACL 2022</i>.</li>
+        <li><b>Zana Buçinca, Maja Barbara Malaya, Krzysztof Z. Gajos (2021).</b> "To Trust or to Think: Cognitive Forcing Functions Can Reduce Overreliance on AI in AI-assisted Decision-making." <i>CSCW</i>.</li>
+        <li><b>Michelene Chi, Paul Feltovich, Robert Glaser (1981).</b> "Categorization and Representation of Physics Problems by Experts and Novices." <i>Cognitive Science</i> 5(2).</li>
+        <li><b>Everett M. Rogers (1962).</b> <i>Diffusion of Innovations</i>.</li>
+      </ol>
+
+      <div class="essay-foot">
+        <a class="btn" href="../projects.html">← All projects</a>
+        <a class="btn btn-primary" href="mailto:robbiahsadiq@gmail.com">Tell me where I am wrong</a>
+      </div>
+
+    </article>
+  </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+</body>
+</html>

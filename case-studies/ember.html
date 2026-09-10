@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ember: a week, then gone | Rabiat Sadiq</title>
+  <meta name="description" content="Ember: a private photo app for a small circle of friends where every drop fades over a week and then destroys its own key. Case study on the architecture, the storage thesis and the design." />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+  <!-- Prevent theme flash & minimalist Rabiat -->
+  <script>
+    (function(){
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+
+  <style>
+    /* Long-form essay layout, scoped to this page. Uses the site palette. */
+    .essay { max-width: 720px; margin: 0 auto; }
+    .essay-hero { max-width: 780px; margin: 56px auto 48px; }
+    .essay-hero .eyebrow { color: rgba(255,255,255,0.92); }
+    .essay-hero h1 { color: #fff; }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+      margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);
+      color: var(--text-muted); font-size: 15px;
+    }
+    .byline strong { color: var(--text); font-weight: 600; }
+    .essay-hero .byline { color: rgba(255,255,255,0.88); border-top-color: rgba(255,255,255,0.28); }
+    .essay-hero .byline strong { color: #fff; }
+    .essay p {
+      font-size: 18px; line-height: 1.75; color: var(--text);
+      margin: 0 0 24px;
+    }
+    .essay h2 {
+      font-size: 28px; line-height: 1.3; margin: 56px 0 20px;
+      letter-spacing: -0.01em;
+    }
+    .essay h3 { font-size: 21px; margin: 40px 0 14px; }
+    .essay ul, .essay ol { margin: 0 0 24px; padding-left: 22px; }
+    .essay li { font-size: 18px; line-height: 1.7; margin-bottom: 12px; color: var(--text); }
+    .essay a { color: var(--primary); }
+
+    .drop { font-size: 21px; }
+
+    .sidenote {
+      border-left: 3px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      padding: 16px 20px; border-radius: 0 12px 12px 0;
+      margin: 0 0 28px;
+    }
+    .sidenote p { font-size: 16px; line-height: 1.65; margin: 0; color: var(--text-muted); }
+    .sidenote p + p { margin-top: 12px; }
+    .sidenote .label {
+      display: block; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700; margin-bottom: 8px;
+    }
+
+    .pull {
+      margin: 40px 0; padding: 0 0 0 24px;
+      border-left: 4px solid var(--primary);
+      font-size: 24px; line-height: 1.45; font-weight: 600;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+
+    figure.fig { margin: 44px 0; }
+    figure.fig svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+    figure.fig figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6;
+      margin-top: 14px; padding-left: 2px;
+    }
+    figure.fig figcaption b { color: var(--text); }
+
+    /* Figure palette, theme aware */
+    .fig svg { --f-ink: #1a1a1a; --f-mute: #6b7280; --f-line: #d1d5db;
+               --f-panel: #ffffff; --f-grid: #eceaf2; }
+    .dark .fig svg { --f-ink: #f3f4f6; --f-mute: #9ca3af; --f-line: #4b5563;
+                     --f-panel: #14141a; --f-grid: #26262f; }
+
+    figure.shot { margin: 40px 0; }
+    figure.shot img {
+      width: 100%; height: auto; display: block;
+      border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: var(--shadow-md); background: var(--surface);
+    }
+    figure.shot figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-top: 14px;
+    }
+    figure.shot figcaption b { color: var(--text); }
+    .shot-2up { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .shot-2up .cap {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); margin: 0 0 8px;
+    }
+    .shot-2up .cap.on { color: var(--primary); }
+    @media (max-width: 640px) { .shot-2up { grid-template-columns: 1fr; } }
+
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+    .table-wrap { overflow-x: auto; }
+
+
+    .phones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 40px 0; }
+    .phones.two { grid-template-columns: repeat(2, 1fr); max-width: 520px; }
+    .phones figure { margin: 0; }
+    .phones img {
+      width: 100%; height: auto; display: block; border-radius: 22px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+    }
+    .phones figcaption { font-size: 14px; color: var(--text-muted); margin-top: 10px; line-height: 1.5; }
+    @media (max-width: 700px) { .phones, .phones.two { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 440px) { .phones, .phones.two { grid-template-columns: 1fr; } }
+
+    .layers { list-style: none; padding: 0; counter-reset: layer; margin: 0 0 28px; }
+    .layers li {
+      position: relative; padding: 16px 18px 16px 60px; margin-bottom: 12px;
+      border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+      font-size: 16.5px; line-height: 1.6;
+    }
+    .layers li::before {
+      counter-increment: layer; content: counter(layer);
+      position: absolute; left: 18px; top: 16px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--primary); color: #fff; font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .layers li b { color: var(--text); }
+
+    .table-wrap { overflow-x: auto; }
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+
+    .swatches { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:28px 0 12px; }
+    .sw { border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--surface); }
+    .sw .chip { height:56px; display:block; }
+    .sw .meta { padding:9px 11px; }
+    .sw b { display:block; font-size:14px; color:var(--text); }
+    .sw span { font-size:12px; color:var(--text-muted); font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+    @media (max-width:560px){ .swatches{ grid-template-columns:repeat(2,1fr);} }
+    .refs { margin-top: 16px; }
+    .refs li { font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin-bottom: 14px; }
+    .refs li b { color: var(--text); font-weight: 600; }
+
+    .essay-foot {
+      margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .essay p, .essay li { font-size: 17px; }
+      .essay h2 { font-size: 24px; }
+      .pull { font-size: 20px; }
+    }
+  </style>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header container">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="../projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="../coursework.html" class="nav-pill">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="../cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" class="nav-pill nav-external">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-text">LinkedIn</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <label class="sr-only" for="tiltModeSelect">Tilt mode</label>
+      <select id="tiltModeSelect" class="tilt-select" title="Tilt mode">
+        <option value="off">Tilt: Off</option>
+        <option value="desktop" selected>Tilt: Desktop</option>
+        <option value="all">Tilt: Mobile & Desktop</option>
+      </select>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: var(--header-height);">
+    <section class="cs-hero essay-hero">
+      <p class="eyebrow">Case study • iOS and Android • Design system and architecture</p>
+      <h1>Ember: a week, then gone</h1>
+      <p class="lead">
+        A private photo app for a small circle of friends. Share a trip the way you would hand
+        someone an album, let them pick what they want to look at, and then let it go. My first
+        real UI project, and the one where I finally built a design system instead of just picking
+        colours.
+      </p>
+      <div class="byline">
+        <span><strong>Rabiat Sadiq</strong></span>
+        <span>2026</span>
+        <span>iOS, Android, and a backend</span>
+      </div>
+      <div class="cs-metrics" style="margin-top:32px">
+        <div class="metric"><h3>Design system</h3><p>Two-half palette, one typeface</p></div>
+        <div class="metric"><h3>Deletion</h3><p>Three independent layers</p></div>
+        <div class="metric"><h3>Transfer</h3><p>1.5 MB where it would be 50</p></div>
+      </div>
+    </section>
+
+    <article class="essay">
+
+      <h2>It starts with the name</h2>
+
+      <p>
+        Ember sits inside both of the words the product is made of.
+      </p>
+
+      <div class="phones two" style="margin-left:auto;margin-right:auto">
+        <figure><img src="../assets/img/projects/ember/wordmark-member.jpg" alt="The word member on a warm gradient" loading="lazy" /></figure>
+        <figure><img src="../assets/img/projects/ember/wordmark-ember.jpg" alt="The word ember on a warm gradient with the tagline for the people who were there" loading="lazy" /></figure>
+      </div>
+
+      <p style="text-align:center;color:var(--text-muted);font-size:16px;margin-top:-12px">
+        rem<b style="color:var(--text)">ember</b> &nbsp;·&nbsp; m<b style="color:var(--text)">ember</b>
+      </p>
+
+      <p>
+        A closed group of <em>members</em>, sharing things they will <em>remember</em> precisely
+        because the photos did not stay. And an ember is literally what the product is: warm, alive
+        for a while, and then not.
+      </p>
+
+      <p>
+        Nothing in the naming had to be invented, which is usually the sign that a name is right. So
+        the launch animation just shows you. The wordmark opens on <em>remember</em> in cursive, the
+        <em>re</em> blurs and lifts away, then the <em>m</em> goes the same way, and you are left with
+        <em>ember</em> as the mark dissolves into the feed. The whole thing is under two seconds,
+        which is roughly a cold app launch anyway, so it costs the user nothing. It explains the name
+        once, on first open, without a single line of onboarding copy.
+      </p>
+
+      <h2>The problem I actually wanted to solve</h2>
+
+      <p>
+        Your friends get back from a trip. They have two hundred photos and they want to share them
+        with you and about nine other people.
+      </p>
+
+      <p>
+        So what happens now. They send the same set to each person, one at a time. And every one of
+        those sends is a copy. The original is on their phone. The version they sent you is stored
+        again in that thread. The version they sent the next person is stored again in that thread.
+        Most people do not realise this, but the photos inside your messages are storage too, sitting
+        on your device, counting against you.
+      </p>
+
+      <p>
+        Multiply that across a friend group and everyone quietly runs out of space, holding many
+        copies of the same trip.
+      </p>
+
+      <p class="pull">
+        You still need to share with your friends. Social media is too public. So you are stuck
+        choosing between the thing that eats your phone and the thing that tells everyone.
+      </p>
+
+      <p>
+        The alternative I wanted was closer to a physical gesture. You hand someone an album. They
+        turn the pages and look at what they want to look at. They say something about the one they
+        liked, either to you or to the whole room. And if there is one they really want, they take it.
+      </p>
+
+      <p>
+        That is the interaction model. Not a feed. Not a broadcast. Showing your friends a dump and
+        letting them choose what to see, react to it, and talk about it, one on one or as a group.
+      </p>
+
+      <h3>Which is where the fade comes from</h3>
+
+      <p>
+        A photo does not sit at full quality for seven days and vanish at a cliff. It loses
+        resolution across its week, and near the end it lifts away into drifting specks of light.
+        Press and hold and you see it whole again, for as long as you hold. What is left at the very
+        end is the thirty six bytes of colour it arrived as.
+      </p>
+
+      <p>
+        A hard cliff makes you check the clock. A slow fade makes you look now.
+      </p>
+
+      <div class="phones">
+        <figure>
+          <img src="../assets/img/projects/ember/onboard-keep.jpg" alt="Onboarding screen reading keep what matters" loading="lazy" />
+          <figcaption>Keeping is deliberate on both sides: the poster allows it, the keeper chooses it, and the poster is told.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/projects/ember/onboard-fades.jpg" alt="Onboarding screen reading it fades, then it goes" loading="lazy" />
+          <figcaption>Detail leaves first, colour last. At the end the bytes are deleted and the key destroyed.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/projects/ember/viewer-voice.jpg" alt="Full screen photo viewer with a voice note and reaction controls" loading="lazy" />
+          <figcaption>Replies are the conversation: text, ten second voice notes, GIFs, your own stickers.</figcaption>
+        </figure>
+      </div>
+
+      <p>
+        Circles set a standing day for themselves. Waffle Wednesday. Sunday Long Way Home. On its day
+        the feed shows who has posted, and that is the entire nudge. There is no streak to protect,
+        because obligation is what kills a group chat. The moment an app can punish you for not
+        showing up, showing up stops meaning anything.
+      </p>
+
+      <h2>The design system</h2>
+
+      <p>
+        This was my first real UI project, and the thing I am proudest of is that it has an actual
+        system underneath it rather than a set of decisions I made one screen at a time.
+      </p>
+
+      <p>
+        The feeling I was aiming for is coming home. Not a product, a room. You are flipping through
+        a family album with people who were there, and when one of them is good you say so, and if
+        one of them matters you keep it. Everything else follows from wanting that to feel warm
+        rather than efficient.
+      </p>
+
+      <h3>A palette in two halves</h3>
+
+      <p>
+        This is the decision I would defend hardest, because it is the thing that stops a pastel
+        interface from becoming unusable. The palette is split, and the two halves have different
+        jobs and different rules.
+      </p>
+
+      <p>
+        <b>Hue</b> is the pastel half, and it is only ever used for fills: backgrounds, gradients,
+        avatar ramps, banner washes. These are large, low contrast and decorative, chosen purely for
+        how they sit underneath a photograph. They carry no meaning, so they carry no contrast
+        obligation.
+      </p>
+
+      <div class="swatches">
+        <div class="sw"><span class="chip" style="background:#FFB49A"></span><div class="meta"><b>peach</b><span>#FFB49A</span></div></div>
+        <div class="sw"><span class="chip" style="background:#FF7E6B"></span><div class="meta"><b>coral</b><span>#FF7E6B</span></div></div>
+        <div class="sw"><span class="chip" style="background:#C0B2F2"></span><div class="meta"><b>lilac</b><span>#C0B2F2</span></div></div>
+        <div class="sw"><span class="chip" style="background:#9ED3F0"></span><div class="meta"><b>sky</b><span>#9ED3F0</span></div></div>
+        <div class="sw"><span class="chip" style="background:#9FE3C4"></span><div class="meta"><b>mint</b><span>#9FE3C4</span></div></div>
+        <div class="sw"><span class="chip" style="background:#FFDF9E"></span><div class="meta"><b>butter</b><span>#FFDF9E</span></div></div>
+        <div class="sw"><span class="chip" style="background:#F9AFC6"></span><div class="meta"><b>rose</b><span>#F9AFC6</span></div></div>
+        <div class="sw"><span class="chip" style="background:#BFDCA8"></span><div class="meta"><b>sage</b><span>#BFDCA8</span></div></div>
+      </div>
+
+      <p>
+        <b>Signal</b> is the deeper half, and it is only ever used for meaning: the countdown ring,
+        urgency, the kept state. Every one of these is held to a 3:1 contrast minimum, because if you
+        cannot tell mint from coral then you cannot tell four days from four hours.
+      </p>
+
+      <div class="swatches">
+        <div class="sw"><span class="chip" style="background:#2E9E72"></span><div class="meta"><b>fresh</b><span>#2E9E72 · 3.19:1</span></div></div>
+        <div class="sw"><span class="chip" style="background:#B8820F"></span><div class="meta"><b>fading</b><span>#B8820F · 3.19:1</span></div></div>
+        <div class="sw"><span class="chip" style="background:#D9503C"></span><div class="meta"><b>urgent</b><span>#D9503C · 3.86:1</span></div></div>
+        <div class="sw"><span class="chip" style="background:#7C6BE0"></span><div class="meta"><b>kept</b><span>#7C6BE0 · 3.95:1</span></div></div>
+      </div>
+
+      <p>
+        The example that made the rule concrete: pastel mint measures 1.40:1. As a background wash
+        that is completely fine. As the colour telling you how long a memory has left, it is
+        unusable. So the two halves are separated in code, and nothing in the app is allowed to use
+        a colour that is not a token.
+      </p>
+
+      <h3>One typeface, and no custom font</h3>
+
+      <p>
+        The reflexive move for a consumer app is to licence a display face. I decided against it, and
+        the reasoning is a good example of the system arguing with itself.
+      </p>
+
+      <ul>
+        <li><b>Weight.</b> A usable custom family runs 200 to 400 KB across its weights. On an app
+          whose entire pitch is not hoarding bytes, that is an awkward first impression.</li>
+        <li><b>Dynamic Type.</b> iOS reflows the system faces correctly across the full accessibility
+          size range, in every script. Custom faces need per-size optical work that almost never gets
+          done, and the first place it breaks is the largest sizes, which is exactly where it matters
+          most.</li>
+        <li><b>Coverage.</b> SF ships every script the app could ever need. A boutique face ships
+          Latin.</li>
+        <li><b>It is not where the brand lives.</b> Ember is recognisable from the cursive mark, the
+          pastel-on-paper palette, the countdown ring and the way it moves. None of that depends on
+          the body face, so none of it breaks when Apple ships a new SF revision.</li>
+      </ul>
+
+      <p>
+        So: SF Pro Rounded everywhere, with Snell Roundhand reserved for the wordmark. Rounded
+        specifically, because the softened terminals read as friendly without reading as childish,
+        and they sit correctly next to a cursive letterform that is also soft-terminalled.
+      </p>
+
+      <h3>Motion has one rule</h3>
+
+      <p>
+        Motion explains where something came from, or it does not happen.
+      </p>
+
+      <p>
+        A sheet rises from the button that opened it. A sticker scales up from the point you tapped.
+        A card fades and lifts three percent on first appearance so a feed assembles rather than
+        snapping. Nothing spins, bounces or slides purely to be noticed.
+      </p>
+
+      <p>
+        Everything is one of two families, which is why transitions across the app feel related.
+        <b>Settle</b> is springs, for anything a finger caused, tuned so the element arrives just
+        after the finger leaves. That small lag is what makes an interface feel physical instead of
+        laggy. <b>Reveal</b> is eased curves, for anything the app did on its own. Exactly one curve
+        in the system overshoots, and it is reserved for stickers and reactions, where a bit of
+        bounce is the entire emotional payload. Using it anywhere else would spend the effect.
+      </p>
+
+      <div class="phones">
+        <figure>
+          <img src="../assets/img/projects/ember/circles.jpg" alt="Circles list showing four circles with ritual days and member counts" loading="lazy" />
+          <figcaption>Circles, each with its own standing day.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/projects/ember/composer-expiry.jpg" alt="Composer with audience selection and 24 hour, 3 day, 7 day expiry options" loading="lazy" />
+          <figcaption>Audience and lifespan are chosen per drop, not per account.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/projects/ember/feed.jpg" alt="The feed showing a live ritual, circle filters, and drops with their remaining time" loading="lazy" />
+          <figcaption>The feed, with a live ritual up top and every drop wearing its clock.</figcaption>
+        </figure>
+      </div>
+
+      <p>
+        Accessibility is in the system rather than bolted on afterwards. Anything interactive is at
+        least 44 by 44 points regardless of how small the glyph inside it looks. Dynamic Type is
+        supported across the full accessibility range, which is most of why there is no custom font.
+        And meaningful colour is held to a contrast floor while decorative colour is not, which is
+        the whole reason the palette is split in two.
+      </p>
+
+      <h2>The backend, and why I pushed on it so hard</h2>
+
+      <p>
+        I want to be accurate about this rather than modest about it. The design and the architecture
+        were equally important, and they took roughly equal amounts of care. But I was deliberate
+        about wanting the backend to be as strong as I could make it, because photos are finicky and
+        the failure modes are all miserable.
+      </p>
+
+      <p>
+        You do not want to lose someone's image. You do not want it stored in the wrong place. You do
+        not want a permission check that quietly lets the wrong person see something, or one that
+        locks a member out of their own circle. And unusually for a photo app, this one is
+        <em>supposed</em> to destroy things on a schedule, which means a bug in the wrong direction
+        deletes something early and a bug in the other direction breaks the entire promise.
+      </p>
+
+      <p>
+        The whole product is a technical claim. "It goes away" is not something you can express in a
+        layout. If deletion is soft, or recoverable, or depends on my application code being correct,
+        then the app is lying and the interface is decoration on top of a lie. So the architecture had
+        to be true first, and then the design had somewhere honest to stand.
+      </p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 720 470" role="img" aria-labelledby="arch-t arch-d" xmlns="http://www.w3.org/2000/svg">
+          <title id="arch-t">Ember architecture and the three deletion layers</title>
+          <desc id="arch-d">A photo is sealed on the phone under its own key, the key is wrapped for each member, ciphertext is uploaded to a private bucket and rows go to Postgres with row level security. Three independent layers delete it: a bucket lifecycle rule, a scheduled server sweeper, and the phone destroying the key.</desc>
+
+          <text x="0" y="16" font-size="13" font-weight="700" fill="var(--f-mute)" letter-spacing="1.4">POSTING A DROP</text>
+
+          <!-- phone -->
+          <rect x="0" y="34" width="196" height="112" rx="14" fill="var(--f-panel)" stroke="#7c3aed" stroke-width="2"/>
+          <text x="16" y="60" font-size="15" font-weight="700" fill="var(--f-ink)">On the phone</text>
+          <text x="16" y="83" font-size="13.5" fill="var(--f-mute)">three renditions made</text>
+          <text x="16" y="103" font-size="13.5" fill="var(--f-mute)">sealed with its own key</text>
+          <text x="16" y="123" font-size="13.5" fill="var(--f-mute)">key wrapped per member</text>
+
+          <!-- arrow -->
+          <path d="M204,90 L252,90" stroke="var(--f-line)" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+          <path d="M258,90 l-10,-5 v10 z" fill="var(--f-line)"/>
+          <text x="230" y="78" font-size="11.5" fill="var(--f-mute)" text-anchor="middle">ciphertext</text>
+
+          <!-- supabase -->
+          <rect x="264" y="24" width="252" height="132" rx="14" fill="none" stroke="var(--f-line)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <text x="276" y="44" font-size="12" font-weight="700" fill="var(--f-mute)" letter-spacing="1.2">SUPABASE</text>
+          <rect x="276" y="54" width="110" height="42" rx="9" fill="var(--f-panel)" stroke="var(--f-line)"/>
+          <text x="331" y="72" font-size="12.5" font-weight="600" fill="var(--f-ink)" text-anchor="middle">Postgres</text>
+          <text x="331" y="88" font-size="11" fill="var(--f-mute)" text-anchor="middle">row level security</text>
+          <rect x="394" y="54" width="110" height="42" rx="9" fill="var(--f-panel)" stroke="var(--f-line)"/>
+          <text x="449" y="72" font-size="12.5" font-weight="600" fill="var(--f-ink)" text-anchor="middle">Private bucket</text>
+          <text x="449" y="88" font-size="11" fill="var(--f-mute)" text-anchor="middle">bytes it cannot read</text>
+          <rect x="276" y="104" width="228" height="38" rx="9" fill="var(--f-panel)" stroke="var(--f-line)"/>
+          <text x="390" y="128" font-size="12" fill="var(--f-mute)" text-anchor="middle">auth · invite codes · comment functions</text>
+
+          <!-- arrow to members -->
+          <path d="M524,90 L572,90" stroke="var(--f-line)" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+          <path d="M578,90 l-10,-5 v10 z" fill="var(--f-line)"/>
+
+          <rect x="584" y="34" width="136" height="112" rx="14" fill="var(--f-panel)" stroke="#ec4899" stroke-width="2"/>
+          <text x="598" y="60" font-size="15" font-weight="700" fill="var(--f-ink)">Each member</text>
+          <text x="598" y="83" font-size="13.5" fill="var(--f-mute)">unwraps their</text>
+          <text x="598" y="103" font-size="13.5" fill="var(--f-mute)">copy of the key,</text>
+          <text x="598" y="123" font-size="13.5" fill="var(--f-mute)">opens the photo</text>
+
+          <!-- deletion band -->
+          <text x="0" y="212" font-size="13" font-weight="700" fill="var(--f-mute)" letter-spacing="1.4">DELETING IT, THREE WAYS THAT DO NOT DEPEND ON EACH OTHER</text>
+
+          <rect x="0" y="232" width="228" height="96" rx="12" fill="var(--f-panel)" stroke="var(--f-line)" stroke-width="1.5"/>
+          <circle cx="26" cy="258" r="12" fill="#7c3aed"/>
+          <text x="26" y="263" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+          <text x="48" y="263" font-size="14" font-weight="700" fill="var(--f-ink)">Bucket lifecycle</text>
+          <text x="16" y="288" font-size="12.5" fill="var(--f-mute)">A TTL on the object itself.</text>
+          <text x="16" y="307" font-size="12.5" fill="var(--f-mute)">Fires even if every line of</text>
+          <text x="16" y="322" font-size="12.5" fill="var(--f-mute)">my code is broken.</text>
+
+          <rect x="246" y="232" width="228" height="96" rx="12" fill="var(--f-panel)" stroke="var(--f-line)" stroke-width="1.5"/>
+          <circle cx="272" cy="258" r="12" fill="#a855f7"/>
+          <text x="272" y="263" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+          <text x="294" y="263" font-size="14" font-weight="700" fill="var(--f-ink)">Server sweeper</text>
+          <text x="262" y="288" font-size="12.5" fill="var(--f-mute)">A cron job every 15 minutes</text>
+          <text x="262" y="307" font-size="12.5" fill="var(--f-mute)">drops expired rows and</text>
+          <text x="262" y="322" font-size="12.5" fill="var(--f-mute)">revokes the wrapped keys.</text>
+
+          <rect x="492" y="232" width="228" height="96" rx="12" fill="none" stroke="#ec4899" stroke-width="2.5"/>
+          <circle cx="518" cy="258" r="12" fill="#ec4899"/>
+          <text x="518" y="263" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+          <text x="540" y="263" font-size="14" font-weight="700" fill="var(--f-ink)">The phone</text>
+          <text x="508" y="288" font-size="12.5" fill="var(--f-mute)">Deletes the cached bytes</text>
+          <text x="508" y="307" font-size="12.5" fill="var(--f-mute)">and destroys the drop key.</text>
+          <text x="508" y="322" font-size="12.5" font-weight="700" fill="#ec4899">This is the load bearing one.</text>
+
+          <rect x="0" y="356" width="720" height="50" rx="12" fill="none" stroke="var(--f-line)" stroke-width="1.5" stroke-dasharray="5 5"/>
+          <text x="360" y="378" font-size="13.5" fill="var(--f-mute)" text-anchor="middle">
+            Layers 1 and 2 tidy up. Layer 3 is what makes it true: destroy the key and the
+          </text>
+          <text x="360" y="396" font-size="13.5" fill="var(--f-mute)" text-anchor="middle">
+            leftover bytes are permanently unreadable, wherever a copy ended up.
+          </text>
+
+          <text x="0" y="440" font-size="12.5" fill="var(--f-mute)">Storage also shrinks before expiry: the large renditions are deleted first as a drop ages.</text>
+        </svg>
+        <figcaption>
+          <b>Figure 1.</b> The architecture, and the part of it that actually carries the promise.
+        </figcaption>
+      </figure>
+
+      <h3>What "its own key" means, in plain words</h3>
+
+      <p>
+        Encryption words get thrown around, so here is what is actually happening.
+      </p>
+
+      <p>
+        Every drop gets its own private key, generated on the phone, used for nothing else. The photo
+        is locked with that key before it ever leaves the device, using AES-256-GCM, which is the
+        standard lock that also tells you if someone tampered with the box. So what travels to the
+        server is a sealed box, and the server never receives the key that opens it.
+      </p>
+
+      <p>
+        Then the key has to reach the right people and nobody else. Each member of the circle has
+        their own public and private key pair. The drop's key is put in a small envelope addressed to
+        each member individually, locked with their public key, using X25519. Six people in the
+        circle means six envelopes. Each person can open exactly their own envelope, get the drop
+        key, and unlock the photo. Anyone else holds an envelope they cannot open, and the server
+        holds a box it cannot open.
+      </p>
+
+      <p>
+        Which is what makes the expiry real. Destroying the drop key is not a flag in a database
+        saying "deleted." It removes the only thing that could ever turn those bytes back into a
+        picture. Whatever survives, wherever it survived, is noise.
+      </p>
+
+      <p>
+        There is a test for exactly that, and it is the most important test in the project: seal a
+        photo, store it, read it back successfully, shred the key, read again. Nothing comes out. That
+        test is the product.
+      </p>
+
+      <p>
+        None of that is hidden from the user either. The app ships with a fine print screen that
+        explains what happens to your photos, who can see you, and what is kept, in the same plain
+        language as above. Being able to read the actual promise from inside the app, rather than
+        finding it in a policy document nobody opens, is the point. Transparency is a feature here,
+        not a compliance step.
+      </p>
+
+      <h2>The storage thesis</h2>
+
+      <p>
+        Ephemerality is usually framed as a privacy feature. It is also an economics feature, and
+        that is the half that makes the app possible for one person to run.
+      </p>
+
+      <p>
+        A photo app that keeps everything forever has a cost curve that only goes up, which is why
+        every one of them eventually sells you storage or sells your attention. If content expires by
+        design, storage cost stops compounding. Running this for a friend group today costs the
+        ninety nine dollar developer program fee and nothing else, because the free database tier is
+        genuinely enough when nothing accumulates.
+      </p>
+
+      <p>
+        On top of that, every photo becomes three renditions and the app is careful about which one it
+        asks for.
+      </p>
+
+      <div class="table-wrap">
+        <table class="collect">
+          <thead><tr><th>Rendition</th><th>Long edge</th><th>Fetched when</th></tr></thead>
+          <tbody>
+            <tr><td>thumb</td><td>400px</td><td>Every card, always cached</td></tr>
+            <tr><td>display</td><td>2048px</td><td>A photo goes full screen</td></tr>
+            <tr><td>original</td><td>Untouched</td><td>A pinch to zoom, or a keep</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Six friends browsing a ten photo drop move about 1.5 MB, not 50 MB, and still get the
+        untouched file the instant somebody actually wants it. Quality is never lost, only deferred.
+        And as a drop ages the larger renditions are deleted first, so most of its storage is released
+        long before the drop itself is.
+      </p>
+
+      <p>
+        Which brings it back to where this started. One copy, shared with the people you chose, that
+        cleans up after itself. Instead of ten copies in ten threads that never do.
+      </p>
+
+      <figure class="shot" style="max-width:340px;margin:40px auto">
+        <img src="../assets/img/projects/ember/profile-storage.jpg" alt="Profile screen showing 7.8 MB on this phone and Zero KB already gone" loading="lazy" />
+        <figcaption style="text-align:center">
+          <b>Shown, not claimed.</b> The profile screen tells you how many bytes you are actually
+          holding and how many have already been released. If the thesis is that this app stays
+          small, the number belongs on screen.
+        </figcaption>
+      </figure>
+
+      <h2>Both platforms, one promise</h2>
+
+      <p>
+        iPhone is SwiftUI. Android is Expo, built in the cloud with EAS. Same server, same crypto: a
+        drop sealed on an iPhone opens on Android, and that is proven by a parity test running against
+        a vector the Swift tests emit, rather than by me assuming two implementations of the same spec
+        agree.
+      </p>
+
+      <p>
+        The app boots into a seeded world with four circles, a live Waffle Wednesday, and a drop in
+        its final hours, so the states that are hard to reach are always one launch away. Without a
+        server configured it runs entirely on device, and the profile screen tells you which mode you
+        are in.
+      </p>
+
+      <p>
+        Tests cover the media pipeline, sealing, key wrapping, shredding, the decay ladder and the
+        models, plus UI tests for the flows that break silently. There is also a suite that runs the
+        real client against the real project, which is how a client and a schema that quietly disagree
+        get caught. It found four real bugs the first time it ran.
+      </p>
+
+      <h2>What I would do next</h2>
+
+      <ul>
+        <li>Run it with an actual circle of friends for a month. Everything above is a design argument
+          until a group of people either keeps opening it or does not.</li>
+        <li>Watch whether the fade reads as intended or as a bug. Losing detail on purpose is the
+          riskiest idea in the product and the one most likely to be misread.</li>
+        <li>Work out whether keeps stay rare. If everyone keeps everything, the app quietly becomes the
+          archive I was trying not to build.</li>
+      </ul>
+
+      <div class="essay-foot">
+        <a class="btn" href="../projects.html">← All projects</a>
+        <a class="btn btn-primary" href="https://github.com/RabiatS/ember" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+
+    </article>
+  </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+</body>
+</html>

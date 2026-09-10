@@ -1,5 +1,5 @@
 /**
- * Builder cube fall — click-to-drop from panel to footer
+ * Builder cube fall: click-to-drop from panel to footer
  */
 import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js';
 

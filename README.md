@@ -1,124 +1,69 @@
-# Rabiat Sadiq Portfolio Website
->>>> [Website](https://www.rabiatsadiq.com)
+# Rabiat Sadiq — Portfolio
 
+**[rabiatsadiq.com](https://www.rabiatsadiq.com)**
 
-A comprehensive, interactive portfolio website showcasing my interdisciplinary work in Applied ML, XR, and Human-Computer Interaction.
+Interactive portfolio for applied ML, XR, and HCI work — built as a static site with no backend required for browsing. If you're here as a recruiter or collaborator, start on the live site; this repo is the source behind it.
 
-## File Structure
+## What to explore
 
-```
-Personal webpage/
-├── index.html              # Home page with hero, featured projects, timeline
-├── vr.html                 # WebXR immersive view (inside the site hero + featured work)
-├── projects.html           # Comprehensive projects page with filtering
-├── coursework.html         # Coursework showcase page
-├── contact.html            # Contact form page
-├── cool.html               # Cool websites collection
-│
-├── case-studies/           # Detailed case study pages
-│   ├── case-study.html            # Magic Mitts haptic VR glove
-│   ├── case-study-ps.html         # PlayStation internship
-│   ├── case-study-spotify.html   # Spotify vs AI research
-│   ├── case-study-assuage.html    # Assuage health ML
-│   └── case-study-pain-xr.html    # XR pain perception (CMU)
-│
-├── assets/                 # Static assets
-│   ├── style.css           # Main stylesheet
-│   ├── script.js           # JavaScript functionality
-│   ├── projects.json       # Project data (easy to update!)
-│   ├── favicon.svg         # Site favicon
-│   ├── mm.png              # Magic Mitts image
-│   ├── HCI_Proposal_for_Independent_Study_Rabiat_XR.pdf
-│   ├── Rabiat_Sadiq_Resume.pdf    # Resume PDF
-│   └── img/                # Image assets
-│       ├── projects/       # Project-specific images
-│       └── placeholders/   # Placeholder images
-│
-└── files/                  # Documents and other files
-    └── Rabiat_Sadiq_Resume_DEC_2025.pdf
-```
+| Area | What you'll find |
+|------|------------------|
+| **Home** | Hero, featured projects, experience timeline, skills |
+| **Projects** | Filterable gallery (XR, ML, HCI, research tags) with search |
+| **Case studies** | Deep dives on Magic Mitts, PlayStation internship, Spotify research, Assuage ML, XR pain perception |
+| **Coursework** | Academic and independent study highlights |
+| **Contact** | Get in touch |
+| **Cool** | Curated inspiration from other sites |
 
-## Features
+Resume: linked from the site header and hero CTAs ([PDF](https://www.rabiatsadiq.com/assets/Rabiat_Sadiq_Resume.pdf)).
 
-- **Dynamic Project Loading**: Projects are loaded from embedded JSON data (no server required)
-- **Interactive Filtering**: Filter projects by tags (XR, ML, HCI, Research, etc.) with real-time updates
-- **Search Functionality**: Real-time search across project titles and descriptions
-- **Case Studies**: Detailed case study pages for major projects with rich content
-- **Responsive Design**: Fully responsive layout that works seamlessly on mobile and desktop
-- **Dark Mode**: Theme toggle with system preference detection and localStorage persistence
-- **Secret Rainbow Mode**: Hidden party mode activated by holding the theme toggle button
-- **Interactive Galaxy Canvas**: Animated nebula background with parallax effect and shooting stars
-- **VR Eye Animation**: Interactive VR headset with eyes that follow cursor movement
-- **View in VR (WebXR)**: On supported headsets (Quest Browser, etc.), a header link opens [`vr.html`](vr.html) — an immersive 3D version of the home hero and featured projects (A-Frame)
-- **Card Tilt Effects**: 3D tilt animations on project cards (configurable: off, desktop-only, or all devices)
-- **Color Scheme Switcher**: 20+ fun color schemes to customize the site's appearance
-- **Smooth Animations**: CSS transitions and JavaScript-powered animations throughout
-- **Accessibility**: ARIA labels, keyboard navigation, and reduced motion support
+## Highlights & interactive features
 
-## Adding a New Project
+**Core experience**
 
-1. Open `assets/projects.json`
-2. Add a new project object to the `projects` array:
+- **Project gallery** — JSON-driven project cards with tag filters and live search
+- **Case studies** — Long-form write-ups for flagship work
+- **Responsive layout** — Mobile and desktop; dark mode with system preference + saved choice
+- **Accessibility** — ARIA labels, keyboard navigation, reduced-motion support
 
-```json
-{
-  "id": "project-id",
-  "title": "Project Title",
-  "subtitle": "Short subtitle",
-  "category": "Category Name",
-  "tags": ["Tag1", "Tag2"],
-  "description": "Brief description",
-  "longDescription": "Detailed description",
-  "technologies": ["Tech1", "Tech2"],
-  "github": "https://github.com/...",
-  "demo": "https://demo-url.com",
-  "caseStudy": "case-studies/case-study-name.html",
-  "status": "complete",
-  "images": ["path/to/image.jpg"],
-  "videos": [],
-  "year": "2024",
-  "type": "Personal"
-}
-```
+**Visual & polish**
 
-3. The project will automatically appear on the projects page!
+- **Galaxy canvas** — Animated nebula hero with parallax and shooting stars
+- **VR headset eyes** — Cursor-following eyes in the hero
+- **Card tilt** — Subtle 3D tilt on project cards (respects reduced motion)
+- **Color schemes** — 20+ palettes plus optional plain/recruiter-friendly modes
+- **Rainbow mode** — Hidden party theme (hold the theme toggle)
+- **Scroll timeline** — Experience section with scroll-driven reveals and cursor-reactive dots
 
-## Creating a Case Study
+**Builder cube** *(homepage, desktop)*
 
-1. Create a new HTML file in `case-studies/` folder
-2. Use an existing case study as a template
-3. Update the `caseStudy` field in `projects.json` to point to your new file
-4. Link to it from project cards
+- A **Three.js** scroll companion: a metallic cube labeled with **HARDWARE**, **SOFTWARE**, **ENGINEER**, **VR**, **AI / ML**, and **RESEARCHER**
+- Tracks scroll on the home page, reacts to theme changes, and supports a **click-to-drop** fall animation into the footer (impact + dust, then resets)
+- **Builder mode** adds extra scroll polish on launch cards when the cube is active
+- Honors `prefers-reduced-motion`; disabled on small screens
 
-## Technologies Used
+**Hidden & coming soon**
 
-- HTML5
-- CSS3 (Custom Properties, Grid, Flexbox)
-- Vanilla JavaScript (ES6+)
-- JSON for data storage
-- Vanilla Tilt.js for card animations
+- **Signal Lab** — Easter egg on the homepage: type `build` anywhere (not in a text field), triple-tap the scroll cue on mobile, or visit once with `?lab=1`. A particle “lab” overlay — “You found the lab. It does not ship.”
+- **Talk to AI me** — Double-click the footer tagline to open a portfolio chat UI; **RAG-powered answers about my work are coming soon** (placeholder conversation today)
+- **RAG project** — Listed on the projects page as in-progress exploration of retrieval-augmented LLM pipelines
 
-## Browser Support
+**WebXR** — **View this site in VR** on the [Cool](https://www.rabiatsadiq.com/cool.html) page (or header on Quest); immersive **A-Frame** lobby of the portfolio hero and featured work
 
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Responsive design for mobile devices
-- Graceful degradation for older browsers
+## Tech stack
 
-## View in VR (WebXR)
+- HTML5, CSS3 (custom properties, Grid, Flexbox)
+- Vanilla JavaScript (ES6+ modules where needed)
+- **Three.js** — Builder cube
+- **GSAP** — Cube fall animation
+- **A-Frame** — WebXR lobby (`vr.html`)
+- JSON for project and VR scene data
+- Vanilla Tilt.js for card interactions
 
-The **View in VR** button appears in the site header when the browser reports support for `immersive-vr` (typical in Meta Quest Browser).
+## Browser support
 
-1. Open the live site over **HTTPS** (required for WebXR), e.g. [rabiatsadiq.com](https://www.rabiatsadiq.com)
-2. Tap **View in VR** → **Enter VR** on the VR page
-3. You spawn inside the portfolio hero: nebula atmosphere, VR headset, intro copy, featured project cards, and nav pills
-4. **Hands:** enable Quest hand tracking to point with your index finger, pinch to select, or grab and release project cards (controllers and mouse also work)
-
-**Local testing:** Serve over HTTPS (`npx local-ssl-proxy` or similar) — `file://` and plain HTTP will not enable WebXR on Quest.
-
-**Desktop without a headset:** Open `vr.html` directly; use mouse-look to preview the 3D layout (Enter VR hidden if WebXR is unavailable).
-
-**Data:** Scene copy and featured projects are defined in [`assets/vr-lobby.json`](assets/vr-lobby.json); layout logic in [`assets/vr-lobby.js`](assets/vr-lobby.js).
+Modern browsers (Chrome, Firefox, Safari, Edge). WebXR requires HTTPS and a compatible headset or browser; the rest of the site works on mobile without VR.
 
 ## License
 
-Personal portfolio website - All rights reserved.
+Personal portfolio — all rights reserved.

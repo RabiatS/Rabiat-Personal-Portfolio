@@ -1,5 +1,5 @@
 /**
- * Main-site scroll polish — timeline + section reveals (index.html, all users)
+ * Main-site scroll polish: timeline + section reveals (index.html, all users)
  */
 import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js';
 import ScrollTrigger from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js';
@@ -86,7 +86,7 @@ function initSectionRevealsStatic() {
   });
 }
 
-/* ── Experience — line draw + dot pop + item reveal ── */
+/* ── Experience: line draw + dot pop + item reveal ── */
 function initExperienceTimeline() {
   const section = document.querySelector('#experience');
   if (!section) return;
@@ -167,7 +167,7 @@ function initExperienceTimeline() {
   });
 }
 
-/* ── Section reveal — once, settles quickly ── */
+/* ── Section reveal: once, settles quickly ── */
 function initSectionReveals() {
   const sections = gsap.utils.toArray('main > section.container');
   sections.forEach((section) => {
