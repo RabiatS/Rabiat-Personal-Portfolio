@@ -93,7 +93,7 @@
       "caseStudy": "case-studies/ai-deployment-gap.html",
       "status": "in-progress",
       "images": [
-        "assets/img/projects/ai-deployment-gap/task-picker.jpg"
+        "assets/img/projects/ai-deployment-gap/hero.jpg"
       ],
       "videos": [],
       "year": "2026",
@@ -154,7 +154,9 @@
       "demo": null,
       "caseStudy": null,
       "status": "in-progress",
-      "images": [],
+      "images": [
+        "assets/img/projects/eyeswipe/hero.jpg"
+      ],
       "videos": [],
       "year": "2026",
       "type": "Personal"
@@ -184,7 +186,9 @@
       "demo": null,
       "caseStudy": null,
       "status": "in-progress",
-      "images": [],
+      "images": [
+        "assets/img/projects/local-multimodal-memory/hero.jpg"
+      ],
       "videos": [],
       "year": "2026",
       "type": "Personal"
