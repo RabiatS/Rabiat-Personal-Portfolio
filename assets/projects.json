@@ -1,6 +1,41 @@
 {
   "projects": [
     {
+      "id": "lantern",
+      "title": "Lantern",
+      "subtitle": "A language model that lives on your phone",
+      "category": "iOS / Health / ML Deployment",
+      "tags": [
+        "ML",
+        "Software",
+        "HCI",
+        "Personal"
+      ],
+      "description": "An iPhone app that runs a quantized LLM entirely on the phone with MLX Swift. No server, no API key, no account. After the weights download once it works in airplane mode, and the readout on screen shows what that costs while it writes: tokens per second, memory in use, and the thermal state.",
+      "longDescription": "The interesting engineering is the part that decides whether the phone can do this at all. Before anything downloads, a green light gate reads the device's RAM, what this process may still allocate, free disk, and whether Metal is present, then says per model: go, go with a warning, or not on this phone. The catalog is tiered on that: a 1B model is the default and runs on 4 GB phones, 3B is warned on 6 GB and clean on 8 GB, 8B is Pro only and always warned, and nothing above 8B because that is a reliable out-of-memory kill even on Pro. A memory pressure handler decides whether the app survives a 6 GB phone under load by dropping context on a warning and unloading weights on critical, then reloading on the next send. Benchmark mode runs the engine as an instrument: time to first token, decode rate, peak memory, and a two minute sustained run sampled with thermal state, written out as JSON and CSV. On phones with Apple Intelligence the built-in model becomes a second engine behind the same interface, and the two cooperate: Apple's model writes the summaries that keep long chats going so the downloaded model keeps its memory. A transparency page explains in plain language where the answers come from and why the phone can run this at all, and Settings shows what staying on the phone has saved, with the assumptions behind the energy estimate spelled out. Same target builds for iPhone, iPad and Mac.",
+      "technologies": [
+        "Swift",
+        "SwiftUI",
+        "MLX Swift",
+        "Metal",
+        "swift-transformers",
+        "Apple Intelligence",
+        "iOS",
+        "iPadOS",
+        "macOS"
+      ],
+      "github": "https://github.com/RabiatS/lantern",
+      "demo": null,
+      "caseStudy": null,
+      "status": "in-progress",
+      "images": [
+        "assets/img/projects/lantern/chat.jpg"
+      ],
+      "videos": [],
+      "year": "2026",
+      "type": "Personal"
+    },
+    {
       "id": "ember",
       "title": "Ember",
       "subtitle": "Photos for a small circle, gone in a week",
