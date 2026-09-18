@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>What the Detector Actually Learned | Rabiat Sadiq</title>
+  <meta name="description" content="Building an on-device detector for AI-generated music: the leaky first attempt, the rebuild, and what the robustness sweep revealed about calibration versus signal." />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+  <!-- Prevent theme flash & minimalist Rabiat -->
+  <script>
+    (function(){
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+
+  <style>
+    /* Long-form essay layout, scoped to this page. Uses the site palette. */
+    /* Full container width. Prose keeps a readable measure; every figure,
+       image, table and swatch grid spans the whole width. */
+    .essay { max-width: 100%; margin: 0; }
+    .essay > p,
+    .essay > h2,
+    .essay > h3,
+    .essay > ul,
+    .essay > ol,
+    .essay > .sidenote,
+    .essay > .pull,
+    .essay > .refs,
+    .essay > .drop { max-width: 900px; }
+    .essay > figure,
+    .essay > .phones,
+    .essay > .swatches,
+    .essay > .table-wrap,
+    .essay > .specimen { max-width: 100%; }
+    /* Full container width, matching the other case study heroes on the site. */
+    .essay-hero { margin: 56px 0 48px; }
+    .essay-hero .lead { max-width: 860px; }
+    .essay-hero .byline { max-width: 860px; }
+    .essay-hero .eyebrow { color: rgba(255,255,255,0.92); }
+    .essay-hero h1 { color: #fff; }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+      margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);
+      color: var(--text-muted); font-size: 15px;
+    }
+    .byline strong { color: var(--text); font-weight: 600; }
+    .essay-hero .byline { color: rgba(255,255,255,0.88); border-top-color: rgba(255,255,255,0.28); }
+    .essay-hero .byline strong { color: #fff; }
+    .essay p {
+      font-size: 18px; line-height: 1.75; color: var(--text);
+      margin: 0 0 24px;
+    }
+    .essay h2 {
+      font-size: 28px; line-height: 1.3; margin: 56px 0 20px;
+      letter-spacing: -0.01em;
+    }
+    .essay h3 { font-size: 21px; margin: 40px 0 14px; }
+    .essay ul, .essay ol { margin: 0 0 24px; padding-left: 22px; }
+    .essay li { font-size: 18px; line-height: 1.7; margin-bottom: 12px; color: var(--text); }
+    .essay a { color: var(--primary); }
+
+    .drop { font-size: 21px; }
+
+    .sidenote {
+      border-left: 3px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      padding: 16px 20px; border-radius: 0 12px 12px 0;
+      margin: 0 0 28px;
+    }
+    .sidenote p { font-size: 16px; line-height: 1.65; margin: 0; color: var(--text-muted); }
+    .sidenote p + p { margin-top: 12px; }
+    .sidenote .label {
+      display: block; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700; margin-bottom: 8px;
+    }
+
+    .pull {
+      margin: 40px 0; padding: 0 0 0 24px;
+      border-left: 4px solid var(--primary);
+      font-size: 24px; line-height: 1.45; font-weight: 600;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+
+    figure.fig { margin: 44px 0; }
+    figure.fig svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+    figure.fig figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6;
+      margin-top: 14px; padding-left: 2px;
+    }
+    figure.fig figcaption b { color: var(--text); }
+
+    /* Figure palette, theme aware */
+    .fig svg { --f-ink: #1a1a1a; --f-mute: #6b7280; --f-line: #d1d5db;
+               --f-panel: #ffffff; --f-grid: #eceaf2; }
+    .dark .fig svg { --f-ink: #f3f4f6; --f-mute: #9ca3af; --f-line: #4b5563;
+                     --f-panel: #14141a; --f-grid: #26262f; }
+
+    figure.shot { margin: 40px 0; }
+    figure.shot img {
+      width: 100%; height: auto; display: block;
+      border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: var(--shadow-md); background: var(--surface);
+    }
+    figure.shot figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-top: 14px;
+    }
+    figure.shot figcaption b { color: var(--text); }
+    .shot-2up { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .shot-2up .cap {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); margin: 0 0 8px;
+    }
+    .shot-2up .cap.on { color: var(--primary); }
+    @media (max-width: 640px) { .shot-2up { grid-template-columns: 1fr; } }
+
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+    .table-wrap { overflow-x: auto; }
+
+    .refs { margin-top: 16px; }
+    .refs li { font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin-bottom: 14px; }
+    .refs li b { color: var(--text); font-weight: 600; }
+
+    .essay-foot {
+      margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .essay p, .essay li { font-size: 17px; }
+      .essay h2 { font-size: 24px; }
+      .pull { font-size: 20px; }
+    }
+  </style>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="../projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="../coursework.html" class="nav-pill">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="../cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" class="nav-pill nav-external">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-text">LinkedIn</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: var(--header-height);">
+    <section class="cs-hero essay-hero">
+      <p class="eyebrow">Field note • AI Music Identifier • Machine learning</p>
+      <h1>What the Detector Actually Learned</h1>
+      <p class="lead">
+        A binary classifier for AI-generated music, from audio alone, running on an iPhone with
+        no network. The first attempt was wrong in three ways I did not notice. The rebuild is
+        where I learned what a leaky split, a shortcut feature and a drifting operating point each
+        feel like from the inside.
+      </p>
+      <div class="byline">
+        <span><strong>Rabiat Sadiq</strong></span>
+        <span>September 2026</span>
+        <span>About a 14 minute read · assumes ML familiarity</span>
+      </div>
+    </section>
+
+    <article class="essay">
+
+      <p class="drop">
+        I think of this one as the project that failed, and the write-up below will show that this
+        is not really true. But it is how I remember it, because the first version was confidently
+        wrong, and confidently wrong is the worst kind.
+      </p>
+
+      <h2>Phase one, December 2025</h2>
+
+      <p>
+        Twelve tracks, six AI and six human. MFCCs with mean and standard deviation over twenty
+        coefficients, spectral centroid, bandwidth, rolloff, zero crossing rate, all computed over
+        ten second clips. Logistic regression on a 75/25 split with a StandardScaler. A notebook
+        of distributions and a two dimensional feature space that looked pleasingly separable.
+      </p>
+
+      <p>
+        Three things were wrong, and I want to name them in order of how much they should have
+        embarrassed me.
+      </p>
+
+      <ol class="layers">
+        <li><b>The split leaked.</b> It was random over clips. With roughly fifteen clips per song,
+          near-identical windows of the same track landed on both sides of the split, so the
+          reported accuracy was measuring memorisation of tracks, not discrimination between
+          classes. This is the canonical grouped-split mistake and I made it anyway.</li>
+        <li><b>The dataset was far too small</b>, and one of the six human files turned out to be
+          a byte-identical duplicate of another. Five human tracks. A model can learn five of
+          anything.</li>
+        <li><b>The environment could not run.</b> The virtualenv was a Windows one, with a
+          <code>Scripts/</code> directory and <code>.exe</code> entry points, so nothing reproduced
+          on the machine I now use.</li>
+      </ol>
+
+      <p>
+        None of this is exotic. That is the point. The failure modes that get you are the ones you
+        already know about, applied to your own work when you are excited.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          The music side of this is not incidental for me. I spend a lot of time inside music and
+          I have opinions about it, and I wanted to know whether the thing I could sometimes hear,
+          the slightly too clean, slightly too centred quality of generated tracks, was a real
+          acoustic signature or a story I was telling myself. A detector that generalises is a
+          way of asking that question without my own taste in the loop.
+        </p>
+      </div>
+
+      <h2>The rebuild, August 2026</h2>
+
+      <h3>Data that actually has both classes as audio</h3>
+
+      <p>
+        Surveying Hugging Face for corpora was its own lesson. <code>SONICS</code> has 32 GB of Suno
+        and Udio fakes and no real audio at all, only YouTube metadata for the human side.
+        <code>FakeMusicCaps</code> is half a megabyte of metadata. The one that ships both classes
+        as waveforms is <code>SleepyJesse/ai_music_large</code>: 20,139 tracks, each carrying an
+        <code>ai_generated</code> flag and a <code>source</code> string naming the generator, with
+        the human side drawn from the Free Music Archive.
+      </p>
+
+      <p>
+        Seventy three gigabytes is more than I wanted on disk, so ingest streams it: download one
+        parquet shard, decode, slice into ten second clips, compute log-mels, append to a memmapped
+        cache, delete the shard. The whole corpus lands as a 17 GB cache inside about a gigabyte of
+        working space, checkpointed per shard and resumable. One detail I am fond of: the corpus is
+        stored ordered by class, so a front to back ingest sees nothing but human tracks until it
+        is half done. Shards are visited interleaved, first, last, second, second-last, so both
+        classes are present from the first minutes and stopping early still leaves something
+        balanced.
+      </p>
+
+      <h3>One front end, shared by construction</h3>
+
+      <p>
+        Every clip is a 128 by 431 log-mel spectrogram, 22,050 Hz, n_fft 2048, hop 512, stored as
+        float16 at 108 KB per clip. Mels are standardised per clip, which removes absolute loudness
+        as a feature, and that matters because AI tracks are typically normalised in a way that
+        human uploads are not.
+      </p>
+
+      <p>
+        The mel transform is one <code>torchaudio</code> module, <code>MelFrontend</code>, and the
+        same module object is used by the cache builder, the training loop and the exported Core ML
+        graph. The features the phone computes are the features the model trained on by
+        construction, rather than by a careful reimplementation in Swift that drifts the first time
+        someone touches it.
+      </p>
+
+      <h3>Splits that cannot lie</h3>
+
+      <p>
+        Grouped by <code>track_uid</code>, stratified by label and source. A <code>holdout</code>
+        split withholds an entire generator, Suno, so there is a number for "a synthesiser the
+        model has never heard." A <code>probe</code> split holds eleven tracks of my own, cached
+        separately, because they are the closest thing I have to the deployment distribution.
+        And I kept the old baseline script, fitting the same model under grouped versus random
+        splitting, purely to quantify how inflated the phase one number had been.
+      </p>
+
+      <h3>The shortcut I was worried about</h3>
+
+      <p>
+        The human class is entirely FMA MP3s and the AI class comes from generators, so the two
+        classes carry different codec bandwidths. A convolutional net will happily learn the
+        spectral cutoff instead of anything musical, and the TISMIR literature on this task found
+        exactly that in their classifiers. I mitigated it three ways: a <code>bandwidth_jitter</code>
+        augmentation that randomly discards top mel bands, per-source metrics reported on every
+        split, and the non-FMA probe set. Whether it worked is a question the robustness sweep
+        answers below.
+      </p>
+
+      <h3>The model</h3>
+
+      <p>
+        <code>AudioCNN</code>, in the PANNs CNN10 family: four double-conv blocks with batch norm,
+        64 to 512 channels, frequency averaged out, then attention pooling over time so the
+        classifier can weight the frames that matter rather than averaging them flat. 4.82 million
+        parameters. It trains on the Apple Silicon GPU through MPS, which is the whole reason the
+        rebuild happened on this machine at all.
+      </p>
+
+      <h2>Results</h2>
+
+      <p>
+        The run that mattered was called <code>overnight</code>. 14,543 training tracks, 81,037
+        clips, batch 64, learning rate 1.5e-4 auto-scaled from the reference batch. Early stopped at
+        epoch 39; the best checkpoint was epoch 31. The decision threshold, 0.745, was chosen by
+        maximising balanced accuracy on validation and then applied unchanged to every other split,
+        which is the only honest way to report it.
+      </p>
+
+      <div class="table-wrap">
+        <table class="collect">
+          <thead><tr><th>Split</th><th>Measures</th><th>Clip AUC</th><th>Clip acc</th><th>Track AUC</th><th>Track acc</th></tr></thead>
+          <tbody>
+            <tr><td>val</td><td>model selection</td><td>0.9866</td><td>0.9581</td><td>0.9618</td><td>0.8829</td></tr>
+            <tr><td>test</td><td>unseen tracks, seen generators</td><td><b>0.9844</b></td><td><b>0.9544</b></td><td>0.9584</td><td>0.8793</td></tr>
+            <tr><td>holdout</td><td>unseen generator (Suno)</td><td>n/a</td><td>0.8000</td><td>n/a</td><td>0.8196</td></tr>
+            <tr><td>probe</td><td>my own 11 tracks</td><td>0.7411</td><td>0.6951</td><td>0.8000</td><td>0.5455</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        The holdout is all AI, so AUC is undefined there and "accuracy" means recall. Validation
+        and test agree to two decimals, so this is not overfit to the selection set. Against the
+        earlier epoch 8 checkpoint, test AUC moved from 0.9613 to 0.9844.
+      </p>
+
+      <p>
+        Training was not smooth. A loss spike at epoch 17 dropped validation AUC from 0.975 to
+        0.568, and it took about six epochs to recover before going on to its best score. Gradient
+        clipping at 5.0 is almost certainly too loose, and I have left that as a note to my future
+        self rather than pretending the curve was clean.
+      </p>
+
+      <h3>Generalisation to a generator it never heard</h3>
+
+      <p>
+        Suno, withheld entirely: 80.0% of clips and 82.0% of tracks. What I find more interesting
+        than the number is that it did not move. Test AUC went from 0.96 to 0.98 between
+        checkpoints and the Suno recall stayed put. Fitting the known generators better bought
+        nothing on the unknown one, which is the kind of result that tells you where the actual
+        ceiling is.
+      </p>
+
+      <h2>The finding I did not expect</h2>
+
+      <p>
+        I ran the model across eleven audio transformations on 595 balanced clips, expecting to
+        find the codec shortcut and expecting to find the detector fragile. I found something more
+        specific than either.
+      </p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 720 390" role="img" aria-labelledby="f1t f1d" xmlns="http://www.w3.org/2000/svg">
+          <title id="f1t">Robustness sweep: AUC stays high while accuracy at a fixed threshold collapses and recovers after recalibration</title>
+          <desc id="f1d">Eleven audio transforms. For each, three points: AUC in violet, accuracy at the fixed threshold as a filled pink dot, and accuracy after re-choosing the threshold as a hollow pink dot. The pink line between them shows what recalibration recovers. For lowpass 1 kHz and highpass 2 kHz, fixed-threshold accuracy is near 0.5 while AUC is still above 0.94.</desc>
+          <line x1="323" y1="36" x2="323" y2="330" stroke="var(--f-grid)"/><text x="323" y="348" font-size="11" fill="var(--f-mute)" text-anchor="middle">0.5</text><line x1="397" y1="36" x2="397" y2="330" stroke="var(--f-grid)"/><text x="397" y="348" font-size="11" fill="var(--f-mute)" text-anchor="middle">0.6</text><line x1="470" y1="36" x2="470" y2="330" stroke="var(--f-grid)"/><text x="470" y="348" font-size="11" fill="var(--f-mute)" text-anchor="middle">0.7</text><line x1="543" y1="36" x2="543" y2="330" stroke="var(--f-grid)"/><text x="543" y="348" font-size="11" fill="var(--f-mute)" text-anchor="middle">0.8</text><line x1="617" y1="36" x2="617" y2="330" stroke="var(--f-grid)"/><text x="617" y="348" font-size="11" fill="var(--f-mute)" text-anchor="middle">0.9</text><line x1="690" y1="36" x2="690" y2="330" stroke="var(--f-grid)"/><text x="690" y="348" font-size="11" fill="var(--f-mute)" text-anchor="middle">1.0</text><text x="240" y="61.0" font-size="12" fill="var(--f-ink)" text-anchor="end">none</text><line x1="652" y1="57.0" x2="658" y2="57.0" stroke="#ec4899" stroke-width="2" opacity="0.6"/><circle cx="652" cy="57.0" r="5" fill="#ec4899"/><circle cx="658" cy="57.0" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><circle cx="685" cy="57.0" r="5" fill="#7c3aed"/><text x="240" y="87.0" font-size="12" fill="var(--f-ink)" text-anchor="end">gain -12 dB</text><line x1="645" y1="83.0" x2="650" y2="83.0" stroke="#ec4899" stroke-width="2" opacity="0.6"/><circle cx="645" cy="83.0" r="5" fill="#ec4899"/><circle cx="650" cy="83.0" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><circle cx="683" cy="83.0" r="5" fill="#7c3aed"/><text x="240" y="113.0" font-size="12" fill="var(--f-ink)" text-anchor="end">highpass 500 Hz</text><line x1="619" y1="109.0" x2="658" y2="109.0" stroke="#ec4899" stroke-width="2" opacity="0.6"/><circle cx="619" cy="109.0" r="5" fill="#ec4899"/><circle cx="658" cy="109.0" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><circle cx="683" cy="109.0" r="5" fill="#7c3aed"/><text x="240" y="139.0" font-size="12" fill="var(--f-ink)" text-anchor="end">lowpass 8 kHz</text><line x1="576" y1="135.0" x2="663" y2="135.0" stroke="#ec4899" stroke-width="2" opacity="0.6"/><circle cx="576" cy="135.0" r="5" fill="#ec4899"/><circle cx="663" cy="135.0" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><circle cx="682" cy="135.0" r="5" fill="#7c3aed"/><text x="240" y="165.0" font-size="12" fill="var(--f-ink)" text-anchor="end">mp3 re-encode</text><line x1="641" y1="161.0" x2="653" y2="161.0" stroke="#ec4899" stroke-width="2" opacity="0.6"/><circle cx="641" cy="161.0" r="5" fill="#ec4899"/><circle cx="653" cy="161.0" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><circle cx="681" cy="161.0" r="5" fill="#7c3aed"/><text x="240" y="191.0" font-size="12" fill="var(--f-ink)" text-anchor="end">lowpass 4 kHz</text><line x1="524" y1="187.0" x2="646" y2="187.0" stroke="#ec4899" stroke-width="2" opacity="0.6"/><circle cx="524" cy="187.0" r="5" fill="#ec4899"/><circle cx="646" cy="187.0" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><circle cx="672" cy="187.0" r="5" fill="#7c3aed"/><text x="240" y="217.0" font-size="12" fill="var(--f-ink)" text-anchor="end">noise 20 dB SNR</text><line x1="568" y1="213.0" x2="617" y2="213.0" stroke="#ec4899" stroke-width="2" opacity="0.6"/><circle cx="568" cy="213.0" r="5" fill="#ec4899"/><circle cx="617" cy="213.0" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><circle cx="658" cy="213.0" r="5" fill="#7c3aed"/><text x="240" y="243.0" font-size="12" fill="var(--f-ink)" text-anchor="end">resample 16 kHz</text><line x1="425" y1="239.0" x2="612" y2="239.0" stroke="#ec4899" stroke-width="2" opacity="0.6"/><circle cx="425" cy="239.0" r="5" fill="#ec4899"/><circle cx="612" cy="239.0" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><circle cx="657" cy="239.0" r="5" fill="#7c3aed"/><text x="240" y="269.0" font-size="12" fill="var(--f-ink)" text-anchor="end">lowpass 1 kHz</text><line x1="320" y1="265.0" x2="615" y2="265.0" stroke="#ec4899" stroke-width="2" opacity="0.6"/><circle cx="320" cy="265.0" r="5" fill="#ec4899"/><circle cx="615" cy="265.0" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><circle cx="655" cy="265.0" r="5" fill="#7c3aed"/><text x="240" y="295.0" font-size="12" fill="var(--f-ink)" text-anchor="end">highpass 2 kHz</text><line x1="322" y1="291.0" x2="595" y2="291.0" stroke="#ec4899" stroke-width="2" opacity="0.6"/><circle cx="322" cy="291.0" r="5" fill="#ec4899"/><circle cx="595" cy="291.0" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><circle cx="647" cy="291.0" r="5" fill="#7c3aed"/><text x="240" y="321.0" font-size="12" fill="var(--f-ink)" text-anchor="end">resample 8 kHz</text><line x1="480" y1="317.0" x2="540" y2="317.0" stroke="#ec4899" stroke-width="2" opacity="0.6"/><circle cx="480" cy="317.0" r="5" fill="#ec4899"/><circle cx="540" cy="317.0" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><circle cx="573" cy="317.0" r="5" fill="#7c3aed"/>
+          <g font-size="12">
+            <circle cx="250" cy="372" r="5" fill="#7c3aed"/><text x="260" y="376" fill="var(--f-ink)">AUC</text>
+            <circle cx="320" cy="372" r="5" fill="#ec4899"/><text x="330" y="376" fill="var(--f-ink)">accuracy at t = 0.745</text>
+            <circle cx="490" cy="372" r="5" fill="none" stroke="#ec4899" stroke-width="2"/><text x="500" y="376" fill="var(--f-ink)">accuracy, threshold re-chosen</text>
+          </g>
+        </svg>
+        <figcaption>
+          <b>Figure 1.</b> The robustness sweep, 595 balanced clips. Read each row left to right:
+          where the filled pink dot falls to chance, the violet dot has barely moved, and the hollow
+          dot shows what one re-chosen threshold gets back. The detector kept discriminating. Its
+          operating point moved.
+        </figcaption>
+      </figure>
+
+      <p class="pull">
+        Filtering causes calibration drift, not signal loss.
+      </p>
+
+      <p>
+        Look at the two worst rows. Lowpass at 1 kHz and highpass at 2 kHz both drive accuracy at
+        the fixed threshold to chance, 0.496 and 0.498. If you only reported accuracy you would
+        conclude the detector had been destroyed. But AUC in those rows is still 0.95 and 0.94.
+        The ranking survived. What moved was the operating point: mean P(AI) swings from 0.303
+        under highpass to 0.857 under 16 kHz resampling, and a fixed cut-off has no defence against
+        that. Re-choose the threshold on the transformed data and accuracy comes back to 0.87 to
+        0.90. Lowpass pushes scores up, highpass pushes them down, and the model is still telling
+        the two classes apart underneath.
+      </p>
+
+      <p>
+        The literature reads this symptom differently. The TISMIR study saw detectors label
+        everything AI under highpass and everything human under lowpass, and reported it as
+        failure. It may well have been failure for their models. Here the discriminative signal is
+        intact and only the calibration moves, and those need different fixes. You do not retrain
+        for a calibration problem. You calibrate.
+      </p>
+
+      <p>
+        Two questions I had carried since phase one closed at the same time. MP3 re-encoding, which
+        overwrites the bitrate fingerprints TISMIR found their classifiers exploiting, costs 0.006
+        AUC and a point and a half of accuracy here, so the codec shortcut is largely ruled out. And
+        resampling does not break this detector: IRCAM Amplify reportedly misclassified every Suno
+        sample when resampled to 22.05 kHz, while this model holds AUC 0.955 through a 16 kHz round
+        trip and 0.841 through 8 kHz, which discards everything above 4 kHz.
+      </p>
+
+      <h2>The other thing the threshold was hiding</h2>
+
+      <p>
+        Per-source recall at the chosen threshold: FMA human 0.973, Udio 0.975, MusicSet 0.522. An
+        earlier version of my notes called MusicSet "near chance," and that was wrong in a way
+        worth being precise about.
+      </p>
+
+      <figure class="fig">
+        <svg viewBox="0 0 760 240" role="img" aria-labelledby="f2t f2d" xmlns="http://www.w3.org/2000/svg">
+          <title id="f2t">Score spread per source against the single global threshold</title>
+          <desc id="f2d">Horizontal bands showing the tenth to ninetieth percentile of predicted probability of AI for Udio and MusicSet tracks with medians marked, the FMA human mean as a single marker, and the global threshold at 0.745, which sits inside the wide MusicSet band.</desc>
+          <text x="385" y="16" font-size="11" fill="var(--f-mute)" text-anchor="middle">P(AI)</text>
+          <line x1="170" y1="44" x2="600" y2="44" stroke="var(--f-line)"/>
+          <text x="170" y="34" font-size="11" fill="var(--f-mute)" text-anchor="middle">0.00</text><text x="278" y="34" font-size="11" fill="var(--f-mute)" text-anchor="middle">0.25</text><text x="385" y="34" font-size="11" fill="var(--f-mute)" text-anchor="middle">0.50</text><text x="492" y="34" font-size="11" fill="var(--f-mute)" text-anchor="middle">0.75</text><text x="600" y="34" font-size="11" fill="var(--f-mute)" text-anchor="middle">1.00</text>
+          <line x1="254" y1="70" x2="254" y2="98" stroke="#6b7280" stroke-width="4"/>
+          <text x="40" y="88" font-size="13" font-weight="700" fill="var(--f-ink)">FMA human</text>
+          <text x="264" y="88" font-size="11" fill="var(--f-mute)">mean 0.20</text>
+          <rect x="550" y="123" width="34" height="22" rx="11" fill="#7c3aed" opacity="0.28"/><line x1="570" y1="120" x2="570" y2="148" stroke="#7c3aed" stroke-width="3"/><text x="40" y="138" font-size="13" font-weight="700" fill="var(--f-ink)">Udio</text><text x="593" y="138" font-size="11" fill="var(--f-mute)">p10 0.88 · p90 0.96</text>
+          <rect x="270" y="173" width="309" height="22" rx="11" fill="#ec4899" opacity="0.28"/><line x1="499" y1="170" x2="499" y2="198" stroke="#ec4899" stroke-width="3"/><text x="40" y="188" font-size="13" font-weight="700" fill="var(--f-ink)">MusicSet</text><text x="586" y="188" font-size="11" fill="var(--f-mute)">p10 0.23 · p90 0.95</text>
+          <line x1="490" y1="56" x2="490" y2="206" stroke="var(--f-ink)" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="496" y="226" font-size="12" font-weight="700" fill="var(--f-ink)">t = 0.745</text>
+        </svg>
+        <figcaption>
+          <b>Figure 2.</b> Why one global threshold is the wrong tool. Udio is tight and far above
+          the line; the human mean sits far below it. MusicSet is clearly separated from human (median 0.76
+          against 0.20) but spread wide, and a threshold tuned on the aggregate, which the larger
+          groups dominate, lands in the middle of it. That is a policy problem, and it looked like a
+          detection failure until the distributions were plotted.
+        </figcaption>
+      </figure>
+
+      <p>
+        MusicSet is separated from human, median 0.764 against 0.195. It is just wide, tenth
+        percentile 0.232, ninetieth 0.950, where Udio sits between 0.884 and 0.964. A global
+        threshold tuned on an aggregate that Udio and FMA dominate lands squarely in MusicSet's
+        middle and halves it. That is a threshold policy problem. Per-source thresholds, or a
+        calibrated score with the decision deferred to the product, would fix it without touching
+        the model. The lesson generalises past music: a single number for "accuracy" can hide an
+        entire subpopulation being cut in half.
+      </p>
+
+      <h2>Getting it onto the phone, and two bugs parity did not catch</h2>
+
+      <p>
+        The exported Core ML model takes raw audio and computes its own mel front end, so there is
+        no Swift feature code to keep in sync with Python. The parity check against the PyTorch
+        graph passed at 1e-7. That number is true, and it hid two real bugs.
+      </p>
+
+      <ol class="layers">
+        <li><b>fp16 overflow in the exported graph.</b> The squared STFT magnitude for loud music
+          reaches about 2.4e5, past the float16 maximum of 65,504. It saturates to infinity, and
+          every loud clip returned the same probability on device. Quiet clips were fine, which is
+          exactly why nobody noticed. The fix attenuates the waveform by 1/32 before the transform
+          and scales the log epsilon identically, so the change is a constant log-domain offset that
+          per-clip standardisation removes. Cached features stayed valid to 7e-7.</li>
+        <li><b>The parity check was too weak to see it.</b> It probed with quiet synthetic noise.
+          It now probes across five amplitudes and real music, and warns loudly on mismatch. Export
+          defaults to fp32, because on real audio fp16 was systematically low by up to 5.5e-2 where
+          fp32 was off by 1.1e-5.</li>
+      </ol>
+
+      <p>
+        Then, adding a microphone path, a third one. Core ML parity was 1.7e-4, so the model was
+        faithful, and the audio reaching it was not. The app's decoded RMS on a test track was
+        0.1568 against a Python reference of 0.1436, and P(AI) read 0.500 where Python said 0.728.
+        Two causes, both train/serve skew in the front end: <code>AVAudioConverter</code>'s default
+        resampler uses a gentler anti-alias filter than the <code>soxr_hq</code> that built the
+        cache, leaving extra high frequency content, and letting it downmix to mono applies its own
+        channel weighting rather than the plain channel mean <code>numpy</code> performs. Per-clip
+        RMS differed by 7 to 18 percent depending on how wide the stereo image was. Fixed by
+        resampling at maximum quality with channels intact and averaging them by hand. RMS now
+        matches training to 0.06 percent.
+      </p>
+
+      <p class="pull">
+        A numerically perfect export is not the same as a correct pipeline. Parity has to be
+        checked on decoded audio, end to end.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          The residual that remains is about 50 ms: AVFoundation keeps roughly 1,153 samples of
+          MP3 encoder delay that libsndfile strips, so clip windows on the phone sit slightly apart
+          from the ones in the cache. That one is inherent to using two decoders and I have decided
+          to live with it, but I wanted it written down rather than discovered by someone else.
+        </p>
+      </div>
+
+      <h2>What is still weak</h2>
+
+      <ul>
+        <li>On my own eleven tracks, the probe, the score went from 8 of 11 to 6 of 11 between
+          checkpoints, almost entirely because the threshold moved from 0.685 to 0.745 and two
+          tracks now sit just under it. Eleven is a very noisy n, but it is the metric closest to
+          real use, and it is the one that regressed.</li>
+        <li>The human class is still entirely FMA. That is a distribution, not the world.</li>
+        <li>8 kHz resampling is the one transform that genuinely costs signal rather than
+          calibration.</li>
+        <li>Clips are ten seconds. SONICS argues long range structure, on the order of two minutes,
+          is where a lot of the signal lives, and I have not tested that.</li>
+      </ul>
+
+      <h2>What I actually learned</h2>
+
+      <p>
+        The technical list is real: grouped splits, held-out generators, shortcut audits, a shared
+        front end, calibration versus discrimination, end to end parity. I can now recognise each
+        of those failure modes by feel, which I could not before, and that recognition is worth more
+        to me than the AUC.
+      </p>
+
+      <p>
+        The less technical lesson is that "the project failed" was a story about phase one that I
+        kept telling through phase two. The rebuild has a 0.98 test AUC and an 80 percent hit rate
+        on a generator it never trained on. Calling it a failure was a calibration error of my own.
+      </p>
+
+      <div class="essay-foot">
+        <a class="btn" href="../writing.html">← Field Notes</a>
+      </div>
+
+    </article>
+  </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+</body>
+</html>
