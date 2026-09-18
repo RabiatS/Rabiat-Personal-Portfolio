@@ -44,6 +44,29 @@
     .essay > .pull,
     .essay > .refs,
     .essay > .drop { max-width: 900px; }
+    /* On wide screens: a longer measure, larger type, and a centred text column
+       so full-width figures read as a deliberate magazine layout rather than
+       text that stops short. */
+    @media (min-width: 1200px) {
+      article.essay > p,
+      article.essay > h2,
+      article.essay > h3,
+      article.essay > ul,
+      article.essay > ol,
+      article.essay > .sidenote,
+      article.essay > .pull,
+      article.essay > .refs,
+      article.essay > .drop { max-width: 980px; margin-left: auto; margin-right: auto; }
+      article.essay p { font-size: 19px; line-height: 1.78; }
+      article.essay li { font-size: 19px; }
+      article.essay .drop { font-size: 22px; }
+      article.essay h2 { font-size: 31px; }
+      article.essay h3 { font-size: 23px; }
+      article.essay > .pull { font-size: 26px; }
+      article.essay > .sidenote { margin-bottom: 30px; }
+      article.essay > .sidenote p { font-size: 17px; }
+      .essay-hero .lead { max-width: 980px; }
+    }
     .essay > figure,
     .essay > .phones,
     .essay > .swatches,
