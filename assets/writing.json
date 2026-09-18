@@ -1,0 +1,59 @@
+{
+  "pieces": [
+    {
+      "id": "ai-deployment-gap",
+      "kind": "Essay",
+      "title": "Nobody Knows What The Last One Did",
+      "blurb": "We ship new models faster than anyone learns what the old ones could already do. Why the gap is an interface problem, why knowing more can make both people and models worse, and what I would build about it.",
+      "date": "2026-01-09",
+      "readTime": "15 min",
+      "href": "case-studies/ai-deployment-gap.html",
+      "image": "assets/img/projects/ai-deployment-gap/hero.jpg",
+      "topics": ["AI", "HCI", "Research"]
+    },
+    {
+      "id": "visionpro-wrist-haptics",
+      "kind": "Case study",
+      "title": "Feeling the Interface",
+      "blurb": "Spatial interfaces tell you what happened by showing you, which fails the moment you look away. Putting the confirmation on the wrist instead, with hardware somebody is already wearing.",
+      "date": "2026-09-10",
+      "readTime": "9 min",
+      "href": "case-studies/visionpro-wrist-haptics.html",
+      "image": "assets/img/projects/visionpro/hero-pinch.jpg",
+      "topics": ["XR", "Haptics", "Apple"]
+    },
+    {
+      "id": "ember",
+      "kind": "Case study",
+      "title": "Ember: a week, then gone",
+      "blurb": "A private photo app for a small circle of friends. The storage problem nobody talks about, a design system built to feel like coming home, and an architecture where deletion is a technical promise rather than a setting.",
+      "date": "2026-09-10",
+      "readTime": "14 min",
+      "href": "case-studies/ember.html",
+      "image": "assets/img/projects/ember/wordmark-ember.jpg",
+      "topics": ["Design system", "iOS", "Privacy"]
+    },
+    {
+      "id": "magic-mitts",
+      "kind": "Case study",
+      "title": "Magic Mitts",
+      "blurb": "A haptic VR glove that physically stops your hand at the surface of something that is not there, for under fifty dollars in parts. First of 89 teams, and an honest note about the two numbers I later took down.",
+      "date": "2024-12-01",
+      "readTime": "8 min",
+      "href": "case-studies/case-study.html",
+      "image": "assets/img/projects/magic-mitts/glove.jpg",
+      "topics": ["Hardware", "XR", "Haptics"]
+    },
+    {
+      "id": "amazon-music",
+      "kind": "Case study",
+      "title": "Amazon Music Adaptive UI",
+      "blurb": "Eight months with Amazon Music through the CMU MHCI capstone. Listeners want social, human-feeling discovery, but many refuse to broadcast their taste. Resolving that contradiction became the design.",
+      "date": "2026-08-01",
+      "readTime": "10 min",
+      "href": "case-studies/case-study-amazon-music.html",
+      "image": "assets/img/projects/amazon-music.png",
+      "topics": ["Research", "Product", "MHCI"]
+    }
+  ]
+}
