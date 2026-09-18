@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hands in Your Pockets | Rabiat Sadiq</title>
+  <meta name="description" content="Why I started treating the Apple Watch as a tiny touch surface for every other screen I own, and what Apple left on the table." />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+  <!-- Prevent theme flash & minimalist Rabiat -->
+  <script>
+    (function(){
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+
+  <style>
+    /* Long-form essay layout, scoped to this page. Uses the site palette. */
+    /* Full container width. Prose keeps a readable measure; every figure,
+       image, table and swatch grid spans the whole width. */
+    .essay { max-width: 100%; margin: 0; }
+    .essay > p,
+    .essay > h2,
+    .essay > h3,
+    .essay > ul,
+    .essay > ol,
+    .essay > .sidenote,
+    .essay > .pull,
+    .essay > .refs,
+    .essay > .drop { max-width: 900px; }
+    /* On wide screens: a longer measure, larger type, and a centred text column
+       so full-width figures read as a deliberate magazine layout rather than
+       text that stops short. */
+    @media (min-width: 1200px) {
+      article.essay > p,
+      article.essay > h2,
+      article.essay > h3,
+      article.essay > ul,
+      article.essay > ol,
+      article.essay > .sidenote,
+      article.essay > .pull,
+      article.essay > .refs,
+      article.essay > .drop { max-width: 980px; margin-left: auto; margin-right: auto; }
+      article.essay p { font-size: 19px; line-height: 1.78; }
+      article.essay li { font-size: 19px; }
+      article.essay .drop { font-size: 22px; }
+      article.essay h2 { font-size: 31px; }
+      article.essay h3 { font-size: 23px; }
+      article.essay > .pull { font-size: 26px; }
+      article.essay > .sidenote { margin-bottom: 30px; }
+      article.essay > .sidenote p { font-size: 17px; }
+      .essay-hero .lead { max-width: 980px; }
+    }
+    .essay > figure,
+    .essay > .phones,
+    .essay > .swatches,
+    .essay > .table-wrap,
+    .essay > .specimen { max-width: 100%; }
+    /* Full container width, matching the other case study heroes on the site. */
+    .essay-hero { margin: 56px 0 48px; }
+    .essay-hero .lead { max-width: 860px; }
+    .essay-hero .byline { max-width: 860px; }
+    .essay-hero .eyebrow { color: rgba(255,255,255,0.92); }
+    .essay-hero h1 { color: #fff; }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+      margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);
+      color: var(--text-muted); font-size: 15px;
+    }
+    .byline strong { color: var(--text); font-weight: 600; }
+    .essay-hero .byline { color: rgba(255,255,255,0.88); border-top-color: rgba(255,255,255,0.28); }
+    .essay-hero .byline strong { color: #fff; }
+    .essay p {
+      font-size: 18px; line-height: 1.75; color: var(--text);
+      margin: 0 0 24px;
+    }
+    .essay h2 {
+      font-size: 28px; line-height: 1.3; margin: 56px 0 20px;
+      letter-spacing: -0.01em;
+    }
+    .essay h3 { font-size: 21px; margin: 40px 0 14px; }
+    .essay ul, .essay ol { margin: 0 0 24px; padding-left: 22px; }
+    .essay li { font-size: 18px; line-height: 1.7; margin-bottom: 12px; color: var(--text); }
+    .essay a { color: var(--primary); }
+
+    .drop { font-size: 21px; }
+
+    .sidenote {
+      border-left: 3px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      padding: 16px 20px; border-radius: 0 12px 12px 0;
+      margin: 0 0 28px;
+    }
+    .sidenote p { font-size: 16px; line-height: 1.65; margin: 0; color: var(--text-muted); }
+    .sidenote p + p { margin-top: 12px; }
+    .sidenote .label {
+      display: block; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700; margin-bottom: 8px;
+    }
+
+    .pull {
+      margin: 40px 0; padding: 0 0 0 24px;
+      border-left: 4px solid var(--primary);
+      font-size: 24px; line-height: 1.45; font-weight: 600;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+
+    figure.fig { margin: 44px 0; }
+    figure.fig svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+    figure.fig figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6;
+      margin-top: 14px; padding-left: 2px;
+    }
+    figure.fig figcaption b { color: var(--text); }
+
+    /* Figure palette, theme aware */
+    .fig svg { --f-ink: #1a1a1a; --f-mute: #6b7280; --f-line: #d1d5db;
+               --f-panel: #ffffff; --f-grid: #eceaf2; }
+    .dark .fig svg { --f-ink: #f3f4f6; --f-mute: #9ca3af; --f-line: #4b5563;
+                     --f-panel: #14141a; --f-grid: #26262f; }
+
+    figure.shot { margin: 40px 0; }
+    figure.shot img {
+      width: 100%; height: auto; display: block;
+      border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: var(--shadow-md); background: var(--surface);
+    }
+    figure.shot figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-top: 14px;
+    }
+    figure.shot figcaption b { color: var(--text); }
+    .shot-2up { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .shot-2up .cap {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); margin: 0 0 8px;
+    }
+    .shot-2up .cap.on { color: var(--primary); }
+    @media (max-width: 640px) { .shot-2up { grid-template-columns: 1fr; } }
+
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+    .table-wrap { overflow-x: auto; }
+
+
+    .phones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin: 48px 0; }
+    .phones.two { grid-template-columns: repeat(2, 1fr); max-width: 760px; margin-left: auto; margin-right: auto; }
+    .phones figure { margin: 0; }
+    .phones img {
+      width: 100%; height: auto; display: block; border-radius: 22px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+    }
+    .phones figcaption { font-size: 14px; color: var(--text-muted); margin-top: 10px; line-height: 1.5; }
+    @media (max-width: 700px) { .phones, .phones.two { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 440px) { .phones, .phones.two { grid-template-columns: 1fr; } }
+
+    .layers { list-style: none; padding: 0; counter-reset: layer; margin: 0 0 28px; }
+    .layers li {
+      position: relative; padding: 16px 18px 16px 60px; margin-bottom: 12px;
+      border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+      font-size: 16.5px; line-height: 1.6;
+    }
+    .layers li::before {
+      counter-increment: layer; content: counter(layer);
+      position: absolute; left: 18px; top: 16px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--primary); color: #fff; font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .layers li b { color: var(--text); }
+
+    .table-wrap { overflow-x: auto; }
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+
+    .refs { margin-top: 16px; }
+    .refs li { font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin-bottom: 14px; }
+    .refs li b { color: var(--text); font-weight: 600; }
+
+    .essay-foot {
+      margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .essay p, .essay li { font-size: 17px; }
+      .essay h2 { font-size: 24px; }
+      .pull { font-size: 20px; }
+    }
+  </style>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="../projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="../coursework.html" class="nav-pill">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="../cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" class="nav-pill nav-external">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-text">LinkedIn</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: var(--header-height);">
+    <section class="cs-hero essay-hero">
+      <p class="eyebrow">Essay • watchOS Swipe Surface • Why I started it</p>
+      <h1>Hands in Your Pockets</h1>
+      <p class="lead">
+        The Apple Watch is sold as a health tracker that happens to have a screen. Take the strap
+        off and look at what is left: a small bright puck with a haptic engine and a radio to every
+        other device you own. This is about the day I stopped seeing it as a watch.
+      </p>
+      <div class="byline">
+        <span><strong>Rabiat Sadiq</strong></span>
+        <span>September 18, 2026</span>
+        <span>About an 8 minute read</span>
+      </div>
+    </section>
+
+    <article class="essay">
+
+      <p class="drop">
+        Picture someone standing somewhere. Their phone is propped in front of them, or an iPad, or
+        they have a headset on. How do they interact with it without it looking like anything?
+      </p>
+
+      <p>
+        That was the first question, and it is older than this project. I had it back when I was
+        thinking about hardware: some little hard square of a device, something you could hold in a
+        pocket with a hand that looks like it is just resting there. Small gestures, nothing that
+        reads as tapping the air or touching everything in the room. Not obvious that you have
+        glasses on. Not obvious that you are doing anything at all.
+      </p>
+
+      <p>
+        I imagined building that device myself. Then I switched to building for iOS, looked at the
+        Watch properly for the first time, and realised the thing I wanted to make was already on
+        my wrist.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          The reason I was suddenly building iOS at all: I got a new MacBook. I love my PC, I love
+          that it runs Unity and everything I need for VR, and I will keep going back to it. But
+          having Xcode and an M5 chip, and moving with AI alongside me the way I learned to at CMU,
+          means an idea can be a running app before I have finished deciding whether it is worth
+          pursuing. I build to find out. Some nights I do not sleep because there is too much I
+          could make. This project came out of one of those nights.
+        </p>
+      </div>
+
+      <h2>Use what people already carry</h2>
+
+      <p>
+        There is a version of this idea that involves designing a new object. I did not want that
+        one. I come from somewhere where resources were finite and you made things with what you
+        had, and that instinct has never left. It is why the Vision Pro haptics project used a
+        Watch that was already on the wrist instead of a new peripheral, and it is why this one
+        does too.
+      </p>
+
+      <p>
+        Apple's ecosystem is the other half of the argument. Whatever else you think about the
+        company, the devices talk to each other well. So instead of a new thing, the question
+        becomes: what can the existing things do together that none of them was sold for?
+      </p>
+
+      <p>
+        I had just got a new Watch. I remember seeing it without the straps, and it was exactly the
+        puck I had been imagining. Bright screen, a haptic engine, a radio link. Everything the
+        hypothetical device needed, already manufactured, already paired.
+      </p>
+
+      <p class="pull">
+        Hands in your pockets, a flick of the thumb, and the screen across the room does the thing.
+      </p>
+
+      <h2>Subtle is the point</h2>
+
+      <p>
+        Voice is having a moment. Hey Siri, audio assistants, the whole rise of talking to your
+        devices. That is genuinely great, and there are a lot of situations where I do not want to
+        talk to anything. On a train. In a meeting. Standing in a kitchen with a recipe propped up
+        and my hands covered in something. Next to a sleeping person.
+      </p>
+
+      <p>
+        Your eyes are already on the screen. You already know exactly what you want it to do. The
+        gap is only in how you tell it. A flick in your pocket closes that gap without a sound,
+        without a raised hand, without anyone else in the room being able to tell it happened.
+      </p>
+
+      <h2>A watch is also a thing</h2>
+
+      <p>
+        This is the part I found most interesting, and it is a little embarrassing that it took me
+        this long. To build it I had to take my eyes off the Watch as a watch. Yes, it tells the
+        time. Yes, it counts steps. But it is also just a device. A thing. A very small touch
+        surface that happens to be worn.
+      </p>
+
+      <p>
+        It is like the ice cream bowl you use for everything except ice cream. Nobody designed it
+        for cereal, keys, or the hair ties by the sink. It works anyway, because a bowl is a bowl
+        before it is an ice cream bowl.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          A while ago I saw the Boston Dynamics robots moving in ways no human moves. Walking
+          backwards at speed, folding, rolling. There is a version of robotics that only wants to
+          recreate how we walk, and I understand it, but why would a machine be limited to us? Why
+          not go past what our bodies happen to do? I keep thinking about that when I look at a
+          Watch and only see a watch. The object is allowed to go past what it was made for.
+        </p>
+      </div>
+
+      <h2>What Apple left on the table</h2>
+
+      <p>
+        Before building I went looking for who had done this. Apple ships almost exactly this
+        gesture grammar already: the Watch can be a remote for Apple TV, it can drive Keynote,
+        and the keyboard on the phone has had swipe for years. Watch gestures reach the iPhone in
+        one more place, inside the VoiceOver accessibility path.
+      </p>
+
+      <p>
+        And that is the whole list. There is no general purpose Watch swipe surface for the phone,
+        and there is no public API that would let a third party build one outside of its own app.
+        I do not know why. Maybe the devices are meant to stay separate as a matter of principle.
+        Maybe it is coming and I will feel silly. I looked, I did not find much, so I am building
+        it.
+      </p>
+
+      <p>
+        That constraint shapes what this can be right now. A third party app cannot control the
+        system interface, so what I can build is a prototype of what it would feel like, inside an
+        app that owns its own content. Which is fine. A prototype that is honest about being one is
+        how you find out whether the idea deserves the rest.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          The other constraint is dumber: I am close to the limit on how many apps one developer
+          account can have installed at a time. This is not a limit designed for someone who
+          wants to pop out a project every other day.
+        </p>
+      </div>
+
+      <h2>What it is so far</h2>
+
+      <p>
+        The phone app has four modes, and each one decides what the five gestures mean while it is
+        showing. The Watch pad labels its own edges with the current mode's meanings, so a flick
+        always says what it will do before you make it.
+      </p>
+
+      <figure class="shot">
+        <img src="../assets/img/projects/watch-swipe-surface/hero-four-pads.jpg"
+             alt="Four Watch screens, one per mode: Reader, Photos, Slides, Prompter, each labelling its edges with what a flick will do" loading="lazy" />
+        <figcaption>
+          <b>The four pads.</b> Reader for recipes, scores and manuals propped up while your hands
+          are busy. Photos for a set across the table. Slides for a deck on the phone or a mirrored
+          display. Prompter for a script rolling past a reading line. Same five gestures, different
+          meanings, always labelled.
+        </figcaption>
+      </figure>
+
+      <p>
+        On the Watch, the whole screen is the pad. Drags are classified by their dominant axis,
+        diagonals and brushes are ignored, and a short fast flick counts on its predicted travel.
+        Each direction has its own haptic. The Digital Crown scrolls the reader, steps slides,
+        scrubs video and nudges the prompter. On newer Watches the pinch gesture, Double Tap,
+        triggers select, so a flick and a select never need the other hand. Flicks made while the
+        phone is out of reach are queued and delivered on the next connection.
+      </p>
+
+      <p>
+        Every flick is logged on the phone with its direction, speed and one way latency, so the
+        link itself can be measured rather than trusted. I want to know what the delay feels like
+        before I have opinions about it.
+      </p>
+
+      <div class="phones two" style="margin-left:auto;margin-right:auto;max-width:640px">
+        <figure>
+          <img src="../assets/img/projects/watch-swipe-surface/phone-reader.jpg" alt="The phone in Reader mode showing a recipe, driven from the Watch" loading="lazy" />
+          <figcaption>Reader on the phone. The hands doing the cooking never touch it.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/projects/watch-swipe-surface/phone-prompter.jpg" alt="The phone in Prompter mode with a script scrolling past a reading line" loading="lazy" />
+          <figcaption>Prompter. Faster and slower are a thumb in a pocket.</figcaption>
+        </figure>
+      </div>
+
+      <h2>Is this one thread?</h2>
+
+      <p>
+        People will notice the sequence. Haptic gloves in undergrad. Wrist haptics for Vision Pro.
+        Now the wrist as the input. I do not honestly experience those as one deliberate thread.
+        What I do see is a connection in what I keep reaching for: haptics, the interactions that
+        are already available on a body, lightweight wearables, things that make life easier
+        without announcing themselves.
+      </p>
+
+      <p>
+        Some of this is just where my head is. I have just finished a masters in human computer
+        interaction, and interfaces and interactions are the top of my mind whether I want them
+        there or not. There is no machine learning in this project. It is still an idea worth
+        chasing, and I have stopped needing every idea to have a model in it.
+      </p>
+
+      <p>
+        The roadmap after the phone is Apple TV, then Vision Pro. Since the Watch to phone link is
+        iOS and watchOS only, whether those need the phone as a bridge or a direct path is itself
+        one of the questions, and I would rather find out by building it than by reading about it.
+      </p>
+
+      <p>
+        I cannot wait to test it standing up, hands in my pockets, with something on the other side
+        of the room.
+      </p>
+
+      <div class="essay-foot">
+        <a class="btn" href="../writing.html">← Field Notes</a>
+        <a class="btn btn-primary" href="https://github.com/RabiatS/watchos-swipe-surface" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+
+    </article>
+  </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+</body>
+</html>

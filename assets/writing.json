@@ -1,6 +1,36 @@
 {
   "pieces": [
     {
+      "id": "watch-swipe-surface",
+      "kind": "Essay",
+      "title": "Hands in Your Pockets",
+      "blurb": "Take the strap off an Apple Watch and what is left is a small bright puck with a haptic engine and a radio to every other screen you own. The day I stopped seeing it as a watch, and what Apple left on the table.",
+      "date": "2026-09-18",
+      "readTime": "8 min",
+      "href": "case-studies/watch-swipe-surface.html",
+      "image": "assets/img/projects/watch-swipe-surface/hero-four-pads.jpg",
+      "topics": [
+        "watchOS",
+        "Interaction",
+        "Apple"
+      ]
+    },
+    {
+      "id": "ai-music-identifier",
+      "kind": "Field note",
+      "title": "What the Detector Actually Learned",
+      "blurb": "An on-device detector for AI-generated music. The leaky first attempt, the rebuild, and a robustness sweep that showed filtering moves the operating point rather than destroying the signal. Assumes some ML.",
+      "date": "2026-09-18",
+      "readTime": "14 min",
+      "href": "case-studies/ai-music-identifier.html",
+      "image": "assets/img/projects/ai-music-identifier/hero.jpg",
+      "topics": [
+        "ML",
+        "Audio",
+        "Core ML"
+      ]
+    },
+    {
       "id": "ai-deployment-gap",
       "kind": "Essay",
       "title": "Nobody Knows What The Last One Did",
@@ -9,7 +39,11 @@
       "readTime": "15 min",
       "href": "case-studies/ai-deployment-gap.html",
       "image": "assets/img/projects/ai-deployment-gap/hero.jpg",
-      "topics": ["AI", "HCI", "Research"]
+      "topics": [
+        "AI",
+        "HCI",
+        "Research"
+      ]
     },
     {
       "id": "visionpro-wrist-haptics",
@@ -20,7 +54,11 @@
       "readTime": "9 min",
       "href": "case-studies/visionpro-wrist-haptics.html",
       "image": "assets/img/projects/visionpro/hero-pinch.jpg",
-      "topics": ["XR", "Haptics", "Apple"]
+      "topics": [
+        "XR",
+        "Haptics",
+        "Apple"
+      ]
     },
     {
       "id": "ember",
@@ -31,7 +69,11 @@
       "readTime": "14 min",
       "href": "case-studies/ember.html",
       "image": "assets/img/projects/ember/wordmark-ember.jpg",
-      "topics": ["Design system", "iOS", "Privacy"]
+      "topics": [
+        "Design system",
+        "iOS",
+        "Privacy"
+      ]
     },
     {
       "id": "magic-mitts",
@@ -42,7 +84,11 @@
       "readTime": "8 min",
       "href": "case-studies/case-study.html",
       "image": "assets/img/projects/magic-mitts/glove.jpg",
-      "topics": ["Hardware", "XR", "Haptics"]
+      "topics": [
+        "Hardware",
+        "XR",
+        "Haptics"
+      ]
     },
     {
       "id": "amazon-music",
@@ -53,7 +99,11 @@
       "readTime": "10 min",
       "href": "case-studies/case-study-amazon-music.html",
       "image": "assets/img/projects/amazon-music.png",
-      "topics": ["Research", "Product", "MHCI"]
+      "topics": [
+        "Research",
+        "Product",
+        "MHCI"
+      ]
     }
   ]
 }

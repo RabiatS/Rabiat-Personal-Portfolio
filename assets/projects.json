@@ -24,7 +24,7 @@
       ],
       "github": "https://github.com/RabiatS/watchos-swipe-surface",
       "demo": null,
-      "caseStudy": null,
+      "caseStudy": "case-studies/watch-swipe-surface.html",
       "status": "in-progress",
       "images": [
         "assets/img/projects/watch-swipe-surface/hero.jpg"
@@ -568,27 +568,34 @@
     {
       "id": "ai-music-identifier",
       "title": "AI Music Identifier",
-      "subtitle": "Audio ML Feature Extraction",
+      "subtitle": "Is this song made by a person? On-device, offline",
       "category": "Applied ML / CV / Video",
       "tags": [
         "ML",
         "Audio",
+        "iOS",
         "Personal"
       ],
-      "description": "Extracted features from audio files (MFCCs) and prepared labeled dataset for model training (AI vs human).",
-      "longDescription": "Audio machine learning project focusing on feature extraction and classification.",
+      "description": "A binary classifier for AI-generated music from ten seconds of audio, exported to Core ML and run on an iPhone with no network. Test AUC 0.984, and 80% recall on a generator it was never trained on.",
+      "longDescription": "Rebuilt from a leaky twelve-track first attempt into a real pipeline: 20,139 tracks streamed from Hugging Face into a memmapped log-mel cache, splits grouped by track and stratified by generator with Suno withheld entirely, a bandwidth jitter augmentation against the codec shortcut, and a 4.8M parameter PANNs-style CNN with attention pooling trained on Apple Silicon. The robustness sweep across eleven audio transforms produced the finding worth the whole project: filtering causes calibration drift rather than signal loss, so where accuracy at a fixed threshold falls to chance, AUC is still above 0.94 and one re-chosen threshold restores it. Getting it onto the phone surfaced an fp16 overflow that made every loud clip return the same probability, a parity check too weak to catch it, and a train/serve skew in the audio front end that a numerically perfect model export had hidden.",
       "technologies": [
-        "Python",
-        "Audio Processing",
-        "Feature Extraction"
+        "PyTorch",
+        "torchaudio",
+        "Core ML",
+        "Swift",
+        "SwiftUI",
+        "MPS",
+        "Hugging Face"
       ],
-      "github": "https://github.com/RabiatS",
+      "github": null,
       "demo": null,
-      "caseStudy": null,
-      "status": "template",
-      "images": [],
+      "caseStudy": "case-studies/ai-music-identifier.html",
+      "status": "complete",
+      "images": [
+        "assets/img/projects/ai-music-identifier/hero.jpg"
+      ],
       "videos": [],
-      "year": "2024",
+      "year": "2026",
       "type": "Personal"
     },
     {
