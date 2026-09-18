@@ -1,6 +1,39 @@
 {
   "projects": [
     {
+      "id": "watch-swipe-surface",
+      "title": "watchOS Swipe Surface",
+      "subtitle": "The Apple Watch as a touch surface for other Apple devices",
+      "category": "Research / HCI",
+      "tags": [
+        "HCI",
+        "UX",
+        "Software",
+        "Research",
+        "Personal"
+      ],
+      "description": "The Apple Watch is sold as a health tracker that happens to have a screen. This treats it as the opposite: a very small touch surface that happens to be worn. Take away the strap and the sensors and what remains is a palm-sized puck with a bright touchscreen, a haptic engine and a radio link to every other Apple device its owner carries.",
+      "longDescription": "The first target is the iPhone. A watchOS app turns the whole Watch display into a gesture pad. Five gestures, up, down, left, right and tap, cross to the phone over WatchConnectivity as a small timestamped event, the phone acts on them, and answers with what it is now showing so the pad can name the thing its next flick will move. Every flick is logged on the phone with its direction, speed and one-way latency, so the link itself can be measured rather than assumed. Apple ships this gesture grammar for the Apple TV Remote and for Keynote, and relays Watch gestures to the iPhone only inside the VoiceOver accessibility path. There is no general-purpose Watch swipe surface for the phone and no public API that would let a third party build one outside its own app. That gap is the starting point. Roadmap after the iPhone is Apple TV, then Vision Pro, and since WatchConnectivity is iOS and watchOS only, whether those need the phone as a bridge or a direct Network.framework path is itself a finding. Scope is deliberately swipes only: no crown, no complications, no standalone Watch mode.",
+      "technologies": [
+        "Swift",
+        "SwiftUI",
+        "watchOS",
+        "iOS",
+        "WatchConnectivity",
+        "Haptics"
+      ],
+      "github": "https://github.com/RabiatS/watchos-swipe-surface",
+      "demo": null,
+      "caseStudy": null,
+      "status": "in-progress",
+      "images": [
+        "assets/img/projects/watch-swipe-surface/hero.jpg"
+      ],
+      "videos": [],
+      "year": "2026",
+      "type": "Personal"
+    },
+    {
       "id": "lantern",
       "title": "Lantern",
       "subtitle": "A language model that lives on your phone",
