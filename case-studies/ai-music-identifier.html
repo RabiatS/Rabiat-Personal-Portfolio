@@ -284,6 +284,17 @@
 
       <h2>The rebuild, August 2026</h2>
 
+      <p>
+        Some context on where my head was. This was one of the first machine learning projects I
+        had picked up in a while, after spending a couple of years with my brain switched over from
+        engineering to design for the masters. I was lucky with the timing: I was in a multimodal ML
+        class when I came back to this, and it let me pick things up faster than I would have alone.
+        Even so, I had to relearn more than I expected, go deeper into audio classification than I
+        had ever gone, and, for the first time, learn what it actually takes to run a model on a
+        phone rather than a laptop: quantisation, export, the front end, all the parts of on-device
+        ML that are still genuinely hard and that nobody's tutorial covers past the toy example.
+      </p>
+
       <h3>Data that actually has both classes as audio</h3>
 
       <p>
@@ -551,6 +562,31 @@
         </p>
       </div>
 
+      <h2>On an actual phone, with actual songs</h2>
+
+      <p>
+        Everything above is offline evaluation, and I want the next paragraph to sit right beside
+        those numbers so nobody reads one without the other.
+      </p>
+
+      <p>
+        The first time I tested it on my own phone, with music I chose, it was bad. The first two
+        songs I tried were human and it called both correctly, and for about a minute I thought it
+        was working. After that it did not really identify anything. Verdicts drifted, tracks I knew
+        the provenance of came back wrong, and there was no consistent signal I could point to and
+        say, that is the model working. On the bench it has a 0.98 AUC. In my hand it was closer to a
+        coin.
+      </p>
+
+      <p>
+        I am not going to explain that away, and I am not going to pretend the offline numbers are
+        the real result either. My own test is also a result. It is the one closest to how anyone
+        would actually use this, it is n of not very many, and it says the deployed system does not
+        work well enough to trust. Some of the gap is the front end skew I found afterwards. Some is
+        that my music is not FMA and not Udio. Some of it I do not know yet, and that is the honest
+        state of it.
+      </p>
+
       <h2>What is still weak</h2>
 
       <ul>
@@ -577,7 +613,56 @@
       <p>
         The less technical lesson is that "the project failed" was a story about phase one that I
         kept telling through phase two. The rebuild has a 0.98 test AUC and an 80 percent hit rate
-        on a generator it never trained on. Calling it a failure was a calibration error of my own.
+        on a generator it never trained on, and then it did badly on my phone. Both of those are
+        true. Calling the whole thing a failure was a calibration error of my own; calling it a
+        success would be another one.
+      </p>
+
+      <h2>Where this started, and the questions I am left holding</h2>
+
+      <p>
+        AI music is not new and it is not leaving. This project began before any of the code, in a
+        <a href="case-study-spotify.html">research study I ran at CMU</a> on how listeners perceive
+        AI-generated music against music made by people. The study was about perception and
+        labelling. At some point I thought: I am technical, I could try to build the label. So I did,
+        and now I know what that costs.
+      </p>
+
+      <p>
+        What I believe after building it is that detection from the finished audio is the wrong end
+        to start from. Watermarks exist now, and they are the right idea, because they are built in at
+        generation rather than reverse engineered from the surface. A detector like mine is always
+        going to be chasing a distribution that moves every time a generator ships. Someone will do
+        this better than I did. I am not the best at any single part of it. But being able to go
+        from a research question to a model to an app on my phone, and to find out in my own hand
+        that it does not work yet, is the thing I like most about working across disciplines. You
+        do not just get to ask the question. You get to find out.
+      </p>
+
+      <p>
+        And the question has moved while I was building. Friends say a generated track has no soul
+        in it. A family member says they can tell because it just does not sound as good. I used to
+        agree. It is 2026 and we are past the uncanny valley now, and I do not think the ear alone
+        can be relied on any more, mine included. So these are the questions I am actually holding,
+        without answers:
+      </p>
+
+      <ul>
+        <li>Should we be afraid of this, in music specifically? Does it matter, and to whom?</li>
+        <li>What does it do to a community of listeners, and to the listener alone with headphones
+          on, to not know?</li>
+        <li>What does it do to artists? Tools have always been there: the DJ pad, Logic, sample
+          packs, presets. Very little has been made from scratch for a long time. Is a generated
+          track just the next tool, or is it a different kind of thing?</li>
+        <li>AI augments me as a developer and I can point at exactly how. How does it augment an
+          artist? Is the augmentation in the lyrics, the arrangement, the sound? Where is the line
+          past which it stops being augmentation?</li>
+        <li>What does the next few years of this actually look like, and who decides?</li>
+      </ul>
+
+      <p>
+        I built a detector because I wanted a yes or no. What I got was a better set of questions
+        and a phone that shrugs at my playlist. I will take it.
       </p>
 
       <div class="essay-foot">
