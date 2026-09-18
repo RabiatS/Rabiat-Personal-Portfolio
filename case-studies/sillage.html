@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sillage | Rabiat Sadiq</title>
+  <meta name="description" content="What software would look like if a perfumer designed it. On layering, fading, the trail you leave behind, and why everything is little things combined." />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+  <!-- Prevent theme flash & minimalist Rabiat -->
+  <script>
+    (function(){
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+
+  <style>
+    /* Long-form essay layout, scoped to this page. Uses the site palette. */
+    /* Full container width. Prose keeps a readable measure; every figure,
+       image, table and swatch grid spans the whole width. */
+    .essay { max-width: 100%; margin: 0; }
+    .essay > p,
+    .essay > h2,
+    .essay > h3,
+    .essay > ul,
+    .essay > ol,
+    .essay > .sidenote,
+    .essay > .pull,
+    .essay > .refs,
+    .essay > .drop { max-width: 900px; }
+    /* On wide screens: a longer measure, larger type, and a centred text column
+       so full-width figures read as a deliberate magazine layout rather than
+       text that stops short. */
+    @media (min-width: 1200px) {
+      article.essay > p,
+      article.essay > h2,
+      article.essay > h3,
+      article.essay > ul,
+      article.essay > ol,
+      article.essay > .sidenote,
+      article.essay > .pull,
+      article.essay > .refs,
+      article.essay > .drop { max-width: 980px; margin-left: auto; margin-right: auto; }
+      article.essay p { font-size: 19px; line-height: 1.78; }
+      article.essay li { font-size: 19px; }
+      article.essay .drop { font-size: 22px; }
+      article.essay h2 { font-size: 31px; }
+      article.essay h3 { font-size: 23px; }
+      article.essay > .pull { font-size: 26px; }
+      article.essay > .sidenote { margin-bottom: 30px; }
+      article.essay > .sidenote p { font-size: 17px; }
+      .essay-hero .lead { max-width: 980px; }
+    }
+    .essay > figure,
+    .essay > .phones,
+    .essay > .swatches,
+    .essay > .table-wrap,
+    .essay > .specimen { max-width: 100%; }
+    /* Full container width, matching the other case study heroes on the site. */
+    .essay-hero { margin: 56px 0 48px; }
+    .essay-hero .lead { max-width: 860px; }
+    .essay-hero .byline { max-width: 860px; }
+    .essay-hero .eyebrow { color: rgba(255,255,255,0.92); }
+    .essay-hero h1 { color: #fff; }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+      margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);
+      color: var(--text-muted); font-size: 15px;
+    }
+    .byline strong { color: var(--text); font-weight: 600; }
+    .essay-hero .byline { color: rgba(255,255,255,0.88); border-top-color: rgba(255,255,255,0.28); }
+    .essay-hero .byline strong { color: #fff; }
+    .essay p {
+      font-size: 18px; line-height: 1.75; color: var(--text);
+      margin: 0 0 24px;
+    }
+    .essay h2 {
+      font-size: 28px; line-height: 1.3; margin: 56px 0 20px;
+      letter-spacing: -0.01em;
+    }
+    .essay h3 { font-size: 21px; margin: 40px 0 14px; }
+    .essay ul, .essay ol { margin: 0 0 24px; padding-left: 22px; }
+    .essay li { font-size: 18px; line-height: 1.7; margin-bottom: 12px; color: var(--text); }
+    .essay a { color: var(--primary); }
+
+    .drop { font-size: 21px; }
+
+    .sidenote {
+      border-left: 3px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      padding: 16px 20px; border-radius: 0 12px 12px 0;
+      margin: 0 0 28px;
+    }
+    .sidenote p { font-size: 16px; line-height: 1.65; margin: 0; color: var(--text-muted); }
+    .sidenote p + p { margin-top: 12px; }
+    .sidenote .label {
+      display: block; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700; margin-bottom: 8px;
+    }
+
+    .pull {
+      margin: 40px 0; padding: 0 0 0 24px;
+      border-left: 4px solid var(--primary);
+      font-size: 24px; line-height: 1.45; font-weight: 600;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+
+    figure.fig { margin: 44px 0; }
+    figure.fig svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+    figure.fig figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6;
+      margin-top: 14px; padding-left: 2px;
+    }
+    figure.fig figcaption b { color: var(--text); }
+
+    /* Figure palette, theme aware */
+    .fig svg { --f-ink: #1a1a1a; --f-mute: #6b7280; --f-line: #d1d5db;
+               --f-panel: #ffffff; --f-grid: #eceaf2; }
+    .dark .fig svg { --f-ink: #f3f4f6; --f-mute: #9ca3af; --f-line: #4b5563;
+                     --f-panel: #14141a; --f-grid: #26262f; }
+
+    figure.shot { margin: 40px 0; }
+    figure.shot img {
+      width: 100%; height: auto; display: block;
+      border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: var(--shadow-md); background: var(--surface);
+    }
+    figure.shot figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-top: 14px;
+    }
+    figure.shot figcaption b { color: var(--text); }
+    .shot-2up { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .shot-2up .cap {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); margin: 0 0 8px;
+    }
+    .shot-2up .cap.on { color: var(--primary); }
+    @media (max-width: 640px) { .shot-2up { grid-template-columns: 1fr; } }
+
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+    .table-wrap { overflow-x: auto; }
+
+
+    .phones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin: 48px 0; }
+    .phones.two { grid-template-columns: repeat(2, 1fr); max-width: 760px; margin-left: auto; margin-right: auto; }
+    .phones figure { margin: 0; }
+    .phones img {
+      width: 100%; height: auto; display: block; border-radius: 22px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+    }
+    .phones figcaption { font-size: 14px; color: var(--text-muted); margin-top: 10px; line-height: 1.5; }
+    @media (max-width: 700px) { .phones, .phones.two { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 440px) { .phones, .phones.two { grid-template-columns: 1fr; } }
+
+    .layers { list-style: none; padding: 0; counter-reset: layer; margin: 0 0 28px; }
+    .layers li {
+      position: relative; padding: 16px 18px 16px 60px; margin-bottom: 12px;
+      border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+      font-size: 16.5px; line-height: 1.6;
+    }
+    .layers li::before {
+      counter-increment: layer; content: counter(layer);
+      position: absolute; left: 18px; top: 16px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--primary); color: #fff; font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .layers li b { color: var(--text); }
+
+    .table-wrap { overflow-x: auto; }
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+
+    .refs { margin-top: 16px; }
+    .refs li { font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin-bottom: 14px; }
+    .refs li b { color: var(--text); font-weight: 600; }
+
+    .essay-foot {
+      margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .essay p, .essay li { font-size: 17px; }
+      .essay h2 { font-size: 24px; }
+      .pull { font-size: 20px; }
+    }
+  </style>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="../projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="../coursework.html" class="nav-pill">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="../cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" class="nav-pill nav-external">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-text">LinkedIn</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: var(--header-height);">
+    <section class="cs-hero essay-hero">
+      <p class="eyebrow">Essay • No project attached • Perfume, music, and small things</p>
+      <h1>Sillage</h1>
+      <p class="lead">
+        Sillage is the perfume word for the trail a scent leaves after the person has walked past.
+        It is the part of a fragrance that other people experience and the wearer never does. This
+        is about what software would look like if a perfumer designed it, and about why I keep
+        building things that fade.
+      </p>
+      <div class="byline">
+        <span><strong>Rabiat Sadiq</strong></span>
+        <span>September 18, 2026</span>
+        <span>About a 10 minute read</span>
+      </div>
+    </section>
+
+    <article class="essay">
+
+      <p class="drop">
+        A friend once called me from a building I had just left. Were you just in the elevator? I
+        could smell your perfume. I had not been in that elevator for ten minutes.
+      </p>
+
+      <p>
+        I think about that call more than it deserves. I was already gone. The scent was still doing
+        something, to someone, on my behalf, and I would never know how it landed. That is sillage,
+        and it turns out to be the thing I care most about in everything I make.
+      </p>
+
+      <h2>Everything is little things</h2>
+
+      <p>
+        Start with the boring truth about perfume: it is a bunch of small scents combined until they
+        make one thing. Music is the same. One song is a bunch of small sounds, and if you go a layer
+        down each sound is a bunch of frequencies, and a layer under that each frequency is a bunch of
+        amplitudes, and under that it is just a lot of very small things. You can keep going. It does
+        not stop being true.
+      </p>
+
+      <p>
+        A function in code is the same idea with a different name. Everything I have ever built is
+        layers of something smaller.
+      </p>
+
+      <p>
+        This is also, honestly, how I solve problems. If a problem is big, I make a smaller one out of
+        it. If that one is still too big, smaller again, until it is so small that fixing it is
+        obvious, and then I climb back up. It is how I learned to program. It is how I learned what a
+        function even was. It is a crucial part of how I live, and I did not notice until recently
+        that it is also how a perfumer works, and how a producer layers a track, and how nature does
+        almost everything. I keep finding biomimicry in places I did not put it.
+      </p>
+
+      <p class="pull">
+        Break it down until it is easy. Then build it back up. Perfume, music, code.
+      </p>
+
+      <h2>What I wear, and why it is mine</h2>
+
+      <p>
+        I wear what I feel like wearing. What I like will not be what you like, and I think that is
+        one of the most interesting facts about people. We all arrive on earth as more or less
+        nothing, the same nothing, and then we grow into something that is only ours. It shows up in
+        handwriting, in how you walk, in how you write code, in what music you can stand. We are all
+        essentially the same and all essentially unique at the same time, and perfume is the most
+        intimate version of that I know.
+      </p>
+
+      <p>
+        So I am chaotic about it, and the people who know me know this. Some days I want something
+        simple and clean. Some days flowery. Some days unisex, some days something that reads as
+        masculine. I have a decent array now. My sister taught me most of what I know, and I started
+        where a lot of people start, with Carolina Herrera, and moved through Libre and a lot of
+        others from there. Kayali is a house I follow closely. Their juicy apple layered with their
+        pistachio is one of the best combinations I have found, and I am going to keep claiming I
+        invented it until someone proves otherwise.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          I almost never wear one scent. I put on two and find out what they make together, and I
+          have discovered things I love that way that neither bottle would have given me alone. Some
+          days I just want to be vanilla, so I wear vanilla in three different shades of vanilla. Why
+          not. Layering again. It is always layering.
+        </p>
+      </div>
+
+      <p>
+        I do not spend much on things. If I am going to slip, it will be on perfume or on
+        technology, and I am at peace with that. Perfume is intimate in a way most purchases are not.
+        It is the closest thing to you all day. There are tricks, too: a little Vaseline on the skin
+        before you spray and it holds for hours longer. But mostly the answer is to buy the one that
+        lasts, which brings me to the trade-off, and I will get there.
+      </p>
+
+      <h2>Reading other people's trails</h2>
+
+      <p>
+        I can walk into a room and know my sister was in it. Everyone has their own scent, and
+        sometimes I walk into a place and think, this reminds me of someone, and then, this reminds
+        me of a time. Smell files things by person and by period without asking you.
+      </p>
+
+      <p>
+        Can I read a stranger from their sillage? A little. There is a particular masculine scent I
+        can pick out on men that tells me something about who they are hoping to run into. Mostly
+        what it tells me is whether they know anything about perfume, because if I can name what
+        someone is wearing we can have a conversation about it. That is a good one, I will say, or,
+        you should try it with this. People are sometimes surprised that I know. Other people think
+        it is common knowledge. Both reactions tell me something.
+      </p>
+
+      <h2>Interfaces have a smell</h2>
+
+      <p>
+        When I was taking my fundamentals of interaction class, I kept reaching for scent to explain
+        things to myself, and I think it holds up.
+      </p>
+
+      <p>
+        Walk into a room and you can smell that it is clean before you have looked at anything. Walk
+        into an Abercrombie and you are hit with the store's own perfume, sprayed on purpose, and
+        Victoria's Secret does the same. The brand has an essence it is trying to give off, and it
+        gets to you before a single word does.
+      </p>
+
+      <p>
+        Interfaces work exactly like that. You can tell something is clean. You can tell something is
+        smooth, or pastel, or sharp, or bubbly, before you have read a label or pressed a button. You
+        eat with your eyes, people say, and it is true of a website. But you also eat with your nose:
+        if the food smells off you do not want it, and biology put that reflex in front of your
+        thinking on purpose, so that spoiled things get rejected before you have to reason about them.
+        An interface gives off a smell in the first half second, and whatever it is, the user has
+        already decided something.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          There is a famous experiment where people are shown two shapes, one spiky and one round,
+          and asked which is called Kiki and which is called Bouba. Almost everyone says the spiky one
+          is Kiki. Nobody taught them that. We feel shapes the way we smell rooms, and design is just
+          a way of choosing what people feel before they think.
+        </p>
+      </div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 720 300" role="img" aria-labelledby="sg-t sg-d" xmlns="http://www.w3.org/2000/svg">
+          <title id="sg-t">The shape of a perfume over a day: top, heart and base notes fading at different rates</title>
+          <desc id="sg-d">Three curves over time from spraying to the next morning. Top notes are bright and gone within the first hour. Heart notes rise and hold for hours. Base notes come in slowly and are still there at the end. A shaded region after a few hours marks where the wearer has stopped noticing and only other people can smell it.</desc>
+          <defs>
+            <linearGradient id="sg-gap" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#ec4899" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#ec4899" stop-opacity="0.18"/>
+            </linearGradient>
+          </defs>
+          <rect x="330" y="30" width="340" height="210" fill="url(#sg-gap)"/>
+          <line x1="60" y1="240" x2="670" y2="240" stroke="var(--f-line)" stroke-width="1.5"/>
+          <line x1="60" y1="240" x2="60" y2="30" stroke="var(--f-line)" stroke-width="1.5"/>
+          <path d="M60,235 C90,60 120,50 150,90 C180,150 210,210 260,236" fill="none" stroke="var(--f-mute)" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M60,238 C130,200 170,110 240,100 C320,90 420,140 520,215 C580,232 630,238 670,239" fill="none" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M60,239 C160,236 240,215 330,180 C430,142 560,120 670,118" fill="none" stroke="#ec4899" stroke-width="3.5" stroke-linecap="round"/>
+          <text x="112" y="46" font-size="12.5" font-weight="700" fill="var(--f-mute)">top notes</text>
+          <text x="236" y="84" font-size="12.5" font-weight="700" fill="#7c3aed">heart</text>
+          <text x="600" y="108" font-size="12.5" font-weight="700" fill="#ec4899">base</text>
+          <text x="60" y="262" font-size="12" fill="var(--f-mute)">spray</text>
+          <text x="330" y="262" font-size="12" fill="var(--f-mute)" text-anchor="middle">a few hours</text>
+          <text x="670" y="262" font-size="12" fill="var(--f-mute)" text-anchor="end">next morning, on the coat</text>
+          <text x="500" y="52" font-size="12" fill="var(--f-ink)" text-anchor="middle" font-weight="700">you have stopped noticing</text>
+          <text x="500" y="68" font-size="11.5" fill="var(--f-mute)" text-anchor="middle">everyone else has not</text>
+          <text x="60" y="290" font-size="12" fill="var(--f-mute)">Not to scale. Shapes, not measurements.</text>
+        </svg>
+        <figcaption>
+          <b>Figure 1.</b> A perfume is designed in time. Something has to be bright and gone, something
+          has to hold, and something has to still be there tomorrow. The shaded part is the point: after
+          a few hours the wearer cannot smell it any more, and from then on it exists only for other
+          people.
+        </figcaption>
+      </figure>
+
+      <h2>Designed to fade</h2>
+
+      <p>
+        Here is the thing perfumers know that software people mostly do not: you design in time. A
+        scent has top notes that are bright and gone within the hour, heart notes that hold for the
+        afternoon, and base notes that are still on your coat the next morning. The entire craft is
+        deciding what fades when. Nothing in a good perfume is meant to last forever, and that is the
+        design, not a limitation of it.
+      </p>
+
+      <p>
+        I have been asked why I keep making things that go away, when the whole industry is built on
+        things that pile up. Accumulation is fine. It is also a kind of hoarding. People want to keep
+        every image and every message, and it all takes space, and space costs money, and eventually
+        it costs convenience too.
+      </p>
+
+      <p>
+        Think about a Polaroid. You take one picture. You hand it to a friend, they look, they hand it
+        back. You show the next person, and the next, seven people if you like. At the end you still
+        have one photograph and seven people have seen it, and it cost you nothing to show them.
+        Digital broke that. Now, to show seven friends the same picture, I send it seven times and
+        there are seven copies of it living on seven phones, and mine, and the act of showing someone
+        something has quietly started costing storage, which is to say money. Ember exists because I
+        wanted the Polaroid back. Show it to the people you chose, let them look, let it go.
+      </p>
+
+      <p>
+        A perfumer would understand that immediately. Of course it fades. What did you think it was
+        for?
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          The one time someone tried to put actual smell into software, as far as I found, it did not
+          go well. A game studio, I could not tell you which one now, worked on a device that would
+          release scent to match what was on screen: flowers when you walked through a field, pizza
+          when you saw pizza. It ran on a few chemicals mixed in a cartridge, and over time the
+          cartridge just started to smell bad. Every combination decayed toward the same off smell.
+          There is probably a lesson in there about mixing things that were never meant to sit
+          together in one box, but I mostly find it funny. Somebody built a fart machine by accident
+          while chasing the flower field.
+        </p>
+      </div>
+
+      <h2>The trade-off is the same one</h2>
+
+      <p>
+        What I dislike about how perfume is sold is the price, and the honest answer to the price is
+        that you can usually get the same scent for a lot less, and it will not last as long. That is
+        the trade. Longevity or cost. Pick.
+      </p>
+
+      <p>
+        Which is exactly the shape of every trade I make at work. Overfit or underfit. Bias or
+        variance. Storage or the ability to look at the photo forever. Privacy or convenience. There
+        is no version of a system where you get all of it, and a lot of what I would call taste, in
+        perfume or in engineering, is just knowing which side you are willing to lose on, and being
+        honest that you chose it.
+      </p>
+
+      <h2>So, what would a perfumer build?</h2>
+
+      <p>
+        Something layered from small parts that each do one thing, the way a scent is built from
+        notes and a song from sounds. Something with a shape in time: a bright opening that gets out
+        of the way, a middle that holds, and a base you only notice once you have stopped looking.
+        Something that leaves a trail you never see yourself, in what other people say about it after
+        they close it. And something that fades on purpose, because a thing designed to last forever
+        was never really designed at all.
+      </p>
+
+      <p>
+        I was gone from that elevator for ten minutes. The best thing I could hope for anything I
+        make is that it keeps working on someone after I have left the room.
+      </p>
+
+      <div class="essay-foot">
+        <a class="btn" href="../writing.html">← Field Notes</a>
+      </div>
+
+    </article>
+  </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+</body>
+</html>

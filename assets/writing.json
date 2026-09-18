@@ -1,6 +1,21 @@
 {
   "pieces": [
     {
+      "id": "sillage",
+      "kind": "Essay",
+      "title": "Sillage",
+      "blurb": "The perfume word for the trail you leave after you have walked past. What software would look like if a perfumer designed it: layered from small things, shaped in time, and made to fade on purpose.",
+      "date": "2026-09-18",
+      "readTime": "10 min",
+      "href": "case-studies/sillage.html",
+      "image": "assets/img/writing/sillage.jpg",
+      "topics": [
+        "Perfume",
+        "Music",
+        "Design"
+      ]
+    },
+    {
       "id": "watch-swipe-surface",
       "kind": "Essay",
       "title": "Hands in Your Pockets",
