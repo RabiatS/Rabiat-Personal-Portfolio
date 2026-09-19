@@ -1,6 +1,21 @@
 {
   "pieces": [
     {
+      "id": "lantern",
+      "kind": "Essay",
+      "title": "If AI Goes Dark",
+      "blurb": "Why I built a language model that lives entirely on the phone. On power, on keeping small tasks small, on having no signal, and on the lantern that always worked when the light went out.",
+      "date": "2026-09-16",
+      "readTime": "7 min",
+      "href": "case-studies/lantern.html",
+      "image": "assets/img/projects/lantern/chat.jpg",
+      "topics": [
+        "On-device ML",
+        "Energy",
+        "Apple"
+      ]
+    },
+    {
       "id": "sillage",
       "kind": "Essay",
       "title": "Sillage",
