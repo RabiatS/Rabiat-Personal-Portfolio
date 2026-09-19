@@ -5,7 +5,7 @@
       "kind": "Essay",
       "title": "Sillage",
       "blurb": "The perfume word for the trail you leave after you have walked past. What software would look like if a perfumer designed it: layered from small things, shaped in time, and made to fade on purpose.",
-      "date": "2026-09-18",
+      "date": "2026-08-20",
       "readTime": "10 min",
       "href": "case-studies/sillage.html",
       "image": "assets/img/writing/sillage.jpg",
@@ -35,7 +35,7 @@
       "kind": "Field note",
       "title": "What the Detector Actually Learned",
       "blurb": "An on-device detector for AI-generated music. The leaky first attempt, the rebuild, and a robustness sweep that showed filtering moves the operating point rather than destroying the signal. Assumes some ML.",
-      "date": "2026-09-18",
+      "date": "2026-08-30",
       "readTime": "14 min",
       "href": "case-studies/ai-music-identifier.html",
       "image": "assets/img/projects/ai-music-identifier/hero.jpg",
@@ -118,6 +118,20 @@
         "Research",
         "Product",
         "MHCI"
+      ]
+    },
+    {
+      "id": "antarctica",
+      "kind": "Thought",
+      "title": "Why not build data centers in Antarctica?",
+      "blurb": "They take too much power and most of it goes to cooling. That is the whole thought.",
+      "date": "2025-12-15",
+      "readTime": "10 sec",
+      "href": "case-studies/antarctica.html",
+      "image": "assets/img/writing/antarctica.jpg",
+      "topics": [
+        "Energy",
+        "Joke, mostly"
       ]
     }
   ]

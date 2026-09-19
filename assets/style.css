@@ -474,6 +474,49 @@ html.dark {
   transition: none;
 }
 
+/* Case study hero in minimalist mode. The gradient collapses to black there
+   (primary and accent both map to black) while headings are forced black, so
+   the hero title vanished. Treat it like a plain card instead. */
+.plain-mode .cs-hero {
+  background: #ffffff;
+  border: 1px solid #000000;
+  box-shadow: none;
+  color: #000000;
+}
+.plain-mode .cs-hero h1,
+.plain-mode .cs-hero .eyebrow,
+.plain-mode .cs-hero .lead,
+.plain-mode .cs-hero .byline,
+.plain-mode .cs-hero .byline strong { color: #000000; }
+.plain-mode .cs-hero .lead,
+.plain-mode .cs-hero .byline { opacity: 0.8; }
+.plain-mode .cs-hero .byline { border-top-color: #000000; }
+.plain-mode .cs-hero .metric {
+  background: #ffffff;
+  border: 1px solid #000000;
+  color: #000000;
+  backdrop-filter: none;
+}
+.plain-mode .cs-hero .metric h3,
+.plain-mode .cs-hero .metric p { color: #000000; }
+
+/* The dark minimalist variant already renders the hero black on black text-light;
+   keep its panel and border consistent with its cards. */
+.plain-mode.plain-mode--rabiat .cs-hero {
+  background: var(--rabiat-panel);
+  border-color: var(--rabiat-border);
+  color: var(--rabiat-text);
+}
+.plain-mode.plain-mode--rabiat .cs-hero h1,
+.plain-mode.plain-mode--rabiat .cs-hero .lead,
+.plain-mode.plain-mode--rabiat .cs-hero .byline,
+.plain-mode.plain-mode--rabiat .cs-hero .byline strong,
+.plain-mode.plain-mode--rabiat .cs-hero .metric,
+.plain-mode.plain-mode--rabiat .cs-hero .metric h3,
+.plain-mode.plain-mode--rabiat .cs-hero .metric p { color: var(--rabiat-text); }
+.plain-mode.plain-mode--rabiat .cs-hero .metric { background: transparent; border-color: var(--rabiat-border); }
+.plain-mode.plain-mode--rabiat .cs-hero .byline { border-top-color: var(--rabiat-border); }
+
 .plain-mode .card:hover {
   box-shadow: none !important;
   border-color: #000000;
