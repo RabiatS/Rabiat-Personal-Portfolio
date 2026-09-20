@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>If AI Goes Dark | Rabiat Sadiq</title>
+  <meta name="description" content="Why I built Lantern, a language model that lives entirely on the phone. On power, small tasks, no signal, and the lantern that always worked when the light went out." />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+  <!-- Prevent theme flash & minimalist Rabiat -->
+  <script>
+    (function(){
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+
+  <style>
+    /* Long-form essay layout, scoped to this page. Uses the site palette. */
+    /* Full container width. Prose keeps a readable measure; every figure,
+       image, table and swatch grid spans the whole width. */
+    .essay { max-width: 100%; margin: 0; }
+    .essay > p,
+    .essay > h2,
+    .essay > h3,
+    .essay > ul,
+    .essay > ol,
+    .essay > .sidenote,
+    .essay > .pull,
+    .essay > .refs,
+    .essay > .drop { max-width: 900px; }
+    /* On wide screens: a longer measure, larger type, and a centred text column
+       so full-width figures read as a deliberate magazine layout rather than
+       text that stops short. */
+    @media (min-width: 1200px) {
+      article.essay > p,
+      article.essay > h2,
+      article.essay > h3,
+      article.essay > ul,
+      article.essay > ol,
+      article.essay > .sidenote,
+      article.essay > .pull,
+      article.essay > .refs,
+      article.essay > .drop { max-width: 980px; margin-left: auto; margin-right: auto; }
+      article.essay p { font-size: 19px; line-height: 1.78; }
+      article.essay li { font-size: 19px; }
+      article.essay .drop { font-size: 22px; }
+      article.essay h2 { font-size: 31px; }
+      article.essay h3 { font-size: 23px; }
+      article.essay > .pull { font-size: 26px; }
+      article.essay > .sidenote { margin-bottom: 30px; }
+      article.essay > .sidenote p { font-size: 17px; }
+      .essay-hero .lead { max-width: 980px; }
+    }
+    .essay > figure,
+    .essay > .phones,
+    .essay > .swatches,
+    .essay > .table-wrap,
+    .essay > .specimen { max-width: 100%; }
+    /* Full container width, matching the other case study heroes on the site. */
+    .essay-hero { margin: 56px 0 48px; }
+    .essay-hero .lead { max-width: 860px; }
+    .essay-hero .byline { max-width: 860px; }
+    .essay-hero .eyebrow { color: rgba(255,255,255,0.92); }
+    .essay-hero h1 { color: #fff; }
+    .byline {
+      display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+      margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);
+      color: var(--text-muted); font-size: 15px;
+    }
+    .byline strong { color: var(--text); font-weight: 600; }
+    .essay-hero .byline { color: rgba(255,255,255,0.88); border-top-color: rgba(255,255,255,0.28); }
+    .essay-hero .byline strong { color: #fff; }
+    .essay p {
+      font-size: 18px; line-height: 1.75; color: var(--text);
+      margin: 0 0 24px;
+    }
+    .essay h2 {
+      font-size: 28px; line-height: 1.3; margin: 56px 0 20px;
+      letter-spacing: -0.01em;
+    }
+    .essay h3 { font-size: 21px; margin: 40px 0 14px; }
+    .essay ul, .essay ol { margin: 0 0 24px; padding-left: 22px; }
+    .essay li { font-size: 18px; line-height: 1.7; margin-bottom: 12px; color: var(--text); }
+    .essay a { color: var(--primary); }
+
+    .drop { font-size: 21px; }
+
+    .sidenote {
+      border-left: 3px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      padding: 16px 20px; border-radius: 0 12px 12px 0;
+      margin: 0 0 28px;
+    }
+    .sidenote p { font-size: 16px; line-height: 1.65; margin: 0; color: var(--text-muted); }
+    .sidenote p + p { margin-top: 12px; }
+    .sidenote .label {
+      display: block; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700; margin-bottom: 8px;
+    }
+
+    .pull {
+      margin: 40px 0; padding: 0 0 0 24px;
+      border-left: 4px solid var(--primary);
+      font-size: 24px; line-height: 1.45; font-weight: 600;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+
+    figure.fig { margin: 44px 0; }
+    figure.fig svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+    figure.fig figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6;
+      margin-top: 14px; padding-left: 2px;
+    }
+    figure.fig figcaption b { color: var(--text); }
+
+    /* Figure palette, theme aware */
+    .fig svg { --f-ink: #1a1a1a; --f-mute: #6b7280; --f-line: #d1d5db;
+               --f-panel: #ffffff; --f-grid: #eceaf2; }
+    .dark .fig svg { --f-ink: #f3f4f6; --f-mute: #9ca3af; --f-line: #4b5563;
+                     --f-panel: #14141a; --f-grid: #26262f; }
+
+    figure.shot { margin: 40px 0; }
+    figure.shot img {
+      width: 100%; height: auto; display: block;
+      border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: var(--shadow-md); background: var(--surface);
+    }
+    figure.shot figcaption {
+      font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-top: 14px;
+    }
+    figure.shot figcaption b { color: var(--text); }
+    .shot-2up { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .shot-2up .cap {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); margin: 0 0 8px;
+    }
+    .shot-2up .cap.on { color: var(--primary); }
+    @media (max-width: 640px) { .shot-2up { grid-template-columns: 1fr; } }
+
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+    .table-wrap { overflow-x: auto; }
+
+
+    .phones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin: 48px 0; }
+    .phones.two { grid-template-columns: repeat(2, 1fr); max-width: 760px; margin-left: auto; margin-right: auto; }
+    .phones figure { margin: 0; }
+    .phones img {
+      width: 100%; height: auto; display: block; border-radius: 22px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+    }
+    .phones figcaption { font-size: 14px; color: var(--text-muted); margin-top: 10px; line-height: 1.5; }
+    @media (max-width: 700px) { .phones, .phones.two { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 440px) { .phones, .phones.two { grid-template-columns: 1fr; } }
+
+    .layers { list-style: none; padding: 0; counter-reset: layer; margin: 0 0 28px; }
+    .layers li {
+      position: relative; padding: 16px 18px 16px 60px; margin-bottom: 12px;
+      border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+      font-size: 16.5px; line-height: 1.6;
+    }
+    .layers li::before {
+      counter-increment: layer; content: counter(layer);
+      position: absolute; left: 18px; top: 16px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--primary); color: #fff; font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .layers li b { color: var(--text); }
+
+    .table-wrap { overflow-x: auto; }
+    .collect { width: 100%; border-collapse: collapse; margin: 0 0 28px; font-size: 16px; }
+    .collect th, .collect td {
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .collect th { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .collect td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .collect td { color: var(--text-muted); }
+
+    .refs { margin-top: 16px; }
+    .refs li { font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin-bottom: 14px; }
+    .refs li b { color: var(--text); font-weight: 600; }
+
+    .essay-foot {
+      margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .essay p, .essay li { font-size: 17px; }
+      .essay h2 { font-size: 24px; }
+      .pull { font-size: 20px; }
+    }
+  </style>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="../projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="../coursework.html" class="nav-pill">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="../cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" class="nav-pill nav-external">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-text">LinkedIn</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: var(--header-height);">
+    <section class="cs-hero essay-hero">
+      <p class="eyebrow">Essay • Lantern • Why I built it</p>
+      <h1>If AI Goes Dark</h1>
+      <p class="lead">
+        Lantern is a language model that lives entirely on the phone. No server, no account, no
+        signal needed. This is about why I wanted one, and about the object it is named after.
+      </p>
+      <div class="byline">
+        <span><strong>Rabiat Sadiq</strong></span>
+        <span>September 2026</span>
+        <span>About a 7 minute read</span>
+      </div>
+    </section>
+
+    <article class="essay">
+
+      <p class="drop">
+        Back home in Nigeria the light went out often. Not occasionally. Often. If the flashlight
+        had not been charged, you had nothing. But there was always a lantern, and the lantern
+        always worked.
+      </p>
+
+      <p>
+        I have not seen one in a long time and I still think about it, because it is the clearest
+        picture I have of what a dependable tool is. It does not need the grid. It does not need
+        permission. It is small, it is yours, and it is enough for the thing you actually need to do
+        right now, which is see.
+      </p>
+
+      <h2>The worry that started it</h2>
+
+      <p>
+        A lot of people are concerned about AI, and a lot of the concern is fair. I am not going to
+        litigate all of it here. The part that has been sitting with me is the power. The models we
+        use every day run in buildings that burn an enormous amount of energy, mostly to stay cool,
+        and every question you type gets routed to one of those buildings and back. That is true
+        whether you asked it to summarise a contract or to fix the tone of a two line email.
+      </p>
+
+      <div class="sidenote">
+        <span class="label">Side note</span>
+        <p>
+          My complete thought on that problem is <a href="antarctica.html">here</a>. It is ten
+          seconds long and I stand by it.
+        </p>
+      </div>
+
+      <p>
+        So I started wondering what it would be like to have something downloaded. Locally. On the
+        thing in your pocket. Not as a political statement, just as a question: can the small tasks
+        stay small?
+      </p>
+
+      <h2>The phone can do this now</h2>
+
+      <p>
+        The honest answer a couple of years ago was no. The honest answer now is yes, for a
+        surprising amount. The GPUs in the newer Pro phones are genuinely capable, Apple's
+        unified memory means the model does not have to be copied around, and a quantised model
+        of a billion or three billion parameters fits and runs at a speed that feels like typing.
+      </p>
+
+      <p>
+        That covers more than you would think. Write an email. Rewrite this so it is clearer. What
+        is a word for this. Explain what this term means. Walk me through the first aid for this.
+        None of those need a data center. They need something small, close, and available. Leave
+        the big tasks to the big machines and let the little ones live on the phone.
+      </p>
+
+      <p class="pull">
+        I need a little something. I do not have Google. I do not have anything. What can I ask?
+      </p>
+
+      <p>
+        That last one is the situation I keep coming back to. You are outside. You are stuck. There
+        is no signal, or you are somewhere the signal is not yours to use. You need a small answer
+        and you need it now. An on the go model that anyone can open at any time, with no
+        connection, is a real thing that could exist, and as far as I can tell not many people have
+        it yet. It will get better over time. It is already useful.
+      </p>
+
+      <h2>What it is</h2>
+
+      <p>
+        Lantern runs a quantised model entirely on the iPhone through MLX. The only network call it
+        ever makes is the one time download of public model weights. After that it works in
+        airplane mode, and the screen shows what that costs while it writes: tokens per second,
+        memory in use, thermal state, live.
+      </p>
+
+      <div class="phones">
+        <figure>
+          <img src="../assets/img/projects/lantern/chat.jpg" alt="Lantern chat with the first aid persona answering, and a live readout of tokens per second and memory" loading="lazy" />
+          <figcaption>The chat. "Ask anything. No signal needed." The readout underneath is the honest part.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/projects/lantern/transparency.jpg" alt="The How Lantern works page, explaining in plain language where the answers come from" loading="lazy" />
+          <figcaption>How Lantern works, in plain words. If it is going to live on your phone, you should know what it is doing there.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/projects/lantern/settings.jpg" alt="Settings showing what staying on the phone has saved: replies answered here, words never sent anywhere, energy saved" loading="lazy" />
+          <figcaption>What staying on the phone has saved, with the assumptions behind the estimate spelled out.</figcaption>
+        </figure>
+      </div>
+
+      <p>
+        The part I am most careful about is the gate. Before anything downloads, the app reads the
+        phone's memory, how much this process is still allowed to allocate, free disk, and whether
+        the GPU is present, and then tells you per model: go, go with a warning, or not on this
+        phone. A small model is the default and runs on four gigabyte phones. Bigger ones are
+        offered with warnings where they belong and not at all where they would just crash. A
+        lantern that sets your house on fire is not a lantern.
+      </p>
+
+      <h2>Learning by building</h2>
+
+      <p>
+        I will be straight about the other reason this exists. I got a new MacBook, I have been
+        learning MLX and reading everything I can find about on device models, and this is how I
+        learn: I make the thing. Reading about quantisation and reading about memory pressure is
+        one kind of knowing. Watching a three billion parameter model get killed on a six gigabyte
+        phone because I let the context grow is a different kind, and it is the kind that sticks.
+      </p>
+
+      <p>
+        Lantern is one of those projects. It is me finding out what the phone can actually hold,
+        and it will keep changing as I keep learning.
+      </p>
+
+      <h2>The name</h2>
+
+      <p>
+        A lantern is what you reach for when the light goes out. It does not care why it went out.
+        It does not care whether the grid is overloaded or the bill was not paid or a storm took the
+        line. It works because it is yours and it is already in the house.
+      </p>
+
+      <p>
+        So the question the app is really asking is this. If, for whatever reason, AI goes dark,
+        the service is down, the connection is gone, the price goes up, the policy changes, the
+        building overheats, what could be our lantern? What is the small, dependable version that
+        is already on the phone and does not need anyone's permission to turn on?
+      </p>
+
+      <p>
+        We have a lot of devices now. They are not scarce any more. The open question, and I do
+        not think it is settled, is whether we really have to run enormous centers and burn that
+        much heat to answer questions that a thing in your pocket could answer on its own.
+      </p>
+
+      <p>
+        I am going to keep learning and keep finding out what the devices can do. This one is a
+        light. It is small. It works when nothing else does.
+      </p>
+
+      <div class="essay-foot">
+        <a class="btn" href="../writing.html">← Field Notes</a>
+        <a class="btn btn-primary" href="https://github.com/RabiatS/lantern" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+
+    </article>
+  </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+</body>
+</html>

@@ -59,7 +59,7 @@
       ],
       "github": "https://github.com/RabiatS/lantern",
       "demo": null,
-      "caseStudy": null,
+      "caseStudy": "case-studies/lantern.html",
       "status": "in-progress",
       "images": [
         "assets/img/projects/lantern/chat.jpg"
