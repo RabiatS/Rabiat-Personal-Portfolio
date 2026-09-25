@@ -2,7 +2,7 @@
 // For a public site, upload the .onnx + .json files somewhere with a fast CDN
 // (e.g. a Hugging Face model repo) and put that URL here, ending with a slash:
 //   export const MODEL_BASE = 'https://huggingface.co/<you>/audio-playground-models/resolve/main/';
-export const MODEL_BASE = new URL('../models/', import.meta.url).href;
+export const MODEL_BASE = 'https://huggingface.co/RabiatS/audio-playground-models/resolve/main/';
 
 // ONNX Runtime Web (runs the neural network on the visitor's GPU via WebGPU).
 export const ORT_VERSION = '1.30.0';
