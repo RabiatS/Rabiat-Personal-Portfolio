@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How Separation Works</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .back { font: 600 13px var(--f-display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+    .back:hover { color: var(--text); }
+    .intro { color: var(--muted); max-width: 720px; margin: 6px 0 0; font-size: 16px; }
+
+    /* Pipeline strip */
+    .pipeline { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; margin-top: 26px; }
+    .pipeline::before {
+      content: ''; position: absolute; left: 4%; right: 4%; top: 27px; height: 2px; background: var(--border);
+    }
+    .flow { position: absolute; left: 4%; right: 4%; top: 24px; height: 8px; pointer-events: none; overflow: hidden; }
+    .flow i { position: absolute; top: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); opacity: .8; animation: flow 6s linear infinite; }
+    @keyframes flow { from { left: -2%; } to { left: 100%; } }
+    .node {
+      position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px;
+      background: none; border: 0; color: var(--muted); cursor: pointer; padding: 0 4px 6px; font: inherit;
+    }
+    .node .dot {
+      width: 56px; height: 56px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border);
+      display: grid; place-items: center; font: 500 13px var(--f-mono); color: var(--muted); transition: all .2s;
+    }
+    .node .name { font: 600 14px var(--f-display); text-transform: uppercase; letter-spacing: .08em; text-align: center; }
+    .node:hover .dot { border-color: var(--subtle); color: var(--text); }
+    .node.done .dot { border-color: var(--r-marrow); color: var(--r-bloodline-light); }
+    .node.active .dot { background: var(--accent); border-color: var(--accent); color: var(--r-bone); box-shadow: 0 0 0 6px rgba(214,40,40,.15); }
+    .node.active .name { color: var(--text); }
+    .node:focus-visible { outline: 2px solid var(--teal); outline-offset: 4px; border-radius: 8px; }
+
+    /* Stage panel */
+    .stage { display: grid; grid-template-columns: minmax(260px, 360px) 1fr; gap: 28px; align-items: start; }
+    @media (max-width: 860px) { .stage { grid-template-columns: 1fr; } .pipeline .name { font-size: 11px; letter-spacing: .02em; } .node .dot { width: 42px; height: 42px; } .pipeline::before, .flow { top: 20px; } }
+    .stage h2 { margin-bottom: 12px; }
+    .stage p { margin: 0 0 12px; color: var(--text-2); }
+    .stage .code { font: 12.5px/1.6 var(--f-mono); color: var(--muted); background: var(--r-void); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px; margin-top: 14px; }
+    .stage .code b { color: var(--teal); font-weight: 500; }
+    .viz { background: var(--r-void); border: 1px solid var(--border); border-radius: 4px; position: relative; overflow: hidden; }
+    .viz canvas { display: block; width: 100%; }
+    .viz-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+    .readout { font: 12.5px var(--f-mono); color: var(--muted); }
+    .readout b { color: var(--text); font-weight: 500; }
+    .nav { display: flex; justify-content: space-between; margin-top: 20px; }
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; font: 12px var(--f-mono); color: var(--muted); margin-top: 10px; }
+    .legend span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+
+    .tip { position: absolute; pointer-events: none; background: var(--r-bone); color: var(--r-void); font: 600 13px var(--f-display); letter-spacing: .03em; padding: 6px 10px; border-radius: 4px; max-width: 260px; line-height: 1.3; opacity: 0; transition: opacity .12s; z-index: 2; }
+    .tip.on { opacity: 1; }
+    .tip small { display: block; font: 12.5px var(--f-body); letter-spacing: 0; margin-top: 3px; color: #333; }
+
+    /* Neural net diagram */
+    .net .block { cursor: help; transition: filter .15s; }
+    .net .block:hover { filter: brightness(1.4); }
+    .net text { font-family: var(--f-display); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+    .pulse { animation: pulse-move 3.2s linear infinite; }
+    @keyframes pulse-move { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+
+    .stem-grid { display: grid; gap: 6px; padding: 10px; }
+    .stem-line { display: grid; grid-template-columns: 110px 1fr; gap: 10px; align-items: center; cursor: pointer; border-radius: 4px; padding: 4px; border: 1px solid transparent; }
+    .stem-line:hover { border-color: var(--border); }
+    .stem-line.solo { border-color: var(--accent); background: var(--r-ember); }
+    .stem-line .label { display: flex; align-items: center; gap: 8px; color: var(--text); }
+    .stem-line .label i { width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
+    .stem-line canvas { height: 64px; border-radius: 3px; }
+    @media (max-width: 560px) { .pipeline .name { font-size: 9.5px; letter-spacing: 0; } }
+    @media (prefers-reduced-motion: reduce) { .flow i, .pulse, .wave-ring { animation: none !important; } }
+    .wave-ring { transform-origin: 70px 120px; animation: ring 2.4s ease-out infinite; }
+    @keyframes ring { from { transform: scale(.3); opacity: .9; } to { transform: scale(2.6); opacity: 0; } }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="b1">Rabiat's</span><span class="b2">How it works</span></div>
+    <div class="spacer"></div>
+    <a class="back" href="index.html">← Back to the playground</a>
+  </header>
+
+  <main>
+    <p class="intro">What happens between pressing <b>Separate</b> and hearing just the vocals. Click through the six stages. Everything below uses the real sample song and the real stems the model pulled out of it.</p>
+
+    <nav class="pipeline" id="pipeline" aria-label="Separation stages">
+      <div class="flow" aria-hidden="true"><i style="animation-delay:0s"></i><i style="animation-delay:-1.5s"></i><i style="animation-delay:-3s"></i><i style="animation-delay:-4.5s"></i></div>
+    </nav>
+
+    <section class="card" style="margin-top:22px">
+      <div class="stage" id="stage"></div>
+      <div class="nav">
+        <button class="btn ghost" id="prev">← Previous</button>
+        <button class="btn primary" id="next">Next →</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="tip" id="tip"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const COLORS = { vocals: '#F05454', drums: '#5EEAD4', bass: '#E8E8E3', other: '#7A7A75' };
+const STEMS = ['vocals', 'drums', 'bass', 'other'];
+
+// ---------- Audio ----------
+const ctx = new AudioContext();
+const audio = { mix: null, stems: {} };
+let playing = null;          // { sources, start, offset }
+const listeners = new Set(); // redraw callbacks for playheads
+
+async function loadAudio() {
+  const get = async (u) => ctx.decodeAudioData(await (await fetch(u)).arrayBuffer());
+  audio.mix = await get('sample.mp3');
+  await Promise.all(STEMS.map(async (s) => { audio.stems[s] = await get(`how/${s}.mp3`); }));
+}
+
+function stop() {
+  if (!playing) return;
+  playing.sources.forEach((s) => { try { s.stop(); } catch {} });
+  playing = null;
+  document.querySelectorAll('[data-play]').forEach((b) => (b.textContent = b.dataset.label));
+}
+function play(buffers, gains, btn) {
+  const wasBtn = playing?.btn;
+  stop();
+  if (wasBtn === btn) return;
+  ctx.resume();
+  const at = ctx.currentTime + 0.05;
+  const sources = buffers.map((b, i) => {
+    const s = ctx.createBufferSource(); s.buffer = b;
+    const g = ctx.createGain(); g.gain.value = gains ? gains[i] : 1;
+    s.connect(g).connect(ctx.destination); s.start(at); return s;
+  });
+  sources[0].onended = () => { if (playing?.sources === sources) stop(); };
+  playing = { sources, start: at, btn, gainsNodes: null };
+  if (btn) btn.textContent = '❚❚ Stop';
+  const tick = () => { if (!playing) { listeners.forEach((f) => f(null)); return; } listeners.forEach((f) => f(ctx.currentTime - playing.start)); requestAnimationFrame(tick); };
+  tick();
+}
+const playBtn = (label, onClick) => {
+  const b = document.createElement('button');
+  b.className = 'btn'; b.textContent = b.dataset.label = label; b.dataset.play = '1';
+  b.onclick = () => onClick(b);
+  return b;
+};
+
+// ---------- DSP helpers ----------
+function mono(buf) {
+  const a = buf.getChannelData(0), b = buf.numberOfChannels > 1 ? buf.getChannelData(1) : a;
+  const out = new Float32Array(a.length);
+  for (let i = 0; i < a.length; i++) out[i] = (a[i] + b[i]) / 2;
+  return out;
+}
+function fft(re, im) { // in-place radix-2
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit;
+    if (i < j) { [re[i], re[j]] = [re[j], re[i]]; [im[i], im[j]] = [im[j], im[i]]; }
+  }
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = -2 * Math.PI / len, wr = Math.cos(ang), wi = Math.sin(ang);
+    for (let i = 0; i < n; i += len) {
+      let cr = 1, ci = 0;
+      for (let k = 0; k < len / 2; k++) {
+        const a = i + k, b = a + len / 2;
+        const tr = re[b] * cr - im[b] * ci, ti = re[b] * ci + im[b] * cr;
+        re[b] = re[a] - tr; im[b] = im[a] - ti; re[a] += tr; im[a] += ti;
+        const ncr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = ncr;
+      }
+    }
+  }
+}
+const specCache = new Map();
+function spectrogram(buf, N = 2048, hop = 512) {
+  if (specCache.has(buf)) return specCache.get(buf);
+  const x = mono(buf), frames = Math.floor((x.length - N) / hop) + 1, bins = N / 2;
+  const win = Float32Array.from({ length: N }, (_, i) => 0.5 - 0.5 * Math.cos(2 * Math.PI * i / N));
+  const mag = new Float32Array(frames * bins);
+  const re = new Float32Array(N), im = new Float32Array(N);
+  for (let f = 0; f < frames; f++) {
+    for (let i = 0; i < N; i++) { re[i] = x[f * hop + i] * win[i]; im[i] = 0; }
+    fft(re, im);
+    for (let k = 0; k < bins; k++) mag[f * bins + k] = Math.hypot(re[k], im[k]);
+  }
+  const s = { mag, frames, bins, sr: buf.sampleRate, hop, N };
+  specCache.set(buf, s);
+  return s;
+}
+// Void → Marrow → Bloodline → Bloodline light → Bone
+const STOPS = [[10,10,10],[107,0,0],[214,40,40],[240,84,84],[245,245,240]];
+function heat(t) {
+  t = Math.max(0, Math.min(1, t)) * (STOPS.length - 1);
+  const i = Math.min(STOPS.length - 2, Math.floor(t)), f = t - i, a = STOPS[i], b = STOPS[i + 1];
+  return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+}
+const FMIN = 30, FMAX = 16000;
+const yToHz = (y, h) => FMIN * Math.pow(FMAX / FMIN, 1 - y / h);
+function drawSpec(canvas, buf, { refMax = null, tint = null } = {}) {
+  const s = spectrogram(buf), W = s.frames, H = 220;
+  const img = new ImageData(W, H);
+  let max = refMax || 0;
+  if (!refMax) for (let i = 0; i < s.mag.length; i++) if (s.mag[i] > max) max = s.mag[i];
+  const rows = Array.from({ length: H }, (_, y) => Math.min(s.bins - 1, Math.round(yToHz(y, H) / (s.sr / s.N))));
+  const tintRGB = tint && [parseInt(tint.slice(1, 3), 16), parseInt(tint.slice(3, 5), 16), parseInt(tint.slice(5, 7), 16)];
+  for (let x = 0; x < W; x++) for (let y = 0; y < H; y++) {
+    const v = s.mag[x * s.bins + rows[y]] / max;
+    const t = (20 * Math.log10(v + 1e-9) + 80) / 80;
+    const c = tintRGB ? tintRGB.map((ch) => 10 + (ch - 10) * Math.max(0, Math.min(1, t))) : heat(t);
+    const o = (y * W + x) * 4; img.data[o] = c[0]; img.data[o + 1] = c[1]; img.data[o + 2] = c[2]; img.data[o + 3] = 255;
+  }
+  const off = document.createElement('canvas'); off.width = W; off.height = H; off.getContext('2d').putImageData(img, 0, 0);
+  canvas._spec = { off, s, max };
+  return max;
+}
+function fitCanvas(c, h) {
+  const dpr = devicePixelRatio || 1;
+  c.style.height = h + 'px';
+  c.width = c.clientWidth * dpr; c.height = h * dpr;
+  const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return g;
+}
+
+// ---------- Tooltip ----------
+const tip = $('tip');
+function showTip(e, html) { tip.innerHTML = html; tip.classList.add('on'); tip.style.left = Math.min(innerWidth - 280, e.clientX + 14) + 'px'; tip.style.top = (e.clientY + 14) + 'px'; }
+function hideTip() { tip.classList.remove('on'); }
+tip.style.position = 'fixed';
+
+// ---------- Stages ----------
+const fmtT = (t) => `${t.toFixed(t < 1 ? 3 : 2)} s`;
+
+const STAGES = [
+  {
+    name: 'Sound', title: 'Sound is air, wiggling',
+    text: `<p>A voice, a kick drum and a bass all push air back and forth at once. By the time it reaches your ears (or a microphone), it's <b>one combined wiggle</b>. Nothing in the file says "this part is the voice".</p>
+           <p>That's why separation is hard: the model has to un-mix something that was never labeled.</p>`,
+    code: `Load the file<br><b>AudioIO.load(url)</b> / <b>decodeAudioData()</b>`,
+    render(viz, ctl) {
+      viz.innerHTML = `<svg viewBox="0 0 720 240" width="100%" style="display:block">
+        <g fill="none" stroke="${COLORS.vocals}" stroke-width="2">
+          ${[0, .6, 1.2, 1.8].map((d) => `<circle class="wave-ring" cx="70" cy="120" r="30" style="animation-delay:${d}s"/>`).join('')}
+        </g>
+        <rect x="40" y="95" width="30" height="50" rx="4" fill="${css('--r-midnight')}"/><path d="M70 95 L100 70 L100 170 L70 145 Z" fill="${css('--r-slate')}"/>
+        <text x="70" y="215" text-anchor="middle" fill="${css('--muted')}" font-family="Rajdhani" font-weight="600" font-size="14" letter-spacing="1">VOICE + DRUMS + BASS</text>
+        <path id="airpath" d="M150 120 C 250 40, 330 200, 430 120 S 600 60, 690 120" fill="none" stroke="${css('--r-midnight')}" stroke-width="2" stroke-dasharray="4 6"/>
+        <text x="420" y="215" text-anchor="middle" fill="${css('--muted')}" font-family="Rajdhani" font-weight="600" font-size="14" letter-spacing="1">ONE COMBINED PRESSURE WAVE → MICROPHONE</text>
+      </svg><canvas id="wave1"></canvas>`;
+      const c = $('wave1'), g = fitCanvas(c, 90), w = c.clientWidth;
+      const x = mono(audio.mix);
+      const draw = (t) => {
+        g.clearRect(0, 0, w, 90); g.fillStyle = css('--r-slate');
+        for (let px = 0; px < w; px++) {
+          let m = 0; const a = Math.floor(px / w * x.length), b = Math.floor((px + 1) / w * x.length);
+          for (let i = a; i < b; i += 8) m = Math.max(m, Math.abs(x[i]));
+          g.fillRect(px, 45 - m * 42, 1, Math.max(1, m * 84));
+        }
+        if (t != null) { g.fillStyle = css('--r-bone'); g.fillRect(t / audio.mix.duration * w, 0, 2, 90); }
+      };
+      draw(null); listeners.add(draw);
+      ctl.append(playBtn('▶ Hear the mix', (b) => play([audio.mix], null, b)));
+      return () => listeners.delete(draw);
+    },
+  },
+  {
+    name: 'Numbers', title: 'The computer sees numbers',
+    text: `<p>The microphone's wiggle is measured <b>44,100 times per second</b>. Each measurement ("sample") is one number between −1 and 1, per speaker (left and right).</p>
+           <p>A 4-minute song is about <b>21 million numbers</b>. Drag the zoom to see the individual dots.</p>`,
+    code: `Everything is resampled to 44.1 kHz stereo<br><b>StereoAudio(left: [Float], right: [Float])</b>`,
+    render(viz, ctl) {
+      viz.innerHTML = `<canvas id="zoomc"></canvas>`;
+      const c = $('zoomc'), g = fitCanvas(c, 300), w = c.clientWidth, H = 300;
+      const x = audio.mix.getChannelData(0), sr = audio.mix.sampleRate;
+      const center = Math.floor(4.2 * sr);
+      const read = document.createElement('span'); read.className = 'readout';
+      const slider = Object.assign(document.createElement('input'), { type: 'range', min: 0, max: 100, value: 0 });
+      slider.style.width = '220px'; slider.setAttribute('aria-label', 'Zoom');
+      const draw = () => {
+        const z = Number(slider.value) / 100;
+        const span = Math.max(24, Math.round(x.length * Math.pow(60 / x.length, z)));   // samples visible
+        const start = Math.max(0, Math.min(x.length - span, center - Math.floor(span / 2)));
+        g.clearRect(0, 0, w, H);
+        g.strokeStyle = css('--r-midnight'); g.beginPath(); g.moveTo(0, H / 2); g.lineTo(w, H / 2); g.stroke();
+        if (span > w * 2) {
+          g.fillStyle = css('--r-slate');
+          for (let px = 0; px < w; px++) {
+            let mn = 0, mx = 0; const a = start + Math.floor(px / w * span), b = start + Math.floor((px + 1) / w * span);
+            for (let i = a; i < b; i++) { mn = Math.min(mn, x[i]); mx = Math.max(mx, x[i]); }
+            g.fillRect(px, H / 2 - mx * 130, 1, Math.max(1, (mx - mn) * 130));
+          }
+        } else {
+          g.strokeStyle = css('--r-slate'); g.beginPath();
+          for (let i = 0; i < span; i++) { const px = i / (span - 1) * w, py = H / 2 - x[start + i] * 130; i ? g.lineTo(px, py) : g.moveTo(px, py); }
+          g.stroke();
+          if (span <= 400) {
+            for (let i = 0; i < span; i++) {
+              const px = i / (span - 1) * w, py = H / 2 - x[start + i] * 130;
+              g.strokeStyle = css('--r-midnight'); g.beginPath(); g.moveTo(px, H / 2); g.lineTo(px, py); g.stroke();
+              g.fillStyle = css('--r-bloodline'); g.beginPath(); g.arc(px, py, span < 100 ? 4 : 2.2, 0, 7); g.fill();
+            }
+          }
+        }
+        read.innerHTML = `Showing <b>${span.toLocaleString()}</b> samples = <b>${fmtT(span / sr)}</b>`;
+      };
+      slider.oninput = draw; draw();
+      const lab = document.createElement('span'); lab.className = 'label'; lab.textContent = 'Zoom in';
+      ctl.append(lab, slider, read);
+      c.onmousemove = (e) => {
+        const z = Number(slider.value) / 100, span = Math.max(24, Math.round(x.length * Math.pow(60 / x.length, z)));
+        const start = Math.max(0, Math.min(x.length - span, center - Math.floor(span / 2)));
+        const i = start + Math.round(e.offsetX / w * (span - 1));
+        showTip(e, `Sample #${i.toLocaleString()}<small>value ${x[i].toFixed(4)} at ${fmtT(i / sr)}</small>`);
+      };
+      c.onmouseleave = hideTip;
+    },
+  },
+  {
+    name: 'Chunks', title: 'Cut into overlapping chunks',
+    text: `<p>The model looks at <b>7.8 seconds at a time</b>. Longer songs are cut into chunks that overlap by 25%.</p>
+           <p>Where chunks overlap, their results are cross-faded using the triangle shapes you see, so each chunk's shaky edges barely count and there are no seams.</p>`,
+    code: `segment = 343,980 samples (7.8 s)<br>stride = 75% of that · triangle weights<br><b>DemucsSeparator.separate()</b>`,
+    render(viz, ctl) {
+      viz.innerHTML = `<canvas id="chunkc"></canvas>`;
+      const c = $('chunkc'), g = fitCanvas(c, 300), w = c.clientWidth, H = 300;
+      const dur = audio.mix.duration, seg = 7.8, stride = seg * 0.75;
+      const offsets = []; for (let o = 0; o < dur; o += stride) offsets.push(o);
+      const x = mono(audio.mix);
+      let hover = -1;
+      const draw = (t) => {
+        g.clearRect(0, 0, w, H);
+        g.fillStyle = css('--r-midnight');
+        for (let px = 0; px < w; px++) {
+          let m = 0; const a = Math.floor(px / w * x.length), b = Math.floor((px + 1) / w * x.length);
+          for (let i = a; i < b; i += 16) m = Math.max(m, Math.abs(x[i]));
+          g.fillRect(px, 230 - m * 40, 1, Math.max(1, m * 80));
+        }
+        offsets.forEach((o, i) => {
+          const x0 = o / dur * w, x1 = Math.min(dur, o + seg) / dur * w, xm = (o + seg / 2) / dur * w, top = 40 + (i % 2) * 22;
+          const col = i === hover ? css('--r-bloodline-light') : i % 2 ? css('--teal') : css('--r-bloodline');
+          g.globalAlpha = i === hover ? .35 : .14; g.fillStyle = col;
+          g.beginPath(); g.moveTo(o / dur * w, 180); g.lineTo(xm, top); g.lineTo((o + seg) / dur * w, 180); g.closePath(); g.fill();
+          g.globalAlpha = 1; g.strokeStyle = col; g.lineWidth = i === hover ? 2 : 1.2; g.stroke();
+          g.fillStyle = col; g.font = '600 13px Rajdhani'; g.fillText(`CHUNK ${i + 1}`, x0 + 6, top - 8 < 20 ? 20 : top - 8);
+        });
+        g.lineWidth = 1;
+        if (t != null) { g.fillStyle = css('--r-bone'); g.fillRect(t / dur * w, 0, 2, H); }
+      };
+      draw(null); listeners.add(draw);
+      c.onmousemove = (e) => {
+        const t = e.offsetX / w * dur;
+        hover = offsets.findIndex((o) => t >= o && t < o + seg && t < o + stride + (t >= offsets.at(-1) ? seg : 0));
+        const covering = offsets.filter((o) => t >= o && t < o + seg).length;
+        draw(playing ? ctx.currentTime - playing.start : null);
+        showTip(e, `${fmtT(t)}<small>${covering} chunk${covering > 1 ? 's' : ''} cover this moment${covering > 1 ? '; their results are blended' : ''}</small>`);
+      };
+      c.onmouseleave = () => { hover = -1; hideTip(); draw(null); };
+      const r = document.createElement('span'); r.className = 'readout';
+      r.innerHTML = `This 20 s song → <b>${offsets.length} chunks</b>. A 4-minute song → about <b>41</b>.`;
+      ctl.append(playBtn('▶ Play', (b) => play([audio.mix], null, b)), r);
+      return () => listeners.delete(draw);
+    },
+  },
+  {
+    name: 'Spectrogram', title: 'Turn sound into a picture',
+    text: `<p>The model also sees the sound as a <b>spectrogram</b>: time goes left to right, pitch goes bottom to top, brightness is loudness. It's made with a Fourier transform (STFT) over tiny overlapping windows.</p>
+           <p>Instruments leave different marks: <b>horizontal stripes</b> are held notes (voice, bass), <b>vertical streaks</b> are hits (drums). Hover to read it.</p>`,
+    code: `4096-point STFT, hop 1024<br>Web app: <b>torch.stft</b> · Mac app: <b>vDSP_fft_zrip</b> (Accelerate)`,
+    render(viz, ctl) {
+      viz.innerHTML = `<canvas id="specc"></canvas>`;
+      const c = $('specc'), H = 300; const g = fitCanvas(c, H), w = c.clientWidth;
+      drawSpec(c, audio.mix);
+      const draw = (t) => {
+        g.imageSmoothingEnabled = true; g.drawImage(c._spec.off, 0, 0, w, H);
+        g.fillStyle = 'rgba(245,245,240,.5)'; g.font = '12px "DM Mono"';
+        [50, 100, 250, 500, 1000, 2000, 4000, 8000].forEach((hz) => {
+          const y = H * (1 - Math.log(hz / FMIN) / Math.log(FMAX / FMIN));
+          g.fillRect(0, y, 6, 1); g.fillText(hz >= 1000 ? hz / 1000 + 'k' : hz, 9, y + 4);
+        });
+        if (t != null) { g.fillStyle = css('--r-bone'); g.fillRect(t / audio.mix.duration * w, 0, 2, H); }
+      };
+      draw(null); listeners.add(draw);
+      c.onmousemove = (e) => {
+        const { s, max } = c._spec, t = e.offsetX / w * audio.mix.duration, hz = yToHz(e.offsetY, H);
+        const f = Math.min(s.frames - 1, Math.floor(t * s.sr / s.hop)), k = Math.min(s.bins - 1, Math.round(hz / (s.sr / s.N)));
+        const db = 20 * Math.log10(s.mag[f * s.bins + k] / max + 1e-9);
+        const what = hz < 150 ? 'bass & kick territory' : hz < 1000 ? 'voice fundamentals, chords' : hz < 5000 ? 'voice harmonics, snare' : 'hi-hats, "s" sounds, air';
+        showTip(e, `${Math.round(hz)} Hz at ${fmtT(t)}<small>${db.toFixed(0)} dB · ${what}</small>`);
+      };
+      c.onmouseleave = hideTip;
+      ctl.append(playBtn('▶ Play and watch', (b) => play([audio.mix], null, b)));
+      return () => listeners.delete(draw);
+    },
+  },
+  {
+    name: 'Neural net', title: 'The neural network un-mixes it',
+    text: `<p>This is <b>Hybrid Transformer Demucs</b>, made by Meta. It has <b>two branches</b> that read the chunk at the same time: one looks at the <b>spectrogram</b>, one at the raw <b>waveform</b>.</p>
+           <p>Each branch squeezes the sound into a compact summary (encoder). In the middle, a <b>transformer</b> lets the two branches share what they noticed. Then decoders expand it back out, <b>once per instrument</b>. Hover the blocks.</p>
+           <p>It learned all of this by practicing on thousands of songs where the separate tracks were known.</p>`,
+    code: `27.4 M numbers ("parameters") in the 6-stem model<br>42 M × 4 in the fine-tuned 4-stem set<br>Mac app: <b>Core ML</b> on the Apple GPU`,
+    render(viz) {
+      const blocks = [
+        { x: 20, y: 40, w: 90, h: 70, label: 'SPECTROGRAM', c: css('--r-midnight'), tip: ['Input: spectrogram', 'The picture from stage 4, as real + imaginary numbers per pitch and moment.'] },
+        { x: 20, y: 210, w: 90, h: 70, label: 'WAVEFORM', c: css('--r-midnight'), tip: ['Input: waveform', 'The raw 343,980 numbers per channel from stage 2.'] },
+        ...[0, 1, 2, 3].map((i) => ({ x: 130 + i * 44, y: 40 + i * 9, w: 34, h: 70 - i * 18, label: '', c: css('--r-marrow'), tip: [`Spectrogram encoder ${i + 1}/4`, 'A convolution layer: finds patterns (onsets, harmonics) and halves the resolution, keeping more "meaning" per number.'] })),
+        ...[0, 1, 2, 3].map((i) => ({ x: 130 + i * 44, y: 210 + i * 9, w: 34, h: 70 - i * 18, label: '', c: css('--r-marrow'), tip: [`Waveform encoder ${i + 1}/4`, 'Same idea on raw audio: learns timing details the spectrogram blurs.'] })),
+        { x: 320, y: 100, w: 90, h: 120, label: 'TRANSFORMER', c: css('--r-bloodline'), tip: ['Cross-domain transformer (5 layers)', 'Attention: every moment can "look at" every other moment, and the two branches exchange notes. This is how it knows a voice is still a voice two seconds later.'] },
+        ...[0, 1, 2, 3].map((i) => ({ x: 430 + i * 44, y: 67 - i * 9, w: 34, h: 16 + i * 18, label: '', c: css('--r-marrow'), tip: [`Spectrogram decoder ${i + 1}/4`, 'Expands the summary back to full detail, using shortcuts ("skip connections") from the matching encoder layer.'] })),
+        ...[0, 1, 2, 3].map((i) => ({ x: 430 + i * 44, y: 237 - i * 9, w: 34, h: 16 + i * 18, label: '', c: css('--r-marrow'), tip: [`Waveform decoder ${i + 1}/4`, 'Rebuilds the waveform part of each instrument.'] })),
+      ];
+      const outs = STEMS.map((s, i) => ({ x: 630, y: 40 + i * 62, w: 76, h: 48, label: s.toUpperCase(), c: COLORS[s], stem: s, tip: [`Output: ${s}`, 'One spectrogram + one waveform per instrument. Next stage turns them back into sound.'] }));
+      const all = [...blocks, ...outs];
+      viz.innerHTML = `<svg class="net" viewBox="0 0 720 320" width="100%" style="display:block">
+        <defs><path id="p1" d="M110 75 L320 150 L430 75 L620 64"/><path id="p2" d="M110 245 L320 170 L430 245 L620 250"/></defs>
+        <path d="M110 75 L320 150 L430 75 L620 64 M110 245 L320 170 L430 245 L620 250" stroke="${css('--r-midnight')}" stroke-width="2" fill="none"/>
+        ${all.map((b, i) => `<g class="block" data-i="${i}"><rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="4" fill="${b.c}" ${b.stem ? 'fill-opacity=".2" stroke="' + b.c + '"' : ''}/>
+          ${b.label ? `<text x="${b.x + b.w / 2}" y="${b.y + b.h / 2 + 5}" text-anchor="middle" font-size="${b.stem ? 13 : 12}" fill="${b.stem ? b.c : css('--r-bone')}">${b.label}</text>` : ''}</g>`).join('')}
+        <text x="215" y="20" text-anchor="middle" font-size="12" fill="${css('--muted')}">ENCODERS</text>
+        <text x="515" y="20" text-anchor="middle" font-size="12" fill="${css('--muted')}">DECODERS</text>
+        <text x="365" y="300" text-anchor="middle" font-size="12" fill="${css('--muted')}">SHARE NOTES</text>
+        ${[0, 1.1, 2.2].map((d) => `<circle r="5" fill="${css('--r-bloodline-light')}" class="pulse" style="offset-path: path('M110 75 L320 150 L430 75 L620 64'); animation-delay:-${d}s"/>
+        <circle r="5" fill="${css('--teal')}" class="pulse" style="offset-path: path('M110 245 L320 170 L430 245 L620 250'); animation-delay:-${d + .5}s"/>`).join('')}
+      </svg>`;
+      viz.querySelectorAll('.block').forEach((el) => {
+        const b = all[el.dataset.i];
+        el.onmousemove = (e) => showTip(e, `${b.tip[0]}<small>${b.tip[1]}</small>`);
+        el.onmouseleave = hideTip;
+        if (b.stem) { el.style.cursor = 'pointer'; el.onclick = () => play([audio.stems[b.stem]], null, null); }
+      });
+    },
+  },
+  {
+    name: 'Stems', title: 'Back to sound: the stems',
+    text: `<p>Each instrument's spectrogram is turned back into sound with the <b>inverse STFT</b>, added to the waveform branch's output, and the chunks are cross-faded together.</p>
+           <p>Compare the pictures: the <b>voice</b> keeps the curvy stripes, <b>drums</b> keep the vertical streaks, <b>bass</b> keeps the bottom band. <b>Click a row</b> to hear just that one; click again for everything.</p>`,
+    code: `Mac app: <b>DemucsSTFT.ispec</b> + overlap-add<br>matches PyTorch to 70 dB (identical to the ear)`,
+    render(viz, ctl) {
+      viz.innerHTML = `<div class="stem-grid">${STEMS.map((s) => `<div class="stem-line" data-s="${s}" style="--c:${COLORS[s]}"><div class="label"><i></i><span class="stem-name" style="font-size:16px">${s}</span></div><canvas></canvas></div>`).join('')}</div>`;
+      const max = spectrogram(audio.mix).mag.reduce((m, v) => (v > m ? v : m), 0);
+      const lines = [...viz.querySelectorAll('.stem-line')];
+      let solo = null;
+      const draws = lines.map((line) => {
+        const c = line.querySelector('canvas'), g = fitCanvas(c, 64), w = c.clientWidth;
+        drawSpec(c, audio.stems[line.dataset.s], { refMax: max, tint: COLORS[line.dataset.s] });
+        return (t) => { g.drawImage(c._spec.off, 0, 0, w, 64); if (t != null) { g.fillStyle = css('--r-bone'); g.fillRect(t / audio.mix.duration * w, 0, 2, 64); } };
+      });
+      const drawAll = (t) => draws.forEach((d) => d(t));
+      drawAll(null); listeners.add(drawAll);
+      const start = (b) => play(STEMS.map((s) => audio.stems[s]), STEMS.map((s) => (!solo || solo === s ? 1 : 0)), b);
+      const btn = playBtn('▶ Play all stems', (b) => { solo = null; lines.forEach((l) => l.classList.remove('solo')); start(b); });
+      lines.forEach((line) => {
+        line.onclick = () => {
+          solo = solo === line.dataset.s ? null : line.dataset.s;
+          lines.forEach((l) => l.classList.toggle('solo', l.dataset.s === solo));
+          stop(); start(btn);
+        };
+      });
+      ctl.append(btn);
+      const r = document.createElement('span'); r.className = 'readout'; r.innerHTML = 'Same brightness scale as stage 4, so quiet stems look quiet.';
+      ctl.append(r);
+      return () => listeners.delete(drawAll);
+    },
+  },
+];
+
+// ---------- Stepper ----------
+let current = 0, cleanup = null;
+const pipe = $('pipeline');
+STAGES.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.className = 'node'; b.innerHTML = `<span class="dot">0${i + 1}</span><span class="name">${s.name}</span>`;
+  b.onclick = () => go(i);
+  pipe.append(b);
+});
+
+function go(i) {
+  current = Math.max(0, Math.min(STAGES.length - 1, i));
+  stop(); hideTip();
+  if (cleanup) cleanup();
+  const s = STAGES[current];
+  [...pipe.querySelectorAll('.node')].forEach((n, k) => { n.classList.toggle('active', k === current); n.classList.toggle('done', k < current); });
+  $('stage').innerHTML = `<div><h2><span class="num">0${current + 1}</span>${s.title}</h2>${s.text}<div class="code">${s.code}</div></div>
+    <div><div class="viz" id="viz"></div><div class="viz-controls" id="ctl"></div></div>`;
+  cleanup = s.render($('viz'), $('ctl')) || null;
+  $('prev').disabled = current === 0;
+  $('next').textContent = current === STAGES.length - 1 ? 'Start over ↺' : 'Next →';
+  try { history.replaceState(null, '', '#' + (current + 1)); } catch {}
+}
+$('prev').onclick = () => go(current - 1);
+$('next').onclick = () => go(current === STAGES.length - 1 ? 0 : current + 1);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') go(current + 1);
+  if (e.key === 'ArrowLeft') go(current - 1);
+});
+
+$('stage').innerHTML = '<p class="muted">Loading the sample and its stems…</p>';
+loadAudio().then(() => go((parseInt(location.hash.slice(1)) || 1) - 1));
+</script>
+</body>
+</html>

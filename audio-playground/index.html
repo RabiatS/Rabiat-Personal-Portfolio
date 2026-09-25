@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rabiat's Audio Playground</title>
+  <meta name="description" content="Cut songs and split them into vocals, drums, bass and more, right in your browser. Nothing is uploaded.">
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Rabiat Sadiq" />
+  <meta property="og:title" content="Audio Playground" />
+  <meta property="og:description" content="Cut songs and split them into vocals, drums, bass, guitar and piano with a model that runs in your browser. Nothing is uploaded." />
+  <meta property="og:url" content="https://www.rabiatsadiq.com/audio-playground/" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="app/style.css">
+  <style>
+    .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; padding: 40px 0 20px; }
+    @media (max-width: 860px) { .hero { grid-template-columns: 1fr; padding-top: 20px; } }
+    .hero h1 { font: 700 clamp(44px, 7vw, 76px)/.92 var(--f-display); text-transform: uppercase; margin: 0; letter-spacing: .005em; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero p { color: var(--text-2); font-size: 18px; max-width: 520px; margin: 18px 0 0; }
+    .cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; align-items: center; }
+    .cta a { text-decoration: none; }
+    .soon { font: 500 11px var(--f-mono); color: var(--muted); margin-left: 4px; text-transform: none; letter-spacing: 0; }
+    .btn.disabled { opacity: .55; pointer-events: none; }
+
+    .split-viz { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px; position: relative; }
+    .split-viz canvas { width: 100%; height: 340px; display: block; }
+    .split-viz .cap { position: absolute; left: 18px; bottom: 12px; font: 11px var(--f-mono); color: var(--muted); }
+
+    section.block { margin-top: 56px; }
+    .eyebrow { font: 500 12px var(--f-mono); color: var(--accent); margin-bottom: 6px; }
+    .block h2 { font-size: 34px; margin-bottom: 20px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    @media (max-width: 860px) { .grid3 { grid-template-columns: 1fr; } }
+    .feature { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
+    .feature .n { font: 500 12px var(--f-mono); color: var(--accent); }
+    .feature h3 { font-size: 20px; color: var(--text); margin: 8px 0 8px; letter-spacing: .04em; }
+    .feature p { margin: 0; color: var(--muted); font-size: 14.5px; }
+    .feature .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+    .chip { font: 600 12px var(--f-display); letter-spacing: .08em; text-transform: uppercase; padding: 4px 9px 3px; border-radius: 999px; background: var(--surface-2); color: var(--text-2); }
+    .chip i { display: inline-block; width: 7px; height: 7px; border-radius: 2px; background: var(--c); margin-right: 6px; vertical-align: 1px; }
+
+    .req { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .req th, .req td { text-align: left; padding: 14px 18px; border-top: 1px solid var(--border); vertical-align: top; font-size: 14.5px; }
+    .req tr:first-child th, .req tr:first-child td { border-top: 0; }
+    .req th { font: 600 14px var(--f-display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); width: 180px; }
+    .req td b { color: var(--text); font-weight: 500; }
+    .req .mono { font: 13px var(--f-mono); color: var(--text-2); }
+    #yourDevice { margin-top: 12px; font: 13px/1.6 var(--f-mono); color: var(--muted); }
+    #yourDevice .ok { color: var(--teal); } #yourDevice .warn { color: var(--r-bloodline-light); }
+
+    .steps { counter-reset: s; display: grid; gap: 10px; }
+    .step { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px; }
+    .step::before { counter-increment: s; content: counter(s, decimal-leading-zero); width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--r-ember); color: var(--r-bloodline-light); font: 500 13px var(--f-mono); }
+    .step h3 { margin: 2px 0 4px; font-size: 17px; color: var(--text); letter-spacing: .04em; }
+    .step p { margin: 0; color: var(--muted); font-size: 14.5px; }
+
+    details { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px; margin-bottom: 8px; }
+    summary { cursor: pointer; font: 600 16px var(--f-display); letter-spacing: .04em; list-style: none; display: flex; justify-content: space-between; }
+    summary::after { content: '+'; color: var(--accent); font-size: 20px; line-height: 1; }
+    details[open] summary::after { content: '–'; }
+    details p { color: var(--muted); margin: 10px 0 2px; font-size: 14.5px; }
+
+    footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: space-between; }
+    footer a { color: var(--text-2); }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="b1">Rabiat's</span><span class="b2">Audio Playground</span></div>
+    <div class="spacer"></div>
+    <a class="btn ghost" href="../cool.html">← rabiatsadiq.com</a>
+    <a class="btn ghost" href="app/how.html">How it works</a>
+    <a class="btn primary" href="app/">Open the app</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Pull any song <em>apart.</em></h1>
+        <p>Cut clips, then split any song into vocals, drums, bass, guitar and piano. It all happens on your own computer: your music is never uploaded.</p>
+        <div class="cta">
+          <a class="btn primary lg" href="app/">Open in your browser</a>
+          <a class="btn outline-teal lg disabled" aria-disabled="true">Mac app <span class="soon">coming soon</span></a>
+        </div>
+      </div>
+      <div class="split-viz" aria-label="Animation: one mixed waveform splitting into four instrument lanes">
+        <canvas id="viz"></canvas>
+        <span class="cap">one song in → four stems out</span>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="eyebrow">What it does</div>
+      <h2>Three things, done well</h2>
+      <div class="grid3">
+        <div class="feature"><span class="n">01</span><h3>Cut &amp; join</h3>
+          <p>Drag across a waveform to select seconds 5 to 7, delete them, and the rest joins up seamlessly. Undo anything.</p></div>
+        <div class="feature"><span class="n">02</span><h3>Split into stems</h3>
+          <p>A machine-learning model separates the song into its parts. Solo, mute and remix them.</p>
+          <div class="chips">
+            <span class="chip" style="--c:#F05454"><i></i>Vocals</span><span class="chip" style="--c:#5EEAD4"><i></i>Drums</span>
+            <span class="chip" style="--c:#E8E8E3"><i></i>Bass</span><span class="chip" style="--c:#E9A23B"><i></i>Guitar</span>
+            <span class="chip" style="--c:#A78BFA"><i></i>Piano</span><span class="chip" style="--c:#7A7A75"><i></i>Other</span>
+          </div></div>
+        <div class="feature"><span class="n">03</span><h3>Download anything</h3>
+          <p>Each stem as WAV or MP3, all stems in one ZIP, or just the mix you're hearing (like a karaoke version).</p></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="eyebrow">How it runs</div>
+      <h2>Your device does the work</h2>
+      <div class="steps">
+        <div class="step"><div><h3>Pick a model</h3><p>The first time, your browser downloads the model (60–91 MB) and keeps it. After that it loads instantly.</p></div></div>
+        <div class="step"><div><h3>Drop a song</h3><p>The file is read inside your browser. Nothing is sent to a server; there is no server doing the splitting at all.</p></div></div>
+        <div class="step"><div><h3>Split, listen, download</h3><p>Your graphics chip runs the model (about 3–6× faster than real time on a recent laptop). Then mix and export.</p></div></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="eyebrow">Requirements</div>
+      <h2>What you need</h2>
+      <table class="req">
+        <tr><th>Browser</th><td><b>Chrome or Edge 113+</b>, or <b>Safari 26+</b>. These use your GPU (WebGPU) and are fastest. Other browsers still work, on the CPU, several times slower.</td></tr>
+        <tr><th>Computer</th><td>A laptop or desktop with <b>8 GB of memory or more</b>. Phones aren't supported yet.</td></tr>
+        <tr><th>Storage</th><td class="mono">4-stem model 91 MB · 6-stem model 60 MB · stored in your browser, removable any time</td></tr>
+        <tr><th>Mac app</th><td>Coming soon. Needs macOS 15+ on Apple silicon (M1 or newer).</td></tr>
+      </table>
+      <div id="yourDevice">Checking your device…</div>
+    </section>
+
+    <section class="block">
+      <div class="eyebrow">Questions</div>
+      <h2>Good to know</h2>
+      <details><summary>Is it free?</summary><p>Yes. The processing happens on your computer, so there's nothing to pay for.</p></details>
+      <details><summary>Is my music uploaded anywhere?</summary><p>No. Songs are opened and processed inside your browser tab. Only the model file is downloaded, once.</p></details>
+      <details><summary>How good is the separation?</summary><p>Vocals, drums and bass come out very clean. Guitar and piano are harder and may carry a little of other instruments. Busy, heavily produced songs are the hardest.</p></details>
+      <details><summary>Can I use the stems in my own music?</summary><p>Splitting songs for practice, study or fun is fine. Publishing stems taken from someone else's song still needs their permission.</p></details>
+    </section>
+
+    <footer>
+      <span>Made by Rabiat · Separation model: <a href="https://github.com/facebookresearch/demucs">Demucs</a> by Meta (MIT license) · Runs on <a href="https://onnxruntime.ai">ONNX Runtime Web</a></span>
+      <a href="app/how.html">How it works →</a>
+    </footer>
+  </main>
+
+<script>
+// Hero animation: one mixed waveform fans out into four instrument lanes.
+(() => {
+  const c = document.getElementById('viz'), g = c.getContext('2d');
+  const lanes = [
+    { name: 'VOCALS', color: '#F05454', f: (x, t) => Math.sin(x * 0.045 + t * 2.2) * 0.55 * (0.6 + 0.4 * Math.sin(x * 0.011 - t)) },
+    { name: 'DRUMS', color: '#5EEAD4', f: (x, t) => { const p = ((x + t * 60) % 70) / 70; return (p < 0.12 ? (1 - p / 0.12) : 0) * Math.sin(x * 1.3) * 0.95; } },
+    { name: 'BASS', color: '#E8E8E3', f: (x, t) => Math.sin(x * 0.018 + t * 1.2) * 0.7 },
+    { name: 'OTHER', color: '#7A7A75', f: (x, t) => (Math.sin(x * 0.2 + t * 3) * 0.25 + Math.sin(x * 0.37 - t * 2) * 0.2) },
+  ];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let w, h, dpr;
+  const size = () => { dpr = devicePixelRatio || 1; w = c.clientWidth; h = c.clientHeight; c.width = w * dpr; c.height = h * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0); };
+  addEventListener('resize', size); size();
+  const ease = (u) => u * u * (3 - 2 * u);
+  function frame(ms) {
+    const t = ms / 1000;
+    g.clearRect(0, 0, w, h);
+    const splitX = w * 0.34, midY = h / 2, laneGap = h / (lanes.length + 0.6);
+    // Mixed signal on the left.
+    g.lineWidth = 1.6; g.strokeStyle = '#A0A09A'; g.beginPath();
+    for (let x = 0; x <= splitX; x += 2) {
+      const v = lanes.reduce((s, l) => s + l.f(x, t), 0) * 0.42;
+      const y = midY - v * laneGap * 0.9;
+      x ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.stroke();
+    g.fillStyle = '#A0A09A'; g.font = '600 12px Rajdhani'; g.fillText('MIX', 4, midY - laneGap * 0.9 - 6);
+    // Fan out into lanes.
+    lanes.forEach((l, i) => {
+      const targetY = laneGap * (i + 0.8);
+      g.strokeStyle = l.color; g.lineWidth = 1.8; g.beginPath();
+      for (let x = splitX; x <= w - 8; x += 2) {
+        const u = Math.min(1, (x - splitX) / (w * 0.22));
+        const cy = midY + (targetY - midY) * ease(u);
+        const y = cy - l.f(x, t) * laneGap * 0.36 * (0.35 + 0.65 * ease(u));
+        x === splitX ? g.moveTo(x, y) : g.lineTo(x, y);
+      }
+      g.stroke();
+      g.fillStyle = l.color; g.font = '600 12px Rajdhani';
+      g.fillText(l.name, w - 8 - g.measureText(l.name).width, targetY - laneGap * 0.36 - 4);
+    });
+    // The "model" node where the split happens.
+    g.fillStyle = '#D62828'; g.beginPath(); g.arc(splitX, midY, 7 + (reduce ? 0 : Math.sin(t * 3) * 1.5), 0, 7); g.fill();
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+// Tell visitors whether their browser will be fast.
+(async () => {
+  const el = document.getElementById('yourDevice');
+  let gpu = false;
+  try { gpu = !!(await navigator.gpu?.requestAdapter()); } catch {}
+  const mem = navigator.deviceMemory;
+  el.innerHTML = (gpu ? '<span class="ok">✓ Your browser supports WebGPU: separation will run on your graphics chip.</span>'
+                      : '<span class="warn">Your browser has no WebGPU: it will work, but slowly. Try Chrome, Edge or Safari 26+.</span>')
+    + (mem && mem < 8 ? `<br><span class="warn">Your device reports ${mem} GB of memory. Stick to shorter songs.</span>` : '');
+})();
+</script>
+</body>
+</html>

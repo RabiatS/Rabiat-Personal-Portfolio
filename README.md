@@ -17,6 +17,7 @@ Rabiat-Personal-Portfolio/
 ├── em-dash-remover.html     # Standalone tool: em/en-dash cleanup for AI text
 ├── sticky-counter.html      # Standalone tool: CMU MHCI sticky note observatory
 ├── hq-daily-planner.html    # Standalone tool: terminal-style daily planner
+├── audio-playground/       # Tool: cut songs + split stems in the browser (Music Sandbox project)
 │
 ├── case-studies/            # Detailed case study pages
 │   ├── case-study.html                 # Magic Mitts haptic VR glove

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rabiat's Audio Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="b1">Rabiat's</span><span class="b2">Audio Playground</span></div>
+    <span class="tag" id="statusTag" title="Where the audio is processed"><span class="dot"></span><span id="statusText">In your browser</span></span>
+    <div class="file-meta" id="fileMeta"></div>
+    <a class="btn ghost" href="how.html" title="An interactive explanation of what the model does">How it works</a>
+    <label class="btn" id="openBtn" hidden>
+      Open file
+      <input type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.aac" hidden id="fileInput2">
+    </label>
+  </header>
+
+  <main>
+    <!-- Empty state -->
+    <label class="dropzone" id="dropzone">
+      <input type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.aac" hidden id="fileInput">
+      <div class="dz-title">Drop a song <em>here</em></div>
+      <div class="dz-sub">MP3, WAV, M4A or FLAC. It never leaves your device.</div>
+      <div class="dz-actions">
+        <span class="btn primary lg">Choose a file</span>
+        <button type="button" class="btn outline-teal lg" id="sampleBtn">Try the sample</button>
+      </div>
+    </label>
+
+    <div id="workspace" hidden>
+      <!-- Editor -->
+      <section class="card">
+        <div class="card-head">
+          <h2><span class="num">01</span>Edit</h2>
+          <button class="info" type="button" aria-label="Tips: Edit" aria-expanded="false" aria-controls="infoEdit">i</button>
+          <div class="info-pop" id="infoEdit" role="note" hidden><ul><li>Drag across the waveform to select, or type <b>Start</b> and <b>End</b>.</li><li><b>Cut &amp; join</b> removes the selection and joins the rest.</li><li><b>Keep only selection</b> trims the clip to it.</li><li><kbd>Space</kbd> play · <kbd>⌫</kbd> cut · <kbd>⌘Z</kbd> undo · <kbd>Esc</kbd> clear</li></ul></div>
+        </div>
+
+        <div id="waveform" class="waveform"></div>
+
+        <div class="row transport">
+          <button class="btn primary round" id="playBtn" title="Play / pause (Space)">▶</button>
+          <button class="btn" id="playSelBtn" disabled>▶ Play selection</button>
+          <div class="time"><span id="curTime">0:00.00</span> / <span id="durTime">0:00.00</span></div>
+          <div class="spacer"></div>
+          <label class="zoom">Zoom <input type="range" id="zoom" min="0" max="500" value="0"></label>
+        </div>
+
+        <div class="row selection">
+          <div class="sel-fields">
+            <label>Start <input type="number" id="selStart" step="0.01" min="0" placeholder="0.00"></label>
+            <label>End <input type="number" id="selEnd" step="0.01" min="0" placeholder="0.00"></label>
+            <span class="sel-len" id="selLen"></span>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn danger" id="cutBtn" disabled title="Remove the selection and join the rest (⌫)">✂ Cut &amp; join</button>
+          <button class="btn" id="trimBtn" disabled title="Keep only the selection">Keep only selection</button>
+          <button class="btn ghost" id="clearSelBtn" disabled>Clear</button>
+        </div>
+
+        <div class="row">
+          <button class="btn ghost" id="undoBtn" disabled>↶ Undo</button>
+          <button class="btn ghost" id="redoBtn" disabled>↷ Redo</button>
+          <div class="spacer"></div>
+          <span class="label">Download</span>
+          <button class="btn" id="exportWav">WAV</button>
+          <button class="btn" id="exportMp3">MP3</button>
+        </div>
+      </section>
+
+      <!-- Separation -->
+      <section class="card">
+        <div class="card-head">
+          <h2><span class="num">02</span>Separate</h2>
+          <button class="info" type="button" aria-label="Tips: Separate" aria-expanded="false" aria-controls="infoSep">i</button>
+          <div class="info-pop" id="infoSep" role="note" hidden><ul><li>Splits what's in the editor, cuts included.</li><li><b>4 stems</b>: the all-rounder.</li><li><b>Vocals + instrumental</b>: karaoke or acapella.</li><li><b>6 stems</b>: adds guitar and piano (less clean).</li><li>Models download once and stay in your browser. Nothing is uploaded.</li><li><span id="deviceCheck">Checking your device…</span></li></ul></div>
+        </div>
+
+        <div class="split-grid">
+          <div class="split-col">
+            <h3>Instruments</h3>
+            <div class="presets" id="presets"></div>
+            <div class="row">
+              <button class="btn primary lg" id="separateBtn">Separate</button>
+              <span class="status" id="sepStatus"></span>
+            </div>
+          </div>
+          <div class="split-col">
+            <div class="h3-row"><h3>Frequency bands</h3>
+            <button class="info" type="button" aria-label="Tips: Frequency bands" aria-expanded="false" aria-controls="infoEq">i</button>
+          <div class="info-pop" id="infoEq" role="note" hidden><ul><li>Splits by pitch: <b>low</b> (bass, kick), <b>mid</b> (voice, chords), <b>high</b> (cymbals, air).</li><li>Instant, but it won't isolate a single instrument.</li><li>The numbers set where one band ends and the next begins.</li></ul></div></div>
+            <div class="row freq">
+              <label>Low/mid <input type="number" id="xLow" value="250" min="20" max="2000"> Hz</label>
+              <label>Mid/high <input type="number" id="xHigh" value="4000" min="500" max="16000"> Hz</label>
+            </div>
+            <div class="row">
+              <button class="btn" id="eqBtn">Split low · mid · high</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stems mixer -->
+      <section class="card" id="stemsCard" hidden>
+        <div class="card-head">
+          <h2><span class="num">03</span>Stems <span class="small" id="stemsSource"></span></h2>
+          <button class="info" type="button" aria-label="Tips: Stems" aria-expanded="false" aria-controls="infoStems">i</button>
+          <div class="info-pop" id="infoStems" role="note" hidden><ul><li><b>▶</b> plays every stem together.</li><li><b>S</b> solo: hear only that stem. <b>M</b> mute: silence it.</li><li>Click a waveform to jump there. <b>Edit</b> opens a stem in the editor.</li><li><b>Download mix</b> saves exactly what you're hearing.</li></ul></div>
+        </div>
+        <div class="row transport">
+          <button class="btn primary round" id="mixPlayBtn">▶</button>
+          <div class="time"><span id="mixTime">0:00.00</span></div>
+          <div class="spacer"></div>
+          <button class="btn ghost" id="unsoloBtn">Reset solo / mute</button>
+        </div>
+
+        <div class="downloads">
+          <span class="label">Download all stems</span>
+          <button class="btn sm" id="zipWav" title="Every stem as its own file, in one ZIP">ZIP · WAV</button>
+          <button class="btn sm" id="zipMp3">ZIP · MP3</button>
+          <span class="sep"></span>
+          <span class="label">Download mix as one file</span>
+          <button class="btn sm" id="mixWav" title="Only what you hear: respects solo, mute and volume">WAV</button>
+          <button class="btn sm" id="mixMp3">MP3</button>
+        </div>
+
+        <div id="stems"></div>
+      </section>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
