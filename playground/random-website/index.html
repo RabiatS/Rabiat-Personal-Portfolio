@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Somewhere · Rabiat</title>
+  <meta name="description" content="One button. It takes you to a good corner of the internet you have not seen yet.">
+  <meta property="og:title" content="Take me somewhere" />
+  <meta property="og:description" content="One button. It takes you to a good corner of the internet you have not seen yet." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    /* every destination drifts past in the background */
+    .drift { position: fixed; inset: -10% 0; display: flex; gap: 48px; justify-content: center; pointer-events: none; overflow: hidden;
+      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.25) 0, #000 70%); -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.25) 0, #000 70%); }
+    .drift .col { display: flex; flex-direction: column; gap: 18px; animation: up 140s linear infinite; }
+    .drift .col:nth-child(2n) { animation-direction: reverse; animation-duration: 170s; }
+    .drift span { font: 700 34px/1 var(--f-display); text-transform: uppercase; color: var(--r-bone); opacity: .028; white-space: nowrap; }
+    .drift span.hit { opacity: .5; color: var(--brand); transition: opacity .2s; }
+    @keyframes up { to { transform: translateY(-50%); } }
+    @media (prefers-reduced-motion: reduce) { .drift .col { animation: none; } }
+
+    .center { position: fixed; inset: 0; display: grid; place-items: center; padding: 90px 20px 110px; }
+    .center > div { width: min(560px, 100%); text-align: center; }
+    .go {
+      width: 100%; border: 0; cursor: pointer; border-radius: 16px; padding: 30px 24px 26px;
+      background: var(--r-bone); color: var(--r-void); box-shadow: 0 30px 80px rgba(0,0,0,.6), inset 0 -4px 0 rgba(0,0,0,.12);
+      font: 700 clamp(30px, 6vw, 52px)/.95 var(--f-display); text-transform: uppercase; letter-spacing: .01em;
+      transition: transform .12s, box-shadow .12s;
+    }
+    .go:hover { transform: translateY(-2px); box-shadow: 0 36px 90px rgba(0,0,0,.65), inset 0 -4px 0 rgba(0,0,0,.12); }
+    .go:active { transform: translateY(2px); box-shadow: 0 18px 50px rgba(0,0,0,.6), inset 0 -2px 0 rgba(0,0,0,.12); }
+    .go:focus-visible { outline: 3px solid var(--teal); outline-offset: 5px; }
+    .go small { display: block; margin-top: 10px; font: 500 12px var(--f-mono); letter-spacing: .04em; text-transform: none; color: var(--r-slate); }
+
+    .last { margin-top: 30px; min-height: 92px; }
+    .last .eyebrow { font: 600 11px var(--f-display); letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+    .last a.name { display: inline-block; margin-top: 6px; font: 700 28px/1.05 var(--f-display); text-transform: uppercase; color: var(--text); text-decoration: none; }
+    .last a.name:hover { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
+    .last .desc { color: var(--text-2); margin-top: 4px; }
+    .last .host { color: var(--muted); font: 12px var(--f-mono); margin-top: 4px; }
+    .flip { animation: flip .45s cubic-bezier(.2,.9,.3,1.2); }
+    @keyframes flip { from { transform: rotateX(80deg); opacity: 0; } }
+
+    .recent { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 4px 14px; justify-content: center; }
+    .recent a { font: 12.5px var(--f-mono); color: var(--muted); text-decoration: none; }
+    .recent a:hover { color: var(--text); }
+    @media (max-width: 600px) { .dock .btn { padding: 8px 8px; font-size: 12px; } .drift span { font-size: 24px; } }
+  </style>
+</head>
+<body>
+  <div class="drift" id="drift" aria-hidden="true"></div>
+
+  <header class="top float">
+    <span class="brand"><span class="b1">Rabiat's</span><span class="b2">Somewhere</span></span>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this page">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Take me somewhere</h4>
+        <p>Every press opens a different corner of the internet in a new tab. I picked them by hand and checked they still work, so no dead links and no ad farms.</p>
+        <ul>
+          <li>No repeats until you have seen them all</li>
+          <li>Pick a mood at the bottom, or leave it on Any</li>
+          <li>The last few you visited stay here, so you can find that one again</li>
+          <li><kbd>Enter</kbd> goes somewhere</li>
+        </ul>
+        <p class="fine"><span id="seenCount"></span> <a href="#" id="resetSeen">Start over</a>. My take on <a href="https://theuselessweb.com/" target="_blank" rel="noopener">The Useless Web</a>.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html">rabiatsadiq.com</a>
+  </header>
+
+  <main class="center">
+    <div>
+      <button class="go" id="go">Take me somewhere<small id="goSub">opens in a new tab</small></button>
+      <div class="last" id="last" aria-live="polite"></div>
+      <div class="recent" id="recent"></div>
+    </div>
+  </main>
+
+  <div class="dock" id="vibes" role="toolbar" aria-label="Mood">
+    <button class="btn" data-vibe="any" aria-pressed="true">Any</button>
+    <button class="btn" data-vibe="calm" aria-pressed="false">Calm</button>
+    <button class="btn" data-vibe="play" aria-pressed="false">Play</button>
+    <button class="btn" data-vibe="weird" aria-pressed="false">Weird</button>
+    <button class="btn" data-vibe="learn" aria-pressed="false">Learn</button>
+    <button class="btn" data-vibe="make" aria-pressed="false">Make</button>
+  </div>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module">
+    import { SITES } from './sites.js';
+    const $ = (id) => document.getElementById(id);
+    const KEY = 'rabiat-somewhere-v1';
+    const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
+    const store = load();
+    const seen = new Set(store.seen || []);
+    let recent = store.recent || [];
+    let vibe = store.vibe || 'any';
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ seen: [...seen], recent, vibe })); } catch {} };
+
+    // background: three drifting columns of every name, doubled so the loop is seamless
+    const cols = 3;
+    const drift = $('drift');
+    for (let c = 0; c < cols; c++) {
+      const col = document.createElement('div'); col.className = 'col';
+      const mine = SITES.filter((_, i) => i % cols === c).sort(() => Math.random() - 0.5);
+      for (const s of [...mine, ...mine]) { const sp = document.createElement('span'); sp.textContent = s.name; sp.dataset.url = s.url; col.appendChild(sp); }
+      drift.appendChild(col);
+    }
+
+    const host = (u) => new URL(u).hostname.replace(/^www\./, '');
+    const pool = () => SITES.filter((s) => vibe === 'any' || s.vibe === vibe);
+
+    function pick() {
+      let options = pool().filter((s) => !seen.has(s.url));
+      if (!options.length) { pool().forEach((s) => seen.delete(s.url)); options = pool(); }
+      const last = recent[0];
+      if (options.length > 1) options = options.filter((s) => s.url !== last);
+      return options[Math.floor(Math.random() * options.length)];
+    }
+
+    function showLast(s, animate) {
+      const box = $('last');
+      box.innerHTML = '';
+      if (!s) return;
+      box.innerHTML = `<div class="eyebrow">You went to</div><a class="name" target="_blank" rel="noopener"></a><div class="desc"></div><div class="host"></div>`;
+      const a = box.querySelector('.name'); a.href = s.url; a.textContent = s.name;
+      box.querySelector('.desc').textContent = s.desc;
+      box.querySelector('.host').textContent = host(s.url);
+      if (animate) { box.classList.remove('flip'); void box.offsetWidth; box.classList.add('flip'); }
+    }
+    function showRecent() {
+      const r = $('recent'); r.innerHTML = '';
+      recent.slice(1, 7).forEach((u) => {
+        const s = SITES.find((x) => x.url === u); if (!s) return;
+        const a = document.createElement('a'); a.href = s.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = s.name;
+        r.appendChild(a);
+      });
+      $('seenCount').textContent = `You have seen ${Math.min(seen.size, SITES.length)} of ${SITES.length}.`;
+    }
+    function highlight(s) {
+      document.querySelectorAll('.drift span.hit').forEach((n) => n.classList.remove('hit'));
+      document.querySelectorAll(`.drift span[data-url="${CSS.escape(s.url)}"]`).forEach((n) => n.classList.add('hit'));
+    }
+
+    function go() {
+      const s = pick();
+      // A real link click inside the user's gesture: popup blockers allow it,
+      // and rel=noopener keeps the new tab from reaching back into this one.
+      const a = Object.assign(document.createElement('a'), { href: s.url, target: '_blank', rel: 'noopener' });
+      document.body.appendChild(a); a.click(); a.remove();
+      seen.add(s.url);
+      recent = [s.url, ...recent.filter((u) => u !== s.url)].slice(0, 8);
+      save();
+      showLast(s, true); showRecent(); highlight(s);
+    }
+
+    function setVibe(v) {
+      vibe = v; save();
+      document.querySelectorAll('[data-vibe]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.vibe === v)));
+      const n = pool().length;
+      $('goSub').textContent = v === 'any' ? 'opens in a new tab' : `${n} ${v} places · opens in a new tab`;
+    }
+    document.querySelectorAll('[data-vibe]').forEach((b) => b.addEventListener('click', () => setVibe(b.dataset.vibe)));
+    $('go').addEventListener('click', go);
+    addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target === document.body) { e.preventDefault(); go(); }
+    });
+    $('resetSeen').addEventListener('click', (e) => { e.preventDefault(); seen.clear(); recent = []; save(); showLast(null); showRecent(); });
+
+    setVibe(vibe);
+    const lastSite = SITES.find((s) => s.url === recent[0]);
+    showLast(lastSite, false); showRecent();
+    if (lastSite) highlight(lastSite);
+  </script>
+</body>
+</html>

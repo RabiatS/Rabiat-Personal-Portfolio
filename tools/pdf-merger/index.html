@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PDF Merger · Rabiat</title>
+  <meta name="description" content="Merge PDFs on your device. Drag to reorder, pick pages, download one file. Nothing is uploaded.">
+  <meta property="og:title" content="PDF Merger" />
+  <meta property="og:description" content="Merge PDFs on your device. Drag to reorder, pick pages, download one file. Nothing is uploaded." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <style>
+    .intake {
+      min-height: calc(100vh - 150px); display: grid; place-items: center; text-align: center;
+      border: 1px solid var(--border); border-radius: 18px; padding: 40px 24px; cursor: pointer;
+      background: radial-gradient(1200px 500px at 50% 0%, rgba(245,245,240,.04), transparent 60%), var(--surface);
+      transition: border-color .15s;
+    }
+    .intake.over, .grid.over { border-color: var(--r-bone); }
+    .intake h1 { font: 700 clamp(40px, 7vw, 76px)/.95 var(--f-display); text-transform: uppercase; margin: 0; }
+    .intake .keys { margin-top: 16px; color: var(--muted); font-size: 16px; }
+    .intake .acts { margin-top: 30px; }
+    .stack { width: 110px; height: 130px; margin: 0 auto 28px; position: relative; }
+    .stack i { position: absolute; inset: 0; border-radius: 8px; background: var(--r-pearl); box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+    .stack i:nth-child(1) { transform: rotate(-10deg) translate(-14px, 4px); background: var(--r-ash); }
+    .stack i:nth-child(2) { transform: rotate(6deg) translate(10px, 0); background: #cfcfca; }
+    .stack i:nth-child(3)::before, .stack i:nth-child(3)::after { content: ''; position: absolute; left: 16px; right: 16px; height: 6px; border-radius: 3px; background: #c4c4be; top: 26px; box-shadow: 0 16px 0 #c4c4be, 0 32px 0 #c4c4be, 0 48px 0 #d8d8d2; }
+    .stack i:nth-child(3)::after { right: 40px; top: 90px; box-shadow: none; }
+
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 16px;
+      padding: 18px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); min-height: 260px;
+    }
+    .doc { position: relative; cursor: grab; }
+    .doc:active { cursor: grabbing; }
+    .doc.dragging { opacity: .35; }
+    .doc.before::before, .doc.after::after {
+      content: ''; position: absolute; top: 0; bottom: 36px; width: 3px; border-radius: 2px; background: var(--r-bone);
+    }
+    .doc.before::before { left: -10px; } .doc.after::after { right: -10px; }
+    .thumb {
+      aspect-ratio: 3 / 4; border-radius: 8px; background: #fff; overflow: hidden; position: relative;
+      box-shadow: 0 1px 0 rgba(255,255,255,.06), 0 10px 26px rgba(0,0,0,.45); display: grid; place-items: center;
+    }
+    .thumb canvas { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .thumb .loading { color: #999; font: 12px var(--f-mono); }
+    .thumb.bad { background: var(--surface-2); color: var(--r-bloodline-light); font: 12px var(--f-mono); padding: 12px; text-align: center; }
+    .order {
+      position: absolute; left: 8px; top: 8px; min-width: 24px; height: 24px; border-radius: 12px; padding: 0 7px;
+      background: rgba(10,10,10,.82); color: var(--r-bone); font: 500 12px/24px var(--f-mono); text-align: center;
+    }
+    .remove {
+      position: absolute; right: 6px; top: 6px; width: 28px; height: 28px; border-radius: 50%; border: 0;
+      background: rgba(10,10,10,.82); color: var(--r-bone); cursor: pointer; font-size: 14px; opacity: 0; transition: opacity .12s;
+    }
+    .doc:hover .remove, .remove:focus-visible { opacity: 1; }
+    @media (hover: none) { .remove { opacity: 1; } }
+    .name { margin-top: 10px; font: 600 15px/1.2 var(--f-display); letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .meta { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; margin-top: 4px; }
+    .meta .pages { color: var(--muted); font: 12px var(--f-mono); }
+    .range-btn { background: none; border: 0; padding: 0; color: var(--text-2); font: 12px var(--f-mono); cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+    .range-in { width: 100%; margin-top: 6px; }
+    .range-in.bad { border-color: var(--r-bloodline-light); }
+    .add-tile {
+      aspect-ratio: 3 / 4; border: 1px dashed var(--border-strong); border-radius: 8px; display: grid; place-items: center;
+      color: var(--muted); cursor: pointer; font: 600 14px var(--f-display); letter-spacing: .1em; text-transform: uppercase; text-align: center;
+    }
+    .add-tile:hover { color: var(--text); border-color: var(--r-ash); }
+    .add-tile span { display: block; font-size: 34px; line-height: 1; margin-bottom: 6px; font-weight: 400; }
+
+    .actionbar {
+      position: sticky; bottom: 16px; margin-top: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 12px 14px; border: 1px solid var(--border-strong); border-radius: 14px;
+      background: rgba(20,20,20,.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    }
+    .actionbar .sum { font: 13px var(--f-mono); color: var(--text-2); }
+    .actionbar input[type=text] { width: 180px; }
+    .actionbar .fname { display: flex; align-items: center; gap: 6px; color: var(--muted); font: 13px var(--f-mono); }
+    @media (max-width: 640px) { .actionbar .fname { display: none; } }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <span class="brand"><span class="b1">Rabiat's</span><span class="b2">PDF Merger</span></span>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this tool">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>How it works</h4>
+        <p>Everything happens in your browser. Your PDFs are never uploaded, so contracts and IDs stay on your device.</p>
+        <ul>
+          <li>Drag the cards to set the order</li>
+          <li>Click <em>All pages</em> on a card to pick pages, like <span class="mono">1-3, 5</span> or <span class="mono">4-</span></li>
+          <li>Drop more files anywhere to add them</li>
+        </ul>
+        <p class="fine">Built with <a href="https://pdf-lib.js.org" target="_blank" rel="noopener">pdf-lib</a> and <a href="https://mozilla.github.io/pdf.js/" target="_blank" rel="noopener">pdf.js</a>. Password-protected PDFs need unlocking first.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html">rabiatsadiq.com</a>
+  </header>
+
+  <main>
+    <label class="intake" id="intake">
+      <input type="file" id="pick" accept="application/pdf,.pdf" multiple hidden>
+      <div>
+        <div class="stack" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h1>Drop your PDFs</h1>
+        <div class="keys">Two or twenty. They stay on your device.</div>
+        <div class="acts"><span class="btn primary lg">Choose PDFs</span></div>
+      </div>
+    </label>
+
+    <section id="work" hidden>
+      <div class="grid" id="grid" aria-label="Files in merge order"></div>
+      <div class="actionbar">
+        <span class="sum" id="sum"></span>
+        <div class="spacer"></div>
+        <button class="btn quiet" id="sort">Sort A to Z</button>
+        <button class="btn quiet" id="clear">Clear</button>
+        <label class="fname">Save as <input type="text" id="outName" value="merged" aria-label="File name"></label>
+        <button class="btn primary" id="merge">Merge</button>
+      </div>
+      <input type="file" id="pick2" accept="application/pdf,.pdf" multiple hidden>
+    </section>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script src="vendor/pdf-lib.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
