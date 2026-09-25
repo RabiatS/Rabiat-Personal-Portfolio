@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tilt · Rabiat</title>
+  <meta name="description" content="The card tilt from my portfolio, on its own. Move over it.">
+  <meta property="og:title" content="Tilt" />
+  <meta property="og:description" content="The card tilt from my portfolio, on its own. Move over it." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    body { background: radial-gradient(1200px 700px at 50% 45%, #171717, var(--r-void) 70%); }
+    .stage { position: fixed; inset: 0; display: grid; place-items: center; padding: 80px 20px 110px; perspective: 1400px; }
+
+    .card {
+      position: relative; width: min(760px, 88vw); aspect-ratio: 16 / 10; border-radius: 18px; cursor: pointer;
+      transform-style: preserve-3d; background: #111;
+      box-shadow: 0 50px 120px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.06);
+    }
+    .card:focus-visible { outline: 3px solid var(--teal); outline-offset: 6px; }
+    .card .img { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; }
+    .card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .35s; }
+    .card img.out { opacity: 0; }
+    /* the cursor shine from the project cards (assets/style.css .img-card::after) */
+    .card .shine { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+      background: radial-gradient(600px 500px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.2), transparent 70%); }
+    .card:hover .shine { opacity: 1; }
+    /* a frame that floats above the image, so the depth reads */
+    .card .frame { position: absolute; inset: 16px; border-radius: 12px; border: 1px solid rgba(245,245,240,.35); transform: translateZ(22px); pointer-events: none; }
+    .card .dot { position: absolute; right: 30px; bottom: 28px; width: 10px; height: 10px; border-radius: 50%; background: var(--brand); transform: translateZ(40px); box-shadow: 0 0 18px rgba(214,40,40,.8); }
+    .card .js-tilt-glare { border-radius: inherit; }
+    .dock .val { font: 12px var(--f-mono); color: var(--muted); min-width: 30px; }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <div class="card" id="card" tabindex="0" role="button" aria-label="Tilting card. Click for the next picture.">
+      <div class="img"><img id="img" alt="" draggable="false"></div>
+      <div class="shine"></div>
+      <div class="frame"></div>
+      <span class="dot"></span>
+    </div>
+  </main>
+
+  <header class="top float">
+    <span class="brand"><span class="b1">Rabiat's</span><span class="b2">Tilt</span></span>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this page">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Tilt</h4>
+        <p>The tilt from the project cards on my site, on its own. Move over the card; click it for the next picture.</p>
+        <p>The frame and the red dot sit in front of the image in 3D, so they drift against it as it turns. The angle slider starts at 12°, the value the site uses.</p>
+        <p class="fine">Pictures are from my Text to Braille, EyeSwipe, Vision Pro haptics and Watch Swipe projects. Built on <a href="https://micku7zu.github.io/vanilla-tilt.js/" target="_blank" rel="noopener">vanilla-tilt.js</a>.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html">rabiatsadiq.com</a>
+  </header>
+
+  <div class="dock" role="toolbar" aria-label="Tilt controls">
+    <span class="lbl">Angle</span>
+    <input type="range" id="angle" min="0" max="30" value="12" aria-label="Maximum tilt angle">
+    <span class="val" id="angleVal">12°</span>
+    <span class="sep"></span>
+    <button class="btn" id="glare" aria-pressed="true">Glare</button>
+    <button class="btn" id="motion" hidden>Motion</button>
+    <button class="btn" id="next">Next</button>
+  </div>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
+  <script>
+    const IMGS = [
+      '../../assets/img/projects/text-to-braille/hero.jpg',
+      '../../assets/img/projects/eyeswipe/hero.jpg',
+      '../../assets/img/projects/visionpro/hero.jpg',
+      '../../assets/img/projects/watch-swipe-surface/hero.jpg',
+    ];
+    const card = document.getElementById('card'), img = document.getElementById('img');
+    const angle = document.getElementById('angle'), glareBtn = document.getElementById('glare');
+    let i = 0, glare = true, gyro = false;
+    IMGS.forEach((src) => { const p = new Image(); p.src = src; }); // warm the cache
+    img.src = IMGS[0];
+
+    // The site's options (assets/script.js): max 12, speed 400, glare 0.22, perspective 900, scale 1.02.
+    function init() {
+      if (!window.VanillaTilt) return;
+      if (card.vanillaTilt) card.vanillaTilt.destroy();
+      VanillaTilt.init(card, {
+        max: +angle.value, speed: 400, glare, 'max-glare': 0.22, perspective: 900, scale: 1.02,
+        gyroscope: gyro, reset: true,
+      });
+    }
+    init();
+
+    function next() {
+      i = (i + 1) % IMGS.length;
+      img.classList.add('out');
+      setTimeout(() => { img.src = IMGS[i]; img.classList.remove('out'); }, 180);
+    }
+    card.addEventListener('click', next);
+    card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); next(); } });
+    document.getElementById('next').addEventListener('click', next);
+    addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' && e.target === document.body) next(); });
+
+    angle.addEventListener('input', () => { document.getElementById('angleVal').textContent = angle.value + '°'; });
+    angle.addEventListener('change', init);
+    glareBtn.addEventListener('click', () => { glare = !glare; glareBtn.setAttribute('aria-pressed', String(glare)); init(); });
+
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    }, { passive: true });
+
+    // Phones: tilt with the device. iOS asks permission first.
+    const touch = matchMedia('(hover: none)').matches;
+    const motion = document.getElementById('motion');
+    if (touch) {
+      motion.hidden = false;
+      motion.addEventListener('click', async () => {
+        try {
+          if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            if (await DeviceOrientationEvent.requestPermission() !== 'granted') return;
+          }
+          gyro = !gyro; motion.setAttribute('aria-pressed', String(gyro)); init();
+        } catch {}
+      });
+    }
+  </script>
+</body>
+</html>

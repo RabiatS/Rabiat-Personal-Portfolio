@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ripple · Rabiat</title>
+  <meta name="description" content="A pool you can touch. Move to make ripples, click to splash.">
+  <meta property="og:title" content="Ripple" />
+  <meta property="og:description" content="A pool you can touch. Move to make ripples, click to splash." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    #water { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+    .fallback { position: fixed; inset: 0; display: grid; place-items: center; color: var(--muted); font: 14px var(--f-mono); }
+  </style>
+</head>
+<body>
+  <canvas id="water" aria-label="Water surface. Move the pointer to make ripples."></canvas>
+  <p class="fallback" id="noGl" hidden>This effect needs WebGL, which this browser has turned off.</p>
+
+  <header class="top float">
+    <span class="brand"><span class="b1">Rabiat's</span><span class="b2">Ripple</span></span>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this page">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Ripple</h4>
+        <p>A little pool. Move across it to drag a wake, click or tap to splash.</p>
+        <ul>
+          <li><b>Trail</b> ripples follow you</li>
+          <li><b>Drops</b> only clicks make waves</li>
+          <li><b>Rain</b> it rains on its own</li>
+          <li>The slider sets how long waves last</li>
+        </ul>
+        <p class="fine">A real wave simulation, drawn with WebGL. My take on <a href="https://ripple-effect.vercel.app/" target="_blank" rel="noopener">Ripple Effect</a>. The same water sits at the top of my Cool page.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html">rabiatsadiq.com</a>
+  </header>
+
+  <div class="dock" role="toolbar" aria-label="Ripple controls">
+    <button class="btn" data-mode="trail" aria-pressed="true">Trail</button>
+    <button class="btn" data-mode="drops" aria-pressed="false">Drops</button>
+    <button class="btn" data-mode="rain" aria-pressed="false">Rain</button>
+    <span class="sep"></span>
+    <span class="lbl">Calm</span>
+    <input type="range" id="life" min="0" max="100" value="55" aria-label="How long waves last">
+    <span class="lbl" style="padding:0 8px 0 0">Lively</span>
+  </div>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module">
+    import { createRipple } from '../../assets/ripple.js';
+
+    // Pool floor: dark tiles, grout, one lane line in brand red.
+    function pool(ctx, w, h) {
+      const t = w < 700 ? 40 : 56;
+      ctx.fillStyle = '#0c0c0c'; ctx.fillRect(0, 0, w, h);
+      for (let y = 0; y < h + t; y += t) {
+        for (let x = 0; x < w + t; x += t) {
+          const k = ((x / t) * 7 + (y / t) * 13) % 5;
+          ctx.fillStyle = ['#161616', '#141414', '#181818', '#151515', '#131313'][k];
+          ctx.fillRect(x + 1.5, y + 1.5, t - 3, t - 3);
+        }
+      }
+      // lane line with a T near the far wall
+      const cx = Math.round(w / 2 / t) * t, lw = Math.round(t * 0.5);
+      ctx.fillStyle = 'rgba(214,40,40,.78)';
+      ctx.fillRect(cx - lw / 2, t * 1.5, lw, h);
+      ctx.fillRect(cx - t * 1.5, t * 1.5, t * 3, lw);
+      // depth: lighter near the middle, dark at the walls
+      // (two gradients: one gradient from teal to black would tint the dark end teal)
+      const R = Math.max(w, h);
+      const glow = ctx.createRadialGradient(w / 2, h * 0.45, 0, w / 2, h * 0.45, R * 0.5);
+      glow.addColorStop(0, 'rgba(94,234,212,.06)');
+      glow.addColorStop(1, 'rgba(94,234,212,0)');
+      ctx.fillStyle = glow; ctx.fillRect(0, 0, w, h);
+      const vig = ctx.createRadialGradient(w / 2, h / 2, R * 0.2, w / 2, h / 2, R * 0.75);
+      vig.addColorStop(0, 'rgba(0,0,0,0)');
+      vig.addColorStop(1, 'rgba(0,0,0,.6)');
+      ctx.fillStyle = vig; ctx.fillRect(0, 0, w, h);
+    }
+
+    const canvas = document.getElementById('water');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let water = null;
+    try { water = createRipple(canvas, { mode: 'refract', texture: pool, bend: 30 }); } catch (err) { console.warn(err); }
+    if (!water) { document.getElementById('noGl').hidden = false; canvas.hidden = true; }
+
+    const life = document.getElementById('life');
+    const setLife = () => water?.set('damping', 0.965 + (+life.value / 100) * 0.031);
+    life.addEventListener('input', setLife); setLife();
+
+    let rainTimer = 0;
+    function rain(on) {
+      clearInterval(rainTimer);
+      water?.set('keepAwake', on);
+      if (!on) return;
+      rainTimer = setInterval(() => {
+        const { w, h } = water.size;
+        water.drop(Math.random() * w, Math.random() * h, 5 + Math.random() * 7, 30 + Math.random() * 50);
+      }, 70);
+    }
+    function setMode(m) {
+      document.querySelectorAll('[data-mode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === m)));
+      water?.set('trail', m !== 'drops');
+      rain(m === 'rain');
+    }
+    document.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+    // A few drops on arrival so it is obvious the surface is alive.
+    if (water && !reduce) {
+      const { w, h } = water.size;
+      [[0.5, 0.45, 0], [0.32, 0.6, 380], [0.7, 0.35, 700]].forEach(([x, y, ms]) =>
+        setTimeout(() => water.drop(w * x, h * y, 24, 80), 300 + ms));
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Background Remover · Rabiat</title>
+  <meta name="description" content="Paste an image, get it back without the background. Runs on your device, full resolution, no watermark, nothing uploaded.">
+  <meta property="og:title" content="Background Remover" />
+  <meta property="og:description" content="Paste an image, get it back without the background. Runs on your device. Nothing is uploaded." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <style>
+    /* ---------- empty state ---------- */
+    .intake {
+      min-height: calc(100vh - 150px); display: grid; place-items: center; text-align: center;
+      border: 1px solid var(--border); border-radius: 18px; background:
+        radial-gradient(1200px 500px at 50% 0%, rgba(245,245,240,.04), transparent 60%), var(--surface);
+      padding: 40px 24px; cursor: pointer; transition: border-color .15s, background-color .15s;
+    }
+    .intake.over { border-color: var(--r-bone); }
+    .intake h1 { font: 700 clamp(40px, 7vw, 76px)/.95 var(--f-display); text-transform: uppercase; margin: 0; letter-spacing: .005em; }
+    .intake .keys { margin-top: 18px; color: var(--muted); font-size: 16px; }
+    .intake .keys kbd { font-size: 15px; padding: 3px 9px; }
+    .intake .acts { display: flex; gap: 10px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
+    .checker-art { width: 120px; height: 120px; margin: 0 auto 26px; border-radius: 22px; position: relative; overflow: hidden;
+      background: repeating-conic-gradient(#262626 0 25%, #1a1a1a 0 50%) 0 0 / 20px 20px; }
+    .checker-art::after { content: ''; position: absolute; inset: 22px; border-radius: 50% 50% 46% 46%; background: linear-gradient(160deg, var(--r-bone), var(--r-ash)); }
+
+    /* ---------- workspace ---------- */
+    .stage {
+      position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border);
+      height: min(70vh, 760px); display: grid; place-items: center; user-select: none; touch-action: none;
+    }
+    .stage { background: var(--surface); }
+    .stage.checker { background: repeating-conic-gradient(#262626 0 25%, #1c1c1c 0 50%) 0 0 / 24px 24px; }
+    .stage .layer { position: absolute; inset: 0; display: grid; place-items: center; padding: 18px; pointer-events: none; }
+    .stage canvas, .stage img { max-width: 100%; max-height: 100%; display: block; }
+    .stage .original { z-index: 1; visibility: hidden; }
+    .stage.comparing .original, .stage.peek .original { visibility: visible; }
+    .stage.peek .result { visibility: hidden; }
+    .stage .result { z-index: 2; }
+    .stage.comparing .result { clip-path: inset(0 0 0 var(--cut, 50%)); }
+    .divider { position: absolute; top: 0; bottom: 0; left: var(--cut, 50%); width: 2px; background: var(--r-bone); z-index: 3; transform: translateX(-1px); pointer-events: none; }
+    .divider::after { content: '⇆'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 38px; height: 38px; border-radius: 50%;
+      background: var(--r-bone); color: var(--r-void); display: grid; place-items: center; font: 700 16px var(--f-mono); box-shadow: 0 4px 18px rgba(0,0,0,.5); }
+    .stage.comparing { cursor: ew-resize; }
+    .stage .veil { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; background: rgba(10,10,10,.78); backdrop-filter: blur(6px); }
+    .veil .box { width: min(360px, 80%); text-align: center; }
+    .veil .msg { font: 600 18px var(--f-display); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 12px; }
+    .veil .sub { color: var(--muted); font: 12.5px var(--f-mono); margin-top: 10px; }
+    .corner { position: absolute; left: 14px; top: 12px; z-index: 4; font: 11px var(--f-mono); color: var(--text-2);
+      background: rgba(10,10,10,.6); padding: 4px 8px; border-radius: 6px; }
+
+    .toolbar { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 14px; }
+    .group { display: flex; align-items: center; gap: 8px; }
+    .group .lbl { font: 600 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+    .sw { width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(255,255,255,.18); cursor: pointer; padding: 0; flex: none; }
+    .sw.clear { background: repeating-conic-gradient(#555 0 25%, #bbb 0 50%) 0 0 / 10px 10px; }
+    .sw.custom { background: conic-gradient(#ff5d5d, #ffd25d, #7dff8a, #5de1ff, #7a6bff, #ff5dd6, #ff5d5d); position: relative; }
+    .sw.custom::after { content: ''; position: absolute; inset: 7px; border-radius: 50%; background: var(--c, #fff); border: 1px solid rgba(0,0,0,.3); }
+    .sw:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+    .edges { display: flex; align-items: center; gap: 10px; min-width: 200px; }
+    .edges input { width: 130px; }
+
+    .picker { position: relative; }
+    .picker .pop { left: 0; right: auto; top: auto; bottom: calc(100% + 10px); width: 290px; }
+    .rgb { display: grid; grid-template-columns: 14px 1fr 58px; gap: 10px; align-items: center; margin-top: 8px; }
+    .rgb b { font: 700 13px var(--f-mono); }
+    .rgb input[type=number] { width: 58px; }
+    .rgb .r { color: #ff7b7b; } .rgb .g { color: #7ee08c; } .rgb .b { color: #7cc4ff; }
+    .hexrow { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+    .hexrow input[type=text] { width: 96px; text-transform: uppercase; }
+    .hexrow .chip { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border-strong); }
+
+    @media (max-width: 760px) {
+      .stage { height: 56vh; }
+      .toolbar { gap: 12px; }
+      .toolbar .grow { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <span class="brand"><span class="b1">Rabiat's</span><span class="b2">Background Remover</span></span>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this tool">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>How it works</h4>
+        <p>The model runs on your device, on your GPU when it can. Your image is never uploaded.</p>
+        <ul>
+          <li><kbd>⌘V</kbd> paste an image, any time</li>
+          <li><kbd>⌘C</kbd> copy the result, ready to paste anywhere</li>
+          <li>Drag the result straight out of the page</li>
+          <li>Hold <kbd>Space</kbd> to peek at the original</li>
+        </ul>
+        <p>Full resolution, no watermark.</p>
+        <p class="fine">The first image downloads the model once (84 MB, or 42 MB without a GPU). After that it starts instantly. Model: <a href="https://huggingface.co/onnx-community/ormbg-ONNX" target="_blank" rel="noopener">ORMBG</a>, Apache 2.0.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html">rabiatsadiq.com</a>
+  </header>
+
+  <main>
+    <label class="intake" id="intake">
+      <input type="file" id="pick" accept="image/*" hidden>
+      <div>
+        <div class="checker-art" aria-hidden="true"></div>
+        <h1>Paste an image</h1>
+        <div class="keys">Press <kbd>⌘V</kbd>, drop one anywhere, or choose a file.</div>
+        <div class="acts">
+          <span class="btn primary lg">Choose image</span>
+          <button type="button" class="btn quiet lg" id="sampleBtn">Try a sample</button>
+        </div>
+      </div>
+    </label>
+
+    <section id="work" hidden>
+      <div class="stage checker" id="stage">
+        <div class="layer original"><canvas id="orig"></canvas></div>
+        <div class="layer result"><canvas id="view"></canvas></div>
+        <div class="divider" id="divider" hidden></div>
+        <span class="corner" id="corner"></span>
+        <div class="veil" id="veil" hidden>
+          <div class="box"><div class="msg" id="veilMsg">Working</div><div class="bar"><i id="veilBar"></i></div><div class="sub" id="veilSub"></div></div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="group" id="swatches" role="radiogroup" aria-label="Background">
+          <span class="lbl">Background</span>
+        </div>
+        <div class="edges group">
+          <span class="lbl">Edges</span>
+          <input type="range" id="edges" min="0" max="100" value="40" aria-label="Edge clean up: left keeps soft hair, right is crisper">
+        </div>
+        <div class="spacer grow"></div>
+        <div class="group">
+          <button class="btn quiet" id="compare" aria-pressed="false">Compare</button>
+          <label class="btn quiet" for="pick2">New</label>
+          <input type="file" id="pick2" accept="image/*" hidden>
+          <button class="btn" id="download" disabled>Download</button>
+          <button class="btn primary" id="copy" disabled>Copy</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

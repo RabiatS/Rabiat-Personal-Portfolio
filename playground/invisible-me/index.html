@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Invisible Me · Rabiat</title>
+  <meta name="description" content="I am hiding somewhere on this page. You cannot see me. Listen for me.">
+  <meta property="og:title" content="Invisible Me" />
+  <meta property="og:description" content="I am hiding somewhere on this page. You cannot see me. Listen for me." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    #field { position: fixed; inset: 0; touch-action: none; cursor: crosshair; }
+    #glow { position: fixed; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s; }
+    body.glow #glow { opacity: 1; }
+
+    .start { position: fixed; inset: 0; display: grid; place-items: center; text-align: center; z-index: 5; padding: 24px; }
+    .start h1 { font: 700 clamp(44px, 8vw, 88px)/.92 var(--f-display); text-transform: uppercase; margin: 0; }
+    .start p { color: var(--muted); margin: 14px 0 28px; font-size: 16px; text-wrap: balance; }
+    .ear { width: 64px; height: 64px; margin: 0 auto 22px; color: var(--r-ash); }
+
+    /* me, drawn centred on the hiding spot */
+    .me { position: fixed; width: 136px; transform: translate(-50%, -55%) scale(0); z-index: 4; pointer-events: none; filter: drop-shadow(0 14px 30px rgba(0,0,0,.6)); }
+    .me.show { animation: pop .7s cubic-bezier(.2, 1.6, .4, 1) forwards; }
+    #meHiding { width: 150px; }
+    @keyframes pop { to { transform: translate(-50%, -55%) scale(1); } }
+    .ring { position: fixed; width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--r-bone); transform: translate(-50%, -50%); pointer-events: none; z-index: 3; animation: ring .9s ease-out forwards; }
+    @keyframes ring { to { width: 360px; height: 360px; opacity: 0; } }
+
+    .clock { font: 500 14px var(--f-mono); color: var(--text-2); padding: 0 10px; min-width: 64px; text-align: center; }
+    .found { font: 600 13px var(--f-display); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 0 10px; }
+  </style>
+</head>
+<body>
+  <div id="field" aria-hidden="true"></div>
+  <canvas id="glow" aria-hidden="true"></canvas>
+
+  <header class="top float">
+    <span class="brand"><span class="b1">Rabiat's</span><span class="b2">Invisible Me</span></span>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="How to play">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>How to play</h4>
+        <p>I'm hiding somewhere on this page. Move around and listen: the beeps get faster and higher as you get closer, and with headphones they come from my side. Click when you think you are right on top of me.</p>
+        <ul>
+          <li><b>Glow</b> shows warmer and colder instead of sound</li>
+          <li><b>Give up</b> shows you where I was</li>
+          <li><kbd>Space</kbd> starts another round</li>
+        </ul>
+        <p class="fine">My take on <a href="https://findtheinvisiblecow.com/" target="_blank" rel="noopener">Find the Invisible Cow</a>, with me instead of the cow. The beeps are made live in your browser.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html">rabiatsadiq.com</a>
+  </header>
+
+  <section class="start" id="start">
+    <div>
+      <svg class="ear" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true">
+        <path d="M14 36v-6a18 18 0 0 1 36 0v6"/><rect x="8" y="34" width="11" height="18" rx="4"/><rect x="45" y="34" width="11" height="18" rx="4"/>
+      </svg>
+      <h1>Find me</h1>
+      <p>You can't see me. Listen for me.</p>
+      <button class="btn primary lg" id="go">Start</button>
+    </div>
+  </section>
+
+  <img class="me" id="meFound" src="me-found.png" alt="Rabiat, smiling with her fingers crossed" width="112" height="138">
+  <img class="me" id="meHiding" src="me-hiding.png" alt="Rabiat, peeking over her laptop" width="144" height="131">
+
+  <div class="dock" id="dock" role="toolbar" aria-label="Game" hidden>
+    <span class="clock" id="clock">0:00</span>
+    <span class="sep" id="clockSep"></span>
+    <button class="btn" id="glowBtn" aria-pressed="false">Glow</button>
+    <button class="btn" id="giveUp">Give up</button>
+    <span class="found" id="found" hidden></span>
+    <button class="btn primary" id="again" hidden>Again</button>
+  </div>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script src="app.js" type="module"></script>
+</body>
+</html>

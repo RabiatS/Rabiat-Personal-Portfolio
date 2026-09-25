@@ -3315,6 +3315,28 @@ body:not(.on-hero) main .btn.secondary:hover {
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 
+/* Cool page title band: water you can move through (assets/ripple.js). The canvas
+   only draws light and shadow on top, so the title reads through it and stays
+   selectable. */
+.cool-hero {
+  position: relative;
+}
+
+.cool-hero .section-head {
+  padding-top: 80px;
+  padding-bottom: 32px;
+  margin-bottom: 0;
+}
+
+.cool-ripple {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
 /* Not a link: clicking spins the card in 3D and leaves you where you are. */
 .music-now {
   display: block;

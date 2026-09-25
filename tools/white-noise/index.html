@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Noise · Rabiat</title>
+  <meta name="description" content="Mix your own background noise: white, pink, brown, rain, wind, waves, fan and fire. Generated live in your browser, no loops, no ads.">
+  <meta property="og:title" content="Noise" />
+  <meta property="og:description" content="Mix your own background noise. Generated live in your browser, no loops, no ads." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <style>
+    .hero { position: relative; display: grid; place-items: center; height: min(46vh, 420px); margin-top: 4px; }
+    #orb { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .play {
+      position: relative; z-index: 2; width: 112px; height: 112px; border-radius: 50%; border: 0; cursor: pointer;
+      background: var(--r-bone); color: var(--r-void); display: grid; place-items: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6); transition: transform .15s;
+    }
+    .play:hover { transform: scale(1.04); }
+    .play:active { transform: scale(.97); }
+    .play:focus-visible { outline: 3px solid var(--teal); outline-offset: 6px; }
+    .play svg { width: 40px; height: 40px; }
+    .status-line { text-align: center; margin-top: 4px; color: var(--muted); font: 13px var(--f-mono); min-height: 20px; }
+
+    .presets { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 22px 0 26px; }
+    .presets .btn { min-width: 92px; justify-content: center; }
+
+    .sounds { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+    .sound {
+      border: 1px solid var(--border); background: var(--surface); border-radius: 14px; padding: 14px 16px 12px;
+      transition: border-color .15s, background .15s; position: relative; overflow: hidden;
+    }
+    .sound.on { border-color: var(--r-bone); background: var(--surface-2); }
+    .sound .head { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; width: 100%; text-align: left; }
+    .sound .glyph { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--r-midnight); color: var(--muted); font: 700 15px var(--f-mono); flex: none; transition: background .15s, color .15s; }
+    .sound.on .glyph { background: var(--r-bone); color: var(--r-void); }
+    .sound .nm { font: 700 17px/1 var(--f-display); letter-spacing: .04em; text-transform: uppercase; }
+    .sound .ds { font: 12px var(--f-mono); color: var(--muted); margin-top: 3px; }
+    .sound input[type=range] { margin-top: 12px; opacity: .45; transition: opacity .15s; }
+    .sound.on input[type=range] { opacity: 1; }
+    .sound .level { position: absolute; left: 0; bottom: 0; height: 2px; background: var(--r-bone); width: 0; transition: width .2s; }
+
+    .bottom { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 22px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; }
+    .bottom .grp { display: flex; align-items: center; gap: 10px; }
+    .bottom .lbl { font: 600 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+    .bottom .vol { width: 160px; }
+    .timer .btn { padding: 6px 10px; font-size: 12.5px; }
+
+    @media (max-width: 560px) {
+      .hero { height: 34vh; }
+      .presets { margin: 16px 0 20px; }
+      .presets .btn { min-width: 0; }
+      .sounds { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .sound { padding: 12px 12px 10px; }
+      .sound .ds { display: none; }
+      .sound .glyph { width: 28px; height: 28px; font-size: 13px; }
+      .sound .nm { font-size: 15px; }
+      .bottom { gap: 14px; }
+      .bottom .vol { width: 100%; flex: 1; }
+      .bottom .grp:first-child { flex: 1 1 100%; }
+      .bottom .timer { flex-wrap: wrap; gap: 4px; }
+      .timer .btn { padding: 6px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <span class="brand"><span class="b1">Rabiat's</span><span class="b2">Noise</span></span>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this tool">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>How it works</h4>
+        <p>Every sound is generated live in your browser. There are no recordings, so there is no loop you can learn to hear, and nothing to download.</p>
+        <ul>
+          <li>Tap a sound to add it, use its slider to set how much</li>
+          <li><kbd>Space</kbd> plays and pauses</li>
+          <li>The timer fades out gently instead of cutting off</li>
+          <li>Your mix is remembered on this device</li>
+        </ul>
+        <p class="fine">White is bright and even. Pink is softer, like steady rain. Brown is deep, like a far-off waterfall. Many people find brown or pink easiest to focus with.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html">rabiatsadiq.com</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <canvas id="orb" aria-hidden="true"></canvas>
+      <button class="play" id="play" aria-label="Play">
+        <svg id="icoPlay" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>
+        <svg id="icoPause" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+      </button>
+    </section>
+    <div class="status-line" id="statusLine"></div>
+
+    <div class="presets" id="presets" role="group" aria-label="Presets"></div>
+
+    <section class="sounds" id="sounds"></section>
+
+    <div class="bottom">
+      <div class="grp"><span class="lbl">Volume</span><input class="vol" type="range" id="master" min="0" max="100" value="70" aria-label="Master volume"></div>
+      <div class="grp timer" id="timer" role="group" aria-label="Sleep timer"><span class="lbl">Timer</span></div>
+    </div>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

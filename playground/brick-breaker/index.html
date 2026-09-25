@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Break My Website · Rabiat</title>
+  <meta name="description" content="My homepage, as a brick breaker. Every word, button and picture is a brick.">
+  <meta property="og:title" content="Break My Website" />
+  <meta property="og:description" content="My homepage, as a brick breaker. Every word, button and picture is a brick." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    :root { --floor: 104px; }
+    /* the real homepage, live, above a floor for the paddle */
+    #site { position: fixed; left: 0; top: 0; width: 100%; height: calc(100% - var(--floor)); border: 0; pointer-events: none; background: var(--r-void); }
+    .floor { position: fixed; left: 0; right: 0; bottom: 0; height: var(--floor); background: var(--r-void); border-top: 1px solid var(--border); }
+    #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: none; z-index: 5; }
+    body.menu #game { cursor: default; }
+    .scan { position: fixed; inset: 0; pointer-events: none; z-index: 6; background: repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px); mix-blend-mode: multiply; }
+
+    .hud { position: fixed; left: 0; right: 0; bottom: 0; height: 30px; z-index: 7; display: flex; align-items: center; gap: 18px; padding: 0 20px 8px; font: 500 12px var(--f-mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; pointer-events: none; }
+    .hud b { color: var(--text); font-weight: 500; }
+    .hud .lives i { display: inline-block; width: 10px; height: 10px; margin-left: 5px; background: var(--brand); }
+    .hud .lives i.lost { background: var(--r-midnight); }
+    .hud .grow { flex: 1; }
+    .hud button { pointer-events: auto; background: none; border: 0; color: var(--muted); font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; padding: 4px 2px; }
+    .hud button:hover { color: var(--text); }
+
+    .menu-card { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: rgba(10,10,10,.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 24px; text-align: center; }
+    .menu-card h1 { font: 700 clamp(44px, 8vw, 92px)/.9 var(--f-display); text-transform: uppercase; margin: 0; }
+    .menu-card p { color: var(--muted); margin: 14px 0 26px; font-size: 16px; }
+    .menu-card .acts { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .menu-card .stat { font: 500 13px var(--f-mono); color: var(--text-2); margin-top: 16px; letter-spacing: .06em; text-transform: uppercase; }
+    .keys kbd { margin: 0 2px; }
+    body:not(.menu) header.top { display: none; }
+  </style>
+</head>
+<body class="menu">
+  <iframe id="site" src="../../index.html?cube=0" title="Rabiat's homepage" tabindex="-1" aria-hidden="true"></iframe>
+  <div class="floor" aria-hidden="true"></div>
+  <canvas id="game" aria-label="Brick breaker game"></canvas>
+  <div class="scan" aria-hidden="true"></div>
+
+  <div class="hud" id="hud" hidden>
+    <span>Score <b id="score">0</b></span>
+    <span>Bricks <b id="left">0</b></span>
+    <span class="grow"></span>
+    <button id="soundBtn" aria-pressed="true">Sound on</button>
+    <button id="pauseBtn">Pause</button>
+    <span class="lives" id="lives"></span>
+  </div>
+
+  <header class="top float" style="z-index: 11">
+    <span class="brand"><span class="b1">Rabiat's</span><span class="b2">Break My Website</span></span>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="How to play">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>How to play</h4>
+        <p>This is my real homepage, running live. Every word, button, chip and picture on screen is a brick. Knock them all off.</p>
+        <ul>
+          <li>Move with the mouse, a finger, or <kbd>←</kbd> <kbd>→</kbd></li>
+          <li><kbd>Space</kbd> or click launches the ball</li>
+          <li>Where the ball hits the paddle sets the angle</li>
+          <li><kbd>P</kbd> pauses, <kbd>Esc</kbd> quits</li>
+        </ul>
+        <p class="fine">Nothing is saved to the real site. Reload and it is whole again.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html">rabiatsadiq.com</a>
+  </header>
+
+  <section class="menu-card" id="menu">
+    <div>
+      <h1 id="menuTitle">Break my website</h1>
+      <p id="menuSub">Every word is a brick.</p>
+      <div class="acts">
+        <button class="btn primary lg" id="play" disabled>Loading</button>
+        <a class="btn quiet lg" id="real" href="../../index.html" hidden>See the real one</a>
+      </div>
+      <div class="stat" id="menuStat"></div>
+    </div>
+  </section>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script src="app.js" type="module"></script>
+</body>
+</html>
