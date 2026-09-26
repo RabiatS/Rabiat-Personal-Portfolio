@@ -265,18 +265,18 @@
   </main>
 
   <script type="module">
-    import { createRipple } from './assets/ripple.js';
+    import { createRipple } from './assets/ripple.js?v=2';
     const band = document.getElementById('coolHero');
     const canvas = document.getElementById('coolRipple');
     const root = document.documentElement;
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches || root.classList.contains('plain-mode');
     if (band && canvas && !still) {
       let water = null;
-      try { water = createRipple(canvas, { mode: 'shade', input: band, light: 1.1 }); } catch {}
+      // 1x is plenty for soft light and shadow, and keeps GPU memory small on phones
+      try { water = createRipple(canvas, { mode: 'shade', input: band, light: 1.1, dpr: 1, damping: 0.972, onLost: () => canvas.remove() }); } catch {}
       if (water) {
-        // a couple of drops so it is clear the title is under water
-        const { w, h } = water.size;
-        [[0.12, 0.55, 500], [0.3, 0.4, 900]].forEach(([x, y, ms]) => setTimeout(() => water.drop(w * x, h * y, 22, 70), ms));
+        // one soft drop so it is clear the title is under water
+        setTimeout(() => { const { w, h } = water.size; water.drop(w * 0.18, h * 0.5, 16, 45); }, 600);
       } else canvas.remove();
     } else canvas?.remove();
   </script>

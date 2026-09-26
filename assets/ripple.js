@@ -26,7 +26,7 @@ uniform float light;
 uniform int mode;
 void main() {
   vec4 s = texture2D(slope, uv);
-  vec2 n = (vec2(s.r, s.a) * 255. - 128.) / 127.;   // byte 128 is exactly flat
+  vec2 n = (s.rg * 255. - 128.) / 127.;   // byte 128 is exactly flat
   vec3 N = normalize(vec3(n * 1.4, 1.));
   vec3 L = normalize(vec3(-.45, -.6, .9));
   float diff = dot(N, L) - L.z;                      // 0 on flat water
@@ -56,10 +56,20 @@ export function createRipple(canvas, opts = {}) {
     light: 1,
     trail: true,             // ripples follow the pointer
     maxCells: 150000,
+    dpr: null,               // canvas resolution; defaults to the screen, capped at 2
+    onLost: null,            // called if the browser drops the WebGL context
     ...opts,
   };
   const gl = canvas.getContext('webgl', { alpha: o.mode === 'shade', premultipliedAlpha: true, antialias: false });
   if (!gl) return null;
+  // If the browser reclaims the GPU context (it does under memory pressure on
+  // phones), stop for good and let the page remove the canvas, rather than
+  // leaving a blank or black layer on top of it.
+  canvas.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault();
+    destroyed = true; cancelAnimationFrame(raf);
+    o.onLost?.();
+  });
 
   const prog = link(gl, VERT, FRAG);
   gl.useProgram(prog);
@@ -84,15 +94,25 @@ export function createRipple(canvas, opts = {}) {
   let last = null;
 
   function resize() {
+    if (destroyed) return;
     const r = canvas.getBoundingClientRect();
-    W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+    if (w === W && h === H) return;
+    W = w; H = h;
+    const dpr = o.dpr ?? Math.min(2, window.devicePixelRatio || 1);
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     gl.viewport(0, 0, canvas.width, canvas.height);
     cell = Math.max(2, Math.ceil(Math.sqrt((W * H) / o.maxCells)));
     cols = Math.ceil(W / cell) + 2; rows = Math.ceil(H / cell) + 2;
     cur = new Float32Array(cols * rows); prev = new Float32Array(cols * rows);
-    bytes = new Uint8Array(cols * rows * 2).fill(128);
+    // RGBA (4 bytes a texel) so every row is aligned; 2-byte formats were read
+    // skewed by WebKit and showed up as diagonal streaks on iPhone.
+    bytes = new Uint8Array(cols * rows * 4);
+    for (let i = 0; i < bytes.length; i += 4) { bytes[i] = 128; bytes[i + 1] = 128; bytes[i + 3] = 255; }
+    // allocate once per size; every frame after this only overwrites it
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, slopeTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, cols, rows, 0, gl.RGBA, gl.UNSIGNED_BYTE, bytes);
     gl.uniform2f(U('res'), W, H);
     gl.uniform1f(U('bend'), o.bend);
     gl.uniform1f(U('light'), o.light);
@@ -101,8 +121,8 @@ export function createRipple(canvas, opts = {}) {
   }
 
   function redrawTexture() {
-    if (o.mode !== 'refract') return;
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (o.mode !== 'refract' || destroyed) return;
+    const dpr = o.dpr ?? Math.min(2, window.devicePixelRatio || 1);
     const c = document.createElement('canvas');
     c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
     const ctx = c.getContext('2d');
@@ -137,16 +157,18 @@ export function createRipple(canvas, opts = {}) {
       for (let x = 1; x < cols - 1; x++, i++) {
         const dx = (cur[i - 1] - cur[i + 1]) * 2.5;
         const dy = (cur[i - cols] - cur[i + cols]) * 2.5;
-        bytes[i * 2] = dx > 127 ? 255 : dx < -127 ? 1 : 128 + dx;
-        bytes[i * 2 + 1] = dy > 127 ? 255 : dy < -127 ? 1 : 128 + dy;
+        bytes[i * 4] = dx > 127 ? 255 : dx < -127 ? 1 : 128 + dx;
+        bytes[i * 4 + 1] = dy > 127 ? 255 : dy < -127 ? 1 : 128 + dy;
       }
     }
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, slopeTex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE_ALPHA, cols, rows, 0, gl.LUMINANCE_ALPHA, gl.UNSIGNED_BYTE, bytes);
+    // update in place: re-creating the texture every frame piles up GPU memory on iPhone
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, cols, rows, gl.RGBA, gl.UNSIGNED_BYTE, bytes);
   }
 
   function draw() {
+    if (destroyed) return;
     if (o.mode === 'shade') { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); }
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
@@ -166,7 +188,7 @@ export function createRipple(canvas, opts = {}) {
     raf = requestAnimationFrame(frame);
   }
   function wake() {
-    if (awake || destroyed) return;
+    if (awake || destroyed || !cur) return;
     awake = true; quiet = 0;
     raf = requestAnimationFrame(frame);
   }
