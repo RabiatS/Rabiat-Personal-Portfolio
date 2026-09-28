@@ -43,10 +43,20 @@ async function fetchModel(url, report) {
   return new Uint8Array(await blob.arrayBuffer());
 }
 
+// Only fetch the 84 MB GPU model when it can actually run: a real adapter that
+// does half-precision maths. Some browsers expose navigator.gpu with no adapter
+// (the iOS Simulator, older iPhones), which used to cost a wasted download.
+async function usableGpu() {
+  try {
+    const a = await self.navigator.gpu?.requestAdapter();
+    return !!a && a.features.has('shader-f16');
+  } catch { return false; }
+}
+
 async function getSession(report) {
   if (session) return session;
   await loadOrt();
-  if (self.navigator.gpu) {
+  if (await usableGpu()) {
     try {
       const bytes = await fetchModel(MODEL.gpu, report);
       report({ phase: 'compile' });
