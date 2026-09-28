@@ -50,6 +50,7 @@ async function take(blob, name) {
   vctx.clearRect(0, 0, w, h);
   $('intake').hidden = true;
   $('work').hidden = false;
+  fit();
   $('corner').textContent = `${w} × ${h}`;
   setOutputs(false);
 
@@ -80,6 +81,19 @@ async function take(blob, name) {
     veil('That did not work', 0, err.message);
   }
 }
+
+// Size both canvases to fit the stage here, not with CSS max-width/max-height:
+// inside the stage's grid, Chrome (and Arc) grew the row to the photo's full
+// height first, so tall phone photos showed only their top third.
+const PAD = 36; // the .layer padding, both sides
+function fit() {
+  if (!state.w) return;
+  const s = $('stage');
+  const k = Math.min(1, (s.clientWidth - PAD) / state.w, (s.clientHeight - PAD) / state.h);
+  const cw = `${Math.max(1, Math.floor(state.w * k))}px`, ch = `${Math.max(1, Math.floor(state.h * k))}px`;
+  for (const c of [view, origCanvas]) { c.style.width = cw; c.style.height = ch; }
+}
+new ResizeObserver(fit).observe($('stage'));
 
 function upscale(mask, mw, mh, w, h) {
   const small = new OffscreenCanvas(mw, mh);
