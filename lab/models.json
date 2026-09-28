@@ -1,0 +1,94 @@
+{
+  "runtime": {
+    "name": "Transformers.js",
+    "version": "4.3.0",
+    "url": "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0/dist/transformers.min.js",
+    "cacheKey": "rabiat-lab-v1",
+    "transferBytes": 5800000
+  },
+  "models": [
+    {
+      "slug": "depth-anything-v2",
+      "name": "Depth Anything V2",
+      "kind": "Vision",
+      "blurb": "Give it any photo and it works out how far away every pixel is, so the photo tilts like a small 3D scene. Try it on your phone and move it around.",
+      "try": "Drop in a photo and tilt it in 3D.",
+      "added": "2026-09-28",
+      "task": "depth-estimation",
+      "params": "24.8M",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "text": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+      },
+      "upstream": {
+        "name": "Depth Anything V2, by Lihe Yang and team (HKU, TikTok)",
+        "url": "https://github.com/DepthAnything/Depth-Anything-V2",
+        "baseModel": "depth-anything/Depth-Anything-V2-Small-hf"
+      },
+      "permissions": [],
+      "source": { "repo": "onnx-community/depth-anything-v2-small", "sha": "4472b7362082ad9968fee890ca0f1e5aca36b93d" },
+      "mirror": { "repo": "RabiatS/depth-anything-v2-small-web", "sha": "9c4f2bedb817a44120dee95bdc9381f0caa516c4" },
+      "files": {
+        "config.json": 38,
+        "preprocessor_config.json": 461,
+        "onnx/model_fp16.onnx": 49642442,
+        "onnx/model_q4f16.onnx": 19126267,
+        "onnx/model_quantized.onnx": 27258801
+      },
+      "variants": [
+        { "tier": "gpu", "phone": false, "device": "webgpu", "dtype": "fp16", "memMB": 280,
+          "files": ["config.json", "preprocessor_config.json", "onnx/model_fp16.onnx"] },
+        { "tier": "gpu", "phone": true, "device": "webgpu", "dtype": "q4f16", "memMB": 200,
+          "files": ["config.json", "preprocessor_config.json", "onnx/model_q4f16.onnx"] },
+        { "tier": "cpu", "device": "wasm", "dtype": "q8", "memMB": 220,
+          "files": ["config.json", "preprocessor_config.json", "onnx/model_quantized.onnx"] }
+      ]
+    },
+    {
+      "slug": "moonshine",
+      "name": "Moonshine",
+      "kind": "Audio",
+      "blurb": "Speech to text made small enough for a phone. Talk and your words show up as you say them. Your voice never leaves your device.",
+      "try": "Talk, and your words appear as you say them.",
+      "added": "2026-09-28",
+      "task": "automatic-speech-recognition",
+      "params": "27M",
+      "license": {
+        "id": "MIT",
+        "name": "MIT",
+        "url": "https://github.com/moonshine-ai/moonshine/blob/main/LICENSE",
+        "text": "https://raw.githubusercontent.com/moonshine-ai/moonshine/main/LICENSE"
+      },
+      "upstream": {
+        "name": "Moonshine Tiny, by Moonshine AI (Useful Sensors)",
+        "url": "https://github.com/moonshine-ai/moonshine",
+        "baseModel": "UsefulSensors/moonshine-tiny"
+      },
+      "permissions": ["mic"],
+      "source": { "repo": "onnx-community/moonshine-tiny-ONNX", "sha": "a6da1241cd305dcd64eab1edbd615f2bb9aabb95" },
+      "mirror": { "repo": "RabiatS/moonshine-tiny-web", "sha": "c87234f11a9d0ca888b875509b6aeedbaadbcd35" },
+      "files": {
+        "config.json": 921,
+        "generation_config.json": 147,
+        "preprocessor_config.json": 128,
+        "tokenizer.json": 3761754,
+        "tokenizer_config.json": 135735,
+        "onnx/encoder_model.onnx": 30882331,
+        "onnx/decoder_model_merged_quantized.onnx": 20243286
+      },
+      "variants": [
+        { "tier": "gpu", "memMB": 300,
+          "device": { "model": "webgpu", "encoder_model": "webgpu", "decoder_model_merged": "wasm" },
+          "dtype": { "model": "fp32", "encoder_model": "fp32", "decoder_model_merged": "q8" },
+          "files": ["config.json", "generation_config.json", "preprocessor_config.json", "tokenizer.json", "tokenizer_config.json",
+                    "onnx/encoder_model.onnx", "onnx/decoder_model_merged_quantized.onnx"] },
+        { "tier": "cpu", "device": "wasm", "memMB": 290,
+          "dtype": { "model": "fp32", "encoder_model": "fp32", "decoder_model_merged": "q8" },
+          "files": ["config.json", "generation_config.json", "preprocessor_config.json", "tokenizer.json", "tokenizer_config.json",
+                    "onnx/encoder_model.onnx", "onnx/decoder_model_merged_quantized.onnx"] }
+      ]
+    }
+  ]
+}
