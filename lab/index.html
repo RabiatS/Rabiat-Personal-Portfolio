@@ -1,128 +1,179 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Lab · Rabiat</title>
-  <meta name="description" content="New openly licensed ML models, running in your browser. Nothing to install, nothing uploaded. Newest first.">
-  <meta property="og:title" content="Rabiat's Lab" />
-  <meta property="og:description" content="New openly licensed ML models, running in your browser. Nothing to install, nothing uploaded." />
-  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="../assets/rabiat-kit.css">
-  <style>
-    /* Water over the title, the same as the Cool page (assets/ripple.js, shade mode) */
-    .hero { position: relative; }
-    .hero .ripple { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-    .hero .inner { max-width: 1180px; margin: 0 auto; padding: 56px 28px 44px; }
-    .hero h1 { font: 700 clamp(44px, 8.4vw, 104px)/.9 var(--f-display); text-transform: uppercase; margin: 0; max-width: 11ch; }
-    .hero .lead { color: var(--muted); font-size: 17px; margin: 18px 0 0; max-width: 520px; }
-    @media (max-width: 600px) { .hero .inner { padding: 32px 16px 28px; } }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lab | Rabiat Sadiq</title>
+  <meta name="description" content="New openly licensed ML models, running in your browser. See what they can and can't do before building them into anything. Nothing to install, nothing uploaded." />
+  <link rel="canonical" href="https://www.rabiatsadiq.com/lab/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Rabiat Sadiq" />
+  <meta property="og:title" content="Lab | Rabiat Sadiq" />
+  <meta property="og:description" content="New openly licensed ML models, running in your browser. See what they can and can't do before building them into anything. Nothing to install, nothing uploaded." />
+  <meta property="og:url" content="https://www.rabiatsadiq.com/lab/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Lab | Rabiat Sadiq" />
+  <meta name="twitter:description" content="New openly licensed ML models, running in your browser. See what they can and can't do before building them into anything. Nothing to install, nothing uploaded." />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 
-    .models { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
-    .model { border-bottom: 1px solid var(--border); }
-    .model a {
-      display: grid; grid-template-columns: 150px minmax(0, 1fr) auto; gap: 8px 28px; align-items: baseline;
-      padding: 26px 4px; color: inherit; text-decoration: none;
-    }
-    .model .when { display: flex; flex-direction: column; gap: 4px; }
-    .model time { font: 12.5px var(--f-mono); color: var(--text-2); }
-    .model .kind { font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-    .model .what { display: flex; flex-direction: column; gap: 6px; }
-    .model .name { font: 700 clamp(26px, 3.4vw, 38px)/1 var(--f-display); text-transform: uppercase; transition: color .15s; }
-    .model .try { color: var(--muted); }
-    .model .fit { font: 12px var(--f-mono); color: var(--muted); text-align: right; white-space: nowrap; }
-    .model .fit::after { content: '→'; display: inline-block; margin-left: 12px; color: var(--text-2); transition: transform .2s; }
-    .model a:hover .name { color: #fff; }
-    .model a:hover .fit::after { transform: translateX(4px); }
-    .model a:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
-    .model.blocked .fit { color: var(--text-2); }
-    @media (max-width: 720px) {
-      .model a { grid-template-columns: 1fr; gap: 10px; padding: 22px 0; }
-      .model .when { flex-direction: row; gap: 12px; align-items: baseline; }
-      .model .fit { text-align: left; white-space: normal; }
-    }
+  <!-- Prevent theme flash & minimalist Rabiat -->
+  <script>
+    (function(){
+      var g = localStorage.getItem('glassLevel');
+      var legacy = { clear: 0, 'default': 50, frosted: 100 };
+      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
+      if (!isFinite(t)) t = 50;
+      t = Math.min(100, Math.max(0, t)) / 100;
+      var st = document.documentElement.style;
+      st.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+      st.setProperty('--glass-lens', (1 - t).toFixed(3));
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+  <style>
+    .lab-meta { margin: 0 0 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .lab-meta .kind { color: var(--primary); font-weight: 600; }
+    .lab-fit { margin: 12px 0 0; font-size: 12.5px; font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+    .lab-card.blocked .lab-fit { color: var(--text); }
   </style>
 </head>
-<body>
-  <header class="top">
-    <span class="brand"><span class="b1">Rabiat's</span><span class="b2">Lab</span></span>
-    <div class="spacer"></div>
-    <div class="info">
-      <button class="info-btn" aria-controls="about" aria-label="About the Lab">i</button>
-      <div class="pop" id="about" hidden>
-        <h4>The Lab</h4>
-        <p>When a new openly licensed model comes out and I want to see what it can do, it gets a page here, built around the thing it does best.</p>
-        <p>Every model runs on your device, in your browser. Before anything downloads, each page says where it will run and how big it is, and it won't download a model your device can't handle. After the first visit it stays cached.</p>
-        <p class="fine">Open licences only. Each page's (i) has the size, speed on your device, licence and source.</p>
-      </div>
+<body data-tilt-mode="desktop">
+  <header class="header">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="../projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="../coursework.html" class="nav-pill">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="./" class="nav-pill" aria-current="page">
+        <span class="nav-icon">🧪</span>
+        <span class="nav-text">Lab</span>
+      </a>
+      <a href="../cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn">in</a>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
-    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html">rabiatsadiq.com</a>
   </header>
 
-  <div class="hero" id="hero">
-    <canvas class="ripple" id="ripple" aria-hidden="true"></canvas>
-    <div class="inner">
-      <h1>What new models are up to</h1>
-      <p class="lead">Openly licensed models, running in your browser. Nothing to install, nothing uploaded. Newest first.</p>
+  <main style="padding-top: var(--header-height);">
+    <!-- Water over the title, like the Cool page. assets/ripple.js, shade mode. -->
+    <div class="cool-hero" id="labHero">
+      <canvas class="cool-ripple" id="labRipple" aria-hidden="true"></canvas>
+      <div class="container section-head">
+        <div>
+          <h1>Lab</h1>
+          <p class="lead" style="margin-top: 16px;">New models come out every day. This is where I try them before building them into anything: what they can and can't do, and how they run on your own device. Nothing to install, nothing uploaded.</p>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <main>
-    <ol class="models" id="models">
+    <section class="container" style="padding-bottom: 40px;">
+      <p class="muted cool-sub">Newest first. Each one says how big it is and where it will run before anything downloads, and stays on your device after the first visit.</p>
+      <!-- Cards regenerated by tools-regen-lab.py from lab/models.json. -->
+      <div class="grid cards-3" id="models">
 <!-- LAB-LIST:START -->
-    <li class="model" data-slug="depth-anything-v2">
-      <a href="depth-anything-v2/">
-        <span class="when"><time datetime="2026-09-28">28 Sep 2026</time><span class="kind">Vision</span></span>
-        <span class="what"><span class="name">Depth Anything V2</span><span class="try">Drop in a photo and tilt it in 3D.</span></span>
-        <span class="fit" data-fit>Apache 2.0 · 19 to 50 MB</span>
-      </a>
-    </li>
-    <li class="model" data-slug="moonshine">
-      <a href="moonshine/">
-        <span class="when"><time datetime="2026-09-28">28 Sep 2026</time><span class="kind">Audio</span></span>
-        <span class="what"><span class="name">Moonshine</span><span class="try">Talk, and your words appear as you say them.</span></span>
-        <span class="fit" data-fit>MIT · 55 MB</span>
-      </a>
-    </li>
+        <article class="card lab-card" data-slug="depth-anything-v2">
+          <p class="lab-meta"><span class="kind">Vision</span> · <time datetime="2026-09-28">28 Sep 2026</time></p>
+          <h3><a href="depth-anything-v2/" style="color:inherit">Depth Anything V2</a></h3>
+          <p class="muted">Give it any photo and it works out how far away every pixel is, so the photo tilts like a small 3D scene. Try it on your phone and move it around.</p>
+          <p class="lab-fit muted" data-fit>Apache 2.0 · 19 to 50 MB</p>
+          <div style="margin-top: 10px;">
+            <a href="depth-anything-v2/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+          </div>
+        </article>
+        <article class="card lab-card" data-slug="moonshine">
+          <p class="lab-meta"><span class="kind">Audio</span> · <time datetime="2026-09-28">28 Sep 2026</time></p>
+          <h3><a href="moonshine/" style="color:inherit">Moonshine</a></h3>
+          <p class="muted">Speech to text made small enough for a phone. Talk and your words show up as you say them. Your voice never leaves your device.</p>
+          <p class="lab-fit muted" data-fit>MIT · 55 MB</p>
+          <div style="margin-top: 10px;">
+            <a href="moonshine/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+          </div>
+        </article>
 <!-- LAB-LIST:END -->
-    </ol>
+      </div>
+    </section>
   </main>
 
-  <script src="../assets/rabiat-kit.js" defer></script>
   <script type="module">
-    // Each row says what this device would do with the model, still without downloading anything.
+    // Each card says what this device would do with the model, still without downloading anything.
     import { loadCatalogue } from './frame/frame.js';
     import { checkDevice, pickVariant, mb } from './frame/device.js';
     import { cachedState } from './frame/cache.js';
     const [data, dev] = await Promise.all([loadCatalogue(), checkDevice()]);
-    for (const li of document.querySelectorAll('.model[data-slug]')) {
-      const model = data.models.find((m) => m.slug === li.dataset.slug);
+    for (const card of document.querySelectorAll('.lab-card[data-slug]')) {
+      const model = data.models.find((m) => m.slug === card.dataset.slug);
       if (!model) continue;
       const { variant } = pickVariant(model, dev);
-      const fit = li.querySelector('[data-fit]');
-      if (!variant) { fit.textContent = 'Too big for this device'; li.classList.add('blocked'); continue; }
+      const fit = card.querySelector('[data-fit]');
+      if (!variant) { fit.textContent = 'Too big for this device'; card.classList.add('blocked'); continue; }
       const where = variant.tier === 'gpu' ? 'your GPU' : 'your CPU';
       const c = await cachedState(data.runtime.cacheKey, model, variant);
       const need = variant.files.filter((f) => !c.files.has(f)).reduce((n, f) => n + model.files[f], 0);
       const total = need + (c.runtime ? 0 : data.runtime.transferBytes);
-      fit.textContent = need ? `Runs on ${where} · ${mb(total)}` : `Ready on this device`;
+      fit.textContent = need ? `Runs on ${where} · ${mb(total)}` : 'Ready on this device';
     }
   </script>
   <script type="module">
     import { createRipple } from '../assets/ripple.js?v=2';
-    const band = document.getElementById('hero');
-    const canvas = document.getElementById('ripple');
-    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!still) {
+    const band = document.getElementById('labHero');
+    const canvas = document.getElementById('labRipple');
+    const root = document.documentElement;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches || root.classList.contains('plain-mode');
+    if (band && canvas && !still) {
       let water = null;
       // 1x is plenty for soft light and shadow, and keeps GPU memory small on phones
       try { water = createRipple(canvas, { mode: 'shade', input: band, light: 1.1, dpr: 1, damping: 0.972, onLost: () => canvas.remove() }); } catch {}
       if (water) setTimeout(() => { const { w, h } = water.size; water.drop(w * 0.18, h * 0.5, 16, 45); }, 600);
       else canvas.remove();
-    } else canvas.remove();
+    } else canvas?.remove();
   </script>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
 </body>
 </html>
