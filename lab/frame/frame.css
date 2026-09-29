@@ -1,0 +1,30 @@
+/* Lab frame: the pieces every Lab page shares, on top of rabiat-kit.css.
+   Layouts stay per model; this is only the gate line, the loading veil and
+   the stats behind (i). */
+
+/* Where it runs and how big it is, said before anything downloads */
+.lab-gate { font: 12.5px/1.5 var(--f-mono); color: var(--muted); margin-top: 16px; }
+.lab-gate strong { color: var(--text); font-weight: 500; }
+.lab-gate.blocked { color: var(--text-2); max-width: 420px; margin-inline: auto; }
+/* A model too big for this device hides the page's actions; the gate says why */
+.lab-blocked [data-needs-model] { display: none !important; }
+
+.brand { text-decoration: none; }
+a.brand:hover .b2 { color: #fff; }
+
+/* Loading veil, the Background Remover's look */
+.lab-veil {
+  position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 24px;
+  background: rgba(10,10,10,.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.lab-veil .box { width: min(380px, 100%); text-align: center; }
+.lab-veil .msg { font: 600 18px var(--f-display); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 12px; }
+.lab-veil .sub { color: var(--muted); font: 12.5px var(--f-mono); margin-top: 10px; }
+.lab-veil .act:not(:empty) { margin-top: 18px; }
+
+/* Stats behind (i) */
+.pop .lab-stats { display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12.5px; }
+.pop .lab-stats dt { font: 600 11px/1.9 var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.pop .lab-stats dd { margin: 0; font: 12px/1.7 var(--f-mono); color: var(--text-2); overflow-wrap: anywhere; }
+.pop .lab-stats a { color: var(--text-2); }
+.pop .lab-forget { margin: 10px 0 0 -10px; }

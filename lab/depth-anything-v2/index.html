@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Depth Anything V2 · Rabiat's Lab</title>
+  <meta name="description" content="Drop in a photo and tilt it in 3D. Depth Anything V2 works out how far away every pixel is, right in your browser. Nothing is uploaded.">
+  <meta property="og:title" content="Depth Anything V2 · Rabiat's Lab" />
+  <meta property="og:description" content="Drop in a photo and tilt it in 3D. The model runs in your browser; nothing is uploaded." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    body { background: radial-gradient(1200px 700px at 50% 45%, #151515, var(--r-void) 70%); }
+    #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; opacity: 0; transition: opacity .4s; }
+    body.has-photo #scene { opacity: 1; }
+    body.has-photo .intake { display: none; }
+
+    .intake {
+      position: fixed; inset: 0; display: grid; place-items: center; text-align: center; padding: 90px 20px 40px;
+    }
+    .intake.over h1 { color: #fff; }
+    .intake h1 { font: 700 clamp(44px, 8vw, 88px)/.92 var(--f-display); text-transform: uppercase; margin: 0; letter-spacing: .005em; transition: color .15s; }
+    .intake .keys { margin-top: 16px; color: var(--muted); font-size: 16px; }
+    .intake .keys kbd { font-size: 15px; padding: 3px 9px; }
+    .intake .acts { display: flex; gap: 12px; justify-content: center; align-items: center; margin-top: 28px; flex-wrap: wrap; }
+    .samples { display: flex; gap: 10px; justify-content: center; margin-top: 22px; }
+    .sample {
+      width: 64px; height: 64px; padding: 0; border-radius: 12px; overflow: hidden; cursor: pointer;
+      border: 1px solid var(--border-strong); background: var(--surface); transition: transform .15s, border-color .15s;
+    }
+    .sample img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .sample:hover { transform: translateY(-2px); border-color: var(--r-ash); }
+    .sample:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+    .samples-lbl { font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-top: 26px; }
+    .dock .val { font: 11.5px var(--f-mono); color: var(--muted); padding: 0 10px 0 6px; white-space: nowrap; }
+    .touch { display: none; }
+    @media (hover: none) { .intake .keys, .mouse { display: none; } .touch { display: inline; } }
+  </style>
+</head>
+<body>
+  <canvas id="scene" aria-label="Your photo in 3D. Move over it, or tilt your phone."></canvas>
+
+  <section class="intake" id="intake">
+    <div>
+      <h1><span class="mouse">Drop a photo</span><span class="touch">Pick a photo</span></h1>
+      <div class="keys">Press <kbd>⌘V</kbd>, drop one anywhere, or choose one.</div>
+      <div class="acts" data-needs-model>
+        <label class="btn primary lg" for="pick">Choose photo</label>
+        <input type="file" id="pick" accept="image/*" hidden>
+      </div>
+      <div data-needs-model>
+        <div class="samples-lbl">Or try one of mine</div>
+        <div class="samples">
+          <button class="sample" data-src="../../assets/img/projects/visionpro/hero-pinch.jpg" aria-label="Sample: a hand pinching in a living room">
+            <img src="../../assets/img/projects/visionpro/hero-pinch.jpg" alt="" loading="lazy"></button>
+          <button class="sample" data-src="samples/portrait.jpg" aria-label="Sample: a retro portrait of Rabiat">
+            <img src="samples/portrait.jpg" alt="" loading="lazy"></button>
+        </div>
+      </div>
+      <p class="lab-gate" id="gate">&nbsp;</p>
+    </div>
+  </section>
+
+  <header class="top float">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">Depth Anything V2</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Depth from one photo</h4>
+        <p>The model looks at a single photo and guesses how far away every pixel is. Here each pixel is pushed forward or back by that guess, so the photo becomes a scene you can tilt.</p>
+        <p>Move over it, drag it, or tilt your phone. The Depth button shows what the model saw: brighter is nearer.</p>
+        <p class="fine">Runs on your device. Your photos are never uploaded.</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <div class="dock" id="dock" hidden>
+    <label class="btn" for="pick">New photo</label>
+    <button class="btn" id="depthBtn" aria-pressed="false">Depth</button>
+    <span class="sep"></span>
+    <span class="lbl">Strength</span>
+    <input type="range" id="strength" min="0" max="100" value="55" aria-label="Depth strength">
+    <button class="btn" id="tiltBtn" hidden>Tilt</button>
+    <span class="val" id="readout" hidden></span>
+  </div>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

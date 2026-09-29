@@ -1888,6 +1888,32 @@ body:not(.on-hero) .btn-view-vr {
     0 6px 20px var(--glass-shadow);
 }
 
+/* LinkedIn as a small mark beside the header buttons. It left the pill row
+   when Lab joined the nav; the footer still has it too. */
+.toggle.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  text-decoration: none;
+  font: 700 15px/1.2 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  letter-spacing: -0.03em;
+}
+
+/* Below 360px it would push the header onto two rows; the footer has LinkedIn. */
+@media (max-width: 359px) {
+  .header-controls .toggle.social-link {
+    display: none;
+  }
+}
+
+/* Plain mode greys out the header toggles it disables; this one is a link and still works. */
+.plain-mode .toggle.social-link,
+.plain-mode .toggle.social-link:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
 #funToggle {
   animation: paintSpin 1s ease-in-out;
 }

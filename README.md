@@ -18,6 +18,14 @@ Rabiat-Personal-Portfolio/
 ├── sticky-counter.html      # Standalone tool: CMU MHCI sticky note observatory
 ├── hq-daily-planner.html    # Standalone tool: terminal-style daily planner
 ├── audio-playground/       # Tool: cut songs + split stems in the browser (Music Sandbox project)
+├── lab/                     # Lab tab: new openly licensed ML models, running in the browser
+│   ├── models.json            # Source of truth: sizes, variants per device, licence, mirror sha
+│   ├── index.html             # The Lab tab, newest first (cards regenerated from models.json)
+│   ├── frame/                 # Shared frame: device check, gate, loader, worker, (i) stats
+│   ├── depth-anything-v2/     # Photo to 3D (Depth Anything V2 Small)
+│   └── moonshine/             # Speak, words appear (Moonshine Tiny)
+├── tools-regen-lab.py       # Rewrites the Lab tab's model cards from lab/models.json
+├── tools-mirror-model.py    # Copies a Lab model's files to huggingface.co/RabiatS at a pinned commit
 │
 ├── case-studies/            # Detailed case study pages
 │   ├── case-study.html                 # Magic Mitts haptic VR glove
@@ -67,6 +75,17 @@ Rabiat-Personal-Portfolio/
 - **Signal Lab**: hidden easter egg — type `build` on the homepage, or triple-tap the scroll cue on mobile
 - **Smooth Animations**: CSS transitions and JavaScript-powered animations throughout
 - **Accessibility**: ARIA labels, keyboard navigation, reduced-motion support, and a real focus-trapped mobile menu
+
+## Adding a Lab Model
+
+Every Lab page shares one frame (`lab/frame/`): before anything downloads it says where the model will run (GPU through WebGPU, or CPU through WebAssembly) and how big it is, and it refuses to download a model that is too big for the device. Models run with [Transformers.js](https://huggingface.co/docs/transformers.js) (pinned in `lab/models.json`), are served from copies on Rabiat's Hugging Face account pinned to a commit, and stay cached in the browser after the first visit.
+
+1. Add an entry to `lab/models.json`: slug, name, blurb, `try` line, `added` date, licence, upstream, `source` repo and sha, the `files` it needs with byte sizes, and `variants` (first one that fits the device wins; `tier` is `gpu` or `cpu`, optional `phone`, `device`, `dtype`, `memMB`). Open licences only.
+2. `python3 tools-mirror-model.py --slug <slug> --dry-run`, then without `--dry-run`. It uploads to `RabiatS/<repo>` and writes `mirror.sha` back.
+3. Make `lab/<slug>/` with `index.html`, `app.js` (calls `mountLab()` from `lab/frame/frame.js`) and `adapter.js` (`load`, optional `warm`, `run`; it runs inside the worker).
+4. `python3 tools-regen-lab.py` to update the Lab tab. It refuses to run without a mirror sha, sizes, a page, or with an em dash anywhere.
+
+Test overrides on any Lab page: `?tier=cpu` forces the WebAssembly path, `?budget=<MB>` pretends the device has that much room (use `?budget=1` to see the too-big message).
 
 ## Adding a New Project
 

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Moonshine · Rabiat's Lab</title>
+  <meta name="description" content="Talk, and your words appear as you say them. Moonshine is speech to text small enough for a phone, running in your browser. Your voice is never uploaded.">
+  <meta property="og:title" content="Moonshine · Rabiat's Lab" />
+  <meta property="og:description" content="Talk, and your words appear as you say them. Runs in your browser; your voice is never uploaded." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <style>
+    body { background: radial-gradient(1100px 600px at 50% 0%, #161616, var(--r-void) 70%) fixed; }
+    main { max-width: 980px; }
+
+    .empty { min-height: calc(100vh - 150px); display: grid; place-items: center; text-align: center; padding: 20px 0 60px; }
+    body.live .empty { display: none; }
+    .empty h1 { font: 700 clamp(44px, 8vw, 88px)/.92 var(--f-display); text-transform: uppercase; margin: 0; }
+    .empty .keys { margin: 16px auto 0; color: var(--muted); font-size: 16px; max-width: 460px; }
+    .empty .acts { display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+
+    .lines { list-style: none; margin: 0; padding: 24px 0 170px; font: 600 clamp(26px, 4.2vw, 46px)/1.22 var(--f-display); letter-spacing: .005em; }
+    .line { margin: 0 0 .55em; color: var(--text); transition: color .4s; scroll-margin-bottom: 120px; }
+    .line.live { color: var(--muted); }
+    /* inline-block, and no held end state: Safari can leave a filter stuck on inline text */
+    .line .w { display: inline-block; }
+    .line .w.new { animation: w-in .45s ease-out backwards; }
+    @keyframes w-in { from { opacity: 0; filter: blur(8px); } }
+    .line .ms { font: 500 12px var(--f-mono); color: var(--subtle); margin-left: 12px; letter-spacing: 0; vertical-align: .35em; }
+    .line.live::after { content: ''; display: inline-block; width: .08em; height: .9em; margin-left: .12em; vertical-align: -.1em; background: var(--muted); animation: blink 1s steps(2) infinite; }
+    .line.waiting::after { display: none; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .hint { font: 13px var(--f-mono); color: var(--muted); padding-top: 24px; }
+
+    .dock .lvl { width: 72px; margin: 0 10px; }
+    .dock .lvl > i { transition: width .06s linear; }
+    @media (max-width: 520px) { .dock { flex-wrap: nowrap; } .dock .lvl { width: 36px; margin: 0 6px; } .dock .btn { padding: 8px 9px; } }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">Moonshine</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Speech to text, on a phone</h4>
+        <p>Moonshine is built to transcribe speech on small devices. Here it listens while you talk and rewrites the line as it hears more, then settles it when you pause.</p>
+        <p>The sample is from John F. Kennedy's 1961 inaugural address (public domain).</p>
+        <p class="fine">Runs on your device. Your voice is never uploaded. English only.</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <main>
+    <section class="empty" id="empty">
+      <div>
+        <h1>Say something</h1>
+        <p class="keys">Press Start and talk. Your words show up as you say them.</p>
+        <div class="acts" data-needs-model>
+          <button class="btn primary lg" id="startBig">Start</button>
+          <button class="btn quiet lg" id="sampleBig">Play a sample</button>
+        </div>
+        <p class="lab-gate" id="gate">&nbsp;</p>
+      </div>
+    </section>
+    <ol class="lines" id="lines" aria-label="Transcript"></ol>
+    <div class="sr" aria-live="polite" id="said"></div>
+  </main>
+
+  <div class="dock" id="dock" hidden>
+    <button class="btn primary" id="start">Stop</button>
+    <span class="bar lvl" aria-hidden="true"><i id="level"></i></span>
+    <button class="btn" id="sample">Sample</button>
+    <span class="sep"></span>
+    <button class="btn" id="copy">Copy</button>
+    <button class="btn" id="clear">Clear</button>
+  </div>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
