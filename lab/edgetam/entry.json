@@ -1,0 +1,71 @@
+{
+  "slug": "edgetam",
+  "name": "EdgeTAM",
+  "maker": "Meta",
+  "kind": "Vision",
+  "task": "Cut-outs",
+  "released": "2025-04",
+  "added": "2026-10-05",
+  "blurb": "Meta's on-device take on Segment Anything 2. Tap anything in a photo and it lifts out as a clean cut-out, ready to drop into a game or a VR scene.",
+  "try": "Tap anything in a photo to lift it out.",
+  "params": "10M",
+  "license": {
+    "id": "Apache-2.0",
+    "name": "Apache 2.0",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0",
+    "text": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  },
+  "upstream": {
+    "name": "EdgeTAM, by Chong Zhou and team (Meta Reality Labs, NTU)",
+    "url": "https://github.com/facebookresearch/EdgeTAM",
+    "baseModel": "facebook/EdgeTAM"
+  },
+  "permissions": [],
+  "source": {
+    "repo": "onnx-community/EdgeTAM-ONNX",
+    "sha": "9c77c7bff7fd0f3079585fa17af7f730ddc531ed"
+  },
+  "mirror": {"repo": "RabiatS/edgetam-web", "sha": null},
+  "files": {
+    "config.json": 38676,
+    "preprocessor_config.json": 720,
+    "onnx/vision_encoder_fp16.onnx": 167617,
+    "onnx/vision_encoder_fp16.onnx_data": 9739536,
+    "onnx/prompt_encoder_mask_decoder_fp16.onnx": 229799,
+    "onnx/prompt_encoder_mask_decoder_fp16.onnx_data": 10454016,
+    "onnx/vision_encoder.onnx": 192225,
+    "onnx/vision_encoder.onnx_data": 19532576,
+    "onnx/prompt_encoder_mask_decoder.onnx": 213114,
+    "onnx/prompt_encoder_mask_decoder.onnx_data": 20958208
+  },
+  "variants": [
+    {
+      "tier": "gpu",
+      "device": "webgpu",
+      "dtype": "fp16",
+      "memMB": 240,
+      "files": [
+        "config.json",
+        "preprocessor_config.json",
+        "onnx/vision_encoder_fp16.onnx",
+        "onnx/vision_encoder_fp16.onnx_data",
+        "onnx/prompt_encoder_mask_decoder_fp16.onnx",
+        "onnx/prompt_encoder_mask_decoder_fp16.onnx_data"
+      ]
+    },
+    {
+      "tier": "cpu",
+      "device": "wasm",
+      "dtype": "fp32",
+      "memMB": 300,
+      "files": [
+        "config.json",
+        "preprocessor_config.json",
+        "onnx/vision_encoder.onnx",
+        "onnx/vision_encoder.onnx_data",
+        "onnx/prompt_encoder_mask_decoder.onnx",
+        "onnx/prompt_encoder_mask_decoder.onnx_data"
+      ]
+    }
+  ]
+}

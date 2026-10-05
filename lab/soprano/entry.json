@@ -1,0 +1,76 @@
+{
+  "slug": "soprano",
+  "name": "Soprano",
+  "maker": "Eugene Kwek",
+  "kind": "Audio",
+  "task": "Text to speech",
+  "released": "2026-01",
+  "added": "2026-10-05",
+  "blurb": "Type a sentence and hear it read aloud, in a clear and natural voice. It is small enough to run in a browser tab and starts talking before it has finished the sentence.",
+  "try": "Type a sentence, hear it spoken.",
+  "params": "80M",
+  "license": {
+    "id": "Apache-2.0",
+    "name": "Apache 2.0",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0",
+    "text": "https://raw.githubusercontent.com/ekwek1/soprano/main/LICENSE"
+  },
+  "upstream": {
+    "name": "Soprano 1.1 80M, by Eugene Kwek",
+    "url": "https://github.com/ekwek1/soprano",
+    "baseModel": "ekwek/Soprano-1.1-80M"
+  },
+  "permissions": [],
+  "runtime": "ort",
+  "source": {
+    "repo": "KevinAHM/soprano-1.1-onnx",
+    "sha": "ad2dfcc6948048555906085b7efd159c169dbded"
+  },
+  "mirror": {
+    "repo": "RabiatS/soprano-1.1-web",
+    "sha": null
+  },
+  "files": {
+    "tokenizer.json": 1630675,
+    "tokenizer_config.json": 1366848,
+    "onnx/soprano_backbone_kv_int8.onnx": 80938986,
+    "onnx/soprano_decoder_fp32.onnx": 262812,
+    "onnx/soprano_decoder_fp32.onnx.data": 121503744,
+    "onnx/soprano_decoder_int8.onnx": 30793092
+  },
+  "variants": [
+    {
+      "tier": "cpu",
+      "phone": false,
+      "device": "wasm",
+      "dtype": {
+        "backbone": "q8",
+        "decoder": "fp32"
+      },
+      "memMB": 560,
+      "files": [
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "onnx/soprano_backbone_kv_int8.onnx",
+        "onnx/soprano_decoder_fp32.onnx",
+        "onnx/soprano_decoder_fp32.onnx.data"
+      ]
+    },
+    {
+      "tier": "cpu",
+      "device": "wasm",
+      "dtype": {
+        "backbone": "q8",
+        "decoder": "q8"
+      },
+      "memMB": 380,
+      "files": [
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "onnx/soprano_backbone_kv_int8.onnx",
+        "onnx/soprano_decoder_int8.onnx"
+      ]
+    }
+  ],
+  "usesTransformers": true
+}

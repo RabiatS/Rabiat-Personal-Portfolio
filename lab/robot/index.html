@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Push the robot · Rabiat's Lab</title>
+  <meta name="description" content="A humanoid robot that taught itself to walk, simulated live in your browser. Shove it and watch it catch its balance. Nothing is uploaded.">
+  <meta property="og:title" content="Push the robot · Rabiat's Lab" />
+  <meta property="og:description" content="A walking humanoid, simulated in your browser. Shove it and watch it catch itself." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <!-- three.js loads only after Start, pinned -->
+  <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js" } }</script>
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    body { background: var(--r-void); }
+    #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; opacity: 0; transition: opacity .8s; }
+    body.live #scene { opacity: 1; }
+    #scene.can-grab { cursor: grab; }
+    #scene.grabbing { cursor: grabbing; }
+
+    /* Before anything loads: a floor in perspective, drawn in CSS */
+    .floor {
+      position: fixed; left: -60%; right: -60%; bottom: 0; height: 100%; pointer-events: none;
+      background:
+        repeating-linear-gradient(90deg, rgba(245,245,240,.10) 0 1px, transparent 1px 72px),
+        repeating-linear-gradient(0deg, rgba(245,245,240,.10) 0 1px, transparent 1px 72px);
+      background-position: center bottom;
+      transform: perspective(600px) rotateX(64deg); transform-origin: 50% 100%;
+      -webkit-mask-image: radial-gradient(55% 75% at 50% 100%, #000 15%, transparent 100%);
+      mask-image: radial-gradient(55% 75% at 50% 100%, #000 15%, transparent 100%);
+      transition: opacity .8s;
+    }
+    body.live .floor, body.live .intake { opacity: 0; pointer-events: none; }
+
+    .intake {
+      position: fixed; inset: 0; display: grid; place-items: center; text-align: center; padding: 90px 20px 60px;
+      transition: opacity .5s;
+    }
+    .intake h1 { font: 700 clamp(46px, 9vw, 96px)/.9 var(--f-display); text-transform: uppercase; margin: 0; letter-spacing: .005em; }
+    .intake .keys { margin: 16px auto 0; color: var(--muted); font-size: 16px; max-width: 430px; }
+    .intake .acts { display: flex; gap: 12px; justify-content: center; margin-top: 28px; }
+
+    .top.float { z-index: 30; } /* the (i) opens over the dock and the stick */
+    .hint {
+      position: fixed; left: 16px; right: 16px; bottom: calc(max(18px, env(safe-area-inset-bottom)) + 62px); z-index: 15;
+      text-align: center; font: 12.5px var(--f-mono); color: var(--muted); pointer-events: none;
+      transition: opacity .6s; text-shadow: 0 1px 10px rgba(0,0,0,.8);
+    }
+    .hint.gone { opacity: 0; }
+    .dock .val { font: 11.5px var(--f-mono); color: var(--muted); padding: 0 10px 0 6px; white-space: nowrap; min-width: 9.5em; }
+
+    /* A thumbstick for phones and tablets */
+    .stick {
+      position: fixed; left: 18px; bottom: calc(max(18px, env(safe-area-inset-bottom)) + 66px); z-index: 20;
+      width: 108px; height: 108px; border-radius: 50%; touch-action: none;
+      border: 1px solid var(--border-strong); background: rgba(20,20,20,.5);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }
+    .stick i {
+      position: absolute; left: 50%; top: 50%; width: 42px; height: 42px; margin: -21px 0 0 -21px; border-radius: 50%;
+      background: var(--r-bone); opacity: .85; transition: transform .12s ease-out;
+    }
+    .stick.on { border-color: var(--teal); }
+    .stick.on i { transition: none; }
+    .touch { display: none; }
+    @media (hover: none) { .mouse { display: none; } .touch { display: inline; } }
+    @media (hover: none) { .hint { bottom: calc(max(18px, env(safe-area-inset-bottom)) + 186px); left: 18px; text-align: left; } }
+    @media (max-width: 520px) {
+      .dock { flex-wrap: nowrap; }
+      .dock .btn { padding: 8px 10px; }
+      .dock .val { min-width: 0; padding: 0 6px 0 2px; }
+    }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <canvas id="scene" aria-label="A walking robot. Drag it to push it."></canvas>
+  <div class="floor" aria-hidden="true"></div>
+
+  <section class="intake" id="intake">
+    <div>
+      <h1>Push the robot</h1>
+      <p class="keys">A humanoid that taught itself to walk. Shove it and watch it catch itself.</p>
+      <div class="acts" data-needs-model>
+        <button class="btn primary lg" id="start">Wake it up</button>
+      </div>
+      <p class="lab-gate" id="gate">&nbsp;</p>
+    </div>
+  </section>
+
+  <header class="top float">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">G1 Walking Policy</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>A robot that learned to walk</h4>
+        <p>A Unitree G1 humanoid in a physics simulation, walked by a small neural network: about 219 thousand numbers. Fifty times a second it reads how the body is moving and sets a target for each of its 29 joints. Nobody wrote the walking. It was learned in simulation, by trial and error.</p>
+        <p>Drag the robot to push it, or press Shove. Arrow keys, or the stick on a phone, choose where it walks. Pull hard enough and it falls.</p>
+        <p class="fine">Policy by Julien Blanchon, trained with mjlab, from mjswan (Apache 2.0). Robot model and meshes by Unitree Robotics, via MuJoCo Menagerie (BSD 3-Clause). How the policy reads the robot is ported from mjswan by Tatsuki Tsujimoto. Physics: MuJoCo 3.14 (Apache 2.0). Drawing: three.js (MIT). Policy runtime: ONNX Runtime Web (MIT).</p>
+        <p class="fine">Runs on your device. Nothing is uploaded.</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <p class="hint gone" id="hint"><span class="mouse">Drag the robot to push it · arrow keys steer</span><span class="touch">Drag the robot to push it · the stick steers</span></p>
+  <div class="stick" id="stick" hidden aria-hidden="true"><i></i></div>
+
+  <div class="dock" id="dock" hidden>
+    <button class="btn" id="walk" aria-pressed="true">Walk</button>
+    <button class="btn" id="shove">Shove</button>
+    <button class="btn" id="reset">Reset</button>
+    <span class="sep"></span>
+    <span class="val" id="readout" title="Policy time per decision, and physics steps per second"></span>
+    <button class="btn" id="vr" hidden>VR</button>
+  </div>
+  <div class="sr" aria-live="polite" id="said"></div>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

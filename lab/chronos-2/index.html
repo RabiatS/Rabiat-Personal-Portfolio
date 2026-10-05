@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chronos-2 · Rabiat's Lab</title>
+  <meta name="description" content="Pick a series of numbers and watch Chronos-2 forecast what comes next, with a band for how sure it is. It runs in your browser; your data is never uploaded.">
+  <meta property="og:title" content="Chronos-2 · Rabiat's Lab" />
+  <meta property="og:description" content="Pick a series and watch the forecast fan out. Runs in your browser; your data is never uploaded." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <style>
+    body { background: radial-gradient(1200px 640px at 70% 30%, #12171a, var(--r-void) 70%) fixed; }
+    main { max-width: 1180px; }
+
+    .head { display: flex; align-items: flex-end; gap: 16px; padding: 18px 0 8px; min-height: 92px; }
+    .head h1 { font: 700 clamp(34px, 5.4vw, 60px)/.92 var(--f-display); text-transform: uppercase; margin: 0; letter-spacing: .005em; }
+    .head .sub { font: 12.5px var(--f-mono); color: var(--muted); margin-top: 10px; }
+    .head .spacer { flex: 1; }
+    .readout { font: 12.5px/1.5 var(--f-mono); color: var(--muted); text-align: right; white-space: nowrap; min-height: 38px; }
+    .readout b { display: block; font: 500 20px/1.2 var(--f-mono); color: var(--text); }
+    .readout b.f { color: var(--teal); }
+
+    .plot { position: relative; }
+    .stage { position: relative; height: clamp(300px, 56vh, 540px); margin: 0 -8px; }
+    #chart { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; cursor: crosshair; }
+    .ask {
+      position: absolute; top: 0; bottom: 30px; right: 0; display: grid; place-items: center; text-align: center;
+      padding: 0 12px; pointer-events: none;
+    }
+    .ask > div { pointer-events: auto; }
+    .ask .lab-gate { max-width: 260px; margin-inline: auto; }
+    body.forecasting .ask { display: none; }
+    /* Too big for this device: the reason sits under the chart, not on it */
+    .lab-blocked .ask { position: static; display: block; padding: 18px 0 0; }
+
+    .controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 18px 0 0; }
+    .controls .btn { font-size: 13px; padding: 8px 13px; }
+    .controls .btn.choice { background: transparent; border-color: transparent; color: var(--muted); }
+    .controls .btn.choice:hover:not(:disabled) { color: var(--text); background: var(--surface-2); }
+    .controls .btn.choice.is-selected { color: var(--text); }
+    .controls .spacer { flex: 1; }
+    .horizon { display: flex; align-items: center; gap: 10px; }
+    .horizon .lbl { font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+    .horizon input { width: 180px; }
+    .horizon .val { font: 12.5px var(--f-mono); color: var(--text-2); min-width: 86px; }
+    select.col {
+      font: 12.5px var(--f-mono); color: var(--text); background: var(--r-void); border: 1px solid var(--border-strong);
+      border-radius: 6px; padding: 6px 8px; max-width: 180px;
+    }
+    .drop-over #chart { opacity: .5; }
+    .legend { display: flex; gap: 18px; font: 11.5px var(--f-mono); color: var(--muted); padding: 10px 0 0; flex-wrap: wrap; }
+    .legend i { display: inline-block; width: 18px; height: 2px; vertical-align: middle; margin-right: 7px; background: var(--r-bone); }
+    .legend i.m { background: var(--teal); }
+    .legend i.b { height: 10px; background: rgba(94, 234, 212, .22); border-radius: 2px; }
+    body:not(.forecasting) .legend .fc { display: none; }
+
+    @media (max-width: 700px) {
+      .head { flex-wrap: wrap; min-height: 0; }
+      .readout { text-align: left; width: 100%; min-height: 0; }
+      .readout b { display: inline; font-size: 15px; margin-right: 8px; }
+      .stage { height: 46vh; min-height: 280px; margin: 0 -4px; }
+      .ask { position: static; display: block; padding: 18px 0 0; }
+      .controls { gap: 4px; }
+      .horizon { width: 100%; padding-top: 8px; }
+      .horizon input { flex: 1; width: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">Chronos-2</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Forecasting, untrained</h4>
+        <p>Chronos-2 reads up to the last 512 values of a series and says what probably comes next: a middle line, and a band where 8 in 10 outcomes should land (the 10th to 90th percentile).</p>
+        <p>I once hand-built a stock trend predictor out of moving averages and linear regression, tuned for that one stock. This model needs no training on your data at all; it has learned what series in general tend to do.</p>
+        <p>Steps, café and power are made up on this page. The CO₂ record is NOAA's monthly mean at Mauna Loa Observatory, 1985 to 2026 (gml.noaa.gov, public domain). Drop in a CSV to try your own.</p>
+        <p class="fine">Runs on your device. Your data is never uploaded.</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <main>
+    <section class="head">
+      <div>
+        <h1 id="name">&nbsp;</h1>
+        <div class="sub" id="sub">&nbsp;</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="readout" id="readout" aria-live="polite"></div>
+    </section>
+
+    <section class="plot">
+      <div class="stage" id="stage">
+        <canvas id="chart" aria-label="Chart of the series and its forecast"></canvas>
+      </div>
+      <div class="ask" id="ask">
+        <div>
+          <button class="btn primary lg" id="go" data-needs-model>Forecast</button>
+          <p class="lab-gate" id="gate">&nbsp;</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="legend" aria-hidden="true">
+      <span><i></i>What happened</span>
+      <span class="fc"><i class="m"></i>Most likely</span>
+      <span class="fc"><i class="b"></i>8 in 10 chance</span>
+    </div>
+
+    <div class="controls">
+      <div id="choices" role="group" aria-label="Series"></div>
+      <button class="btn choice" id="yours">Your data</button>
+      <input type="file" id="file" accept=".csv,.tsv,.txt,text/csv,text/plain" hidden>
+      <select class="col" id="col" aria-label="Column" hidden></select>
+      <div class="spacer"></div>
+      <div class="horizon" data-needs-model>
+        <span class="lbl">Ahead</span>
+        <input type="range" id="horizon" min="4" max="64" value="30" aria-label="How far ahead to forecast">
+        <span class="val" id="hval"></span>
+      </div>
+    </div>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

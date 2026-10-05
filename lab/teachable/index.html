@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Teach by example · Rabiat's Lab</title>
+  <meta name="description" content="Teach an image model two things with a few examples from your camera or photos, then watch it tell them apart live. SigLIP 2 runs in your browser; nothing is uploaded.">
+  <meta property="og:title" content="Teach by example · Rabiat's Lab" />
+  <meta property="og:description" content="Show it a few examples of two things and it tells them apart live. Runs in your browser; nothing is uploaded." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <style>
+    body { background: radial-gradient(1100px 640px at 30% 20%, #161616, var(--r-void) 70%) fixed; }
+    main { max-width: 1120px; }
+
+    .work { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 40px; align-items: start; padding-top: 12px; }
+
+    /* ---------- what it sees ---------- */
+    .eye { position: sticky; top: 16px; }
+    .feed {
+      position: relative; aspect-ratio: 1; border-radius: 14px; overflow: hidden;
+      background: var(--surface); border: 1px solid var(--border-strong);
+      transition: box-shadow .25s, border-color .25s;
+    }
+    .feed video, .feed canvas, .feed img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .feed video.mirror { transform: scaleX(-1); }
+    .feed.snap { box-shadow: 0 0 0 3px rgba(245,245,240,.55); }
+    .feed .start {
+      position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px;
+      background: radial-gradient(420px 320px at 50% 40%, #1b1b1b, var(--surface));
+    }
+    .feed .start h1 { font: 700 clamp(36px, 5vw, 52px)/.92 var(--f-display); text-transform: uppercase; margin: 0; }
+    .feed .start p.keys { color: var(--muted); margin: 12px auto 0; max-width: 300px; font-size: 15px; }
+    .feed .start .acts { display: flex; flex-direction: column; gap: 10px; align-items: center; margin-top: 22px; }
+    .feed .start .lab-gate { max-width: 300px; margin-inline: auto; }
+    body.live .feed .start { display: none; }
+    .feed .call {
+      position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 18px 14px;
+      background: linear-gradient(transparent, rgba(10,10,10,.82));
+      display: flex; align-items: baseline; gap: 10px; pointer-events: none;
+      opacity: 0; transition: opacity .25s;
+    }
+    .feed .call.on { opacity: 1; }
+    .feed .call b { font: 700 34px/1 var(--f-display); text-transform: uppercase; letter-spacing: .01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .feed .call span { font: 13px var(--f-mono); color: var(--muted); }
+    .feed .live-btn { position: absolute; top: 12px; right: 12px; }
+
+    .props { display: flex; align-items: center; gap: 4px; margin-top: 12px; flex-wrap: wrap; }
+    .props .lbl { font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding-right: 6px; }
+    .props .btn { background: transparent; border-color: transparent; color: var(--muted); font-size: 13px; padding: 7px 11px; }
+    .props .btn:hover:not(:disabled) { color: var(--text); background: var(--surface-2); }
+    .props .btn.is-selected { color: var(--text); }
+    .props .em { font-size: 17px; line-height: 1; text-transform: none; }
+
+    .bars { margin-top: 18px; display: grid; gap: 12px; }
+    .barrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; }
+    .barrow .nm { font: 600 15px var(--f-display); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color .2s; }
+    .barrow .pc { font: 13px var(--f-mono); color: var(--muted); }
+    .barrow .track { grid-column: 1 / -1; height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+    .barrow .track i { display: block; height: 100%; width: 0; background: var(--r-ash); border-radius: 4px; transition: width .18s ease-out, background-color .2s; }
+    .barrow.best .nm, .barrow.best .pc { color: var(--text); }
+    .barrow.best .track i { background: var(--r-bone); }
+    .hint { font: 12.5px/1.5 var(--f-mono); color: var(--muted); margin-top: 14px; min-height: 19px; }
+
+    /* ---------- the classes ---------- */
+    .classes { display: grid; gap: 14px; }
+    .cls {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 14px 12px;
+      transition: border-color .2s;
+    }
+    .cls.over { border-color: var(--r-bone); }
+    .cls-head { display: flex; align-items: center; gap: 8px; }
+    .cls-name {
+      flex: 1; min-width: 0; border: 1px solid transparent !important; background: transparent !important;
+      font: 700 22px/1.1 var(--f-display) !important; letter-spacing: .02em; text-transform: uppercase; color: var(--text) !important;
+      padding: 4px 6px !important; margin-left: -6px; border-radius: 6px !important;
+    }
+    .cls-name:hover { border-color: var(--border-strong) !important; }
+    .cls-name:focus { border-color: var(--r-bone) !important; }
+    .cls-n { font: 12.5px var(--f-mono); color: var(--muted); white-space: nowrap; }
+    .thumbs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 10px 0 12px; min-height: 56px; align-items: center; }
+    .thumbs::-webkit-scrollbar { display: none; }
+    .thumbs canvas, .thumbs img { flex: none; width: 56px; height: 56px; border-radius: 8px; object-fit: cover; display: block; background: var(--surface-2); }
+    .thumbs .new { animation: pop .28s ease-out; }
+    @keyframes pop { from { transform: scale(.4); opacity: 0; } }
+    .thumbs .empty { font: 12.5px var(--f-mono); color: var(--subtle); padding-left: 2px; }
+    .cls-acts { display: flex; gap: 8px; align-items: center; }
+    .hold { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    .hold[aria-pressed="true"] { background: var(--r-midnight); border-color: var(--r-bone); }
+    .cls-acts .spacer { flex: 1; }
+    .more { justify-self: start; }
+    .lab-blocked .thumbs .empty { visibility: hidden; }
+
+    @media (max-width: 820px) {
+      .work { grid-template-columns: 1fr; gap: 18px; padding-top: 0; }
+      .eye { position: static; max-width: 460px; width: 100%; margin: 0 auto; }
+      /* On a phone everything fits on one screen: the feed, the bars, and the classes side by side */
+      .classes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .bars { margin-top: 12px; gap: 8px; }
+      .hint { margin-top: 10px; }
+    }
+    @media (max-width: 560px) {
+      .feed { aspect-ratio: 4 / 3; }
+      .feed .start { padding: 14px; }
+      .feed .start h1 { font-size: 30px; }
+      .feed .start p.keys { display: none; }
+      .feed .start .acts { margin-top: 14px; gap: 4px; }
+      .feed .start .lab-gate { margin-top: 8px; }
+      .feed .call { padding: 28px 14px 10px; }
+      .feed .call b { font-size: 26px; }
+      .props { margin-top: 8px; }
+      .cls { padding: 10px 10px 8px; }
+      .cls-head { flex-wrap: wrap; gap: 0 8px; }
+      .cls-name { font-size: 17px !important; width: 100%; flex: none; }
+      .cls-n { font-size: 11.5px; }
+      .thumbs { margin: 6px 0 8px; min-height: 40px; gap: 4px; }
+      .thumbs canvas, .thumbs img { width: 40px; height: 40px; border-radius: 6px; }
+      .thumbs .empty { font-size: 11px; }
+      .cls-acts { flex-wrap: wrap; gap: 2px 4px; }
+      .cls-acts .hold { flex: 1 0 100%; justify-content: center; }
+      .cls-acts .spacer { display: none; }
+      .cls-acts .btn.sm { padding: 6px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">Teach it by example</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Teach by example</h4>
+        <p>Google's Teachable Machine (2017) let anyone teach a computer with a webcam and no code. I found the idea in December 2025 and rebuilt it here on SigLIP 2, a newer image model.</p>
+        <p>The model turns each picture into 768 numbers. Your examples stay in this page as those numbers. Each new frame is compared with them, after taking away what they all share (the room, the light), and goes to the class it sits closest to. Nothing is trained or uploaded; a few examples are enough.</p>
+        <p>The practice camera draws a pretend scene, for when you have no camera or would rather not. Photos you drop on a class teach it too; drop one on the picture to test it.</p>
+        <p class="fine">Runs on your device. Your camera and photos never leave it.</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <main>
+    <div class="work">
+      <section class="eye" aria-label="What the model sees">
+        <div class="feed" id="feed">
+          <video id="video" class="mirror" playsinline muted hidden></video>
+          <canvas id="practice" hidden></canvas>
+          <img id="still" alt="Your test photo" hidden>
+          <div class="call" id="call" aria-live="polite"><b id="callName"></b><span id="callPc"></span></div>
+          <button class="btn sm live-btn" id="liveBtn" hidden>Live</button>
+          <div class="start" id="start">
+            <div>
+              <h1>Teach it two things</h1>
+              <p class="keys">Show it a few examples of each. Then it guesses, live.</p>
+              <div class="acts" data-needs-model>
+                <button class="btn primary lg" id="camBtn">Start camera</button>
+                <button class="btn quiet" id="practiceBtn">Use the practice camera</button>
+              </div>
+              <p class="lab-gate" id="gate">&nbsp;</p>
+            </div>
+          </div>
+        </div>
+        <div class="props" id="props" hidden>
+          <span class="lbl">Hold up</span>
+        </div>
+        <div class="bars" id="bars" aria-label="How sure it is"></div>
+        <p class="hint" id="hint"></p>
+      </section>
+
+      <section aria-label="Classes">
+        <div class="classes" id="classes"></div>
+        <button class="btn quiet more" id="addClass" data-needs-model>Add a class</button>
+      </section>
+    </div>
+  </main>
+
+  <template id="clsTpl">
+    <article class="cls">
+      <div class="cls-head">
+        <input type="text" class="cls-name" maxlength="24" aria-label="Class name" spellcheck="false">
+        <span class="cls-n">0</span>
+      </div>
+      <div class="thumbs"><span class="empty">Drop photos here, or hold below</span></div>
+      <div class="cls-acts">
+        <button class="btn hold" data-needs-model>Hold to add</button>
+        <label class="btn quiet sm pick" data-needs-model>Photos<input type="file" accept="image/*" multiple hidden></label>
+        <span class="spacer"></span>
+        <button class="btn quiet sm clear">Clear</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

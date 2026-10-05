@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Search my work · Rabiat's Lab</title>
+  <meta name="description" content="Search everything Rabiat has built and written by what you mean, not the exact words. A 23M-parameter model from MongoDB runs in your browser; nothing you type is uploaded.">
+  <meta property="og:title" content="Search my work · Rabiat's Lab" />
+  <meta property="og:description" content="Search by meaning, not keywords. The model runs in your browser; nothing you type is uploaded." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <style>
+    body { background: radial-gradient(1000px 520px at 20% 0%, #171717, var(--r-void) 72%) fixed; }
+    main { max-width: 820px; }
+
+    /* The search sits low and big until there is something to show, then rises. */
+    .hero { padding-top: max(40px, 16vh); transition: padding-top .5s cubic-bezier(.2,.8,.2,1); }
+    body.searching .hero { padding-top: 8px; }
+    .hero h1 {
+      font: 700 clamp(44px, 8vw, 84px)/.92 var(--f-display); text-transform: uppercase; margin: 0 0 22px;
+      max-height: 2em; overflow: hidden; transition: max-height .45s, opacity .3s, margin .45s;
+    }
+    body.searching .hero h1 { max-height: 0; opacity: 0; margin-bottom: 0; }
+
+    .field { position: relative; display: block; }
+    .field input {
+      width: 100%; appearance: none; -webkit-appearance: none; border: 0; border-bottom: 1px solid var(--border-strong);
+      border-radius: 0; background: transparent; color: var(--text); padding: 10px 92px 12px 0;
+      font: 500 clamp(24px, 4.4vw, 36px)/1.2 var(--f-display); letter-spacing: .01em; outline: none;
+      transition: border-color .2s;
+    }
+    .field input::placeholder { color: var(--subtle); }
+    .field input:focus { border-bottom-color: var(--r-bone); }
+    .field input::-webkit-search-cancel-button { -webkit-appearance: none; }
+    .took {
+      position: absolute; right: 0; bottom: 15px; font: 12px var(--f-mono); color: var(--muted);
+      white-space: nowrap; opacity: 0; transition: opacity .25s;
+    }
+    .took.on { opacity: 1; }
+
+    .examples { display: flex; flex-wrap: wrap; gap: 4px 22px; margin-top: 16px; }
+    .ex {
+      appearance: none; border: 0; background: none; padding: 4px 0; cursor: pointer;
+      font: italic 16px var(--f-body); color: var(--muted); transition: color .15s;
+    }
+    .ex:hover { color: var(--text); }
+    .ex:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; border-radius: 3px; }
+    .ex.is-selected { outline-offset: 3px !important; border-radius: 0; color: var(--text); }
+    .hero .lab-gate { margin-top: 20px; }
+    body.searching .hero .lab-gate { display: none; }
+
+    /* Results: rows glide to their new rank as the meaning of the query shifts. */
+    .results { list-style: none; margin: 26px 0 0; padding: 0; position: relative; }
+    .r { position: relative; border-top: 1px solid var(--border); transition: opacity .35s; }
+    .r:last-child { border-bottom: 1px solid var(--border); }
+    .r.new { animation: r-in .5s ease-out backwards; }
+    @keyframes r-in { from { opacity: 0; filter: blur(6px); transform: translateY(6px); } }
+    .r a { display: grid; grid-template-columns: 1fr auto; gap: 2px 18px; padding: 16px 2px 17px; text-decoration: none; color: inherit; }
+    .r .meta { grid-column: 1; font: 11px/1.4 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .r .t { grid-column: 1; font: 600 clamp(22px, 3.4vw, 28px)/1.1 var(--f-display); letter-spacing: .005em; transition: color .15s; }
+    .r .s { grid-column: 1; font-size: 15px; color: var(--muted); max-width: 60ch; }
+    .r .score { grid-column: 2; grid-row: 1 / span 3; align-self: center; font: 12px var(--f-mono); color: var(--subtle); }
+    .r .out { font: 500 .7em var(--f-mono); color: var(--muted); margin-left: .35em; vertical-align: .25em; }
+    .r a:hover .t { color: #fff; }
+    .r a:hover .s { color: var(--text-2); }
+    .r a:focus-visible { outline: 2px solid var(--teal); outline-offset: -2px; border-radius: 4px; }
+    .none { font: 13px var(--f-mono); color: var(--muted); padding: 18px 0; }
+
+    @media (max-width: 600px) {
+      .hero { padding-top: max(28px, 9vh); }
+      .field input { padding-right: 52px; }
+      .took .tier { display: none; }
+      .examples { gap: 2px 16px; }
+      .ex { font-size: 15px; }
+      .r a { gap: 2px 12px; padding: 14px 0 15px; }
+      .r .s { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">mdbr-leaf-ir</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Search by meaning</h4>
+        <p>Type what you are after in your own words. A small model turns it into 768 numbers that stand for its meaning, and every project and piece of writing on this site has its own 768. The closest meanings come first, even when no words match.</p>
+        <p>I worked out the site's side ahead of time with the same model file, so your browser only has to read one line: yours. This is the model that will power an "Ask me" feature here later.</p>
+        <p class="fine">Runs on your device. What you type is never uploaded. The number on each result is how close it is, from 0 to 1.</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Search my work</h1>
+      <label class="field" data-needs-model>
+        <input id="q" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false"
+          placeholder="What are you looking for?" aria-label="Search my projects and writing">
+        <span class="took" id="took"></span>
+      </label>
+      <div class="examples" data-needs-model>
+        <button class="ex" type="button">something I can wear</button>
+        <button class="ex" type="button">maps and navigation</button>
+        <button class="ex" type="button">music</button>
+        <button class="ex" type="button">health</button>
+      </div>
+      <p class="lab-gate" id="gate">&nbsp;</p>
+    </section>
+    <ol class="results" id="results" aria-label="Results, closest first"></ol>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

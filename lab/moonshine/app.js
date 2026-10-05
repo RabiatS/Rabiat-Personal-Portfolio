@@ -2,6 +2,9 @@
 // phrases by loudness; while a phrase is still going it is re-transcribed every
 // half second or so, and when you pause it is transcribed once more and settles.
 import { mountLab, veil } from '../frame/frame.js';
+import { SAMPLES, sample, sampleUrl } from '../samples/samples.js';
+// Clean readings first; then radio from the Moon, which is much harder.
+const PLAYLIST = [...SAMPLES.filter((s) => s.kind === 'reading'), sample('apollo11-eagle.m4a')];
 
 const $ = (id) => document.getElementById(id);
 const RATE = 16000, FRAME = 512, FRAME_MS = (FRAME / RATE) * 1000;
@@ -50,16 +53,29 @@ function stopMic() {
   setListening(false);
 }
 
-let sampleBuf = null;
-async function playSample() {
+// Each press plays the next NASA clip; a file of your own plays the same way.
+const buffers = new Map();
+let nextSample = 0;
+async function playSample(file) {
   unlockAudio();
   if (mic) stopMic();
   stopSample();
   await lab.ensure();
   await graph();
-  sampleBuf ??= await ctx.decodeAudioData(await (await fetch(new URL('./sample.m4a', import.meta.url))).arrayBuffer());
+  let buf, label;
+  if (file instanceof Blob) {
+    try { buf = await ctx.decodeAudioData(await file.arrayBuffer()); }
+    catch { window.rkToast?.("That file isn't audio I can read"); return; }
+    label = file.name.replace(/\.[^.]+$/, '');
+  } else {
+    const clip = PLAYLIST[nextSample++ % PLAYLIST.length];
+    if (!buffers.has(clip.file)) buffers.set(clip.file, await ctx.decodeAudioData(await (await fetch(sampleUrl(clip))).arrayBuffer()));
+    buf = buffers.get(clip.file);
+    label = clip.label;
+  }
+  window.rkToast?.(`Playing: ${label}`);
   const src = ctx.createBufferSource();
-  src.buffer = sampleBuf;
+  src.buffer = buf;
   src.connect(node); src.connect(ctx.destination);
   src.onended = () => { if (sampleSrc === src) { sampleSrc = null; if (speaking) end(); setListening(false); } };
   sampleSrc = src;
@@ -216,7 +232,14 @@ function show(li, text) {
 
 // ---------- controls ----------
 $('startBig').addEventListener('click', startMic);
-$('sampleBig').addEventListener('click', playSample);
+$('sampleBig').addEventListener('click', () => playSample());
+$('file').addEventListener('change', (e) => { const f = e.target.files[0]; e.target.value = ''; if (f) playSample(f); });
+window.addEventListener('dragover', (e) => { if (e.dataTransfer?.types?.includes('Files')) e.preventDefault(); });
+window.addEventListener('drop', (e) => {
+  const f = [...(e.dataTransfer?.files || [])].find((x) => x.type.startsWith('audio/') || x.type.startsWith('video/'));
+  if (!f) return;
+  e.preventDefault(); playSample(f);
+});
 $('start').addEventListener('click', () => (mic ? stopMic() : startMic()));
 $('sample').addEventListener('click', () => (sampleSrc ? (stopSample(), setListening(false)) : playSample()));
 $('copy').addEventListener('click', async () => {

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AudioSeal · Rabiat's Lab</title>
+  <meta name="description" content="Hide a 16-bit ID inside a voice clip where you can't hear it, then try to scrub it off. AudioSeal runs in your browser; your voice is never uploaded.">
+  <meta property="og:title" content="AudioSeal · Rabiat's Lab" />
+  <meta property="og:description" content="Stamp a voice with a hidden ID, then try to scrub it off. Runs in your browser." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <style>
+    body { background: radial-gradient(1100px 620px at 50% 0%, #161616, var(--r-void) 70%) fixed; }
+    main { max-width: 920px; }
+    .lbl { font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+
+    .intro { text-align: center; padding: 6vh 0 30px; }
+    .intro h1 { font: 700 clamp(44px, 8vw, 88px)/.92 var(--f-display); text-transform: uppercase; margin: 0; }
+    .intro p { margin: 16px auto 0; color: var(--muted); font-size: 16px; max-width: 460px; }
+    body.stamped .intro { display: none; }
+
+    /* The ID, and what the detector reads back, as two rows of 16 dots */
+    .ledger { display: grid; grid-template-columns: 92px auto 1fr; align-items: center; gap: 12px 16px; width: max-content; max-width: 100%; margin: 0 auto; }
+    body.stamped .ledger { margin: 22px 0 0; }
+    .ledger .val { font: 13px var(--f-mono); color: var(--muted); white-space: nowrap; }
+    .ledger .val b { color: var(--text); font-weight: 500; }
+    .dots { display: flex; gap: 7px; }
+    .dots .byte { display: flex; gap: 7px; }
+    .dots .byte + .byte { margin-left: 9px; }
+    .dot { width: 15px; height: 15px; border-radius: 50%; padding: 0; background: transparent; border: 1.5px solid var(--r-bone); }
+    .dot.on { background: var(--r-bone); border-color: transparent; }
+    button.dot { cursor: pointer; transition: transform .12s, background .12s; }
+    button.dot:hover { transform: scale(1.18); }
+    button.dot:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+    .back .dot { transition: background .3s, border-color .3s, opacity .3s; }
+    .back .dot.miss { border-color: var(--subtle); }
+    .back .dot.miss.on { background: var(--subtle); border-color: transparent; }
+    .row-back[hidden] { display: none !important; }
+    .shuffle { margin-left: 6px; }
+
+    .acts { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
+    body.stamped .acts { justify-content: flex-start; margin-top: 22px; }
+    .lab-gate { text-align: center; }
+    body.stamped .lab-gate { text-align: left; }
+
+    /* The clip, coloured by where the detector hears the mark */
+    .stage { margin-top: 26px; }
+    .clipline { display: flex; justify-content: space-between; font: 12px var(--f-mono); color: var(--muted); margin-bottom: 8px; }
+    .wave { display: block; width: 100%; height: 150px; cursor: pointer; touch-action: manipulation; }
+    .listen { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .listen .ab { display: flex; gap: 6px; margin-left: 6px; }
+
+    .verdict { display: flex; align-items: baseline; gap: 28px; flex-wrap: wrap; margin-top: 26px; }
+    .verdict .say { font: 700 clamp(30px, 4.6vw, 44px)/1 var(--f-display); text-transform: uppercase; letter-spacing: .01em; }
+    .verdict .num b { display: block; font: 500 26px var(--f-mono); color: var(--text); letter-spacing: -.01em; }
+    .verdict .num { font: 12px var(--f-mono); color: var(--muted); }
+    .verdict .ms { font: 11.5px var(--f-mono); color: var(--subtle); margin-left: auto; }
+
+    .attacks { margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--border); }
+    .attacks .btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .attacks .log { font: 12px var(--f-mono); color: var(--muted); margin-top: 12px; min-height: 1.4em; }
+
+    @media (max-width: 600px) {
+      .intro { padding-top: 3vh; }
+      .ledger { grid-template-columns: auto 1fr; gap: 6px 10px; width: 100%; }
+      .ledger .lbl { grid-column: 1; }
+      .ledger .val { grid-column: 2; justify-self: end; }
+      .ledger .dots { grid-column: 1 / -1; margin-bottom: 8px; }
+      .ledger .r1:not(.dots) { grid-row: 1; } .ledger .dots.r1 { grid-row: 2; }
+      .ledger .r2:not(.dots) { grid-row: 3; } .ledger .dots.r2 { grid-row: 4; }
+      .acts .btn { min-width: 250px; justify-content: center; }
+      body.stamped .acts .btn { min-width: 0; }
+      .dots, .dots .byte { gap: 5px; }
+      .dots .byte + .byte { margin-left: 8px; }
+      .dot { width: 16px; height: 16px; }
+      .wave { height: 110px; }
+      .listen .ab { margin-left: 0; }
+      .verdict { gap: 18px; }
+      .verdict .ms { margin-left: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">AudioSeal</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>An inaudible watermark</h4>
+        <p>AudioSeal hides a 16-bit message in speech, spread so thinly you can't hear it. A second network listens for it sample by sample, so it can show which parts of a clip carry the mark, and read the message back.</p>
+        <p>Tap the dots to pick the message. Then try to break it: noise, cuts and volume barely touch it, and changing the speed wipes it out.</p>
+        <p>The sample is Neil Armstrong on the Moon, 1969 (NASA, public domain). You can also stamp your own recording or file; it never leaves your device.</p>
+        <p class="fine">Runs on your device. Your voice is never uploaded.</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>Stamp a voice</h1>
+      <p>Hide an ID in a voice clip where you can't hear it. Then try to scrub it off.</p>
+    </section>
+
+    <div class="ledger" data-needs-model>
+      <span class="lbl r1">Your ID</span>
+      <div class="dots r1" id="msg" role="group" aria-label="The 16-bit ID to hide. Each dot is a bit; filled is 1."></div>
+      <span class="val r1"><b id="hex">0x0000</b><button class="btn quiet sm shuffle" id="shuffle" title="A new random ID">Shuffle</button></span>
+      <span class="lbl r2 row-back" hidden>Read back</span>
+      <div class="dots back r2 row-back" id="back" hidden aria-label="The ID the detector reads back"></div>
+      <span class="val r2 row-back" hidden><b id="acc">0/16</b> bits</span>
+    </div>
+
+    <div class="acts" data-needs-model>
+      <button class="btn primary lg" id="stampSample">Stamp the sample</button>
+      <button class="btn lg" id="record">Record your own</button>
+      <label class="btn quiet lg" for="file">Use a file</label>
+      <input type="file" id="file" accept="audio/*" hidden>
+    </div>
+    <p class="lab-gate" id="gate">&nbsp;</p>
+
+    <section class="stage" id="stage" hidden>
+      <div class="clipline"><span id="clipName"></span><span id="clipLen"></span></div>
+      <canvas class="wave" id="wave" aria-label="The clip's waveform. Teal where the detector finds the mark."></canvas>
+      <div class="listen">
+        <button class="btn primary" id="play">Play</button>
+        <div class="ab" role="group" aria-label="What to listen to">
+          <button class="btn" data-v="orig">Original</button>
+          <button class="btn is-selected" data-v="marked" aria-pressed="true">Stamped</button>
+          <button class="btn" data-v="mark" title="Only the watermark, turned up so you can hear it">The mark</button>
+        </div>
+      </div>
+
+      <div class="verdict" aria-live="polite">
+        <span class="say" id="say">&nbsp;</span>
+        <span class="num"><b id="found">0%</b>of the clip marked</span>
+        <span class="num"><b id="bitsBig">0/16</b>bits match</span>
+        <span class="ms" id="ms"></span>
+      </div>
+
+      <div class="attacks">
+        <span class="lbl">Try to break it</span>
+        <div class="btns">
+          <button class="btn" data-attack="noise" title="Add a layer of hiss">Add noise</button>
+          <button class="btn" data-attack="cut" title="Cut a second out of the middle">Cut a second</button>
+          <button class="btn" data-attack="patch" title="Swap a second and a half back to the unmarked original">Swap a piece</button>
+          <button class="btn" data-attack="quiet" title="Halve the volume">Quieter</button>
+          <button class="btn" data-attack="fast" title="Play it 5% faster, like a sped-up recording">5% faster</button>
+          <button class="btn quiet" id="undo" disabled>Undo all</button>
+        </div>
+        <div class="log" id="log"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

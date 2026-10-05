@@ -1,0 +1,57 @@
+{
+  "slug": "strands-decider",
+  "name": "Strands Decider 2B",
+  "maker": "Strands Labs",
+  "kind": "Language",
+  "task": "Decisions",
+  "released": "2026-09",
+  "added": "2026-10-05",
+  "blurb": "A decision model: it does not write, it picks. Give it a situation and some options and it gives each one a calibrated probability in a single pass.",
+  "try": "Describe a dilemma, list your options, and see how it leans.",
+  "params": "2B",
+  "license": {
+    "id": "Apache-2.0",
+    "name": "Apache 2.0",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0",
+    "text": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  },
+  "upstream": {
+    "name": "strands-decider-2B (hobson v19), by Strands Labs",
+    "url": "https://huggingface.co/StrandsAgents/strands-decider-2B-hobson-v19",
+    "baseModel": "StrandsAgents/strands-decider-2B-hobson-v19"
+  },
+  "permissions": [],
+  "source": {
+    "repo": "onnx-community/strands-decider-2B-hobson-v19-ONNX",
+    "sha": "31a83e0244b26d939ae33f87189d6c8204003e53"
+  },
+  "mirror": {
+    "repo": "RabiatS/strands-decider-2b-web",
+    "sha": null
+  },
+  "files": {
+    "config.json": 1806,
+    "tokenizer.json": 19989592,
+    "tokenizer_config.json": 1128,
+    "onnx/model_q4f16.onnx": 527999,
+    "onnx/model_q4f16.onnx_data": 1093105664
+  },
+  "variants": [
+    {
+      "tier": "gpu",
+      "phone": false,
+      "device": "webgpu",
+      "dtype": "q4f16",
+      "memMB": 1820,
+      "files": [
+        "config.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "onnx/model_q4f16.onnx",
+        "onnx/model_q4f16.onnx_data"
+      ]
+    }
+  ],
+  "runtime": "ort",
+  "usesTransformers": true
+}

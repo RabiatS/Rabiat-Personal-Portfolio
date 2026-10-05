@@ -10,11 +10,13 @@
     {
       "slug": "depth-anything-v2",
       "name": "Depth Anything V2",
-      "kind": "Vision",
+      "maker": "HKU and TikTok",
+      "kind": "Space",
+      "task": "Depth",
+      "released": "2024-06",
+      "added": "2026-09-28",
       "blurb": "Give it any photo and it works out how far away every pixel is, so the photo tilts like a small 3D scene. Try it on your phone and move it around.",
       "try": "Drop in a photo and tilt it in 3D.",
-      "added": "2026-09-28",
-      "task": "depth-estimation",
       "params": "24.8M",
       "license": {
         "id": "Apache-2.0",
@@ -28,8 +30,14 @@
         "baseModel": "depth-anything/Depth-Anything-V2-Small-hf"
       },
       "permissions": [],
-      "source": { "repo": "onnx-community/depth-anything-v2-small", "sha": "4472b7362082ad9968fee890ca0f1e5aca36b93d" },
-      "mirror": { "repo": "RabiatS/depth-anything-v2-small-web", "sha": "9c4f2bedb817a44120dee95bdc9381f0caa516c4" },
+      "source": {
+        "repo": "onnx-community/depth-anything-v2-small",
+        "sha": "4472b7362082ad9968fee890ca0f1e5aca36b93d"
+      },
+      "mirror": {
+        "repo": "RabiatS/depth-anything-v2-small-web",
+        "sha": "9c4f2bedb817a44120dee95bdc9381f0caa516c4"
+      },
       "files": {
         "config.json": 38,
         "preprocessor_config.json": 461,
@@ -38,22 +46,41 @@
         "onnx/model_quantized.onnx": 27258801
       },
       "variants": [
-        { "tier": "gpu", "phone": false, "device": "webgpu", "dtype": "fp16", "memMB": 280,
-          "files": ["config.json", "preprocessor_config.json", "onnx/model_fp16.onnx"] },
-        { "tier": "gpu", "phone": true, "device": "webgpu", "dtype": "q4f16", "memMB": 200,
-          "files": ["config.json", "preprocessor_config.json", "onnx/model_q4f16.onnx"] },
-        { "tier": "cpu", "device": "wasm", "dtype": "q8", "memMB": 220,
-          "files": ["config.json", "preprocessor_config.json", "onnx/model_quantized.onnx"] }
+        {
+          "tier": "gpu",
+          "phone": false,
+          "device": "webgpu",
+          "dtype": "fp16",
+          "memMB": 280,
+          "files": ["config.json", "preprocessor_config.json", "onnx/model_fp16.onnx"]
+        },
+        {
+          "tier": "gpu",
+          "phone": true,
+          "device": "webgpu",
+          "dtype": "q4f16",
+          "memMB": 200,
+          "files": ["config.json", "preprocessor_config.json", "onnx/model_q4f16.onnx"]
+        },
+        {
+          "tier": "cpu",
+          "device": "wasm",
+          "dtype": "q8",
+          "memMB": 220,
+          "files": ["config.json", "preprocessor_config.json", "onnx/model_quantized.onnx"]
+        }
       ]
     },
     {
       "slug": "moonshine",
       "name": "Moonshine",
+      "maker": "Moonshine AI",
       "kind": "Audio",
+      "task": "Speech to text",
+      "released": "2024-10",
+      "added": "2026-09-28",
       "blurb": "Speech to text made small enough for a phone. Talk and your words show up as you say them. Your voice never leaves your device.",
       "try": "Talk, and your words appear as you say them.",
-      "added": "2026-09-28",
-      "task": "automatic-speech-recognition",
       "params": "27M",
       "license": {
         "id": "MIT",
@@ -67,8 +94,11 @@
         "baseModel": "UsefulSensors/moonshine-tiny"
       },
       "permissions": ["mic"],
-      "source": { "repo": "onnx-community/moonshine-tiny-ONNX", "sha": "a6da1241cd305dcd64eab1edbd615f2bb9aabb95" },
-      "mirror": { "repo": "RabiatS/moonshine-tiny-web", "sha": "c87234f11a9d0ca888b875509b6aeedbaadbcd35" },
+      "source": {
+        "repo": "onnx-community/moonshine-tiny-ONNX",
+        "sha": "a6da1241cd305dcd64eab1edbd615f2bb9aabb95"
+      },
+      "mirror": {"repo": "RabiatS/moonshine-tiny-web", "sha": "c87234f11a9d0ca888b875509b6aeedbaadbcd35"},
       "files": {
         "config.json": 921,
         "generation_config.json": 147,
@@ -79,15 +109,930 @@
         "onnx/decoder_model_merged_quantized.onnx": 20243286
       },
       "variants": [
-        { "tier": "gpu", "memMB": 300,
-          "device": { "model": "webgpu", "encoder_model": "webgpu", "decoder_model_merged": "wasm" },
-          "dtype": { "model": "fp32", "encoder_model": "fp32", "decoder_model_merged": "q8" },
-          "files": ["config.json", "generation_config.json", "preprocessor_config.json", "tokenizer.json", "tokenizer_config.json",
-                    "onnx/encoder_model.onnx", "onnx/decoder_model_merged_quantized.onnx"] },
-        { "tier": "cpu", "device": "wasm", "memMB": 290,
-          "dtype": { "model": "fp32", "encoder_model": "fp32", "decoder_model_merged": "q8" },
-          "files": ["config.json", "generation_config.json", "preprocessor_config.json", "tokenizer.json", "tokenizer_config.json",
-                    "onnx/encoder_model.onnx", "onnx/decoder_model_merged_quantized.onnx"] }
+        {
+          "tier": "gpu",
+          "memMB": 300,
+          "device": {"model": "webgpu", "encoder_model": "webgpu", "decoder_model_merged": "wasm"},
+          "dtype": {"model": "fp32", "encoder_model": "fp32", "decoder_model_merged": "q8"},
+          "files": [
+            "config.json",
+            "generation_config.json",
+            "preprocessor_config.json",
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "onnx/encoder_model.onnx",
+            "onnx/decoder_model_merged_quantized.onnx"
+          ]
+        },
+        {
+          "tier": "cpu",
+          "device": "wasm",
+          "memMB": 290,
+          "dtype": {"model": "fp32", "encoder_model": "fp32", "decoder_model_merged": "q8"},
+          "files": [
+            "config.json",
+            "generation_config.json",
+            "preprocessor_config.json",
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "onnx/encoder_model.onnx",
+            "onnx/decoder_model_merged_quantized.onnx"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "name": "gpt-oss-20b",
+      "maker": "OpenAI",
+      "kind": "Language",
+      "task": "Reasoning chat",
+      "released": "2025-08",
+      "blurb": "OpenAI's first open-weight language model since GPT-2. It reasons step by step, uses tools, and runs on a laptop with 16 GB of memory, just not inside a browser tab.",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      },
+      "why": "21 billion parameters, about 13 GB.",
+      "watch": {"url": "https://gpt-oss.com", "label": "Try the official playground"}
+    },
+    {
+      "slug": "qwen-image-edit",
+      "name": "Qwen-Image-Edit",
+      "maker": "Alibaba Qwen",
+      "kind": "Vision",
+      "task": "Image editing",
+      "released": "2025-08",
+      "blurb": "Edit a photo by describing the change: swap the background, fix the words on a sign, turn a character to face the other way.",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      },
+      "why": "20 billion parameters, tens of gigabytes.",
+      "watch": {"url": "https://qwenlm.github.io/blog/qwen-image-edit/"}
+    },
+    {
+      "slug": "trellis-2",
+      "name": "TRELLIS.2",
+      "maker": "Microsoft",
+      "kind": "Space",
+      "task": "Image to 3D",
+      "released": "2025-12",
+      "blurb": "One picture in, a textured 3D model out, ready for a game engine or a VR scene. The weights are MIT; the full pipeline also loads two helper models with their own licences.",
+      "license": {"id": "MIT", "name": "MIT", "url": "https://opensource.org/license/mit"},
+      "why": "4 billion parameters plus helper models, many gigabytes.",
+      "watch": {"url": "https://microsoft.github.io/TRELLIS.2/"}
+    },
+    {
+      "slug": "flux-2-klein",
+      "name": "FLUX.2 [klein] 4B",
+      "maker": "Black Forest Labs",
+      "kind": "Vision",
+      "task": "Image generation",
+      "released": "2026-01",
+      "blurb": "A small, fast image generator and editor from the makers of FLUX. Only the 4B size is Apache licensed; the larger one is not.",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      },
+      "why": "4 billion parameters, about 8 GB.",
+      "watch": {"url": "https://bfl.ai/blog/flux2-klein-towards-interactive-visual-intelligence"}
+    },
+    {
+      "slug": "ace-step-1-5",
+      "name": "ACE-Step 1.5",
+      "maker": "ACE Studio and StepFun",
+      "kind": "Audio",
+      "task": "Music generation",
+      "released": "2026-01",
+      "blurb": "Write a prompt and lyrics, get a full song with vocals in seconds on a good GPU.",
+      "license": {"id": "MIT", "name": "MIT", "url": "https://opensource.org/license/mit"},
+      "why": "several gigabytes of weights.",
+      "watch": {"url": "https://ace-step.github.io/ace-step-v1.5.github.io/"}
+    },
+    {
+      "slug": "voxtral-realtime",
+      "name": "Voxtral Mini 4B Realtime",
+      "maker": "Mistral AI",
+      "kind": "Audio",
+      "task": "Live transcription",
+      "released": "2026-02",
+      "blurb": "Speech to text that keeps up as you talk, in many languages. A WebGPU version exists, but it is a multi-gigabyte download, so here it is a demo instead.",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      },
+      "why": "4.4 billion parameters, several gigabytes.",
+      "watch": {"url": "https://huggingface.co/spaces/mistralai/Voxtral-Mini-Realtime"}
+    },
+    {
+      "slug": "edgetam",
+      "name": "EdgeTAM",
+      "maker": "Meta",
+      "kind": "Vision",
+      "task": "Cut-outs",
+      "released": "2025-04",
+      "added": "2026-10-05",
+      "blurb": "Meta's on-device take on Segment Anything 2. Tap anything in a photo and it lifts out as a clean cut-out, ready to drop into a game or a VR scene.",
+      "try": "Tap anything in a photo to lift it out.",
+      "params": "10M",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "text": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+      },
+      "upstream": {
+        "name": "EdgeTAM, by Chong Zhou and team (Meta Reality Labs, NTU)",
+        "url": "https://github.com/facebookresearch/EdgeTAM",
+        "baseModel": "facebook/EdgeTAM"
+      },
+      "permissions": [],
+      "source": {"repo": "onnx-community/EdgeTAM-ONNX", "sha": "9c77c7bff7fd0f3079585fa17af7f730ddc531ed"},
+      "mirror": {"repo": "RabiatS/edgetam-web", "sha": "92687711c272e0c1e5de808834406fd40bcc2e25"},
+      "files": {
+        "config.json": 38676,
+        "preprocessor_config.json": 720,
+        "onnx/vision_encoder_fp16.onnx": 167617,
+        "onnx/vision_encoder_fp16.onnx_data": 9739536,
+        "onnx/prompt_encoder_mask_decoder_fp16.onnx": 229799,
+        "onnx/prompt_encoder_mask_decoder_fp16.onnx_data": 10454016,
+        "onnx/vision_encoder.onnx": 192225,
+        "onnx/vision_encoder.onnx_data": 19532576,
+        "onnx/prompt_encoder_mask_decoder.onnx": 213114,
+        "onnx/prompt_encoder_mask_decoder.onnx_data": 20958208
+      },
+      "variants": [
+        {
+          "tier": "gpu",
+          "device": "webgpu",
+          "dtype": "fp16",
+          "memMB": 240,
+          "files": [
+            "config.json",
+            "preprocessor_config.json",
+            "onnx/vision_encoder_fp16.onnx",
+            "onnx/vision_encoder_fp16.onnx_data",
+            "onnx/prompt_encoder_mask_decoder_fp16.onnx",
+            "onnx/prompt_encoder_mask_decoder_fp16.onnx_data"
+          ]
+        },
+        {
+          "tier": "cpu",
+          "device": "wasm",
+          "dtype": "fp32",
+          "memMB": 300,
+          "files": [
+            "config.json",
+            "preprocessor_config.json",
+            "onnx/vision_encoder.onnx",
+            "onnx/vision_encoder.onnx_data",
+            "onnx/prompt_encoder_mask_decoder.onnx",
+            "onnx/prompt_encoder_mask_decoder.onnx_data"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "teleocr",
+      "name": "TeleOCR",
+      "maker": "XingChen-AGI",
+      "kind": "Vision",
+      "task": "Document reading",
+      "released": "2026-08",
+      "added": "2026-10-05",
+      "blurb": "A small vision language model that reads documents: printed pages, receipts, handwriting, tables and formulas. Point it at a photo and it writes out what it sees.",
+      "try": "Drop in a photo of a page and watch it read.",
+      "params": "1.4B",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "text": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+      },
+      "upstream": {
+        "name": "TeleOCR, by Peng Cai and team (XingChen-AGI)",
+        "url": "https://huggingface.co/XingChen-AGI/TeleOCR",
+        "baseModel": "XingChen-AGI/TeleOCR"
+      },
+      "permissions": [],
+      "source": {"repo": "stefanj0/TeleOCR-ONNX", "sha": "02bb1bedf6a9480f8f45749d4bd87c7dad0d1d6d"},
+      "mirror": {"repo": "RabiatS/teleocr-web", "sha": "1df47fdcbe4befc2607d8789001af28aa9cf4798"},
+      "files": {
+        "config.json": 3654,
+        "generation_config.json": 244,
+        "preprocessor_config.json": 502,
+        "tokenizer.json": 11421896,
+        "tokenizer_config.json": 5776,
+        "onnx/vision_encoder_q4f16.onnx": 297713,
+        "onnx/vision_encoder_q4f16.onnx_data": 1327654912,
+        "onnx/embed_tokens_q4f16.onnx": 821,
+        "onnx/embed_tokens_q4f16.onnx_data": 89946112,
+        "onnx/decoder_model_merged_q4f16.onnx": 475805,
+        "onnx/decoder_model_merged_q4f16.onnx_data": 352251904
+      },
+      "variants": [
+        {
+          "tier": "gpu",
+          "phone": false,
+          "device": "webgpu",
+          "dtype": "q4f16",
+          "memMB": 2700,
+          "files": [
+            "config.json",
+            "generation_config.json",
+            "preprocessor_config.json",
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "onnx/vision_encoder_q4f16.onnx",
+            "onnx/vision_encoder_q4f16.onnx_data",
+            "onnx/embed_tokens_q4f16.onnx",
+            "onnx/embed_tokens_q4f16.onnx_data",
+            "onnx/decoder_model_merged_q4f16.onnx",
+            "onnx/decoder_model_merged_q4f16.onnx_data"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "strands-decider",
+      "name": "Strands Decider 2B",
+      "maker": "Strands Labs",
+      "kind": "Language",
+      "task": "Decisions",
+      "released": "2026-09",
+      "added": "2026-10-05",
+      "blurb": "A decision model: it does not write, it picks. Give it a situation and some options and it gives each one a calibrated probability in a single pass.",
+      "try": "Describe a dilemma, list your options, and see how it leans.",
+      "params": "2B",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "text": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+      },
+      "upstream": {
+        "name": "strands-decider-2B (hobson v19), by Strands Labs",
+        "url": "https://huggingface.co/StrandsAgents/strands-decider-2B-hobson-v19",
+        "baseModel": "StrandsAgents/strands-decider-2B-hobson-v19"
+      },
+      "permissions": [],
+      "source": {
+        "repo": "onnx-community/strands-decider-2B-hobson-v19-ONNX",
+        "sha": "31a83e0244b26d939ae33f87189d6c8204003e53"
+      },
+      "mirror": {"repo": "RabiatS/strands-decider-2b-web", "sha": "7b8e34f6ad7495ad0cd1472648f111815e697cdc"},
+      "files": {
+        "config.json": 1806,
+        "tokenizer.json": 19989592,
+        "tokenizer_config.json": 1128,
+        "onnx/model_q4f16.onnx": 527999,
+        "onnx/model_q4f16.onnx_data": 1093105664
+      },
+      "variants": [
+        {
+          "tier": "gpu",
+          "phone": false,
+          "device": "webgpu",
+          "dtype": "q4f16",
+          "memMB": 1820,
+          "files": [
+            "config.json",
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "onnx/model_q4f16.onnx",
+            "onnx/model_q4f16.onnx_data"
+          ]
+        }
+      ],
+      "runtime": "ort",
+      "usesTransformers": true
+    },
+    {
+      "slug": "leaf-search",
+      "name": "mdbr-leaf-ir",
+      "maker": "MongoDB",
+      "kind": "Language",
+      "task": "Search",
+      "released": "2025-08",
+      "added": "2026-10-05",
+      "blurb": "A tiny search model that matches by meaning, not by keywords. Here it searches everything I have built and written, right in your browser.",
+      "try": "Search my work by what you mean.",
+      "params": "23M",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "text": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+      },
+      "upstream": {
+        "name": "LEAF IR, by Robin Vujanic and Thomas Rückstieß (MongoDB Research)",
+        "url": "https://huggingface.co/MongoDB/mdbr-leaf-ir",
+        "baseModel": "MongoDB/mdbr-leaf-ir"
+      },
+      "permissions": [],
+      "source": {"repo": "MongoDB/mdbr-leaf-ir", "sha": "4262131b32c3182bd06e67e92ae69d7bd66e0c5c"},
+      "mirror": {"repo": "RabiatS/mdbr-leaf-ir-web", "sha": "be04b15681403ef3089c9cc413e757ab3634c9ac"},
+      "files": {
+        "config.json": 829,
+        "tokenizer.json": 711661,
+        "tokenizer_config.json": 1529,
+        "onnx/model_quantized.onnx": 220597,
+        "onnx/model_quantized.onnx_data": 22954752
+      },
+      "variants": [
+        {
+          "tier": "cpu",
+          "device": "wasm",
+          "dtype": "q8",
+          "memMB": 200,
+          "files": [
+            "config.json",
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "onnx/model_quantized.onnx",
+            "onnx/model_quantized.onnx_data"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "rf-detr",
+      "name": "RF-DETR Nano",
+      "maker": "Roboflow",
+      "kind": "Vision",
+      "task": "Object detection",
+      "released": "2025-07",
+      "added": "2026-10-05",
+      "blurb": "Point a camera and it boxes and names what it sees, many times a second. A detection transformer small enough for a phone, with no clean-up pass for overlapping boxes.",
+      "try": "Point your camera and watch it name things live.",
+      "params": "30.5M",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://github.com/roboflow/rf-detr/blob/develop/LICENSE",
+        "text": "https://raw.githubusercontent.com/roboflow/rf-detr/develop/LICENSE"
+      },
+      "upstream": {
+        "name": "RF-DETR Nano, by Roboflow",
+        "url": "https://github.com/roboflow/rf-detr",
+        "baseModel": "Roboflow/rf-detr-nano"
+      },
+      "permissions": ["camera"],
+      "source": {"repo": "onnx-community/rfdetr_nano-ONNX", "sha": "eae21cee0687a91bcf9fa071605c48d7705d2d91"},
+      "mirror": {"repo": "RabiatS/rfdetr-nano-web", "sha": "ab6d4fd086eb3a0f66a8016f64a63ed115e916e6"},
+      "files": {
+        "config.json": 3213,
+        "preprocessor_config.json": 444,
+        "onnx/model_q4.onnx": 25036973,
+        "onnx/model_int8.onnx": 28825949
+      },
+      "variants": [
+        {
+          "tier": "gpu",
+          "device": "webgpu",
+          "dtype": "q4",
+          "memMB": 220,
+          "files": ["config.json", "preprocessor_config.json", "onnx/model_q4.onnx"]
+        },
+        {
+          "tier": "cpu",
+          "device": "wasm",
+          "dtype": "int8",
+          "memMB": 230,
+          "files": ["config.json", "preprocessor_config.json", "onnx/model_int8.onnx"]
+        }
+      ]
+    },
+    {
+      "slug": "dpdfnet",
+      "name": "DPDFNet",
+      "maker": "Ceva",
+      "kind": "Audio",
+      "task": "Noise removal",
+      "released": "2025-12",
+      "added": "2026-10-05",
+      "blurb": "Takes the noise out of speech: cafe chatter, fans, rain. It is small and streaming, built for earbuds and calls, and here it cleans a whole clip several times faster than it takes to play.",
+      "try": "Bury a voice in noise, then clean it back out.",
+      "params": "2.6M",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "text": "https://raw.githubusercontent.com/ceva-ip/DPDFNet/main/LICENSE"
+      },
+      "upstream": {
+        "name": "DPDFNet-2 48 kHz HR, by Daniel Rika, Nino Sapir and Ido Gus (Ceva)",
+        "url": "https://github.com/ceva-ip/DPDFNet",
+        "baseModel": "Ceva-IP/DPDFNet"
+      },
+      "permissions": ["mic"],
+      "runtime": "ort",
+      "source": {"repo": "Ceva-IP/DPDFNet", "sha": "dd6818d00f50c836fed43a6243ebe49116de5964"},
+      "mirror": {"repo": "RabiatS/dpdfnet-web", "sha": "34a483ae611480beff1f620c198b791c80cb348b"},
+      "files": {"onnx/dpdfnet2_48khz_hr.onnx": 10493337},
+      "variants": [
+        {
+          "tier": "cpu",
+          "device": "wasm",
+          "dtype": "fp32",
+          "memMB": 180,
+          "files": ["onnx/dpdfnet2_48khz_hr.onnx"]
+        }
+      ]
+    },
+    {
+      "slug": "chronos-2",
+      "name": "Chronos-2",
+      "maker": "Amazon",
+      "kind": "Data",
+      "task": "Forecasting",
+      "released": "2025-10",
+      "added": "2026-10-05",
+      "blurb": "Give it any series of numbers, steps, sales, power use, and it says what probably comes next, with a band for how sure it is. It has never seen your data and needs no training on it.",
+      "try": "Pick a series and watch the forecast fan out.",
+      "params": "120M",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "text": "https://raw.githubusercontent.com/amazon-science/chronos-forecasting/main/LICENSE"
+      },
+      "upstream": {
+        "name": "Chronos-2, by Abdul Fatir Ansari and team (Amazon)",
+        "url": "https://github.com/amazon-science/chronos-forecasting",
+        "baseModel": "amazon/chronos-2"
+      },
+      "permissions": [],
+      "runtime": "ort",
+      "source": {"repo": "TSFM-ai/chronos-2-onnx", "sha": "d999122ad90648a4f057aba78ac9e04f6c5dbb06"},
+      "mirror": {"repo": "RabiatS/chronos-2-web", "sha": "b7ce2a0ae23c759b3a05eb237971c6fcd717e554"},
+      "files": {"model.onnx": 478551180},
+      "variants": [
+        {"tier": "gpu", "device": "webgpu", "dtype": "fp32", "memMB": 1100, "files": ["model.onnx"]},
+        {"tier": "cpu", "device": "wasm", "dtype": "fp32", "memMB": 1100, "files": ["model.onnx"]}
+      ]
+    },
+    {
+      "slug": "soprano",
+      "name": "Soprano",
+      "maker": "Eugene Kwek",
+      "kind": "Audio",
+      "task": "Text to speech",
+      "released": "2026-01",
+      "added": "2026-10-05",
+      "blurb": "Type a sentence and hear it read aloud, in a clear and natural voice. It is small enough to run in a browser tab and starts talking before it has finished the sentence.",
+      "try": "Type a sentence, hear it spoken.",
+      "params": "80M",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "text": "https://raw.githubusercontent.com/ekwek1/soprano/main/LICENSE"
+      },
+      "upstream": {
+        "name": "Soprano 1.1 80M, by Eugene Kwek",
+        "url": "https://github.com/ekwek1/soprano",
+        "baseModel": "ekwek/Soprano-1.1-80M"
+      },
+      "permissions": [],
+      "runtime": "ort",
+      "source": {"repo": "KevinAHM/soprano-1.1-onnx", "sha": "ad2dfcc6948048555906085b7efd159c169dbded"},
+      "mirror": {"repo": "RabiatS/soprano-1.1-web", "sha": "a2e3752b933758963c0da7ab16d5482cdabca244"},
+      "files": {
+        "tokenizer.json": 1630675,
+        "tokenizer_config.json": 1366848,
+        "onnx/soprano_backbone_kv_int8.onnx": 80938986,
+        "onnx/soprano_decoder_fp32.onnx": 262812,
+        "onnx/soprano_decoder_fp32.onnx.data": 121503744,
+        "onnx/soprano_decoder_int8.onnx": 30793092
+      },
+      "variants": [
+        {
+          "tier": "cpu",
+          "phone": false,
+          "device": "wasm",
+          "dtype": {"backbone": "q8", "decoder": "fp32"},
+          "memMB": 560,
+          "files": [
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "onnx/soprano_backbone_kv_int8.onnx",
+            "onnx/soprano_decoder_fp32.onnx",
+            "onnx/soprano_decoder_fp32.onnx.data"
+          ]
+        },
+        {
+          "tier": "cpu",
+          "device": "wasm",
+          "dtype": {"backbone": "q8", "decoder": "q8"},
+          "memMB": 380,
+          "files": [
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "onnx/soprano_backbone_kv_int8.onnx",
+            "onnx/soprano_decoder_int8.onnx"
+          ]
+        }
+      ],
+      "usesTransformers": true
+    },
+    {
+      "slug": "teachable",
+      "name": "Teach it by example",
+      "maker": "Google",
+      "kind": "Vision",
+      "task": "Teach by example",
+      "released": "2025-02",
+      "found": {"month": "2025-12", "note": "I found the idea in December 2025."},
+      "added": "2026-10-05",
+      "blurb": "Google's Teachable Machine idea from 2017, rebuilt on a modern image model: show it a few examples of two things, and it tells them apart live. Nothing is trained on a server; it all happens in your browser.",
+      "try": "Teach it two things with a few photos, then watch it guess.",
+      "params": "93M",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "text": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+      },
+      "upstream": {
+        "name": "SigLIP 2 base, patch 16, 224 px, by Michael Tschannen and team (Google DeepMind)",
+        "url": "https://huggingface.co/google/siglip2-base-patch16-224",
+        "baseModel": "google/siglip2-base-patch16-224"
+      },
+      "permissions": ["camera"],
+      "source": {
+        "repo": "onnx-community/siglip2-base-patch16-224-ONNX",
+        "sha": "ba1f3b0843f24bc5417d38e19c37b287d719b2f4"
+      },
+      "mirror": {
+        "repo": "RabiatS/siglip2-base-patch16-224-web",
+        "sha": "463148b268aa5f614a3acae4fc6a509cd8fed0f4"
+      },
+      "files": {
+        "config.json": 435,
+        "preprocessor_config.json": 394,
+        "onnx/vision_model_fp16.onnx": 186039516,
+        "onnx/vision_model_q4f16.onnx": 54630849,
+        "onnx/vision_model_quantized.onnx": 94553333
+      },
+      "variants": [
+        {
+          "tier": "gpu",
+          "phone": false,
+          "device": "webgpu",
+          "dtype": "fp16",
+          "memMB": 560,
+          "files": ["config.json", "preprocessor_config.json", "onnx/vision_model_fp16.onnx"]
+        },
+        {
+          "tier": "gpu",
+          "phone": true,
+          "device": "webgpu",
+          "dtype": "q4f16",
+          "memMB": 290,
+          "files": ["config.json", "preprocessor_config.json", "onnx/vision_model_q4f16.onnx"]
+        },
+        {
+          "tier": "cpu",
+          "phone": false,
+          "device": "wasm",
+          "dtype": "q8",
+          "memMB": 380,
+          "files": ["config.json", "preprocessor_config.json", "onnx/vision_model_quantized.onnx"]
+        }
+      ]
+    },
+    {
+      "slug": "audioseal",
+      "name": "AudioSeal",
+      "maker": "Meta",
+      "kind": "Audio",
+      "task": "Watermarking",
+      "released": "2024-01",
+      "added": "2026-10-05",
+      "blurb": "Hides a short ID inside speech where you can't hear it, then finds it again, down to which parts of a clip carry it. Noise, cuts and volume barely touch it; a small change of speed wipes it out.",
+      "try": "Stamp a voice with a hidden ID, then try to scrub it off.",
+      "params": "23M",
+      "license": {
+        "id": "MIT",
+        "name": "MIT",
+        "url": "https://github.com/facebookresearch/audioseal/blob/main/LICENSE",
+        "text": "https://raw.githubusercontent.com/facebookresearch/audioseal/main/LICENSE"
+      },
+      "upstream": {
+        "name": "AudioSeal 16-bit, by Robin San Roman and team (Meta FAIR)",
+        "url": "https://github.com/facebookresearch/audioseal",
+        "baseModel": "facebook/audioseal"
+      },
+      "permissions": ["mic"],
+      "runtime": "ort",
+      "source": {"repo": "DarumaHQ/audioseal-onnx", "sha": "55477a4c93a98fd9c38f59173d506c7e9a803589"},
+      "mirror": {"repo": "RabiatS/audioseal-web", "sha": "341d174c698c3a219bd851d8dbc7def30085a820"},
+      "files": {"audioseal_generator_16bits.onnx": 58818989, "audioseal_detector_16bits.onnx": 34662285},
+      "variants": [
+        {
+          "tier": "gpu",
+          "device": "webgpu",
+          "dtype": "fp32",
+          "memMB": 340,
+          "files": ["audioseal_generator_16bits.onnx", "audioseal_detector_16bits.onnx"]
+        },
+        {
+          "tier": "cpu",
+          "device": "wasm",
+          "dtype": "fp32",
+          "memMB": 340,
+          "files": ["audioseal_generator_16bits.onnx", "audioseal_detector_16bits.onnx"]
+        }
+      ]
+    },
+    {
+      "slug": "aifs-2",
+      "name": "AIFS 2.0",
+      "maker": "ECMWF",
+      "kind": "Science",
+      "task": "Weather forecasting",
+      "released": "2026-01",
+      "blurb": "The machine-learning weather model from the European Centre for Medium-Range Weather Forecasts, released with open weights.",
+      "license": {
+        "id": "CC-BY-4.0",
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "why": "about 1 GB of weights and global weather data as input.",
+      "watch": {"url": "https://huggingface.co/ecmwf/aifs-single-2.0", "label": "See the model"}
+    },
+    {
+      "slug": "boltz-2",
+      "name": "Boltz-2",
+      "maker": "MIT Jameel Clinic and Recursion",
+      "kind": "Science",
+      "task": "Protein structure",
+      "released": "2025-06",
+      "blurb": "Predicts the 3D shape of proteins and how strongly a drug-like molecule binds to them, an open alternative to AlphaFold 3 for that job.",
+      "license": {"id": "MIT", "name": "MIT", "url": "https://opensource.org/license/mit"},
+      "why": "hundreds of millions of parameters and a big GPU.",
+      "watch": {"url": "https://github.com/jwohlwend/boltz", "label": "See the project"}
+    },
+    {
+      "slug": "evo-2",
+      "name": "Evo 2",
+      "maker": "Arc Institute",
+      "kind": "Science",
+      "task": "DNA",
+      "released": "2025-02",
+      "blurb": "A language model for DNA across all of life. It can predict which mutations break a gene and even write new genetic sequences.",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      },
+      "why": "1 to 40 billion parameters.",
+      "watch": {"url": "https://arcinstitute.org/tools/evo/evo-designer", "label": "Try the designer"}
+    },
+    {
+      "slug": "fourcastnet-3",
+      "name": "FourCastNet 3",
+      "maker": "NVIDIA",
+      "kind": "Science",
+      "task": "Weather forecasting",
+      "released": "2025-11",
+      "blurb": "A neural weather model that forecasts the whole planet days to weeks ahead in minutes on a single GPU, a job that takes physics models a supercomputer.",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      },
+      "why": "gigabytes of weights and global weather data as input.",
+      "watch": {"url": "https://huggingface.co/nvidia/fourcastnet3", "label": "See the model"}
+    },
+    {
+      "slug": "matrix-game-3",
+      "name": "Matrix-Game 3.0",
+      "maker": "Skywork",
+      "kind": "Space",
+      "task": "World model",
+      "released": "2026-03",
+      "blurb": "A world model: instead of a game engine, a neural network imagines the next frame of a 3D world as you move through it with the keyboard and mouse.",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      },
+      "why": "more than 5 billion parameters and a large GPU.",
+      "watch": {"url": "https://matrix-game-v3.github.io/", "label": "Watch the demo"}
+    },
+    {
+      "slug": "smolvla",
+      "name": "SmolVLA",
+      "maker": "Hugging Face",
+      "kind": "Space",
+      "task": "Robot brain",
+      "released": "2025-06",
+      "blurb": "A small vision-language-action model: it looks through a robot's cameras, reads an instruction like \"put the cube in the box\", and outputs the arm's next moves. Trained on community robot data and small enough for a gaming laptop.",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      },
+      "why": "450 million parameters, and it needs a robot or a simulator to drive.",
+      "watch": {"url": "https://huggingface.co/blog/smolvla", "label": "Read and watch"}
+    },
+    {
+      "slug": "x-vla",
+      "name": "X-VLA",
+      "maker": "Tsinghua AIR",
+      "kind": "Space",
+      "task": "Robot brain",
+      "released": "2025-11",
+      "blurb": "One model that drives many different robots, from single arms to two-armed setups, by learning a small \"prompt\" per robot body.",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      },
+      "why": "about 0.9 billion parameters plus a robot to drive.",
+      "watch": {"url": "https://thu-air-dream.github.io/X-VLA/", "label": "Watch the demo"}
+    },
+    {
+      "slug": "zuna-1-1",
+      "name": "ZUNA1.1",
+      "maker": "Zyphra",
+      "kind": "Body",
+      "task": "Brain signals",
+      "released": "2026-07",
+      "blurb": "A foundation model for EEG, the electrical signals of the brain. It can rebuild a missing electrode from the others and turn messy recordings into something models can learn from.",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+      },
+      "why": "380 million parameters, about 1.5 GB.",
+      "watch": {"url": "https://www.zyphra.com/our-work/zuna1.1", "label": "Read and watch"}
+    },
+    {
+      "slug": "robot",
+      "name": "G1 Walking Policy",
+      "maker": "Julien Blanchon and mjswan",
+      "kind": "Space",
+      "task": "Robot walking",
+      "released": "2025-10",
+      "added": "2026-10-05",
+      "blurb": "A humanoid robot that taught itself to walk in simulation, running live in your browser. Shove it and watch a small network catch its balance, fifty times a second.",
+      "try": "Shove a walking robot and watch it catch itself.",
+      "params": "219K",
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "text": "https://raw.githubusercontent.com/ttktjmt/mjswan/d5e4215d72036135299580463d7ec53558cf7d5e/LICENSE"
+      },
+      "upstream": {
+        "name": "Unitree G1 velocity policy by Julien Blanchon, trained with mjlab, published in mjswan by Tatsuki Tsujimoto (Apache 2.0). Robot model and meshes: Unitree Robotics, via Google DeepMind's MuJoCo Menagerie unitree_g1 at 4d038b3 (BSD 3-Clause). All files from huggingface.co/ttktjmt/mjswan at 40ee941",
+        "url": "https://github.com/ttktjmt/mjswan",
+        "baseModel": "ttktjmt/mjswan"
+      },
+      "permissions": [],
+      "runtime": "ort",
+      "source": {"repo": "ttktjmt/mjswan", "sha": "40ee941b03bc6ca3ce39acc00b931fd39b27b21d"},
+      "mirror": {"repo": "RabiatS/g1-walking-web", "sha": "84bbfa3dcabbeb768934e95608cc36a7f4057b8a"},
+      "mirrorExtras": [
+        {
+          "name": "LICENSE-unitree-g1",
+          "url": "https://raw.githubusercontent.com/google-deepmind/mujoco_menagerie/4d038b3feae26ec82b46a4d586379114012a8ac7/unitree_g1/LICENSE"
+        }
+      ],
+      "files": {
+        "policies/locomotion.onnx": 877936,
+        "policies/locomotion.json": 5917,
+        "scenes/unitree_g1/g1.xml": 25967,
+        "scenes/unitree_g1/assets/head_link.STL": 932784,
+        "scenes/unitree_g1/assets/left_ankle_pitch_link.STL": 71184,
+        "scenes/unitree_g1/assets/left_ankle_roll_link.STL": 653384,
+        "scenes/unitree_g1/assets/left_elbow_link.STL": 88784,
+        "scenes/unitree_g1/assets/left_hip_pitch_link.STL": 181684,
+        "scenes/unitree_g1/assets/left_hip_roll_link.STL": 192184,
+        "scenes/unitree_g1/assets/left_hip_yaw_link.STL": 296284,
+        "scenes/unitree_g1/assets/left_knee_link.STL": 854884,
+        "scenes/unitree_g1/assets/left_rubber_hand.STL": 2287484,
+        "scenes/unitree_g1/assets/left_shoulder_pitch_link.STL": 176784,
+        "scenes/unitree_g1/assets/left_shoulder_roll_link.STL": 400284,
+        "scenes/unitree_g1/assets/left_shoulder_yaw_link.STL": 249184,
+        "scenes/unitree_g1/assets/left_wrist_pitch_link.STL": 85984,
+        "scenes/unitree_g1/assets/left_wrist_roll_link.STL": 356184,
+        "scenes/unitree_g1/assets/left_wrist_yaw_link.STL": 318684,
+        "scenes/unitree_g1/assets/pelvis.STL": 1060884,
+        "scenes/unitree_g1/assets/pelvis_contour_link.STL": 1805184,
+        "scenes/unitree_g1/assets/right_ankle_pitch_link.STL": 71184,
+        "scenes/unitree_g1/assets/right_ankle_roll_link.STL": 653784,
+        "scenes/unitree_g1/assets/right_elbow_link.STL": 88784,
+        "scenes/unitree_g1/assets/right_hip_pitch_link.STL": 181284,
+        "scenes/unitree_g1/assets/right_hip_roll_link.STL": 192684,
+        "scenes/unitree_g1/assets/right_hip_yaw_link.STL": 296284,
+        "scenes/unitree_g1/assets/right_knee_link.STL": 852284,
+        "scenes/unitree_g1/assets/right_rubber_hand.STL": 2192684,
+        "scenes/unitree_g1/assets/right_shoulder_pitch_link.STL": 176784,
+        "scenes/unitree_g1/assets/right_shoulder_roll_link.STL": 401884,
+        "scenes/unitree_g1/assets/right_shoulder_yaw_link.STL": 249984,
+        "scenes/unitree_g1/assets/right_wrist_pitch_link.STL": 79584,
+        "scenes/unitree_g1/assets/right_wrist_roll_link.STL": 356084,
+        "scenes/unitree_g1/assets/right_wrist_yaw_link.STL": 341484,
+        "scenes/unitree_g1/assets/torso_link_rev_1_0.STL": 2570584,
+        "scenes/unitree_g1/assets/waist_roll_link_rev_1_0.STL": 85884,
+        "scenes/unitree_g1/assets/waist_yaw_link_rev_1_0.STL": 619984
+      },
+      "variants": [
+        {
+          "tier": "cpu",
+          "device": "wasm",
+          "dtype": "fp32",
+          "memMB": 220,
+          "files": [
+            "policies/locomotion.onnx",
+            "policies/locomotion.json",
+            "scenes/unitree_g1/g1.xml",
+            "scenes/unitree_g1/assets/head_link.STL",
+            "scenes/unitree_g1/assets/left_ankle_pitch_link.STL",
+            "scenes/unitree_g1/assets/left_ankle_roll_link.STL",
+            "scenes/unitree_g1/assets/left_elbow_link.STL",
+            "scenes/unitree_g1/assets/left_hip_pitch_link.STL",
+            "scenes/unitree_g1/assets/left_hip_roll_link.STL",
+            "scenes/unitree_g1/assets/left_hip_yaw_link.STL",
+            "scenes/unitree_g1/assets/left_knee_link.STL",
+            "scenes/unitree_g1/assets/left_rubber_hand.STL",
+            "scenes/unitree_g1/assets/left_shoulder_pitch_link.STL",
+            "scenes/unitree_g1/assets/left_shoulder_roll_link.STL",
+            "scenes/unitree_g1/assets/left_shoulder_yaw_link.STL",
+            "scenes/unitree_g1/assets/left_wrist_pitch_link.STL",
+            "scenes/unitree_g1/assets/left_wrist_roll_link.STL",
+            "scenes/unitree_g1/assets/left_wrist_yaw_link.STL",
+            "scenes/unitree_g1/assets/pelvis.STL",
+            "scenes/unitree_g1/assets/pelvis_contour_link.STL",
+            "scenes/unitree_g1/assets/right_ankle_pitch_link.STL",
+            "scenes/unitree_g1/assets/right_ankle_roll_link.STL",
+            "scenes/unitree_g1/assets/right_elbow_link.STL",
+            "scenes/unitree_g1/assets/right_hip_pitch_link.STL",
+            "scenes/unitree_g1/assets/right_hip_roll_link.STL",
+            "scenes/unitree_g1/assets/right_hip_yaw_link.STL",
+            "scenes/unitree_g1/assets/right_knee_link.STL",
+            "scenes/unitree_g1/assets/right_rubber_hand.STL",
+            "scenes/unitree_g1/assets/right_shoulder_pitch_link.STL",
+            "scenes/unitree_g1/assets/right_shoulder_roll_link.STL",
+            "scenes/unitree_g1/assets/right_shoulder_yaw_link.STL",
+            "scenes/unitree_g1/assets/right_wrist_pitch_link.STL",
+            "scenes/unitree_g1/assets/right_wrist_roll_link.STL",
+            "scenes/unitree_g1/assets/right_wrist_yaw_link.STL",
+            "scenes/unitree_g1/assets/torso_link_rev_1_0.STL",
+            "scenes/unitree_g1/assets/waist_roll_link_rev_1_0.STL",
+            "scenes/unitree_g1/assets/waist_yaw_link_rev_1_0.STL"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "webcam-pulse",
+      "name": "ME-rPPG",
+      "maker": "Tsinghua University",
+      "kind": "Body",
+      "task": "Heart rate",
+      "released": "2025-04",
+      "added": "2026-10-05",
+      "blurb": "Your pulse, from your webcam. Each heartbeat shifts the colour of your skin very slightly, and this tiny model turns those shifts into a pulse wave and a heart rate. The video never leaves your device.",
+      "try": "Look at the camera for ten seconds.",
+      "params": "0.58M",
+      "license": {
+        "id": "MIT",
+        "name": "MIT",
+        "url": "https://github.com/KegangWangCCNU/ME-rPPG/blob/main/LICENSE",
+        "text": "https://raw.githubusercontent.com/KegangWangCCNU/ME-rPPG/bec0855162a032832cfb71670c8ca7c79e218cd3/LICENSE"
+      },
+      "upstream": {
+        "name": "ME-rPPG, by Kegang Wang, Jiankai Tang and team (Tsinghua University)",
+        "url": "https://github.com/KegangWangCCNU/ME-rPPG",
+        "baseModel": "KegangWangCCNU/ME-rPPG"
+      },
+      "permissions": ["camera"],
+      "runtime": "ort",
+      "source": {
+        "host": "github",
+        "repo": "KegangWangCCNU/ME-rPPG",
+        "sha": "bec0855162a032832cfb71670c8ca7c79e218cd3"
+      },
+      "mirror": {"repo": "RabiatS/me-rppg-web", "sha": "0f3ea30ec10bfc12fec948f91774c9158b63b04b"},
+      "files": {"model.onnx": 2487146, "state.json": 7153843},
+      "variants": [
+        {
+          "tier": "cpu",
+          "device": "wasm",
+          "dtype": "fp32",
+          "memMB": 220,
+          "files": ["model.onnx", "state.json"]
+        }
       ]
     }
   ]

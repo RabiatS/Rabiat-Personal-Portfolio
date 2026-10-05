@@ -1,0 +1,67 @@
+{
+  "slug": "teleocr",
+  "name": "TeleOCR",
+  "maker": "XingChen-AGI",
+  "kind": "Vision",
+  "task": "Document reading",
+  "released": "2026-08",
+  "added": "2026-10-05",
+  "blurb": "A small vision language model that reads documents: printed pages, receipts, handwriting, tables and formulas. Point it at a photo and it writes out what it sees.",
+  "try": "Drop in a photo of a page and watch it read.",
+  "params": "1.4B",
+  "license": {
+    "id": "Apache-2.0",
+    "name": "Apache 2.0",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0",
+    "text": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  },
+  "upstream": {
+    "name": "TeleOCR, by Peng Cai and team (XingChen-AGI)",
+    "url": "https://huggingface.co/XingChen-AGI/TeleOCR",
+    "baseModel": "XingChen-AGI/TeleOCR"
+  },
+  "permissions": [],
+  "source": {
+    "repo": "stefanj0/TeleOCR-ONNX",
+    "sha": "02bb1bedf6a9480f8f45749d4bd87c7dad0d1d6d"
+  },
+  "mirror": {
+    "repo": "RabiatS/teleocr-web",
+    "sha": null
+  },
+  "files": {
+    "config.json": 3654,
+    "generation_config.json": 244,
+    "preprocessor_config.json": 502,
+    "tokenizer.json": 11421896,
+    "tokenizer_config.json": 5776,
+    "onnx/vision_encoder_q4f16.onnx": 297713,
+    "onnx/vision_encoder_q4f16.onnx_data": 1327654912,
+    "onnx/embed_tokens_q4f16.onnx": 821,
+    "onnx/embed_tokens_q4f16.onnx_data": 89946112,
+    "onnx/decoder_model_merged_q4f16.onnx": 475805,
+    "onnx/decoder_model_merged_q4f16.onnx_data": 352251904
+  },
+  "variants": [
+    {
+      "tier": "gpu",
+      "phone": false,
+      "device": "webgpu",
+      "dtype": "q4f16",
+      "memMB": 2700,
+      "files": [
+        "config.json",
+        "generation_config.json",
+        "preprocessor_config.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "onnx/vision_encoder_q4f16.onnx",
+        "onnx/vision_encoder_q4f16.onnx_data",
+        "onnx/embed_tokens_q4f16.onnx",
+        "onnx/embed_tokens_q4f16.onnx_data",
+        "onnx/decoder_model_merged_q4f16.onnx",
+        "onnx/decoder_model_merged_q4f16.onnx_data"
+      ]
+    }
+  ]
+}

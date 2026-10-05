@@ -28,8 +28,11 @@ export function checkDevice() {
         }
       } catch { /* no WebGPU */ }
     }
-    const gb = navigator.deviceMemory; // Chrome only, capped at 8
-    let budgetMB = gb ? Math.round(gb * 1024 * 0.25) : (phone ? 450 : 2000);
+    // Chrome reports memory (often capped at 8 GB); others don't. Phones get a
+    // fixed floor because a tab that runs out of memory just reloads.
+    const gb = navigator.deviceMemory;
+    let budgetMB = phone ? (gb ? Math.min(450, Math.round(gb * 1024 * 0.15)) : 450)
+                         : (gb ? Math.round(Math.min(gb, 16) * 1024 * 0.4) : 3000);
     if (params.has('budget')) budgetMB = Number(params.get('budget')) || 0;
     let freeMB = null;
     try { const e = await navigator.storage?.estimate(); if (e) freeMB = Math.round((e.quota - e.usage) / 1048576); } catch {}
@@ -39,12 +42,14 @@ export function checkDevice() {
 
 // First variant this device can use, or null with the smallest need for the message.
 // A GPU device may fall back to a CPU variant; a CPU device never gets a GPU one.
+// reason, when nothing fits: 'phone' (desktop only), 'gpu' (needs WebGPU) or 'memory'.
 export function pickVariant(model, dev) {
-  const usable = model.variants.filter((v) =>
-    (v.tier === 'cpu' || dev.tier === 'gpu') && (v.phone === undefined || v.phone === dev.phone));
+  const forDevice = model.variants.filter((v) => v.phone === undefined || v.phone === dev.phone);
+  const usable = forDevice.filter((v) => v.tier === 'cpu' || dev.tier === 'gpu');
   const fits = usable.find((v) => v.memMB <= dev.budgetMB);
   const needMB = Math.min(...(usable.length ? usable : model.variants).map((v) => v.memMB));
-  return { variant: fits || null, needMB };
+  const reason = fits ? null : !forDevice.length ? 'phone' : !usable.length ? 'gpu' : 'memory';
+  return { variant: fits || null, needMB, reason };
 }
 
 export function variantBytes(model, variant) {
@@ -53,5 +58,6 @@ export function variantBytes(model, variant) {
 
 export const mb = (bytes) => {
   const v = bytes / 1e6;
+  if (v >= 1000) return `${(v / 1000).toFixed(v >= 10000 ? 0 : 1)} GB`;
   return `${v < 10 ? v.toFixed(1) : Math.round(v)} MB`;
 };

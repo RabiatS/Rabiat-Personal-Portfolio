@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>RF-DETR Nano · Rabiat's Lab</title>
+  <meta name="description" content="Point your camera and watch boxes and names follow what it sees. RF-DETR Nano runs live in your browser; nothing is uploaded.">
+  <meta property="og:title" content="RF-DETR Nano · Rabiat's Lab" />
+  <meta property="og:description" content="Point your camera and watch it name things live. The model runs in your browser; nothing is uploaded." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    body { background: radial-gradient(1200px 700px at 50% 55%, #141414, var(--r-void) 70%); }
+    #stage { position: fixed; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .4s; }
+    body.live #stage { opacity: 1; }
+    body.live .intake { display: none; }
+    video { display: none; }
+
+    .intake { position: fixed; inset: 0; display: grid; place-items: center; text-align: center; padding: 90px 20px 40px; overflow-y: auto; }
+    .intake h1 { font: 700 clamp(44px, 8vw, 88px)/.92 var(--f-display); text-transform: uppercase; margin: 0; }
+    .intake .keys { margin: 16px auto 0; color: var(--muted); font-size: 16px; max-width: 420px; }
+    .intake .acts { display: flex; gap: 12px; justify-content: center; align-items: center; margin-top: 28px; flex-wrap: wrap; }
+    .samples-lbl { font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-top: 26px; }
+    .samples { display: flex; gap: 10px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+    .sample {
+      position: relative; width: 64px; height: 64px; padding: 0; border-radius: 12px; overflow: hidden; cursor: pointer;
+      border: 1px solid var(--border-strong); background: var(--surface); transition: transform .15s, border-color .15s;
+    }
+    .sample img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .sample:hover { transform: translateY(-2px); border-color: var(--r-ash); }
+    .sample:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+    /* The moving one: a small play mark */
+    .sample.moving::after {
+      content: ''; position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform: translate(-35%, -50%);
+      border-left: 13px solid var(--r-bone); border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+      filter: drop-shadow(0 1px 4px rgba(0,0,0,.6));
+    }
+
+    .dock .grp { display: flex; align-items: center; }
+    .dock .val, .dock .fps { font: 11.5px var(--f-mono); color: var(--muted); white-space: nowrap; }
+    .dock .val { min-width: 34px; padding-right: 6px; }
+    .dock .fps { min-width: 58px; text-align: right; padding: 0 10px 0 4px; color: var(--text-2); }
+    .dock input[type=range] { width: 120px; }
+    @media (max-width: 520px) {
+      .dock { flex-wrap: wrap; }
+      .dock .btn { padding: 8px 10px; }
+      .dock input[type=range] { width: 110px; margin: 0 4px; }
+      .dock .lbl { padding-left: 4px; }
+    }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <canvas id="stage" aria-label="What the model sees, with a box around each thing it found"></canvas>
+  <video id="cam" playsinline muted></video>
+
+  <section class="intake" id="intake">
+    <div>
+      <h1>Point your camera</h1>
+      <p class="keys">Boxes follow what it sees, live.</p>
+      <div class="acts" data-needs-model>
+        <button class="btn primary lg" id="camBig">Start camera</button>
+        <label class="btn quiet lg" for="pick">Choose photo</label>
+        <input type="file" id="pick" accept="image/*" hidden>
+      </div>
+      <div data-needs-model>
+        <div class="samples-lbl">Or try one of these</div>
+        <div class="samples" id="samples">
+          <button class="sample moving" data-i="0" aria-label="Moving sample: a busy street"><img src="samples/street.jpg" alt="" loading="lazy"></button>
+          <button class="sample" data-i="1" aria-label="Sample: a street full of cars"><img src="samples/cars.jpg" alt="" loading="lazy"></button>
+          <button class="sample" data-i="2" aria-label="Sample: my haptic glove holding an apple"><img src="../../assets/img/projects/magic-mitts/glove.jpg" alt="" loading="lazy"></button>
+          <button class="sample" data-i="3" aria-label="Sample: a living room seen through Vision Pro"><img src="../../assets/img/projects/visionpro/hero-pinch.jpg" alt="" loading="lazy"></button>
+        </div>
+      </div>
+      <p class="lab-gate" id="gate">&nbsp;</p>
+    </div>
+  </section>
+
+  <header class="top float">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">RF-DETR Nano</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Live object detection</h4>
+        <p>Each frame, the model puts a box around everything it recognises, from people and cars to cups and phones, 80 kinds in all. The slider sets how sure it has to be before a box shows.</p>
+        <p>In 2024 I built a <a href="https://github.com/RabiatS/Pytorch_car_detection_model" target="_blank" rel="noopener">car detector with YOLOv5</a>. YOLO makes many overlapping guesses for each object and needs a clean-up step, non-maximum suppression, to keep one box each. RF-DETR is a detection transformer: each of its 300 slots learns to claim a different object, so there is nothing to clean up.</p>
+        <p class="fine">Runs on your device. Camera frames are never uploaded. The two street photos are CC0 from Wikimedia Commons, by <a href="https://commons.wikimedia.org/wiki/File:Traffic_and_pedestrians_on_Calle_Vel%C3%A1squez_near_Catedral_San_Nicol%C3%A1s_de_Bari_in_Porlamar,_Venezuela.jpg" target="_blank" rel="noopener">Wilfredor</a> and <a href="https://commons.wikimedia.org/wiki/File:Onehunga_Mall_Has_Tons_Of_Cars.jpg" target="_blank" rel="noopener">Ingolfson</a>; the glove and the living room are mine.</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <div class="dock" id="dock" hidden>
+    <button class="btn" id="camBtn">Camera</button>
+    <button class="btn" id="flipBtn" hidden>Flip</button>
+    <label class="btn" for="pick">Photo</label>
+    <button class="btn" id="nextBtn">Sample</button>
+    <span class="sep"></span>
+    <span class="grp">
+      <span class="lbl">Sure</span>
+      <input type="range" id="thresh" min="10" max="95" value="50" aria-label="How sure the model must be before a box shows">
+      <span class="val" id="threshVal">50%</span>
+      <span class="fps" id="fps" aria-live="off"></span>
+    </span>
+  </div>
+  <div class="sr" aria-live="polite" id="said"></div>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

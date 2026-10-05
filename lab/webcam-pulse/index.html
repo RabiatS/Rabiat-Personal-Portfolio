@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ME-rPPG · Rabiat's Lab</title>
+  <meta name="description" content="Look at your webcam for ten seconds and see your pulse. ME-rPPG reads it from tiny colour changes in your skin, right in your browser. Nothing is recorded or uploaded.">
+  <meta property="og:title" content="ME-rPPG · Rabiat's Lab" />
+  <meta property="og:description" content="Your pulse, from your webcam. Runs in your browser; nothing is recorded or uploaded." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <style>
+    body { background: radial-gradient(1100px 700px at 50% 42%, #151515, var(--r-void) 70%) fixed; overflow-x: hidden; }
+    .stage {
+      min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 96px 16px 116px;
+    }
+
+    .intro { text-align: center; }
+    .intro h1 { font: 700 clamp(40px, 7.4vw, 84px)/.92 var(--f-display); text-transform: uppercase; margin: 0 auto; max-width: 11ch; }
+    .intro .keys { margin: 16px auto 0; color: var(--muted); font-size: 16px; max-width: 430px; }
+    .intro .acts { display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+    body.running .intro { display: none; }
+
+    .live { display: none; align-items: center; justify-content: center; gap: clamp(28px, 6vw, 76px); }
+    body.running .live { display: flex; }
+    .view {
+      position: relative; width: min(360px, 72vw, 46svh); aspect-ratio: 1; border-radius: 24px; overflow: hidden;
+      background: var(--surface); box-shadow: 0 30px 80px rgba(0,0,0,.5);
+    }
+    .view video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(.8) brightness(.86); }
+    .view.mirror video { transform: scaleX(-1); }
+    .view::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(closest-side, transparent 64%, rgba(10,10,10,.55)); }
+    .view canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+    body.stopped .view video { opacity: .35; }
+
+    .readout { min-width: 3.2ch; --c: 0; }
+    .num {
+      font: 500 clamp(80px, 11vw, 136px)/.86 var(--f-mono); letter-spacing: -.06em; font-variant-numeric: tabular-nums;
+      color: var(--text); opacity: calc(.26 + .74 * var(--c)); filter: blur(calc((1 - var(--c)) * 3px));
+      transition: opacity .9s, filter .9s;
+    }
+    .unit { display: flex; align-items: center; gap: 9px; margin-top: 14px; font: 600 14px var(--f-display); letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+    .beat { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); opacity: .14; transition: opacity .5s ease-out; }
+    .beat.on { opacity: 1; transition: none; box-shadow: 0 0 12px var(--teal); }
+    .state { font: 12.5px var(--f-mono); color: var(--subtle); margin-top: 6px; }
+
+    .wave { display: block; width: 100vw; height: 150px; margin: 22px 0 6px; }
+    .foot { display: none; text-align: center; }
+    body.running .foot { display: block; }
+    .hint { font: 13px/1.5 var(--f-mono); color: var(--muted); margin: 0; }
+    .fine { font: 12px/1.5 var(--f-mono); color: var(--subtle); margin: 4px 0 0; }
+
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    @media (max-width: 640px) {
+      .stage { justify-content: flex-start; padding-top: 84px; }
+      body:not(.running) .stage { justify-content: center; }
+      .live { flex-direction: column; gap: 18px; }
+      .readout { display: flex; align-items: baseline; gap: 14px; }
+      .num { font-size: 76px; }
+      .unit { margin: 0; }
+      .state { margin: 0; }
+      .wave { height: 104px; margin-top: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top float">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">ME-rPPG</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Your pulse, from your webcam</h4>
+        <p>Each heartbeat pushes a little more blood into your face, and your skin's colour shifts by far less than you could see. ME-rPPG looks at a small crop of your face 30 times a second and turns those shifts into a pulse wave. The number is the strongest rhythm in the last ten seconds.</p>
+        <p>In 2024 I built a heart disease predictor, <a href="https://github.com/RabiatS/PulsePredictors-ML" target="_blank" rel="noopener">Pulse Predictors</a>, from tabular data. This one reads the pulse from tiny colour changes in your skin instead.</p>
+        <p>The portrait is my illustration with a pulse painted in at the rate it shows, so you can see it work without a camera.</p>
+        <p class="fine">A fun demo, not a medical device. Don't use it to check your health. Nothing is recorded or uploaded: the video stays on your device.</p>
+        <p class="fine">The face finder is BlazeFace on MediaPipe, both Apache 2.0, from Google. The steps around the model follow the official ME-rPPG web demo (Apache 2.0).</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <main class="stage">
+    <section class="intro">
+      <h1>Look at the camera for ten seconds</h1>
+      <p class="keys">I'll read your pulse from tiny colour changes in your skin. Nothing is recorded or uploaded.</p>
+      <div class="acts" data-needs-model>
+        <button class="btn primary lg" id="startBig">Start camera</button>
+        <button class="btn quiet lg" id="portraitBig">Try my portrait</button>
+      </div>
+      <p class="lab-gate" id="gate">&nbsp;</p>
+    </section>
+
+    <section class="live" aria-label="Measuring">
+      <div class="view" id="viewBox">
+        <video id="video" playsinline muted></video>
+        <canvas id="overlay"></canvas>
+      </div>
+      <div class="readout" id="readout">
+        <div class="num" id="bpm">--</div>
+        <div class="unit"><i class="beat" id="beat"></i>BPM</div>
+        <div class="state" id="state">Finding your face</div>
+      </div>
+    </section>
+
+    <canvas class="wave" id="wave" aria-hidden="true"></canvas>
+
+    <div class="foot">
+      <p class="hint" id="hint">Hold still. Good light helps.</p>
+      <p class="fine">Nothing is recorded or uploaded.</p>
+    </div>
+    <div class="sr" aria-live="polite" id="said"></div>
+  </main>
+
+  <div class="dock" id="dock" hidden>
+    <button class="btn primary" id="toggle">Stop</button>
+    <button class="btn" id="swap">Portrait</button>
+  </div>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "slug": "dpdfnet",
+  "name": "DPDFNet",
+  "maker": "Ceva",
+  "kind": "Audio",
+  "task": "Noise removal",
+  "released": "2025-12",
+  "added": "2026-10-05",
+  "blurb": "Takes the noise out of speech: cafe chatter, fans, rain. It is small and streaming, built for earbuds and calls, and here it cleans a whole clip several times faster than it takes to play.",
+  "try": "Bury a voice in noise, then clean it back out.",
+  "params": "2.6M",
+  "license": {
+    "id": "Apache-2.0",
+    "name": "Apache 2.0",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0",
+    "text": "https://raw.githubusercontent.com/ceva-ip/DPDFNet/main/LICENSE"
+  },
+  "upstream": {
+    "name": "DPDFNet-2 48 kHz HR, by Daniel Rika, Nino Sapir and Ido Gus (Ceva)",
+    "url": "https://github.com/ceva-ip/DPDFNet",
+    "baseModel": "Ceva-IP/DPDFNet"
+  },
+  "permissions": ["mic"],
+  "runtime": "ort",
+  "source": {
+    "repo": "Ceva-IP/DPDFNet",
+    "sha": "dd6818d00f50c836fed43a6243ebe49116de5964"
+  },
+  "mirror": {"repo": "RabiatS/dpdfnet-web", "sha": null},
+  "files": {
+    "onnx/dpdfnet2_48khz_hr.onnx": 10493337
+  },
+  "variants": [
+    {
+      "tier": "cpu",
+      "device": "wasm",
+      "dtype": "fp32",
+      "memMB": 180,
+      "files": ["onnx/dpdfnet2_48khz_hr.onnx"]
+    }
+  ]
+}

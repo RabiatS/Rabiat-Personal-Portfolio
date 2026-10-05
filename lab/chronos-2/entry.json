@@ -1,0 +1,56 @@
+{
+  "slug": "chronos-2",
+  "name": "Chronos-2",
+  "maker": "Amazon",
+  "kind": "Data",
+  "task": "Forecasting",
+  "released": "2025-10",
+  "added": "2026-10-05",
+  "blurb": "Give it any series of numbers, steps, sales, power use, and it says what probably comes next, with a band for how sure it is. It has never seen your data and needs no training on it.",
+  "try": "Pick a series and watch the forecast fan out.",
+  "params": "120M",
+  "license": {
+    "id": "Apache-2.0",
+    "name": "Apache 2.0",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0",
+    "text": "https://raw.githubusercontent.com/amazon-science/chronos-forecasting/main/LICENSE"
+  },
+  "upstream": {
+    "name": "Chronos-2, by Abdul Fatir Ansari and team (Amazon)",
+    "url": "https://github.com/amazon-science/chronos-forecasting",
+    "baseModel": "amazon/chronos-2"
+  },
+  "permissions": [],
+  "runtime": "ort",
+  "source": {
+    "repo": "TSFM-ai/chronos-2-onnx",
+    "sha": "d999122ad90648a4f057aba78ac9e04f6c5dbb06"
+  },
+  "mirror": {
+    "repo": "RabiatS/chronos-2-web",
+    "sha": null
+  },
+  "files": {
+    "model.onnx": 478551180
+  },
+  "variants": [
+    {
+      "tier": "gpu",
+      "device": "webgpu",
+      "dtype": "fp32",
+      "memMB": 1100,
+      "files": [
+        "model.onnx"
+      ]
+    },
+    {
+      "tier": "cpu",
+      "device": "wasm",
+      "dtype": "fp32",
+      "memMB": 1100,
+      "files": [
+        "model.onnx"
+      ]
+    }
+  ]
+}

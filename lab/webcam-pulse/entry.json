@@ -1,0 +1,52 @@
+{
+  "slug": "webcam-pulse",
+  "name": "ME-rPPG",
+  "maker": "Tsinghua University",
+  "kind": "Body",
+  "task": "Heart rate",
+  "released": "2025-04",
+  "added": "2026-10-05",
+  "blurb": "Your pulse, from your webcam. Each heartbeat shifts the colour of your skin very slightly, and this tiny model turns those shifts into a pulse wave and a heart rate. The video never leaves your device.",
+  "try": "Look at the camera for ten seconds.",
+  "params": "0.58M",
+  "license": {
+    "id": "MIT",
+    "name": "MIT",
+    "url": "https://github.com/KegangWangCCNU/ME-rPPG/blob/main/LICENSE",
+    "text": "https://raw.githubusercontent.com/KegangWangCCNU/ME-rPPG/bec0855162a032832cfb71670c8ca7c79e218cd3/LICENSE"
+  },
+  "upstream": {
+    "name": "ME-rPPG, by Kegang Wang, Jiankai Tang and team (Tsinghua University)",
+    "url": "https://github.com/KegangWangCCNU/ME-rPPG",
+    "baseModel": "KegangWangCCNU/ME-rPPG"
+  },
+  "permissions": [
+    "camera"
+  ],
+  "runtime": "ort",
+  "source": {
+    "host": "github",
+    "repo": "KegangWangCCNU/ME-rPPG",
+    "sha": "bec0855162a032832cfb71670c8ca7c79e218cd3"
+  },
+  "mirror": {
+    "repo": "RabiatS/me-rppg-web",
+    "sha": null
+  },
+  "files": {
+    "model.onnx": 2487146,
+    "state.json": 7153843
+  },
+  "variants": [
+    {
+      "tier": "cpu",
+      "device": "wasm",
+      "dtype": "fp32",
+      "memMB": 220,
+      "files": [
+        "model.onnx",
+        "state.json"
+      ]
+    }
+  ]
+}

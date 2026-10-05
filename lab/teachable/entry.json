@@ -1,0 +1,83 @@
+{
+  "slug": "teachable",
+  "name": "Teach it by example",
+  "maker": "Google",
+  "kind": "Vision",
+  "task": "Teach by example",
+  "released": "2025-02",
+  "found": {
+    "month": "2025-12",
+    "note": "I found the idea in December 2025."
+  },
+  "added": "2026-10-05",
+  "blurb": "Google's Teachable Machine idea from 2017, rebuilt on a modern image model: show it a few examples of two things, and it tells them apart live. Nothing is trained on a server; it all happens in your browser.",
+  "try": "Teach it two things with a few photos, then watch it guess.",
+  "params": "93M",
+  "license": {
+    "id": "Apache-2.0",
+    "name": "Apache 2.0",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0",
+    "text": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  },
+  "upstream": {
+    "name": "SigLIP 2 base, patch 16, 224 px, by Michael Tschannen and team (Google DeepMind)",
+    "url": "https://huggingface.co/google/siglip2-base-patch16-224",
+    "baseModel": "google/siglip2-base-patch16-224"
+  },
+  "permissions": [
+    "camera"
+  ],
+  "source": {
+    "repo": "onnx-community/siglip2-base-patch16-224-ONNX",
+    "sha": "ba1f3b0843f24bc5417d38e19c37b287d719b2f4"
+  },
+  "mirror": {
+    "repo": "RabiatS/siglip2-base-patch16-224-web",
+    "sha": null
+  },
+  "files": {
+    "config.json": 435,
+    "preprocessor_config.json": 394,
+    "onnx/vision_model_fp16.onnx": 186039516,
+    "onnx/vision_model_q4f16.onnx": 54630849,
+    "onnx/vision_model_quantized.onnx": 94553333
+  },
+  "variants": [
+    {
+      "tier": "gpu",
+      "phone": false,
+      "device": "webgpu",
+      "dtype": "fp16",
+      "memMB": 560,
+      "files": [
+        "config.json",
+        "preprocessor_config.json",
+        "onnx/vision_model_fp16.onnx"
+      ]
+    },
+    {
+      "tier": "gpu",
+      "phone": true,
+      "device": "webgpu",
+      "dtype": "q4f16",
+      "memMB": 290,
+      "files": [
+        "config.json",
+        "preprocessor_config.json",
+        "onnx/vision_model_q4f16.onnx"
+      ]
+    },
+    {
+      "tier": "cpu",
+      "phone": false,
+      "device": "wasm",
+      "dtype": "q8",
+      "memMB": 380,
+      "files": [
+        "config.json",
+        "preprocessor_config.json",
+        "onnx/vision_model_quantized.onnx"
+      ]
+    }
+  ]
+}
