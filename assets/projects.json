@@ -396,6 +396,68 @@
       "type": "Personal"
     },
     {
+      "id": "spotify-research",
+      "title": "Spotify vs AI Research Study",
+      "subtitle": "UCRE · User-Centered Research and Evaluation · Fall 2025",
+      "category": "Web / Full-Stack / Product",
+      "tags": [
+        "HCI",
+        "Research",
+        "UX",
+        "Web"
+      ],
+      "description": "A UX research and design project exploring how Spotify listeners perceive AI-generated music, and how clearer labeling and controls can build trust in the listening experience.",
+      "longDescription": "Research study site built and deployed. Explores how listeners distinguish AI-generated from human-created tracks without hurting the experience.",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Web",
+        "Research"
+      ],
+      "github": "https://github.com/RabiatS/spotify-vs-ai-research-study",
+      "demo": "https://spotify-vs-ai-research-study.vercel.app/",
+      "caseStudy": "case-studies/case-study-spotify.html",
+      "status": "complete",
+      "images": [
+        "assets/img/projects/spotify-vs-ai-research.png"
+      ],
+      "videos": [],
+      "year": "2025",
+      "type": "Research"
+    },
+    {
+      "id": "ethics-of-meta",
+      "title": "The Ethics of Meta: Everyday AI Auditing",
+      "subtitle": "UCRE · User-Centered Research and Evaluation · Fall 2025",
+      "category": "Research / HCI",
+      "tags": [
+        "HCI",
+        "Research",
+        "UX",
+        "AI",
+        "Data"
+      ],
+      "description": "Can everyday people spot and report harmful behaviour in generative AI? Hands-on research on Meta AI, an analysis of WeAudit's bias survey, and a heuristic evaluation and 10 usability sessions on CMU's WeAudit TAIGA auditing tool.",
+      "longDescription": "Team project as Lead Researcher. Background research across Instagram, WhatsApp, Messenger and Quest found impersonating bots, inconsistent safety help and late privacy notices. Data analysis of WeAudit's survey showed race (65%) and gender (59%) bias were most often seen as harmful, with lived experience of discrimination raising harm ratings. Usability testing of TAIGA found all 10 participants unsure what the tool was for, leading to recommendations for navigation, onboarding and a guided audit flow.",
+      "technologies": [
+        "Python",
+        "Pandas",
+        "Plotly",
+        "Heuristic Evaluation",
+        "Usability Testing"
+      ],
+      "github": null,
+      "demo": null,
+      "caseStudy": "case-studies/ethics-of-meta.html",
+      "status": "complete",
+      "images": [
+        "assets/img/projects/ethics-of-meta/card.jpg"
+      ],
+      "videos": [],
+      "year": "2025",
+      "type": "Research"
+    },
+    {
       "id": "ctrl-alt-elite",
       "title": "Semi-Autonomous E-Scooter Control System",
       "subtitle": "IXD · Interaction Design Fundamentals · Fall 2025",
@@ -883,36 +945,6 @@
       "status": "complete",
       "images": [
         "assets/img/projects/assuage-logo.png"
-      ],
-      "videos": [],
-      "year": "2024",
-      "type": "Research"
-    },
-    {
-      "id": "spotify-research",
-      "title": "Spotify vs AI Research Study",
-      "subtitle": "UX Research & Design",
-      "category": "Web / Full-Stack / Product",
-      "tags": [
-        "HCI",
-        "Research",
-        "UX",
-        "Web"
-      ],
-      "description": "A UX research and design project exploring how Spotify listeners perceive AI-generated music, and how clearer labeling and controls can build trust in the listening experience.",
-      "longDescription": "Research study site built and deployed. Explores how listeners distinguish AI-generated from human-created tracks without hurting the experience.",
-      "technologies": [
-        "TypeScript",
-        "React",
-        "Web",
-        "Research"
-      ],
-      "github": "https://github.com/RabiatS/spotify-vs-ai-research-study",
-      "demo": "https://spotify-vs-ai-research-study.vercel.app/",
-      "caseStudy": "case-studies/case-study-spotify.html",
-      "status": "complete",
-      "images": [
-        "assets/img/projects/spotify-vs-ai-research.png"
       ],
       "videos": [],
       "year": "2024",

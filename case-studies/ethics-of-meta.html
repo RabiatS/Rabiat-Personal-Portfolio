@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Case Study | The Ethics of Meta: Everyday AI Auditing | Rabiat Sadiq</title>
+  <meta name="description" content="UCRE team research, Fall 2025: how everyday people can spot and report harmful behaviour in generative AI, from hands-on testing of Meta AI to 10 usability sessions on CMU's WeAudit TAIGA." />
+  <link rel="canonical" href="https://www.rabiatsadiq.com/case-studies/ethics-of-meta.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Rabiat Sadiq" />
+  <meta property="og:title" content="Case Study | The Ethics of Meta: Everyday AI Auditing | Rabiat Sadiq" />
+  <meta property="og:description" content="UCRE team research, Fall 2025: how everyday people can spot and report harmful behaviour in generative AI." />
+  <meta property="og:url" content="https://www.rabiatsadiq.com/case-studies/ethics-of-meta.html" />
+  <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/projects/ethics-of-meta/card.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Case Study | The Ethics of Meta: Everyday AI Auditing | Rabiat Sadiq" />
+  <meta name="twitter:description" content="UCRE team research, Fall 2025: how everyday people can spot and report harmful behaviour in generative AI." />
+  <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/projects/ethics-of-meta/card.jpg" />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+  <!-- Prevent theme flash & minimalist Rabiat -->
+  <script>
+    (function(){
+      var g = localStorage.getItem('glassLevel');
+      var legacy = { clear: 0, 'default': 50, frosted: 100 };
+      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
+      if (!isFinite(t)) t = 50;
+      t = Math.min(100, Math.max(0, t)) / 100;
+      var st = document.documentElement.style;
+      st.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+      st.setProperty('--glass-lens', (1 - t).toFixed(3));
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="../assets/script.js" defer></script>
+  <script src="../assets/music.js" defer></script>
+  <style>
+    /* charts from the team's data analysis report: white plots, so they sit on a card in every theme */
+    .cs-fig { margin: 24px 0 8px; }
+    .cs-fig img { display: block; width: 100%; max-width: 860px; height: auto; border-radius: 12px; border: 1px solid var(--border); background: #fff; }
+    .cs-fig figcaption { margin-top: 10px; font-size: 14px; color: var(--text-muted); max-width: 860px; }
+    .cs-timeline { list-style: none; padding: 0; margin: 16px 0 0; }
+    .cs-timeline li { padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .cs-timeline li:last-child { border-bottom: 0; }
+    .cs-timeline .when { display: inline-block; min-width: 108px; font-weight: 600; }
+    .cs-quote { margin: 16px 0; padding: 4px 0 4px 16px; border-left: 3px solid var(--border-strong); color: var(--text-muted); font-style: italic; }
+  </style>
+</head>
+<body data-tilt-mode="desktop">
+  <header class="header">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="../projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="../coursework.html" class="nav-pill">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="../lab/" class="nav-pill">
+        <span class="nav-icon">🧪</span>
+        <span class="nav-text">Lab</span>
+      </a>
+      <a href="../cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn">in</a>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <main class="container cs-page">
+    <section class="cs-hero">
+      <p class="eyebrow">CMU MHCI • UCRE • Fall 2025</p>
+      <h1>The Ethics of Meta: Everyday AI Auditing</h1>
+      <p class="lead">
+        Can ordinary people spot harmful behaviour in generative AI, and would they report it if they did?
+        Our team started with Meta AI across Instagram, WhatsApp, Messenger and Quest, then tested that
+        question on real data and a real auditing tool: CMU's WeAudit survey and its TAIGA platform.
+      </p>
+      <div class="cs-metrics">
+        <div class="metric"><h3>When</h3><p>Sep to Oct 2025</p></div>
+        <div class="metric"><h3>My role</h3><p>Lead Researcher, team of 5</p></div>
+        <div class="metric"><h3>Methods</h3><p>Background research • Data analysis • Heuristic evaluation • Usability testing</p></div>
+      </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>The question</h2>
+      <p>
+        This was Project 1 of User-Centered Research and Evaluation (05-610), "Learning From What Exists".
+        We started broad, asking how Meta uses generative AI across its platforms, with a goal that stayed
+        the same all project: <strong>how can we empower and incentivize everyday users to understand,
+        identify and report harmful algorithmic behaviours?</strong>
+      </p>
+      <ul class="cs-timeline">
+        <li><span class="when">Sep 2025</span> Background research on Meta AI</li>
+        <li><span class="when">Sep 28</span> Data analysis report on the WeAudit bias survey</li>
+        <li><span class="when">Oct 2 to 5</span> Heuristic evaluation of WeAudit TAIGA, individual then as a team</li>
+        <li><span class="when">Oct 12</span> Usability testing: 10 moderated sessions and findings</li>
+      </ul>
+    </section>
+
+    <section class="cs-section">
+      <h2>1. Background research: living with Meta AI</h2>
+      <p>
+        Each of us did two hands-on sessions with Meta AI (celebrity and "mind reader" chatbots on Instagram,
+        WhatsApp trip planning, Messenger text and image generation, meta.ai, and Meta AI on Quest) and five
+        informational reviews of news, research, Reddit threads and Meta's own documentation. That added up
+        to ten experiential sessions and more than twenty sources.
+      </p>
+      <ul>
+        <li><strong>The bots blur who is human.</strong> A "Justin Bieber" bot kept insisting it was the real person. A "Your Therapist" bot reported on Reddit claimed to be a licensed psychologist, complete with a fake licence number.</li>
+        <li><strong>Safety help is inconsistent.</strong> In our tests, crisis prompts were redirected to hotlines. In a Common Sense Media study with teen accounts, reported by the Washington Post, only about 1 in 5 harmful chats triggered any intervention.</li>
+        <li><strong>Privacy notices come late.</strong> WhatsApp told us Meta AI remembers chat details only after we had already shared some, and US users cannot opt out of their data being used for training.</li>
+        <li><strong>The outputs carry stereotypes.</strong> Asked to imagine doctors and nurses, Messenger AI showed mostly young men as doctors, women only as nurses, and little racial diversity. The only feedback option was a downvote with a short list of reasons.</li>
+        <li><strong>Policy and experience don't match.</strong> Meta documents labels, memory controls and safeguards, but in everyday use they were easy to miss and applied unevenly.</li>
+      </ul>
+      <p>
+        The thread through all of it: people can't report a harm they can't see, and the reporting tools
+        that exist are too thin to capture what they do see.
+      </p>
+    </section>
+
+    <section class="cs-section">
+      <h2>2. Data analysis: who sees bias as harm?</h2>
+      <p>
+        Next we analysed survey data from WeAudit, a CMU HCII project, where participants rated how harmful
+        AI-generated images were across race, gender and sexuality bias, then shared their demographics and
+        their own experiences with discrimination. We built the analysis in Python (Pandas, NumPy, Plotly,
+        Matplotlib in Google Colab).
+      </p>
+      <figure class="cs-fig">
+        <img src="../assets/img/projects/ethics-of-meta/harm-by-bias-type.jpg" alt="Bar chart: about 65% of participants recognised race bias as harmful, 59% gender, 32% sexuality and 2% the neutral images." loading="lazy" width="1270" height="935">
+        <figcaption>Recognition of harm was highest for race (about 65%) and gender (about 59%), much lower for sexuality (about 32%), and near zero for the neutral control.</figcaption>
+      </figure>
+      <figure class="cs-fig">
+        <img src="../assets/img/projects/ethics-of-meta/harm-heatmap.jpg" alt="Heat map of mean harm ratings for race bias by participant gender and race. Non-binary participants rating bias against Black participants scored highest at 6.1; male participants rating bias against white participants scored lowest at 3.1." loading="lazy" width="1400" height="1047">
+        <figcaption>Perceived harm is intersectional. The gap between the highest (non-binary participants, bias against Black/African American people, 6.1 of 7) and the lowest (male participants, bias against white people, 3.1) is 3 full points.</figcaption>
+      </figure>
+      <ul>
+        <li><strong>Lived experience matters.</strong> People who had faced discrimination rated every kind of bias as more harmful, most of all racial bias, and the differences were statistically significant.</li>
+        <li><strong>Representation is the main reason.</strong> Missing or excluded groups were the most common justification for calling an image harmful, with more than 5,000 mentions in the open-text answers.</li>
+        <li><strong>No partisan divide.</strong> Mapping mean scores by state, split by the 2020 election result and leaving out states with fewer than 20 participants, showed similar racial bias perception in Republican and Democratic states.</li>
+      </ul>
+      <figure class="cs-fig">
+        <img src="../assets/img/projects/ethics-of-meta/reasoning-lollipop.jpg" alt="Double lollipop chart comparing how often each reason was given for harmful versus unharmful judgments. Representation and diversity dominates the harmful side." loading="lazy" width="1400" height="771">
+        <figcaption>Themes coded from open-text answers after stopword removal and tokenisation. Representation and diversity dominate the reasons for calling bias harmful.</figcaption>
+      </figure>
+      <p>
+        What it meant for the project: audits should prioritise race and gender, recruit diverse
+        participants on purpose, and can frame racial bias as a shared concern rather than a polarising one.
+      </p>
+    </section>
+
+    <section class="cs-section">
+      <h2>3. Heuristic evaluation: WeAudit TAIGA</h2>
+      <p>
+        TAIGA is WeAudit's tool for the public to generate images with Stable Diffusion, compare outputs side
+        by side and discuss bias in a forum. Each of us evaluated it against Nielsen's heuristics before we
+        synthesised as a team. I focused on the discussion forum and on mobile, where content overflowed
+        the screen and controls like reply buttons became hard to reach.
+      </p>
+      <ul>
+        <li><strong>Help and documentation:</strong> all five reviewers found nothing explaining how to prompt, compare or post.</li>
+        <li><strong>Consistency and standards:</strong> the Home link worked on some pages and not others.</li>
+        <li><strong>User control and freedom:</strong> a magnifier could trap you, and the prompt page had no way back.</li>
+        <li><strong>Error prevention:</strong> random characters still produced images, and new posts went up with no guidance.</li>
+      </ul>
+      <p>The strengths were real too: clear loading feedback, saved prompt history and a clean layout.</p>
+    </section>
+
+    <section class="cs-section">
+      <h2>4. Usability testing: 10 sessions</h2>
+      <p>
+        We ran 10 moderated, think-aloud sessions with adults who use AI tools but had never seen TAIGA, and
+        I ran two of them. Each person scanned the homepage, generated single and compared images, found
+        their way home, and replied in the forum. We then clustered the transcripts by theme.
+      </p>
+      <ul>
+        <li><strong>Critical: nobody could tell what the site was for.</strong> All 10 participants were confused about its purpose, and the confusion lasted the whole session.</li>
+        <li><strong>The compare tool was misread.</strong> Three thought it compared two AI models. Everyone typed prompts unrelated to bias (birds, dogs), and nobody commented on bias in the results.</li>
+        <li><strong>Navigation failed.</strong> The logo didn't go home for 7 of 10, the hamburger menu did nothing for 5, and 8 missed the "Go to discussion forum" button.</li>
+        <li><strong>Quality undercut trust.</strong> Six called the images scary, inaccurate or useless, which made the audit itself feel pointless.</li>
+        <li><strong>What worked:</strong> five praised how fast images appeared, and many said auditing AI is something the public should care about.</li>
+      </ul>
+      <p class="cs-quote">"I'm not sure, it doesn't really say what it's for; it just gives a place to type and generate something."</p>
+      <p>
+        Our recommendations: global navigation with a working logo, a short optional walkthrough, "?" help
+        beside Generate, Compare and Discuss, prompt inspiration shown by default, and a visible
+        four-step flow (generate, analyse, give feedback, discuss).
+      </p>
+    </section>
+
+    <section class="cs-section">
+      <h2>What we learned</h2>
+      <p>The project ended with a sharper answer about what everyday auditing needs:</p>
+      <ul>
+        <li><strong>Agency needs usability.</strong> If people can't work the tool, they can't critique the AI.</li>
+        <li><strong>Agency needs a credible system.</strong> Bad outputs make auditing feel pointless.</li>
+        <li><strong>Agency needs a guided workflow.</strong> Without "what to do next", auditing becomes button-clicking.</li>
+        <li><strong>Responsiveness keeps people curious.</strong> Fast feedback kept participants experimenting.</li>
+        <li><strong>Plain language moves people.</strong> Participants wanted the site to talk about harm directly.</li>
+      </ul>
+      <p>
+        My role was Lead Researcher: guiding the research, finding sources for the team and helping
+        analyse the data. The same course's second project became my
+        <a href="case-study-spotify.html">Spotify vs AI study</a>.
+      </p>
+    </section>
+
+    <section class="cs-section">
+      <h2>Team and credits</h2>
+      <p>
+        Team 10 (Justice League): Laila Dancy, Zeana El-Hajomar, Rabiat Sadiq, Rachael Shivam and Cameron Thompson.
+        User-Centered Research and Evaluation, Carnegie Mellon University, Fall 2025, taught by Raelin Musuraca.
+        Survey data: Shen, H. and the WeAudit team, Human-Computer Interaction Institute, Carnegie Mellon University.
+      </p>
+      <div class="badges" style="margin-top:12px">
+        <span class="tag">UX Research</span>
+        <span class="tag">Heuristic Evaluation</span>
+        <span class="tag">Usability Testing</span>
+        <span class="tag">Python</span>
+        <span class="tag">Pandas</span>
+        <span class="tag">Plotly</span>
+        <span class="tag">AI Ethics</span>
+      </div>
+    </section>
+
+    <section class="cs-next" style="margin-top:40px;display:flex;gap:16px">
+      <a class="btn" href="../projects.html">Back to Projects</a>
+      <a class="btn secondary" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </section>
+  </main>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+</body>
+</html>
