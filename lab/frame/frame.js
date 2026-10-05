@@ -9,7 +9,7 @@
 // The first action on the page is the consent: pages call ensure() from it.
 
 import { checkDevice, pickVariant, variantBytes, mb } from './device.js';
-import { cachedState, forget, repoOf } from './cache.js';
+import { cachedState, forget, repoOf, fileUrl } from './cache.js';
 
 const $el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
@@ -58,7 +58,7 @@ export async function mountLab({ slug, adapter, gate, stats, verb = 'start' }) {
   const rt = data.runtime;
   const model = data.models.find((m) => m.slug === slug);
   const dev = await checkDevice();
-  let { variant, needMB } = pickVariant(model, dev);
+  let { variant, needMB, reason } = pickVariant(model, dev);
   const where = () => (variant.tier === 'gpu' ? 'your GPU' : 'your CPU');
 
   const lab = {
@@ -70,14 +70,22 @@ export async function mountLab({ slug, adapter, gate, stats, verb = 'start' }) {
   // ---------- gate ----------
   let cached = variant ? await cachedState(rt.cacheKey, model, variant) : null;
   const missingFileBytes = () => variant.files.filter((f) => !cached.files.has(f)).reduce((n, f) => n + model.files[f], 0);
-  const toDownload = () => missingFileBytes() + (cached.runtime ? 0 : rt.transferBytes);
+  // Models Transformers.js can't run use ONNX Runtime 1.30 straight from the
+  // browser's HTTP cache; only the model files count toward their size.
+  const runtimeBytes = () => (model.runtime === 'ort' || cached.runtime ? 0 : rt.transferBytes);
+  const toDownload = () => missingFileBytes() + runtimeBytes();
   function drawGate() {
     if (!gate) return;
     gate.replaceChildren();
     if (!variant) {
       gate.classList.add('blocked');
-      gate.append($el('strong', null, 'Too big for this device.'),
-        ` It needs about ${needMB} MB of memory to run, and this ${dev.phone ? 'phone' : 'browser'} has room for about ${dev.budgetMB} MB.${dev.phone ? ' Try it on a laptop.' : ''}`);
+      const smallest = Math.min(...model.variants.map((v) => variantBytes(model, v)));
+      const [head, why] = {
+        phone: ['Made for a laptop or desktop.', ` It is a ${mb(smallest)} download.`],
+        gpu: ['Needs WebGPU.', ' This browser does not have it. Try a recent Chrome, Edge or Safari.'],
+        memory: ['Too big for this device.', ` It needs about ${mb(needMB * 1e6)} of memory to run, and this ${dev.phone ? 'phone' : 'browser'} has room for about ${mb(dev.budgetMB * 1e6)}.${dev.phone ? ' Try it on a laptop.' : ''}`],
+      }[reason];
+      gate.append($el('strong', null, head), why);
       return;
     }
     const need = toDownload();
@@ -94,6 +102,7 @@ export async function mountLab({ slug, adapter, gate, stats, verb = 'start' }) {
   const pending = new Map();
   let nextId = 0;
   function dispatch(msg) {
+    if (msg.type === 'partial') { pending.get(msg.id)?.onPartial?.(msg.data); return; }
     if (msg.id != null && pending.has(msg.id)) {
       const p = pending.get(msg.id); pending.delete(msg.id);
       msg.type === 'result' ? p.resolve(msg) : p.reject(new Error(msg.message));
@@ -170,13 +179,19 @@ export async function mountLab({ slug, adapter, gate, stats, verb = 'start' }) {
       };
       const { repo, sha } = repoOf(model);
       host.post({ type: 'load', runtimeUrl: rt.url, cacheKey: rt.cacheKey, adapterUrl: adapter, repo, sha,
-        device: variant.device, dtype: variant.dtype, totalBytes: total });
+        fileBase: fileUrl(model, ''), device: variant.device, dtype: variant.dtype, totalBytes: total,
+        needsTransformers: model.runtime !== 'ort' || !!model.usesTransformers });
     });
   }
 
-  lab.run = (input, transfer) => lab.ensure().then(() => new Promise((resolve, reject) => {
+  // onPartial(data) receives whatever the adapter emits while it works (for example streamed tokens).
+  lab.run = (input, transfer, { onPartial } = {}) => lab.ensure().then(() => new Promise((resolve, reject) => {
     const id = ++nextId;
-    pending.set(id, { resolve: (msg) => { lab.times.runs.push(msg.ms); fillStats(); resolve(msg); }, reject });
+    pending.set(id, { resolve: (msg) => {
+      // Live pages run many times a second: keep the last 200 timings and redraw the stats at most twice a second.
+      lab.times.runs.push(msg.ms); if (lab.times.runs.length > 200) lab.times.runs.shift();
+      scheduleStats(); resolve(msg);
+    }, reject, onPartial });
     host.post({ type: 'run', id, input }, transfer);
   }));
 
@@ -184,6 +199,8 @@ export async function mountLab({ slug, adapter, gate, stats, verb = 'start' }) {
   if (!toDownload()) lab.ensure({ background: true }).catch(() => {});
 
   // ---------- (i) stats ----------
+  let statsTimer = 0;
+  function scheduleStats() { if (!statsTimer) statsTimer = setTimeout(() => { statsTimer = 0; fillStats(); }, 500); }
   function fillStats() {
     if (!stats) return;
     const dl = $el('dl', 'lab-stats');
@@ -192,8 +209,11 @@ export async function mountLab({ slug, adapter, gate, stats, verb = 'start' }) {
     add('Model', link(`${model.name} · ${model.params}`, model.upstream.url));
     add('Licence', link(model.license.name, model.license.url));
     add('Added', niceDate(model.added));
-    const { repo, sha } = repoOf(model);
-    add('Files', link(`${repo} @ ${sha.slice(0, 7)}`, `https://huggingface.co/${repo}/tree/${sha}`));
+    const src = repoOf(model);
+    if (src.host === 'local') add('Files', 'staged locally, not mirrored yet');
+    else if (src.host === 'url') add('Files', link(new URL(src.base).hostname, src.base));
+    else if (src.host === 'github') add('Files', link(`${src.repo} @ ${src.sha.slice(0, 7)}`, `https://github.com/${src.repo}/tree/${src.sha}`));
+    else add('Files', link(`${src.repo} @ ${src.sha.slice(0, 7)}`, `https://huggingface.co/${src.repo}/tree/${src.sha}`));
     if (variant) {
       add('Download', `${mb(variantBytes(model, variant))}, ${dtypeLabel(variant.dtype)}`);
       const threads = self.crossOriginIsolated ? navigator.hardwareConcurrency : 1;
@@ -209,7 +229,7 @@ export async function mountLab({ slug, adapter, gate, stats, verb = 'start' }) {
     } else {
       add('Needs', `about ${needMB} MB of memory`);
     }
-    add('Runtime', `${rt.name} ${rt.version}`);
+    add('Runtime', model.runtime === 'ort' ? 'ONNX Runtime Web 1.30.0' : `${rt.name} ${rt.version}`);
     const parts = [dl];
     if (variant && (lab.state === 'ready' || !toDownload())) {
       const b = $el('button', 'btn quiet sm lab-forget', 'Remove from this device');

@@ -1,0 +1,51 @@
+{
+  "slug": "leaf-search",
+  "name": "mdbr-leaf-ir",
+  "maker": "MongoDB",
+  "kind": "Language",
+  "task": "Search",
+  "released": "2025-08",
+  "added": "2026-10-05",
+  "blurb": "A tiny search model that matches by meaning, not by keywords. Here it searches everything I have built and written, right in your browser.",
+  "try": "Search my work by what you mean.",
+  "params": "23M",
+  "license": {
+    "id": "Apache-2.0",
+    "name": "Apache 2.0",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0",
+    "text": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  },
+  "upstream": {
+    "name": "LEAF IR, by Robin Vujanic and Thomas Rückstieß (MongoDB Research)",
+    "url": "https://huggingface.co/MongoDB/mdbr-leaf-ir",
+    "baseModel": "MongoDB/mdbr-leaf-ir"
+  },
+  "permissions": [],
+  "source": {
+    "repo": "MongoDB/mdbr-leaf-ir",
+    "sha": "4262131b32c3182bd06e67e92ae69d7bd66e0c5c"
+  },
+  "mirror": {"repo": "RabiatS/mdbr-leaf-ir-web", "sha": null},
+  "files": {
+    "config.json": 829,
+    "tokenizer.json": 711661,
+    "tokenizer_config.json": 1529,
+    "onnx/model_quantized.onnx": 220597,
+    "onnx/model_quantized.onnx_data": 22954752
+  },
+  "variants": [
+    {
+      "tier": "cpu",
+      "device": "wasm",
+      "dtype": "q8",
+      "memMB": 200,
+      "files": [
+        "config.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "onnx/model_quantized.onnx",
+        "onnx/model_quantized.onnx_data"
+      ]
+    }
+  ]
+}

@@ -90,6 +90,13 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 28px 64px; }
 .pop ul { margin: 0 0 10px; padding-left: 18px; }
 .pop li { margin: 3px 0; }
 .pop .fine { color: var(--muted); font-size: 12.5px; }
+/* On a phone the (i) sits mid-header, so its popover would run off the left
+   edge: span the header instead. Floating headers stay fixed (more specific). */
+@media (max-width: 440px) {
+  .top { position: relative; }
+  .top .info { position: static; }
+  .top .pop { left: 16px; right: 16px; width: auto; top: calc(100% - 6px); max-height: calc(100vh - 90px); overflow-y: auto; }
+}
 
 /* ---------- Buttons ---------- */
 .btn {

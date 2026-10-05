@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>DPDFNet · Rabiat's Lab</title>
+  <meta name="description" content="Bury a voice in cafe chatter, fan hum or rain, then take the noise back out. DPDFNet runs in your browser; nothing is uploaded.">
+  <meta property="og:title" content="DPDFNet · Rabiat's Lab" />
+  <meta property="og:description" content="Bury a voice in noise, then take the noise back out. Runs in your browser; nothing is uploaded." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <style>
+    body { background: radial-gradient(1100px 620px at 50% 30%, #151515, var(--r-void) 70%) fixed; }
+    main { max-width: 1020px; text-align: center; }
+    h1 { font: 700 clamp(40px, 7.4vw, 80px)/.92 var(--f-display); text-transform: uppercase; margin: clamp(10px, 4vh, 40px) 0 0; }
+    .sub { margin: 12px auto 0; color: var(--muted); font-size: 16px; max-width: 460px; }
+
+    /* ---------- the picture of the sound ---------- */
+    .strip {
+      position: relative; margin: clamp(22px, 4vh, 36px) 0 0; height: clamp(170px, 34vh, 300px);
+      border-radius: 12px; overflow: hidden; background: var(--r-void); border: 1px solid var(--border);
+      box-shadow: 0 24px 60px rgba(0,0,0,.45); cursor: default;
+    }
+    .strip.flippable { cursor: pointer; }
+    .strip canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .strip::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: linear-gradient(to bottom, rgba(10,10,10,.7), transparent 46px), linear-gradient(to top, rgba(10,10,10,.82), transparent 44px); }
+    .strip > span { z-index: 2; }
+    .strip > i { z-index: 2; }
+    #specClean { opacity: 0; transition: opacity .22s ease; clip-path: inset(0 calc(100% - var(--done, 0%)) 0 0); }
+    .strip.clean #specClean { opacity: 1; }
+    .front { position: absolute; top: 0; bottom: 0; left: var(--done, 0%); width: 2px; margin-left: -1px; background: var(--r-bone); box-shadow: 0 0 18px 4px rgba(245,245,240,.35); opacity: 0; transition: opacity .3s; pointer-events: none; }
+    .strip.working .front { opacity: 1; }
+    .head { position: absolute; top: 0; bottom: 0; left: 0; width: 1px; background: rgba(245,245,240,.85); opacity: 0; pointer-events: none; }
+    .strip.playing .head { opacity: 1; }
+    .tag { position: absolute; left: 14px; top: 11px; font: 600 12px var(--f-display); letter-spacing: .16em; text-transform: uppercase; color: var(--text); text-shadow: 0 1px 8px rgba(0,0,0,.8); }
+    .src { position: absolute; left: 14px; bottom: 9px; font: 11.5px var(--f-mono); color: var(--text-2); text-shadow: 0 1px 8px rgba(0,0,0,.8); }
+    .len { position: absolute; right: 14px; bottom: 9px; font: 11.5px var(--f-mono); color: var(--text-2); text-shadow: 0 1px 8px rgba(0,0,0,.8); }
+
+    /* ---------- controls ---------- */
+    .row { display: flex; gap: 10px 14px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 18px; }
+    .play { min-width: 112px; justify-content: center; }
+    .play svg { width: 13px; height: 13px; fill: currentColor; }
+    .seg { display: flex; gap: 6px; }
+    .lvl { display: flex; align-items: center; gap: 10px; font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+    .lvl input { width: 170px; }
+    .main-act { margin-top: 26px; min-height: 52px; }
+    .flip { display: flex; gap: 8px; }
+    .flip .btn { min-width: 128px; justify-content: center; }
+    .speed { font: 12.5px var(--f-mono); color: var(--muted); margin: 10px 0 0; min-height: 1.5em; }
+    .own { margin-top: 18px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+    .own .btn.rec[aria-pressed="true"] { color: var(--text); }
+    .own .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid currentColor; }
+    .own .btn.rec[aria-pressed="true"] .dot { background: var(--r-bone); border-color: var(--r-bone); animation: blink 1s steps(2) infinite; }
+    @keyframes blink { 50% { opacity: .25; } }
+    @media (max-width: 520px) {
+      .lvl input { width: 140px; }
+      .flip .btn { min-width: 0; flex: 1; }
+      .flip { width: 100%; max-width: 320px; }
+      .seg .btn { padding: 6px 9px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">DPDFNet</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Noise out, voice kept</h4>
+        <p>DPDFNet is Ceva's speech cleaner for earbuds and calls. It hears 20 ms at a time and works out, frequency by frequency, what is voice and what is noise, carrying a memory from one moment to the next.</p>
+        <p>Pick a noise and how loud it is, then Clean it. Flip between Noisy and Clean while it plays, or tap the picture. Changing the noise cleans it again. The picture is a spectrogram: low sounds at the bottom, high at the top.</p>
+        <p>The voice is the Apollo 13 crew in 1970 (NASA, public domain), radio static and all. The added noises are made in your browser; the cafe chatter is that same clip, backwards and at other speeds. You can also use your own recording or file; it never leaves your device.</p>
+        <p class="fine">Runs on your device. Your voice is never uploaded. This is the 48 kHz model with 2 of its dual-path blocks.</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <main>
+    <h1>Take the noise out</h1>
+
+    <div class="strip" id="strip" aria-label="Spectrogram of the clip">
+      <canvas id="specNoisy"></canvas>
+      <canvas id="specClean"></canvas>
+      <i class="front"></i>
+      <i class="head" id="head"></i>
+      <span class="tag" id="tag">Noisy</span>
+      <span class="src" id="src">Apollo 13, 1970</span>
+      <span class="len" id="len"></span>
+    </div>
+
+    <div class="row">
+      <button class="btn play" id="play"><svg viewBox="0 0 12 12" aria-hidden="true"><path id="playIcon" d="M2 1l9 5-9 5z"/></svg><span id="playLbl">Play</span></button>
+      <div class="seg" id="kinds" role="group" aria-label="Noise">
+        <button class="btn sm is-selected" data-kind="cafe" aria-pressed="true">Cafe</button>
+        <button class="btn sm" data-kind="fan" aria-pressed="false">Fan</button>
+        <button class="btn sm" data-kind="rain" aria-pressed="false">Rain</button>
+      </div>
+      <label class="lvl">Noise <input type="range" id="level" min="0" max="100" value="60" aria-label="How loud the noise is"></label>
+    </div>
+
+    <div class="row main-act" data-needs-model>
+      <button class="btn primary lg" id="clean">Clean it</button>
+      <div class="flip" id="flip" role="group" aria-label="Listen to" hidden>
+        <button class="btn lg is-selected" id="hearNoisy" aria-pressed="true">Noisy</button>
+        <button class="btn lg" id="hearClean" aria-pressed="false">Clean</button>
+      </div>
+    </div>
+    <p class="lab-gate" id="gate">&nbsp;</p>
+    <p class="speed" id="speed"></p>
+
+    <div class="own" data-needs-model>
+      <button class="btn quiet rec" id="rec" aria-pressed="false"><span class="dot"></span><span id="recLbl">Record your own</span></button>
+      <label class="btn quiet" for="file">Use a file</label>
+      <input type="file" id="file" accept="audio/*" hidden>
+      <button class="btn quiet" id="useSample" hidden>Back to the sample</button>
+    </div>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+{
+  "slug": "rf-detr",
+  "name": "RF-DETR Nano",
+  "maker": "Roboflow",
+  "kind": "Vision",
+  "task": "Object detection",
+  "released": "2025-07",
+  "added": "2026-10-05",
+  "blurb": "Point a camera and it boxes and names what it sees, many times a second. A detection transformer small enough for a phone, with no clean-up pass for overlapping boxes.",
+  "try": "Point your camera and watch it name things live.",
+  "params": "30.5M",
+  "license": {
+    "id": "Apache-2.0",
+    "name": "Apache 2.0",
+    "url": "https://github.com/roboflow/rf-detr/blob/develop/LICENSE",
+    "text": "https://raw.githubusercontent.com/roboflow/rf-detr/develop/LICENSE"
+  },
+  "upstream": {
+    "name": "RF-DETR Nano, by Roboflow",
+    "url": "https://github.com/roboflow/rf-detr",
+    "baseModel": "Roboflow/rf-detr-nano"
+  },
+  "permissions": ["camera"],
+  "source": {
+    "repo": "onnx-community/rfdetr_nano-ONNX",
+    "sha": "eae21cee0687a91bcf9fa071605c48d7705d2d91"
+  },
+  "mirror": {"repo": "RabiatS/rfdetr-nano-web", "sha": null},
+  "files": {
+    "config.json": 3213,
+    "preprocessor_config.json": 444,
+    "onnx/model_q4.onnx": 25036973,
+    "onnx/model_int8.onnx": 28825949
+  },
+  "variants": [
+    {
+      "tier": "gpu",
+      "device": "webgpu",
+      "dtype": "q4",
+      "memMB": 220,
+      "files": ["config.json", "preprocessor_config.json", "onnx/model_q4.onnx"]
+    },
+    {
+      "tier": "cpu",
+      "device": "wasm",
+      "dtype": "int8",
+      "memMB": 230,
+      "files": ["config.json", "preprocessor_config.json", "onnx/model_int8.onnx"]
+    }
+  ]
+}

@@ -39,3 +39,9 @@ Rabiat_Sadiq_T_Shaped_Interaction_Engineer.md
 # Local working files
 .archive/
 .cursor/
+
+# tools-lab-entry.py lock file
+lab/.models.lock
+
+# Lab models staged locally until tools-mirror-model.py copies them to Hugging Face
+lab/*/.assets/

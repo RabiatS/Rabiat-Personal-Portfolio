@@ -51,7 +51,7 @@
       <div class="pop" id="about" hidden>
         <h4>Speech to text, on a phone</h4>
         <p>Moonshine is built to transcribe speech on small devices. Here it listens while you talk and rewrites the line as it hears more, then settles it when you pause.</p>
-        <p>The sample is from John F. Kennedy's 1961 inaugural address (public domain).</p>
+        <p>Each press of the sample plays the next one: Thoreau, Emerson and Epictetus read by LibriVox volunteers, then Neil Armstrong on the Moon over 1969 radio, which is much harder. All public domain. You can also drop in any audio or video file of your own; it never leaves your device.</p>
         <p class="fine">Runs on your device. Your voice is never uploaded. English only.</p>
         <div id="labStats"></div>
       </div>
@@ -67,6 +67,8 @@
         <div class="acts" data-needs-model>
           <button class="btn primary lg" id="startBig">Start</button>
           <button class="btn quiet lg" id="sampleBig">Play a sample</button>
+          <label class="btn quiet lg" for="file">Use a file</label>
+          <input type="file" id="file" accept="audio/*,video/*" hidden>
         </div>
         <p class="lab-gate" id="gate">&nbsp;</p>
       </div>

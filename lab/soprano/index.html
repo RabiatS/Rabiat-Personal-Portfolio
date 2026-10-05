@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Soprano · Rabiat's Lab</title>
+  <meta name="description" content="Type a sentence and hear it read aloud. Soprano is a small text to speech model that runs in your browser and starts talking before it has finished the sentence. Your text is never uploaded.">
+  <meta property="og:title" content="Soprano · Rabiat's Lab" />
+  <meta property="og:description" content="Type a sentence and hear it read aloud, made in your browser as it speaks." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <style>
+    body { background: radial-gradient(1100px 620px at 50% 0%, #161616, var(--r-void) 70%) fixed; }
+    main { max-width: 860px; padding-top: 4vh; }
+
+    /* The words: typed in a text area, then read back in the same place */
+    .page { position: relative; }
+    .words, .reading {
+      display: block; width: 100%; margin: 0; padding: 0; border: 0; background: transparent; color: var(--text);
+      font: 400 clamp(23px, 3.4vw, 34px)/1.45 var(--f-body); letter-spacing: .002em;
+      white-space: pre-wrap; overflow-wrap: break-word;
+    }
+    .words { resize: none; outline: none; min-height: 3.2em; caret-color: var(--teal); overflow: hidden; }
+    .words::placeholder { color: var(--subtle); opacity: 1; }
+    .reading { position: relative; cursor: text; }
+    .reading .w { color: var(--subtle); transition: color .25s; }
+    .reading .w.said { color: var(--text); }
+    .reading .w.now { color: #fff; }
+    .reading .gap { color: var(--subtle); }
+    /* the mark under the word being spoken, gliding from word to word */
+    .reading .mark { position: absolute; left: 0; top: 0; height: 2px; width: 0; background: var(--teal); border-radius: 1px;
+      transition: transform .18s ease-out, width .18s ease-out, opacity .3s; opacity: 0; pointer-events: none; }
+    .reading.playing .mark { opacity: 1; }
+    .count { font: 11.5px var(--f-mono); color: var(--subtle); text-align: right; margin-top: 6px; min-height: 1.2em; }
+
+    /* The sound, scrolling past a fixed playhead while it plays */
+    .wave { display: block; width: 100%; height: 76px; margin-top: 18px; }
+
+    .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .row .spacer { flex: 1; }
+    .nums { display: flex; gap: 22px; font: 12px var(--f-mono); color: var(--muted); }
+    .nums b { display: block; font: 500 20px var(--f-mono); color: var(--text); letter-spacing: -.01em; }
+    .nums[hidden] { display: none; }
+
+    .try { margin-top: 34px; }
+    .try .lbl { font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .ex { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 7px 0; cursor: pointer;
+      font: italic 400 16px/1.45 var(--f-body); color: var(--muted); transition: color .15s; }
+    .ex:hover { color: var(--text); }
+    .ex:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+    .lab-gate { margin-top: 12px; }
+    @media (max-width: 600px) {
+      main { padding-top: 2vh; }
+      .nums { gap: 16px; }
+      .nums b { font-size: 17px; }
+      .ex { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">Soprano</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Text to speech, on your device</h4>
+        <p>Soprano reads your words out loud. A small language model writes the sound as a stream of audio tokens, and a second network turns them into a voice, a fraction of a second at a time, so it starts talking before it has finished the sentence.</p>
+        <p>The words light up roughly in time with the voice. That timing is my estimate from the length of each word, not something the model reports.</p>
+        <p class="fine">Runs on your device. Your text is never uploaded. English only, one voice.</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <main>
+    <div class="page">
+      <label class="sr" for="words" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Text to speak</label>
+      <textarea class="words" id="words" rows="3" maxlength="600" spellcheck="false"
+        placeholder="Hello. Type anything you like here, and I'll read it back to you."></textarea>
+      <div class="reading" id="reading" hidden aria-live="off"></div>
+    </div>
+    <div class="count" id="count"></div>
+
+    <canvas class="wave" id="wave" aria-hidden="true"></canvas>
+
+    <div class="row">
+      <button class="btn primary lg" id="speak" data-needs-model>Speak</button>
+      <button class="btn quiet" id="replay" hidden>Replay</button>
+      <button class="btn quiet" id="save" hidden>Download WAV</button>
+      <span class="spacer"></span>
+      <div class="nums" id="nums" hidden>
+        <span title="From pressing Speak to the first sound"><b id="ttfs">0.00 s</b>first sound</span>
+        <span title="Seconds of speech made per second of work"><b id="rtf">0.0×</b>real time</span>
+      </div>
+    </div>
+    <p class="lab-gate" id="gate">&nbsp;</p>
+
+    <div class="try" data-needs-model>
+      <div class="lbl">Or try one of mine</div>
+      <button class="ex">Hi, I'm glad you stopped by. This voice is being made right now, inside your browser.</button>
+      <button class="ex">Make the tea first. The bug will still be there in five minutes, and you'll be kinder to it.</button>
+      <button class="ex">I like small tools that do one thing well, then get out of the way.</button>
+    </div>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

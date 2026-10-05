@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Strands Decider 2B · Rabiat's Lab</title>
+  <meta name="description" content="Describe a situation, list your options, and a small decision model gives each one a probability, right in your browser. Nothing is uploaded.">
+  <meta property="og:title" content="Strands Decider 2B · Rabiat's Lab" />
+  <meta property="og:description" content="A situation and some options in, a probability for each out. The model runs in your browser; nothing is uploaded." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../frame/frame.css">
+  <style>
+    body { background: radial-gradient(1000px 620px at 50% 0%, #161616, var(--r-void) 70%) fixed; }
+    main { max-width: 760px; }
+    h1 { font: 700 clamp(44px, 8vw, 84px)/.92 var(--f-display); text-transform: uppercase; margin: 18px 0 30px; }
+
+    .lbl { display: block; font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+    .field { margin-bottom: 22px; }
+    textarea, input.q {
+      width: 100%; display: block; border: 1px solid var(--border-strong); border-radius: 10px;
+      background: var(--surface); color: var(--text); transition: border-color .15s;
+    }
+    textarea { font: 18px/1.55 var(--f-body); padding: 14px 16px; resize: vertical; min-height: 92px; }
+    input.q { font: 600 21px/1.3 var(--f-display); letter-spacing: .01em; padding: 12px 16px; }
+    textarea:focus, input.q:focus { outline: none; border-color: var(--r-bone); }
+    textarea::placeholder, input.q::placeholder, .opt input::placeholder { color: var(--subtle); }
+
+    .kinds { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .kind[aria-checked="true"] { color: var(--text); }
+
+    /* Each option row is also its bar: the fill grows behind the words */
+    .opts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .opt {
+      position: relative; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 8px 0 14px;
+      border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface); overflow: hidden;
+      transition: border-color .3s;
+    }
+    .opt .fill {
+      position: absolute; inset: 0; transform-origin: left; transform: scaleX(0);
+      background: linear-gradient(to right, rgba(160,160,154,.10), rgba(160,160,154,.18));
+      border-right: 2px solid var(--r-slate);
+      transition: transform .9s cubic-bezier(.2,.9,.25,1.04), background .4s;
+    }
+    .opt.win .fill { background: linear-gradient(to right, rgba(245,245,240,.10), rgba(245,245,240,.22)); border-right-color: var(--r-bone); }
+    .opt.win { border-color: var(--r-bone); }
+    .opt .n { position: relative; font: 500 12px var(--f-mono); color: var(--subtle); width: 14px; text-align: center; }
+    .opt input {
+      position: relative; flex: 1; min-width: 0; border: 0; background: transparent; color: var(--text-2);
+      font: 17px/1.3 var(--f-body); padding: 14px 0;
+    }
+    .opt input:focus { outline: none; }
+    .opt:focus-within:not(.win) { border-color: var(--r-ash); }
+    .opt input[readonly] { cursor: default; }
+    .opt .pct { position: relative; font: 500 14px var(--f-mono); color: var(--muted); min-width: 3.4em; text-align: right; opacity: 0; transition: opacity .3s; }
+    .opt.win .pct, .opt.win input { color: var(--text); }
+    .opt.win .pct { font-weight: 500; }
+    body.decided .opt .pct { opacity: 1; }
+    .opt .x { position: relative; width: 30px; height: 30px; border: 0; border-radius: 8px; background: transparent; color: var(--subtle); cursor: pointer; font: 18px/1 var(--f-mono); }
+    .opt .x:hover { color: var(--text); background: var(--surface-2); }
+    .opt .x:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }
+    .opt .x[hidden] { display: none; }
+    .scale-ends { display: flex; justify-content: space-between; font: 11.5px var(--f-mono); color: var(--subtle); margin: 8px 2px 0; }
+    .add { margin: 10px 0 0 -10px; }
+
+    .go { display: flex; align-items: center; gap: 16px; margin-top: 26px; flex-wrap: wrap; }
+    .time { font: 13px var(--f-mono); color: var(--muted); }
+    .time b { color: var(--text); font-weight: 500; }
+    .lab-gate { margin-top: 14px; }
+
+    .examples { margin-top: 38px; padding-top: 22px; border-top: 1px solid var(--border); }
+    .ex-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ex { text-transform: none; letter-spacing: .02em; font-size: 15px; }
+
+    @media (max-width: 520px) {
+      h1 { margin: 6px 0 24px; }
+      textarea { font-size: 17px; }
+      input.q { font-size: 19px; }
+      .opt input { font-size: 16px; }
+      .ex-row .ex { flex: 1 1 100%; justify-content: flex-start; }
+    }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">Strands Decider 2B</span></a>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this model">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>A model that only decides</h4>
+        <p>Strands Decider does not write. It reads a situation and one typed question, then scores every option in a single pass. The bars are its probabilities.</p>
+        <p>Pick one chooses between options. Scale rates on levels, lowest first. Yes or no checks whether a statement holds, and works best with a plain statement rather than a question.</p>
+        <p class="fine">This is the 4-bit build (q4f16). Next to the full model it can flip near-ties, so treat a close split as a coin toss. It was made for routing and triage inside software, so take its life advice lightly.</p>
+        <p class="fine">Runs on your device. Nothing you type is uploaded.</p>
+        <div id="labStats"></div>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+
+  <main>
+    <h1>Help me decide</h1>
+    <form id="form" data-needs-model autocomplete="off">
+      <div class="field">
+        <label class="lbl" for="state">The situation</label>
+        <textarea id="state" rows="3" maxlength="1500" placeholder="Say what is going on. A sentence or two is plenty."></textarea>
+      </div>
+      <div class="field">
+        <label class="lbl" for="question" id="qLabel">The question</label>
+        <input class="q" id="question" type="text" maxlength="200" placeholder="What should I do?">
+      </div>
+      <div class="kinds" role="radiogroup" aria-label="Kind of question">
+        <button type="button" class="btn sm kind" role="radio" data-kind="choice" aria-checked="true">Pick one</button>
+        <button type="button" class="btn sm kind" role="radio" data-kind="score" aria-checked="false">Scale</button>
+        <button type="button" class="btn sm kind" role="radio" data-kind="noul" aria-checked="false">Yes or no</button>
+      </div>
+      <ol class="opts" id="opts" aria-label="Options"></ol>
+      <div class="scale-ends" id="ends" hidden><span>lowest</span><span>highest</span></div>
+      <button type="button" class="btn quiet sm add" id="add">Add option</button>
+      <div class="go">
+        <button type="submit" class="btn primary lg" id="decide">Decide</button>
+        <span class="time" id="time"></span>
+      </div>
+    </form>
+    <p class="lab-gate" id="gate">&nbsp;</p>
+    <section class="examples" data-needs-model>
+      <span class="lbl">Or try one</span>
+      <div class="ex-row" id="examples"></div>
+    </section>
+    <div class="sr" aria-live="polite" id="said"></div>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{
+  "slug": "audioseal",
+  "name": "AudioSeal",
+  "maker": "Meta",
+  "kind": "Audio",
+  "task": "Watermarking",
+  "released": "2024-01",
+  "added": "2026-10-05",
+  "blurb": "Hides a short ID inside speech where you can't hear it, then finds it again, down to which parts of a clip carry it. Noise, cuts and volume barely touch it; a small change of speed wipes it out.",
+  "try": "Stamp a voice with a hidden ID, then try to scrub it off.",
+  "params": "23M",
+  "license": {
+    "id": "MIT",
+    "name": "MIT",
+    "url": "https://github.com/facebookresearch/audioseal/blob/main/LICENSE",
+    "text": "https://raw.githubusercontent.com/facebookresearch/audioseal/main/LICENSE"
+  },
+  "upstream": {
+    "name": "AudioSeal 16-bit, by Robin San Roman and team (Meta FAIR)",
+    "url": "https://github.com/facebookresearch/audioseal",
+    "baseModel": "facebook/audioseal"
+  },
+  "permissions": ["mic"],
+  "runtime": "ort",
+  "source": {
+    "repo": "DarumaHQ/audioseal-onnx",
+    "sha": "55477a4c93a98fd9c38f59173d506c7e9a803589"
+  },
+  "mirror": {"repo": "RabiatS/audioseal-web", "sha": null},
+  "files": {
+    "audioseal_generator_16bits.onnx": 58818989,
+    "audioseal_detector_16bits.onnx": 34662285
+  },
+  "variants": [
+    {
+      "tier": "gpu",
+      "device": "webgpu",
+      "dtype": "fp32",
+      "memMB": 340,
+      "files": ["audioseal_generator_16bits.onnx", "audioseal_detector_16bits.onnx"]
+    },
+    {
+      "tier": "cpu",
+      "device": "wasm",
+      "dtype": "fp32",
+      "memMB": 340,
+      "files": ["audioseal_generator_16bits.onnx", "audioseal_detector_16bits.onnx"]
+    }
+  ]
+}
