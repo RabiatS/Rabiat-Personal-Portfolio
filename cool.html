@@ -52,6 +52,7 @@
   <link rel="stylesheet" href="assets/style.css" />
   <script src="assets/script.js" defer></script>
   <script src="assets/music.js" defer></script>
+  <script src="assets/previews.js" defer></script>
 </head>
 <body data-tilt-mode="desktop">
   <header class="header">
@@ -195,6 +196,43 @@
 
       <h2 class="cool-h2">Playground</h2>
       <p class="muted cool-sub">Effects from this site on their own, my versions of a few sites I love, and small experiments.</p>
+      <!-- Lab picks: real models that run in the browser, with a screen recording of each. -->
+      <h3 class="cool-sub-h">Try these right now, from the Lab</h3>
+      <div class="grid lab-picks">
+        <article class="card">
+          <a class="preview-media" href="lab/robot/" tabindex="-1" aria-hidden="true"><video data-preview muted loop playsinline preload="none" poster="lab/previews/robot.jpg"><source src="lab/previews/robot.mp4" type="video/mp4"></video></a>
+          <h3><a href="lab/robot/" style="color:inherit">G1 Walking Robot</a></h3>
+          <p class="muted">A humanoid that taught itself to walk, running live in your browser. Shove it and watch it catch its balance.</p>
+          <div style="margin-top: 10px;">
+            <a href="lab/robot/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try it ↗</a>
+          </div>
+        </article>
+        <article class="card">
+          <a class="preview-media" href="lab/rf-detr/" tabindex="-1" aria-hidden="true"><video data-preview muted loop playsinline preload="none" poster="lab/previews/rf-detr.jpg"><source src="lab/previews/rf-detr.mp4" type="video/mp4"></video></a>
+          <h3><a href="lab/rf-detr/" style="color:inherit">RF-DETR Nano</a></h3>
+          <p class="muted">Point a camera, or pick a busy street, and it boxes and names what it sees, many times a second.</p>
+          <div style="margin-top: 10px;">
+            <a href="lab/rf-detr/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try it ↗</a>
+          </div>
+        </article>
+        <article class="card">
+          <a class="preview-media" href="lab/edgetam/" tabindex="-1" aria-hidden="true"><video data-preview muted loop playsinline preload="none" poster="lab/previews/edgetam.jpg"><source src="lab/previews/edgetam.mp4" type="video/mp4"></video></a>
+          <h3><a href="lab/edgetam/" style="color:inherit">EdgeTAM</a></h3>
+          <p class="muted">Meta's on-device take on Segment Anything. Tap anything in a photo and it lifts out as a clean cut-out.</p>
+          <div style="margin-top: 10px;">
+            <a href="lab/edgetam/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try it ↗</a>
+          </div>
+        </article>
+        <article class="card">
+          <a class="preview-media" href="lab/depth-anything-v2/" tabindex="-1" aria-hidden="true"><video data-preview muted loop playsinline preload="none" poster="lab/previews/depth.jpg"><source src="lab/previews/depth.mp4" type="video/mp4"></video></a>
+          <h3><a href="lab/depth-anything-v2/" style="color:inherit">Depth Anything V2</a></h3>
+          <p class="muted">It works out how far away every pixel is, so any photo tilts like a small 3D scene.</p>
+          <div style="margin-top: 10px;">
+            <a href="lab/depth-anything-v2/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try it ↗</a>
+          </div>
+        </article>
+      </div>
+      <h3 class="cool-sub-h">Effects and games</h3>
       <div class="grid cards-3">
         <article class="card">
           <h3><a href="playground/brick-breaker/" style="color:inherit">Break My Website</a></h3>

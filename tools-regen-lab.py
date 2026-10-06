@@ -60,6 +60,13 @@ def sizes(m):
     def fmt(n): return f'{n / 1000:.1f} GB' if n >= 1000 else f'{n} MB'
     return fmt(mbs[0]) if len(mbs) == 1 else f'{fmt(mbs[0])} to {fmt(mbs[-1])}'
 
+for m in data['models']:
+    for key in ('video', 'poster'):
+        f = (m.get('preview') or {}).get(key)
+        if f and not (root / 'lab' / f).is_file(): problems.append(f"{m['slug']}: preview {key} {f} is missing")
+if problems:
+    sys.exit('Not regenerated:\n  ' + '\n  '.join(problems))
+
 # newest month first; inside a month, JSON order
 models = sorted(data['models'], key=when, reverse=True)
 
@@ -81,7 +88,13 @@ def card(m):
             <a href="{url}" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ {e(m['watch'].get('label', 'Watch the demo'))} ↗</a>
           </div>
         </article>'''
-    return f'''        <article class="card lab-card" data-slug="{m['slug']}" data-kind="{m['kind']}">
+    clip = ''
+    if m.get('preview'):
+        # a looping screen recording of the demo; assets/previews.js plays it while on screen
+        v, p = e(m['preview']['video']), e(m['preview']['poster'])
+        clip = (f'\n          <a class="preview-media" href="{m["slug"]}/" tabindex="-1" aria-hidden="true">'
+                f'<video data-preview muted loop playsinline preload="none" poster="{p}"><source src="{v}" type="video/mp4"></video></a>')
+    return f'''        <article class="card lab-card" data-slug="{m['slug']}" data-kind="{m['kind']}">{clip}
           <p class="lab-meta">{meta}</p>
           <h3><a href="{m['slug']}/" style="color:inherit">{e(m['name'])}</a></h3>
           <p class="lab-by muted">{e(m['maker'])} · {e(m['license']['name'])}</p>
