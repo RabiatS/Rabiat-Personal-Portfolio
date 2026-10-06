@@ -396,6 +396,37 @@
       "type": "Personal"
     },
     {
+      "id": "xr-pain-perception",
+      "title": "XR Pain Augmentation Research",
+      "subtitle": "CMU Augmented Perception Lab · Sep 2025 to Aug 2026",
+      "category": "XR / Unity / Immersive",
+      "tags": [
+        "XR",
+        "Research",
+        "HCI",
+        "Perception"
+      ],
+      "description": "The XR side of a lab pain study: a body-tracked virtual arm, visual and sound cues timed to a medical thermode, and pain ratings inside the headset, from independent study to participant pilots.",
+      "longDescription": "Started as a Fall 2025 independent study and continued as a graduate research assistant through August 2026. Built in Unity for Meta Quest: a virtual forearm aligned to the real one with body tracking, a library of cues (glow, colour ramps, pulses, a laser beam), a bridge that lets Unity drive a Medoc TSA 2 thermode so heat and visuals share one clock, in-VR pain ratings and timestamped logging. Pilots in June and July 2026 shaped drift compensation and the protocol.",
+      "technologies": [
+        "Unity",
+        "C#",
+        "Meta Quest",
+        "Medoc TSA 2",
+        "Research"
+      ],
+      "github": null,
+      "demo": null,
+      "caseStudy": "case-studies/case-study-pain-xr.html",
+      "status": "complete",
+      "images": [
+        "assets/img/projects/xr-pain/laser-peak.jpg"
+      ],
+      "videos": [],
+      "year": "2025-2026",
+      "type": "Research"
+    },
+    {
       "id": "spotify-research",
       "title": "Spotify vs AI Research Study",
       "subtitle": "UCRE · User-Centered Research and Evaluation · Fall 2025",
@@ -887,36 +918,6 @@
       "videos": [],
       "year": "2024",
       "type": "Personal"
-    },
-    {
-      "id": "xr-pain-perception",
-      "title": "XR Pain Augmentation Research",
-      "subtitle": "CMU Augmented Perception Lab",
-      "category": "XR / Unity / Immersive",
-      "tags": [
-        "XR",
-        "Research",
-        "HCI",
-        "Perception"
-      ],
-      "description": "Multimodal XR prototypes to study pain perception; goal includes later ML integration for personalization and analysis.",
-      "longDescription": "Building multimodal XR prototypes in Unity to study how visual, auditory, and ambient cues influence pain perception in controlled VR experiments. Designing adaptive XR interfaces and instrumentation with structured logging to support future ML-driven personalization and analysis.",
-      "technologies": [
-        "Unity",
-        "C#",
-        "XR",
-        "Research"
-      ],
-      "github": null,
-      "demo": null,
-      "caseStudy": "case-studies/case-study-pain-xr.html",
-      "status": "complete",
-      "images": [
-        "assets/img/projects/vr-pain-augmentation-research.png"
-      ],
-      "videos": [],
-      "year": "2025",
-      "type": "Research"
     },
     {
       "id": "assuage",
