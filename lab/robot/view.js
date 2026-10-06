@@ -105,6 +105,41 @@ export function createView(canvas, data, { phone = false } = {}) {
   }
   const pelvis = bodies[data.pelvis], torso = bodies[data.torso];
 
+  // ---------- name plate on the chest ----------
+  // Sized from the torso's own meshes (body frame, MuJoCo axes: x forward, z up),
+  // so it sits just proud of the chest and moves with every step.
+  (function namePlate() {
+    const box = new THREE.Box3();
+    for (const m of torso.children) {
+      if (!m.geometry?.boundingBox) continue;
+      m.updateMatrix();
+      box.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrix));
+    }
+    if (box.isEmpty()) return;
+    const c = document.createElement('canvas'); c.width = 512; c.height = 128;
+    const draw = () => {
+      const x = c.getContext('2d');
+      x.clearRect(0, 0, c.width, c.height);
+      x.font = '700 92px Rajdhani, "Barlow Condensed", sans-serif';
+      x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillStyle = '#d62828';
+      x.fillText('RABIAT', c.width / 2, c.height / 2 + 6);
+      tex.needsUpdate = true;
+    };
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+    draw();
+    document.fonts?.load('700 92px Rajdhani').then(draw, () => {});
+    const w = (box.max.y - box.min.y) * 0.8;
+    const plate = new THREE.Mesh(new THREE.PlaneGeometry(w, w / 4),
+      new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
+    // text runs along +y (the viewer's right when facing the robot), reads upward along +z, faces +x
+    plate.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(
+      new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 0)));
+    plate.position.set(box.max.x + 0.004, (box.min.y + box.max.y) / 2, box.min.z + (box.max.z - box.min.z) * 0.42);
+    torso.add(plate);
+  })();
+
   // ---------- push feedback, in teal ----------
   const tealLine = new THREE.MeshBasicMaterial({ color: COL.teal, transparent: true, opacity: 0.9, depthTest: false, fog: false });
   const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 1, 10).translate(0, 0.5, 0), tealLine);

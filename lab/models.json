@@ -9,6 +9,7 @@
   "models": [
     {
       "slug": "depth-anything-v2",
+      "preview": { "video": "previews/depth.mp4", "poster": "previews/depth.jpg" },
       "name": "Depth Anything V2",
       "maker": "HKU and TikTok",
       "kind": "Space",
@@ -231,6 +232,7 @@
     },
     {
       "slug": "edgetam",
+      "preview": { "video": "previews/edgetam.mp4", "poster": "previews/edgetam.jpg" },
       "name": "EdgeTAM",
       "maker": "Meta",
       "kind": "Vision",
@@ -462,6 +464,7 @@
     },
     {
       "slug": "rf-detr",
+      "preview": { "video": "previews/rf-detr.mp4", "poster": "previews/rf-detr.jpg" },
       "name": "RF-DETR Nano",
       "maker": "Roboflow",
       "kind": "Vision",
@@ -877,6 +880,7 @@
     },
     {
       "slug": "robot",
+      "preview": { "video": "previews/robot.mp4", "poster": "previews/robot.jpg" },
       "name": "G1 Walking Policy",
       "maker": "Julien Blanchon and mjswan",
       "kind": "Space",

@@ -3363,6 +3363,37 @@ body:not(.on-hero) main .btn.secondary:hover {
   z-index: 1;
 }
 
+/* Looping preview clips on Lab and Playground cards. assets/previews.js plays
+   them only while they are on screen; the poster stands in otherwise. */
+.preview-media {
+  display: block;
+  margin: 0 0 14px;
+  aspect-ratio: 16 / 10;
+  border-radius: calc(var(--radius) - 4px);
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+.preview-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cool-sub-h {
+  margin: 8px 0 14px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.lab-picks {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-bottom: 36px;
+}
+
 /* Not a link: clicking spins the card in 3D and leaves you where you are. */
 .music-now {
   display: block;
