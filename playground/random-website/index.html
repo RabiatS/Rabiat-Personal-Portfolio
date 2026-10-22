@@ -50,6 +50,48 @@
     .recent a { font: 12.5px var(--f-mono); color: var(--muted); text-decoration: none; }
     .recent a:hover { color: var(--text); }
     @media (max-width: 600px) { .dock .btn { padding: 8px 8px; font-size: 12px; } .drift span { font-size: 24px; } }
+
+    /* ---------- Dailies: bottom right ---------- */
+    .dailies-btn {
+      position: fixed; right: 20px; bottom: max(18px, env(safe-area-inset-bottom)); z-index: 21;
+      display: flex; align-items: center; gap: 8px; padding: 12px 16px; cursor: pointer;
+      border-radius: 12px; border: 1px solid var(--border-strong); color: var(--text);
+      background: rgba(20,20,20,.74); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3);
+      box-shadow: 0 12px 40px rgba(0,0,0,.45); font: 600 13px var(--f-display); letter-spacing: .12em; text-transform: uppercase;
+    }
+    .dailies-btn:hover { border-color: var(--r-ash); }
+    .dailies-btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+    .dailies-btn .count { font: 500 11px var(--f-mono); letter-spacing: 0; text-transform: none; color: var(--muted); }
+    .dailies-btn[aria-expanded="true"] { border-color: var(--r-bone); }
+    .sheet {
+      position: fixed; right: 20px; bottom: calc(max(18px, env(safe-area-inset-bottom)) + 58px); z-index: 22;
+      width: min(380px, calc(100vw - 24px)); max-height: min(72vh, 640px); display: flex; flex-direction: column;
+      background: var(--surface); border: 1px solid var(--border-strong); border-radius: 14px; box-shadow: 0 24px 70px rgba(0,0,0,.6);
+    }
+    .sheet header { padding: 16px 18px 10px; border-bottom: 1px solid var(--border); }
+    .sheet h3 { margin: 0; font: 700 22px/1 var(--f-display); text-transform: uppercase; }
+    .sheet .today { margin-top: 6px; font: 12px var(--f-mono); color: var(--muted); }
+    .sheet .bar { margin-top: 10px; }
+    .sheet .list { overflow-y: auto; padding: 4px 8px 8px; }
+    .sheet .grp { margin: 12px 10px 4px; font: 600 11px var(--f-display); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+    .row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; }
+    .row:hover { background: var(--surface-2); }
+    .tick { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border-strong); background: none; cursor: pointer; display: grid; place-items: center; color: var(--r-void); padding: 0; }
+    .tick:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+    .row.done .tick { background: var(--r-bone); border-color: var(--r-bone); }
+    .tick svg { width: 12px; height: 12px; opacity: 0; }
+    .row.done .tick svg { opacity: 1; }
+    .row a { flex: 1; min-width: 0; text-decoration: none; color: var(--text); }
+    .row .nm { font: 600 16px/1.1 var(--f-display); letter-spacing: .02em; }
+    .row .ds { font: 12px var(--f-mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .row.done .nm { color: var(--muted); }
+    .sheet footer { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--border); }
+    .sheet footer .btn { flex: 1; justify-content: center; }
+    @media (max-width: 600px) {
+      /* sit above the mood dock instead of on top of it */
+      .dailies-btn { right: 12px; bottom: calc(max(18px, env(safe-area-inset-bottom)) + 54px); padding: 10px 13px; }
+      .sheet { right: 12px; bottom: calc(max(18px, env(safe-area-inset-bottom)) + 104px); max-height: 62vh; }
+    }
   </style>
 </head>
 <body>
@@ -68,6 +110,7 @@
           <li>Pick a mood at the bottom, or leave it on Any</li>
           <li>The last few you visited stay here, so you can find that one again</li>
           <li><kbd>Enter</kbd> goes somewhere</li>
+          <li><b>Dailies</b>, bottom right, lists games with a new puzzle every day and ticks off the ones you have done today</li>
         </ul>
         <p class="fine"><span id="seenCount"></span> <a href="#" id="resetSeen">Start over</a>. My take on <a href="https://theuselessweb.com/" target="_blank" rel="noopener">The Useless Web</a>.</p>
       </div>
@@ -92,9 +135,23 @@
     <button class="btn" data-vibe="make" aria-pressed="false">Make</button>
   </div>
 
+  <button class="dailies-btn" id="dailiesBtn" aria-expanded="false" aria-controls="dailies">Dailies <span class="count" id="dailyCount"></span></button>
+  <section class="sheet" id="dailies" hidden aria-label="Dailies">
+    <header>
+      <h3>Dailies</h3>
+      <div class="today" id="dailyToday"></div>
+      <div class="bar"><i id="dailyBar"></i></div>
+    </header>
+    <div class="list" id="dailyList"></div>
+    <footer>
+      <button class="btn primary" id="dailySurprise">Surprise me</button>
+    </footer>
+  </section>
+
   <script src="../../assets/rabiat-kit.js" defer></script>
   <script type="module">
     import { SITES } from './sites.js';
+    import { DAILIES } from './dailies.js';
     const $ = (id) => document.getElementById(id);
     const KEY = 'rabiat-somewhere-v1';
     const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
@@ -178,6 +235,67 @@
     const lastSite = SITES.find((s) => s.url === recent[0]);
     showLast(lastSite, false); showRecent();
     if (lastSite) highlight(lastSite);
+
+    // ---------- Dailies ----------
+    // A checklist for today: opening a game ticks it, and it all clears at local midnight.
+    const DKEY = 'rabiat-dailies-v1';
+    const todayKey = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
+    const loadDone = () => { try { const v = JSON.parse(localStorage.getItem(DKEY)); return v && v.day === todayKey() ? new Set(v.done) : new Set(); } catch { return new Set(); } };
+    let done = loadDone(), doneDay = todayKey();
+    const saveDone = () => { try { localStorage.setItem(DKEY, JSON.stringify({ day: todayKey(), done: [...done] })); } catch {} };
+    const ALL = DAILIES.flatMap((g) => g.items);
+    const tickSvg = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.4l2.3 2.3 4.7-5.2"/></svg>';
+
+    function renderDailies() {
+      if (doneDay !== todayKey()) { done = new Set(); doneDay = todayKey(); } // midnight passed with the page open
+      const n = ALL.filter((d) => done.has(d.url)).length;
+      $('dailyCount').textContent = n ? `${n}/${ALL.length}` : '';
+      $('dailyToday').textContent = `${new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })} · ${n} of ${ALL.length} done · resets at midnight`;
+      $('dailyBar').style.width = `${(n / ALL.length) * 100}%`;
+      const list = $('dailyList');
+      if (!list.children.length) {
+        for (const g of DAILIES) {
+          const h = document.createElement('div'); h.className = 'grp'; h.textContent = g.group; list.appendChild(h);
+          for (const d of g.items) {
+            const row = document.createElement('div'); row.className = 'row'; row.dataset.url = d.url;
+            row.innerHTML = `<button class="tick" aria-pressed="false">${tickSvg}</button><a target="_blank" rel="noopener"><div class="nm"></div><div class="ds"></div></a>`;
+            const a = row.querySelector('a'); a.href = d.url;
+            row.querySelector('.nm').textContent = d.name; row.querySelector('.ds').textContent = d.desc;
+            row.querySelector('.tick').setAttribute('aria-label', `Done today: ${d.name}`);
+            row.querySelector('.tick').addEventListener('click', () => { done.has(d.url) ? done.delete(d.url) : done.add(d.url); saveDone(); renderDailies(); });
+            a.addEventListener('click', () => { done.add(d.url); saveDone(); setTimeout(renderDailies, 0); });
+            list.appendChild(row);
+          }
+        }
+      }
+      for (const row of list.querySelectorAll('.row')) {
+        const on = done.has(row.dataset.url);
+        row.classList.toggle('done', on);
+        row.querySelector('.tick').setAttribute('aria-pressed', String(on));
+      }
+      $('dailySurprise').textContent = n === ALL.length ? 'All done today' : 'Surprise me';
+      $('dailySurprise').disabled = n === ALL.length;
+    }
+    function toggleDailies(open) {
+      const sheet = $('dailies');
+      open = open ?? sheet.hidden;
+      sheet.hidden = !open;
+      $('dailiesBtn').setAttribute('aria-expanded', String(open));
+      if (open) { done = loadDone(); renderDailies(); }
+    }
+    $('dailiesBtn').addEventListener('click', (e) => { e.stopPropagation(); toggleDailies(); });
+    $('dailies').addEventListener('click', (e) => e.stopPropagation());
+    document.addEventListener('click', () => toggleDailies(false));
+    addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleDailies(false); });
+    $('dailySurprise').addEventListener('click', () => {
+      const left = ALL.filter((d) => !done.has(d.url));
+      if (!left.length) return;
+      const d = left[Math.floor(Math.random() * left.length)];
+      const a = Object.assign(document.createElement('a'), { href: d.url, target: '_blank', rel: 'noopener' });
+      document.body.appendChild(a); a.click(); a.remove();
+      done.add(d.url); saveDone(); renderDailies();
+    });
+    renderDailies();
   </script>
 </body>
 </html>

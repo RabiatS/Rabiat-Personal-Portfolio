@@ -1,4 +1,4 @@
-// Hand-picked, checked live on Sep 25, 2026. No parked domains, no ad farms.
+// Hand-picked, checked live on Sep 25, 2026 (dailies added Oct 22, 2026). No parked domains, no ad farms.
 // vibe: calm | play | weird | learn | make
 export const SITES = [
   // calm
@@ -37,6 +37,15 @@ export const SITES = [
   ['https://neal.fun/asteroid-launcher/', 'Asteroid Launcher', 'pick a rock, pick a city', 'play'],
   ['https://neal.fun/absurd-trolley-problems/', 'Absurd Trolley Problems', 'moral choices, badly', 'play'],
   ['https://smashthewalls.com/', 'Smash the Walls', 'break the page', 'play'],
+  // dailies: a new puzzle every day (also in the Dailies panel)
+  ['https://www.nytimes.com/games/wordle/index.html', 'Wordle', 'the original, five letters a day', 'play'],
+  ['https://www.nytimes.com/games/connections', 'Connections', 'four groups of four, every day', 'play'],
+  ['https://www.spotle.io/', 'Spotle', 'guess the music artist of the day', 'play'],
+  ['https://bandle.app/', 'Bandle', 'name the song one instrument at a time', 'play'],
+  ['https://framed.wtf/', 'Framed', 'name the movie from six frames', 'play'],
+  ['https://contexto.me/', 'Contexto', 'guess the word by how close you are', 'play'],
+  ['https://worldle.teuteuf.fr/', 'Worldle', 'name the country from its shape', 'learn'],
+  ['https://timeguessr.com/', 'TimeGuessr', 'where and when was this photo taken', 'learn'],
 
   // weird
   ['https://pointerpointer.com/', 'Pointer Pointer', 'photos of people pointing at your cursor', 'weird'],
