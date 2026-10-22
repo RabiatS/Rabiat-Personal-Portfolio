@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Number Span · Brain Gym · Rabiat</title>
+  <meta name="description" content="Digits flash one at a time. Type them back in order. How many can you hold? Brain Gym, on rabiatsadiq.com.">
+  <meta property="og:title" content="Number Span" />
+  <meta property="og:description" content="Digits flash one at a time. How many can you hold?" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../gym.css">
+  <style>
+    .screen { height: clamp(200px, 38vh, 320px); display: grid; place-items: center; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); margin-bottom: 22px; overflow: hidden; }
+    .digit { font: 700 clamp(120px, 26vw, 220px)/1 var(--f-display); color: var(--text); }
+    .digit.flash { animation: flash .7s ease-out both; }
+    @keyframes flash { 0% { transform: scale(.82); opacity: 0; } 18% { transform: scale(1); opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+    .say { font: 600 16px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+    .pips { display: flex; gap: 6px; justify-content: center; margin-top: 14px; }
+    .pips i { width: 9px; height: 9px; border-radius: 50%; background: var(--r-midnight); }
+    .pips i.on { background: var(--r-bone); }
+    .gym-input input { letter-spacing: .3em; text-align: center; }
+    .start { text-align: center; }
+    .start p { color: var(--text-2); margin: 0 0 20px; }
+    @media (prefers-reduced-motion: reduce) { .digit.flash { animation: none; } }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <span class="brand"><span class="b1">Rabiat's Brain Gym</span><span class="b2">Number Span</span></span>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this exercise">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Number Span</h4>
+        <p>Digits appear one at a time, about one a second. When they stop, type them back in order.</p>
+        <p>Start at 3. Each right answer adds a digit. You get two tries at each length, and the run ends when both miss.</p>
+        <p class="fine">Working memory, the space you hold things in while you think. George A. Miller, "The Magical Number Seven, Plus or Minus Two", Psychological Review 63(2), 1956.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html#brain-gym">rabiatsadiq.com</a>
+  </header>
+
+  <main class="gym">
+    <div class="gym-card" id="card"></div>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module">
+    import { best, showResult } from '../gym.js';
+    const ID = 'number-span', ON = 700, GAP = 300;
+    const card = document.getElementById('card');
+    let len, tries, longest, digits;
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    function intro() {
+      const b = best.get(ID);
+      card.innerHTML = `
+        <div class="start">
+          <div class="screen"><span class="say">Watch, then type them back</span></div>
+          <p>Digits flash one at a time. Hold them in your head, no writing them down.${b != null ? ` Your best is ${b}.` : ''}</p>
+          <button class="btn primary lg" id="go">Start</button>
+        </div>`;
+      document.getElementById('go').addEventListener('click', () => { len = 3; tries = 0; longest = 0; play(); });
+      document.getElementById('go').focus();
+    }
+
+    async function play() {
+      // never the same digit twice in a row, which is hard to see flash
+      digits = [];
+      while (digits.length < len) { const d = Math.floor(Math.random() * 10); if (d !== digits.at(-1)) digits.push(d); }
+      card.innerHTML = `
+        <div class="gym-top"><span class="gym-tag">${len} digits${tries ? ' · second try' : ''}</span><span class="gym-tag">longest ${longest || 'none yet'}</span></div>
+        <div class="screen" id="screen"><span class="say">Ready</span></div>
+        <div class="pips" id="pips">${'<i></i>'.repeat(len)}</div>`;
+      const screen = document.getElementById('screen'), pips = [...document.getElementById('pips').children];
+      await sleep(900);
+      for (let i = 0; i < digits.length; i++) {
+        screen.innerHTML = `<span class="digit flash">${digits[i]}</span>`;
+        pips[i].classList.add('on');
+        await sleep(ON + GAP);
+      }
+      screen.innerHTML = '<span class="say">Your turn</span>';
+      const form = document.createElement('form');
+      form.className = 'gym-input'; form.autocomplete = 'off';
+      form.innerHTML = '<input id="ans" inputmode="numeric" placeholder="Type them in order" aria-label="The digits, in order"><button class="btn primary" type="submit">Check</button>';
+      card.appendChild(form);
+      const fb = document.createElement('div'); fb.className = 'gym-feedback'; fb.id = 'fb'; fb.setAttribute('aria-live', 'polite');
+      card.appendChild(fb);
+      const input = form.querySelector('#ans');
+      input.focus();
+      form.addEventListener('submit', (e) => { e.preventDefault(); check(input.value); });
+    }
+
+    async function check(value) {
+      const typed = String(value).replace(/\D/g, '');
+      if (!typed) return;
+      const want = digits.join(''), right = typed === want;
+      document.querySelector('.gym-input').querySelectorAll('input, button').forEach((el) => (el.disabled = true));
+      const fb = document.getElementById('fb');
+      fb.innerHTML = `<span class="verdict ${right ? 'ok' : ''}"></span><span class="why"></span>`;
+      fb.querySelector('.verdict').textContent = right ? `Right, ${len} digits` : 'Not quite';
+      fb.querySelector('.why').textContent = right ? 'One more next time.' : `It was ${want.split('').join(' ')}.`;
+      if (right) { longest = len; len++; tries = 0; }
+      else { tries++; }
+      if (!right && tries >= 2) { await sleep(1600); return finish(); }
+      await sleep(1500);
+      play();
+    }
+
+    function finish() {
+      const isNew = best.offer(ID, longest);
+      showResult(card, {
+        big: longest,
+        line: `${longest ? `You held ${longest} digits in order.` : 'Three is a hard start for some people. Try again.'}${isNew ? ' A new best on this device.' : ''}`,
+        bench: {
+          title: 'How that compares',
+          text: 'Most adults hold somewhere between 5 and 9 digits this way, about 7 on average. Tiredness, distraction and how fast the digits come all move it, so try it a few times.',
+          src: 'Miller (1956), Psychological Review 63(2), 81 to 97',
+        },
+        again: () => { len = 3; tries = 0; longest = 0; play(); },
+      });
+    }
+    intro();
+  </script>
+</body>
+</html>

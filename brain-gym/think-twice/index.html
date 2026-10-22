@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Think Twice · Brain Gym · Rabiat</title>
+  <meta name="description" content="Questions where the first answer that comes to mind is wrong. Slow down and check. Brain Gym, on rabiatsadiq.com.">
+  <meta property="og:title" content="Think Twice" />
+  <meta property="og:description" content="Questions where the first answer that comes to mind is wrong." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../gym.css">
+  <style>
+    .kind { font: 600 11px var(--f-display); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .gym-q { font-size: clamp(21px, 3vw, 27px); }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <span class="brand"><span class="b1">Rabiat's Brain Gym</span><span class="b2">Think Twice</span></span>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this exercise">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Think Twice</h4>
+        <p>Every question has an answer that jumps out first, and it is wrong. The skill is noticing that pull and checking before you commit.</p>
+        <p>Each round starts with the classic three from the Cognitive Reflection Test, which has published averages to compare with, then five of mine.</p>
+        <p class="fine">Shane Frederick, "Cognitive Reflection and Decision Making", Journal of Economic Perspectives 19(4), 2005.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html#brain-gym">rabiatsadiq.com</a>
+  </header>
+
+  <main class="gym">
+    <div class="gym-card" id="card"></div>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module">
+    import { best, shuffle, dots, showResult } from '../gym.js';
+    const ID = 'think-twice';
+    // ans: accepted numbers; lure: the answer that jumps out first
+    const CLASSIC = [
+      { q: 'A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost?', unit: 'cents', ans: [5, 0.05], lure: [10, 0.1],
+        why: 'If the ball were 10 cents, the bat would be $1.10 and together they would cost $1.20. A 5 cent ball and a $1.05 bat make $1.10.' },
+      { q: 'If it takes 5 machines 5 minutes to make 5 widgets, how long would it take 100 machines to make 100 widgets?', unit: 'minutes', ans: [5], lure: [100],
+        why: 'Each machine makes one widget in 5 minutes. A hundred machines working side by side make a hundred widgets in the same 5 minutes.' },
+      { q: 'In a lake there is a patch of lily pads. Every day, the patch doubles in size. If it takes 48 days to cover the whole lake, how long would it take to cover half of it?', unit: 'days', ans: [47], lure: [24],
+        why: 'It doubles every day, so the day before the lake is fully covered, it is half covered: day 47.' },
+    ].map((x) => ({ ...x, classic: true }));
+    const MINE = [
+      { q: 'A notebook and a pen cost $3.20 together. The notebook costs $3.00 more than the pen. How much does the pen cost?', unit: 'cents', ans: [10, 0.1], lure: [20, 0.2],
+        why: 'A 20 cent pen would make the notebook $3.20 and the total $3.40. A 10 cent pen and a $3.10 notebook make $3.20.' },
+      { q: 'If 4 printers print 4 posters in 4 minutes, how many minutes would 40 printers take to print 40 posters?', unit: 'minutes', ans: [4], lure: [40],
+        why: 'Each printer prints one poster in 4 minutes, however many printers there are.' },
+      { q: 'Mould on a slice of bread doubles in area every hour. It covers the whole slice after 10 hours. After how many hours did it cover half the slice?', unit: 'hours', ans: [9], lure: [5],
+        why: 'Doubling works backwards too: one hour before it covered everything, it covered half.' },
+      { q: "You're running a race and you overtake the person in second place. What place are you in now?", unit: 'place', ans: [2], lure: [1],
+        why: 'You took their place, second. The person in first is still ahead of you.' },
+      { q: 'A farmer has 15 sheep. All but 8 run away. How many sheep are left?', unit: 'sheep', ans: [8], lure: [7],
+        why: '"All but 8" means 8 stay. The subtraction 15 minus 8 is the trap.' },
+      { q: 'One egg takes 6 minutes to boil. How long do 3 eggs take, boiled together in the same pot?', unit: 'minutes', ans: [6], lure: [18],
+        why: 'They cook at the same time, so it is still 6 minutes.' },
+      { q: 'Divide 30 by a half, then add 10. What do you get?', unit: '', ans: [70], lure: [25],
+        why: 'Dividing by a half is the same as doubling: 30 ÷ 0.5 = 60, plus 10 is 70. Halving 30 is a different question.' },
+      { q: 'How many months of the year have 28 days?', unit: 'months', ans: [12], lure: [1],
+        why: 'Every month has at least 28 days. February is just the only one that stops there.' },
+      { q: 'A clock takes 5 seconds to strike 6 o\'clock, timed from the first chime to the last. How many seconds does it take to strike 12?', unit: 'seconds', ans: [11], lure: [10],
+        why: 'Six chimes have five gaps, so each gap is 1 second. Twelve chimes have eleven gaps: 11 seconds.' },
+    ];
+    const card = document.getElementById('card');
+    let deck, round, score, classicScore, bar;
+
+    function start() {
+      deck = [...CLASSIC, ...shuffle(MINE).slice(0, 5)]; round = 0; score = 0; classicScore = 0;
+      card.innerHTML = `<div class="gym-top"><div class="gym-dots" id="dots"></div><span class="gym-tag" id="tag"></span></div><div id="stage"></div>`;
+      bar = dots(document.getElementById('dots'), deck.length);
+      show();
+    }
+
+    function show() {
+      const it = deck[round];
+      bar.at(round);
+      document.getElementById('tag').textContent = `${round + 1} of ${deck.length}`;
+      const stage = document.getElementById('stage');
+      stage.innerHTML = `
+        <div class="kind">${it.classic ? 'One of the classic three' : 'One of mine'}</div>
+        <p class="gym-q"></p>
+        <form class="gym-input" id="form" autocomplete="off">
+          <input id="ans" inputmode="decimal" placeholder="Your answer" aria-label="Your answer">
+          ${it.unit ? `<span class="unit">${it.unit}</span>` : ''}
+          <button class="btn primary" type="submit">Check</button>
+        </form>
+        <div class="gym-feedback" id="fb" aria-live="polite"></div>`;
+      stage.querySelector('.gym-q').textContent = it.q;
+      const input = stage.querySelector('#ans');
+      input.focus({ preventScroll: true });
+      stage.querySelector('#form').addEventListener('submit', (e) => { e.preventDefault(); check(input.value); });
+    }
+
+    const num = (s) => { const m = String(s).replace(/,/g, '').match(/-?\d*\.?\d+/); return m ? parseFloat(m[0]) : NaN; };
+    const near = (a, b) => Math.abs(a - b) < 1e-9;
+
+    function check(value) {
+      const it = deck[round], v = num(value);
+      if (Number.isNaN(v)) { document.getElementById('ans').focus(); return; }
+      const right = it.ans.some((a) => near(a, v)), lured = it.lure.some((a) => near(a, v));
+      if (right) { score++; if (it.classic) classicScore++; }
+      bar.mark(round, right ? 'ok' : 'no');
+      document.getElementById('form').querySelectorAll('input, button').forEach((el) => (el.disabled = true));
+      const fb = document.getElementById('fb');
+      const verdict = right ? 'Right' : lured ? 'That is the one that jumps out first' : `Not quite. It is ${it.ans[0]}${it.unit ? ' ' + it.unit : ''}`;
+      fb.innerHTML = `<span class="verdict ${right ? 'ok' : ''}"></span><span class="why"></span>
+        <div class="gym-next"><button class="btn primary" id="next">${round + 1 < deck.length ? 'Next' : 'See how you did'}</button></div>`;
+      fb.querySelector('.verdict').textContent = verdict;
+      fb.querySelector('.why').textContent = it.why;
+      const next = fb.querySelector('#next');
+      next.addEventListener('click', () => { round++; round < deck.length ? show() : finish(); });
+      next.focus({ preventScroll: true });
+    }
+
+    function finish() {
+      const isNew = best.offer(ID, score);
+      showResult(card, {
+        big: score, of: deck.length,
+        line: `${classicScore} of the classic three, ${score - classicScore} of mine.${isNew ? ' A new best on this device.' : ''}`,
+        bench: {
+          title: 'How the classic three compare',
+          text: `You got ${classicScore} of 3. When Shane Frederick gave these three questions to 3,428 people, the average was 1.24 out of 3. Carnegie Mellon students averaged 1.51 and MIT students 2.18. The three are well known now, so anyone who has seen them before scores higher.`,
+          src: 'Frederick (2005), Journal of Economic Perspectives 19(4), 25 to 42',
+        },
+        again: start,
+      });
+    }
+    start();
+  </script>
+</body>
+</html>
