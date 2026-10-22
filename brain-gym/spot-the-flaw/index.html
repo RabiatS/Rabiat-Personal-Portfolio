@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Spot the Flaw · Brain Gym · Rabiat</title>
+  <meta name="description" content="A confident answer with one wrong sentence in it. Find it. Brain Gym, on rabiatsadiq.com.">
+  <meta property="og:title" content="Spot the Flaw" />
+  <meta property="og:description" content="A confident answer with one wrong sentence in it. Find it." />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
+  <link rel="stylesheet" href="../gym.css">
+  <style>
+    .ask { margin: 0 0 14px auto; max-width: 88%; width: fit-content; padding: 12px 16px; border-radius: 14px 14px 4px 14px; background: var(--surface-2); color: var(--text-2); font-size: 16px; line-height: 1.5; }
+    .reply { display: flex; gap: 12px; align-items: flex-start; }
+    .bot { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border-strong); display: grid; place-items: center; color: var(--muted); font: 600 11px var(--f-mono); margin-top: 4px; }
+    .answer { font: 400 clamp(18px, 2.4vw, 21px)/1.75 var(--f-body); color: var(--text); }
+    .sent { cursor: pointer; border-radius: 4px; padding: 1px 2px; transition: background .12s, box-shadow .12s; }
+    .sent:hover, .sent:focus-visible { background: var(--surface-2); outline: none; }
+    .locked .sent { cursor: default; }
+    .locked .sent:hover { background: none; }
+    .sent.flaw { box-shadow: 0 0 0 2px var(--r-bone); background: rgba(245,245,240,.08); }
+    .sent.flaw.found { box-shadow: 0 0 0 2px var(--teal); background: rgba(94,234,212,.1); }
+    .sent.miss { text-decoration: line-through; text-decoration-color: var(--r-slate); color: var(--muted); }
+    .hint { margin: 16px 0 0 42px; font: 13px var(--f-mono); color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <span class="brand"><span class="b1">Rabiat's Brain Gym</span><span class="b2">Spot the Flaw</span></span>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" aria-controls="about" aria-label="About this exercise">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Spot the Flaw</h4>
+        <p>Each answer sounds sure of itself, the way AI answers do. Exactly one sentence in it is wrong. Tap that sentence.</p>
+        <p>The skill is reading for what is actually claimed, not how confident it sounds. Eight rounds, drawn from a bigger set, so it changes every time.</p>
+        <p class="fine">I wrote every answer by hand. Your best score stays on this device.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/cool.html#brain-gym">rabiatsadiq.com</a>
+  </header>
+
+  <main class="gym">
+    <div class="gym-card" id="card"></div>
+  </main>
+
+  <script src="../../assets/rabiat-kit.js" defer></script>
+  <script type="module">
+    import { ITEMS } from './items.js';
+    import { best, shuffle, dots, showResult } from '../gym.js';
+    const ROUNDS = 8, ID = 'spot-the-flaw';
+    const card = document.getElementById('card');
+    let round, score, deck, bar;
+
+    function start() {
+      deck = shuffle(ITEMS).slice(0, ROUNDS); round = 0; score = 0;
+      card.innerHTML = `
+        <div class="gym-top"><div class="gym-dots" id="dots"></div><span class="gym-tag" id="tag"></span></div>
+        <div id="stage"></div>`;
+      bar = dots(document.getElementById('dots'), ROUNDS);
+      show();
+    }
+
+    function show() {
+      const it = deck[round];
+      bar.at(round);
+      const b = best.get(ID);
+      document.getElementById('tag').textContent = `${round + 1} of ${ROUNDS}${b != null ? ` · best ${b}` : ''}`;
+      const stage = document.getElementById('stage');
+      stage.innerHTML = `
+        <div class="ask"></div>
+        <div class="reply"><span class="bot" aria-hidden="true">AI</span><p class="answer" id="answer"></p></div>
+        <p class="hint">One sentence is wrong. Tap it.</p>
+        <div class="gym-feedback" id="fb" aria-live="polite"></div>`;
+      stage.querySelector('.ask').textContent = it.q;
+      const ans = stage.querySelector('#answer');
+      it.a.forEach((s, i) => {
+        const sp = document.createElement('span');
+        sp.className = 'sent'; sp.textContent = s; sp.tabIndex = 0; sp.setAttribute('role', 'button');
+        sp.addEventListener('click', () => pick(i));
+        sp.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(i); } });
+        ans.appendChild(sp);
+        if (i < it.a.length - 1) ans.appendChild(document.createTextNode(' '));
+      });
+    }
+
+    function pick(i) {
+      const it = deck[round], ans = document.getElementById('answer');
+      if (ans.classList.contains('locked')) return;
+      ans.classList.add('locked');
+      const sents = ans.querySelectorAll('.sent');
+      const right = i === it.bad;
+      if (right) score++;
+      sents[it.bad].classList.add('flaw');
+      if (right) sents[it.bad].classList.add('found'); else sents[i].classList.add('miss');
+      bar.mark(round, right ? 'ok' : 'no');
+      document.querySelector('.hint').hidden = true;
+      const fb = document.getElementById('fb');
+      fb.innerHTML = `<span class="verdict ${right ? 'ok' : ''}">${right ? 'Found it' : 'Not that one'}</span><span class="why"></span>
+        <div class="gym-next"><button class="btn primary" id="next">${round + 1 < ROUNDS ? 'Next' : 'See how you did'}</button></div>`;
+      fb.querySelector('.why').textContent = it.why;
+      const next = fb.querySelector('#next');
+      next.addEventListener('click', () => { round++; round < ROUNDS ? show() : finish(); });
+      next.focus({ preventScroll: true });
+    }
+
+    function finish() {
+      const isNew = best.offer(ID, score);
+      const prev = best.get(ID);
+      showResult(card, {
+        big: score, of: ROUNDS,
+        line: isNew ? 'A new best on this device.' : score === ROUNDS ? 'Every flaw found.' : `Your best here is ${prev} of ${ROUNDS}.`,
+        again: start,
+      });
+    }
+    start();
+  </script>
+</body>
+</html>

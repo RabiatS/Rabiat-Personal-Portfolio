@@ -1,0 +1,34 @@
+/* Brain Gym: shared pieces on top of the Rabiat kit (assets/rabiat-kit.css).
+   Red stays the brand mark: right answers are teal, misses are plain bone text. */
+.gym { min-height: calc(100vh - 92px); display: grid; place-items: center; padding: 8px 20px 96px; }
+.gym-card { width: min(700px, 100%); }
+.gym-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+.gym-dots { display: flex; gap: 6px; flex-wrap: wrap; }
+.gym-dots i { width: 22px; height: 6px; border-radius: 3px; background: var(--r-midnight); transition: background .2s; }
+.gym-dots i.now { background: var(--r-ash); }
+.gym-dots i.ok { background: var(--teal); }
+.gym-dots i.no { background: var(--r-slate); }
+.gym-tag { font: 500 12px var(--f-mono); color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
+.gym-q { font: 400 clamp(19px, 2.6vw, 24px)/1.5 var(--f-body); color: var(--text); margin: 0 0 22px; }
+.gym-feedback { margin-top: 20px; min-height: 64px; font-size: 15.5px; line-height: 1.6; color: var(--text-2); }
+.gym-feedback .verdict { display: block; font: 700 15px var(--f-display); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; color: var(--text); }
+.gym-feedback .verdict.ok { color: var(--teal); }
+.gym-next { margin-top: 18px; }
+.gym-input { display: flex; gap: 10px; align-items: stretch; }
+.gym-input input {
+  flex: 1; min-width: 0; padding: 14px 16px; font: 500 22px var(--f-mono); color: var(--text);
+  background: var(--r-void); border: 1px solid var(--border-strong); border-radius: 10px;
+}
+.gym-input input:focus { outline: none; border-color: var(--r-bone); }
+.gym-input .unit { align-self: center; font: 14px var(--f-mono); color: var(--muted); }
+
+/* results */
+.gym-result { text-align: center; }
+.gym-result .big { font: 700 clamp(72px, 14vw, 128px)/.9 var(--f-display); letter-spacing: -.01em; }
+.gym-result .big small { font-size: .38em; color: var(--muted); font-weight: 600; }
+.gym-result .line { margin-top: 10px; color: var(--text-2); font-size: 16px; }
+.gym-result .bench { margin: 26px auto 0; max-width: 520px; text-align: left; padding: 16px 18px; border: 1px solid var(--border-strong); border-radius: 12px; background: var(--surface); font-size: 14.5px; color: var(--text-2); }
+.gym-result .bench h4 { margin: 0 0 6px; font: 700 12px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.gym-result .bench .src { margin-top: 8px; font: 12px var(--f-mono); color: var(--muted); }
+.gym-result .acts { display: flex; gap: 10px; justify-content: center; margin-top: 26px; flex-wrap: wrap; }
+@media (max-width: 600px) { .gym { place-items: start center; padding-top: 4px; } }
