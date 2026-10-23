@@ -1,6 +1,21 @@
 {
   "pieces": [
     {
+      "id": "the-point-was-to-learn",
+      "kind": "Essay",
+      "title": "The Point Was to Learn",
+      "blurb": "We train AI by rewarding the finished task and hoping the learning comes along, and most of us grew up under the same deal. From a boat that never finished its race to OpenAI's agents this summer, with the code behind the reward, and what it might look like to reward the learning instead.",
+      "date": "2026-10-22",
+      "readTime": "16 min",
+      "href": "case-studies/the-point-was-to-learn.html",
+      "image": "assets/img/writing/point-was-to-learn.jpg",
+      "topics": [
+        "AI training",
+        "Learning",
+        "Biomimicry"
+      ]
+    },
+    {
       "id": "lantern",
       "kind": "Essay",
       "title": "If AI Goes Dark",
