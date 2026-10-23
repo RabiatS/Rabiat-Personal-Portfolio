@@ -1,4 +1,4 @@
-// Dailies: games with a new puzzle every day. Checked live on Oct 22, 2026.
+// Dailies: games with a new puzzle every day. Checked live on Oct 22, 2026 (Originle, FoodGuessr, Krillion added later that day).
 // The panel keeps a checklist for today (this device, local midnight).
 export const DAILIES = [
   ['Words', [
@@ -10,6 +10,7 @@ export const DAILIES = [
     ['https://wafflegame.net/daily', 'Waffle', 'swap letters into six words'],
     ['https://squaredle.app/', 'Squaredle', 'trace words through a grid'],
     ['https://contexto.me/', 'Contexto', 'guess the word by how close you are'],
+    ['https://krillion.org/', 'Krillion', 'seven trivia prompts, rarer answers score more'],
   ]],
   ['Places and time', [
     ['https://worldle.teuteuf.fr/', 'Worldle', 'name the country from its shape'],
@@ -17,6 +18,7 @@ export const DAILIES = [
     ['https://travle.earth/', 'Travle', 'walk from one country to another'],
     ['https://timeguessr.com/', 'TimeGuessr', 'where and when was this photo taken'],
     ['https://www.chronophoto.app/daily.html', 'Chronophoto', 'guess the year of a photo'],
+    ['https://foodguessr.com/', 'FoodGuessr', 'guess where a dish comes from'],
   ]],
   ['Music, film and games', [
     ['https://www.spotle.io/', 'Spotle', 'a new music artist every day'],
@@ -25,6 +27,7 @@ export const DAILIES = [
     ['https://guessthe.game/', 'GuessThe.Game', 'name the video game from screenshots'],
   ]],
   ['People and animals', [
+    ['https://originle.io/', 'Originle', 'a new person every day, guess where they are from'],
     ['https://personaguesser.com/', 'PersonaGuesser', 'a new person every day'],
     ['https://poeltl.nbpa.com/', 'Poeltl', 'guess the NBA player'],
     ['https://metazooa.com/', 'Metazooa', 'guess the animal through the tree of life'],
