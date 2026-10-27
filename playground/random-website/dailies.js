@@ -10,7 +10,7 @@ export const DAILIES = [
     ['https://wafflegame.net/daily', 'Waffle', 'swap letters into six words'],
     ['https://squaredle.app/', 'Squaredle', 'trace words through a grid'],
     ['https://contexto.me/', 'Contexto', 'guess the word by how close you are'],
-    ['https://krillion.org/', 'Krillion', 'seven trivia prompts, rarer answers score more'],
+    ['https://krillion.io/', 'Krillion', 'seven trivia prompts, rarer answers score more'],
   ]],
   ['Places and time', [
     ['https://worldle.teuteuf.fr/', 'Worldle', 'name the country from its shape'],
