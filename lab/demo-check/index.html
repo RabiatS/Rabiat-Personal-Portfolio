@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Demo Check · Rabiat's Lab</title>
-  <meta name="description" content="Run a Claude demo many times before you show it once. Pass rate, latency, the failures, and a recorded run to fall back on.">
+  <meta name="description" content="Run a Claude demo ten times before you show it once. Every answer is checked by code.">
   <meta property="og:title" content="Demo Check · Rabiat's Lab" />
-  <meta property="og:description" content="Run a Claude demo many times before you show it once." />
+  <meta property="og:description" content="Run a Claude demo ten times before you show it once." />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,41 +14,61 @@
   <link rel="stylesheet" href="../../assets/rabiat-kit.css">
   <link rel="stylesheet" href="../frame/frame.css">
   <style>
-    body { background: radial-gradient(1100px 600px at 50% 0%, #161616, var(--r-void) 70%) fixed; }
-    main { max-width: 980px; }
-    h1 { font: 700 clamp(40px, 7vw, 76px)/.92 var(--f-display); text-transform: uppercase; margin: 28px 0 10px; }
-    .lede { color: var(--muted); max-width: 620px; margin: 0 0 28px; }
-    .label { font: 600 12px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 26px 0 10px; }
-    .scen { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
-    .scen button { text-align: left; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; cursor: pointer; font: inherit; }
-    .scen button[aria-pressed="true"] { outline: 2px solid var(--text); outline-offset: -2px; }
-    .scen b { display: block; font: 700 18px var(--f-display); text-transform: uppercase; letter-spacing: .02em; margin-bottom: 4px; }
-    .scen span { color: var(--muted); font-size: 14px; }
-    .prompt { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; font: 13px/1.5 var(--f-mono); color: var(--text-2); white-space: pre-wrap; margin: 12px 0 0; }
-    .prompt em { color: var(--muted); font-style: normal; }
-    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; }
-    .field { display: flex; flex-direction: column; gap: 6px; font: 12px var(--f-mono); color: var(--muted); }
-    .field input, .field select { background: var(--surface); color: var(--text); border: 1px solid var(--border-strong); border-radius: 8px; padding: 9px 10px; font: 14px var(--f-mono); min-width: 0; }
-    .field.key { flex: 1 1 280px; }
-    .fine { color: var(--subtle); font: 12px var(--f-mono); margin: 8px 0 0; }
-    .btn { background: var(--surface-2); color: var(--text); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 16px; font: 600 14px var(--f-display); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
-    .btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
-    .btn:disabled { opacity: .45; cursor: not-allowed; }
-    .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
-    .tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
-    .tile .k { font: 12px var(--f-mono); color: var(--muted); }
-    .tile .v { font: 700 30px var(--f-display); margin-top: 2px; }
-    .verdict { font: 700 22px var(--f-display); text-transform: uppercase; letter-spacing: .03em; margin: 16px 0 0; }
-    .verdict.good { color: var(--teal); } .verdict.warn { color: var(--text); } .verdict.bad { color: var(--r-bloodline-light); }
-    table { width: 100%; border-collapse: collapse; font: 13px var(--f-mono); }
-    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
-    th { color: var(--muted); font-weight: 500; }
-    td.pass { color: var(--teal); } td.fail, td.error { color: var(--r-bloodline-light); }
-    details summary { cursor: pointer; color: var(--muted); }
-    details pre { white-space: pre-wrap; word-break: break-word; background: var(--surface); padding: 10px; border-radius: 8px; max-height: 260px; overflow: auto; }
-    .table-wrap { overflow-x: auto; }
-    .acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-    @media (max-width: 600px) { .tile .v { font-size: 24px; } }
+    body { background: radial-gradient(1000px 620px at 50% 0%, #161616, var(--r-void) 70%) fixed; }
+    main { max-width: 760px; }
+    h1 { font: 700 clamp(44px, 8vw, 84px)/.92 var(--f-display); text-transform: uppercase; margin: 18px 0 30px; }
+
+    .lbl { display: block; font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+    .field { margin-bottom: 22px; }
+    .kinds { display: flex; gap: 6px; flex-wrap: wrap; }
+    .kind[aria-checked="true"] { color: var(--text); border-color: var(--r-bone); }
+
+    /* What the user says: reads like the situation box on Help me decide */
+    .say { border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface); padding: 14px 16px; font: 18px/1.55 var(--f-body); color: var(--text-2); white-space: pre-wrap; }
+    .say.mono { font: 14px/1.6 var(--f-mono); }
+    .pass-if { font: 13px var(--f-mono); color: var(--muted); margin: 10px 2px 0; }
+    .pass-if b { color: var(--text); font-weight: 500; }
+
+    input.key { width: 100%; display: block; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface); color: var(--text); font: 16px var(--f-mono); padding: 12px 16px; }
+    input.key:focus { outline: none; border-color: var(--r-bone); }
+    input.key::placeholder { color: var(--subtle); }
+
+    .pair { display: flex; gap: 28px; flex-wrap: wrap; }
+
+    .go { display: flex; align-items: center; gap: 16px; margin-top: 26px; flex-wrap: wrap; }
+    .time { font: 13px var(--f-mono); color: var(--muted); }
+    .time b { color: var(--text); font-weight: 500; }
+
+    /* Results: one square per run, filled when it passes */
+    .result { margin-top: 38px; padding-top: 22px; border-top: 1px solid var(--border); }
+    .runs { list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; flex-wrap: wrap; }
+    .runs li { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border-strong); display: grid; place-items: center; font: 500 11px var(--f-mono); color: var(--subtle); }
+    .runs li.running { animation: breathe 1.2s ease-in-out infinite; }
+    @keyframes breathe { 50% { border-color: var(--r-ash); } }
+    .runs li.pass { background: var(--r-bone); border-color: var(--r-bone); color: var(--r-void); }
+    .runs li.fail { border-color: var(--r-bloodline-light); color: var(--r-bloodline-light); }
+    .runs li.error { border-style: dashed; color: var(--muted); }
+    .score { font: 700 clamp(34px, 6vw, 56px)/1 var(--f-display); text-transform: uppercase; margin: 22px 0 6px; }
+    .score span { color: var(--muted); text-transform: none; }
+    .verdict { font: 13px var(--f-mono); color: var(--muted); margin: 0; }
+    .verdict b { color: var(--text); font-weight: 500; }
+
+    .misses { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 8px; }
+    .miss { border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface); padding: 12px 8px 12px 14px; }
+    .miss .row { display: flex; align-items: center; gap: 12px; }
+    .miss .n { font: 500 12px var(--f-mono); color: var(--subtle); min-width: 2.2em; }
+    .miss .why { flex: 1; font: 16px/1.4 var(--f-body); color: var(--text-2); }
+    .miss .ms { font: 13px var(--f-mono); color: var(--muted); }
+    pre.raw { margin: 10px 0 2px; padding: 12px; border-radius: 8px; background: var(--r-void); font: 12px/1.55 var(--f-mono); color: var(--text-2); white-space: pre-wrap; word-break: break-word; max-height: 280px; overflow: auto; }
+    .after { display: flex; gap: 6px; flex-wrap: wrap; margin: 18px 0 0 -10px; }
+    .rec-note { font: 12.5px var(--f-mono); color: var(--muted); margin: 6px 0 0; }
+
+    @media (max-width: 520px) {
+      h1 { margin: 6px 0 24px; }
+      .say { font-size: 17px; }
+      .pair { gap: 18px; }
+    }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -58,125 +78,152 @@
     <div class="info">
       <button class="info-btn" aria-controls="about" aria-label="About this page">i</button>
       <div class="pop" id="about" hidden>
-        <h4>Run it ten times before you show it once</h4>
-        <p>A live AI demo is a promise about what the model can do. This page runs one Claude demo many times against the real API and checks every answer with code, so you know the pass rate and the slow runs before an audience does.</p>
-        <p>Each scenario has a strict checker. The honesty one is the point: the answer is not in the document, and it only passes if Claude says so.</p>
-        <p class="fine">Bring your own Anthropic API key. It stays in this tab, goes only to api.anthropic.com, and is never saved. Runs cost a few cents.</p>
+        <h4>Run it ten times, show it once</h4>
+        <p>A live AI demo is a promise about what the model can do. This sends the same demo to Claude again and again, and code checks every answer, so you see the misses before an audience does.</p>
+        <p>Each square is one run. A filled square passed. The last demo is the honest one: the answer is not in the document, and Claude only passes if it says so.</p>
+        <p>Show it live when every run passes and the slowest 5% still answer within 4 seconds. Otherwise keep the recorded run ready.</p>
+        <p class="fine">Built on the Claude API with your own key. The key stays in this tab, goes only to api.anthropic.com, and is never saved. Ten runs on Haiku cost a few cents.</p>
       </div>
     </div>
     <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
   </header>
 
   <main>
-    <h1>Demo Check</h1>
-    <p class="lede">Pick a Claude demo, run it 5 to 20 times, and see the pass rate, the latency, every failure, and a recorded passing run to fall back on.</p>
+    <h1>Will it hold up?</h1>
 
-    <p class="label">1 · Pick a demo</p>
-    <div class="scen" id="scen"></div>
-    <div class="prompt" id="prompt"></div>
-
-    <p class="label">2 · Run it</p>
-    <div class="row">
-      <label class="field key">Anthropic API key
-        <input type="password" id="key" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
-      </label>
-      <label class="field">Model
-        <select id="model">
-          <option value="claude-haiku-4-5-20251001">claude-haiku-4-5</option>
-          <option value="claude-sonnet-5-5">claude-sonnet-5-5</option>
-          <option value="claude-opus-5-5">claude-opus-5-5</option>
-        </select>
-      </label>
-      <label class="field">Runs
-        <input type="number" id="runs" value="10" min="1" max="20" style="width:80px">
-      </label>
-      <label class="field">Latency budget (s)
-        <input type="number" id="budget" value="4" min="1" max="60" step="0.5" style="width:90px">
-      </label>
-      <button class="btn primary" id="go">Run</button>
-      <button class="btn" id="stop" disabled>Stop</button>
+    <div class="field">
+      <span class="lbl" id="demoLbl">The demo</span>
+      <div class="kinds" role="radiogroup" aria-labelledby="demoLbl" id="demos"></div>
     </div>
-    <p class="fine">Your key stays in this tab and is sent only to api.anthropic.com. Nothing is stored.</p>
 
-    <section id="out" hidden>
-      <p class="label">3 · Results</p>
-      <div class="tiles">
-        <div class="tile"><div class="k">Pass rate</div><div class="v" id="tRate">-</div></div>
-        <div class="tile"><div class="k">Runs</div><div class="v" id="tRuns">-</div></div>
-        <div class="tile"><div class="k">p50 latency</div><div class="v" id="tP50">-</div></div>
-        <div class="tile"><div class="k">p95 latency</div><div class="v" id="tP95">-</div></div>
+    <div class="field">
+      <span class="lbl">What the user says</span>
+      <div class="say" id="say"></div>
+      <p class="pass-if" id="passIf"></p>
+    </div>
+
+    <div class="field">
+      <label class="lbl" for="key">Your Anthropic key</label>
+      <input class="key" id="key" type="password" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+    </div>
+
+    <div class="pair">
+      <div class="field">
+        <span class="lbl" id="modelLbl">Model</span>
+        <div class="kinds" role="radiogroup" aria-labelledby="modelLbl" id="models"></div>
       </div>
+      <div class="field">
+        <span class="lbl" id="runsLbl">Runs</span>
+        <div class="kinds" role="radiogroup" aria-labelledby="runsLbl" id="counts"></div>
+      </div>
+    </div>
+
+    <div class="go">
+      <button type="button" class="btn primary lg" id="go">Run it 10 times</button>
+      <button type="button" class="btn quiet" id="stop" hidden>Stop</button>
+      <span class="time" id="time"></span>
+    </div>
+    <p class="lab-gate">Your key stays in this tab and goes only to api.anthropic.com.</p>
+
+    <section class="result" id="result" hidden>
+      <ol class="runs" id="runs" aria-label="Runs"></ol>
+      <p class="score" id="score"></p>
       <p class="verdict" id="verdict"></p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Result</th><th>Time</th><th>Why</th><th>Output</th></tr></thead>
-          <tbody id="rows"></tbody>
-        </table>
+      <ul class="misses" id="misses"></ul>
+      <div class="after">
+        <button type="button" class="btn quiet sm" id="recBtn" hidden>Recorded run</button>
+        <button type="button" class="btn quiet sm" id="copy">Copy report</button>
       </div>
-      <p class="label">Fallback</p>
-      <p class="fine" id="fallbackNote">The first passing run is kept here, labelled as recorded, so a live failure never has to be faked.</p>
-      <details id="fallback" hidden><summary id="fallbackSum">Recorded passing run</summary><pre id="fallbackPre"></pre></details>
-      <div class="acts">
-        <button class="btn" id="copy">Copy report</button>
+      <div id="rec" hidden>
+        <p class="rec-note" id="recNote"></p>
+        <pre class="raw" id="recPre"></pre>
       </div>
     </section>
+    <div class="sr" aria-live="polite" id="said"></div>
   </main>
 
+  <script src="../../assets/rabiat-kit.js" defer></script>
   <script type="module">
     import { SCENARIOS, summarize } from './scenarios.js';
 
     const $ = id => document.getElementById(id);
-    let current = SCENARIOS[0];
-    let runs = [];
-    let stopFlag = false;
-    let fallback = null;
+    const MODELS = [
+      ['claude-haiku-4-5-20251001', 'Haiku 4.5'],
+      ['claude-sonnet-5-5', 'Sonnet 5.5'],
+      ['claude-opus-5-5', 'Opus 5.5'],
+    ];
+    const COUNTS = [5, 10, 20];
+    const SHORT = { schedule: 'Schedule a call', receipt: 'Read a receipt', grounded: 'Not in the doc' };
+    const BUDGET_MS = 4000;
 
-    // (i) popover, same pattern as the other Lab pages
-    const infoBtn = document.querySelector('.info-btn'), pop = $('about');
-    infoBtn.addEventListener('click', e => { e.stopPropagation(); pop.hidden = !pop.hidden; });
-    document.addEventListener('click', e => { if (!pop.contains(e.target)) pop.hidden = true; });
+    const state = { demo: SCENARIOS[0], model: MODELS[0][0], n: 10 };
+    let runs = [], stopFlag = false, recorded = null, busy = false;
 
-    function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
-
-    function drawScenarios() {
-      $('scen').innerHTML = SCENARIOS.map(s =>
-        `<button type="button" data-id="${s.id}" aria-pressed="${s.id === current.id}"><b>${esc(s.title)}</b><span>${esc(s.blurb)}</span></button>`).join('');
-      $('scen').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
-        current = SCENARIOS.find(s => s.id === b.dataset.id); drawScenarios(); resetResults();
-      }));
-      $('prompt').innerHTML = `<em>User says:</em>\n${esc(current.user)}\n\n<em>Passes if:</em> ${esc(current.expected)}`;
+    function radios(el, items, isOn, onPick) {
+      el.innerHTML = '';
+      items.forEach(([value, label]) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'btn sm kind'; b.setAttribute('role', 'radio');
+        b.textContent = label; b.setAttribute('aria-checked', String(isOn(value)));
+        b.addEventListener('click', () => { if (busy) return; onPick(value); });
+        el.appendChild(b);
+      });
     }
 
-    function resetResults() { runs = []; fallback = null; $('out').hidden = true; $('rows').innerHTML = ''; $('fallback').hidden = true; }
+    function draw() {
+      radios($('demos'), SCENARIOS.map(s => [s.id, SHORT[s.id]]), v => v === state.demo.id,
+        v => { state.demo = SCENARIOS.find(s => s.id === v); clear(); draw(); });
+      radios($('models'), MODELS, v => v === state.model, v => { state.model = v; clear(); draw(); });
+      radios($('counts'), COUNTS.map(c => [c, String(c)]), v => v === state.n, v => { state.n = v; draw(); });
+      $('say').textContent = state.demo.user;
+      $('say').classList.toggle('mono', state.demo.id === 'receipt');
+      $('passIf').innerHTML = 'passes if <b></b>';
+      $('passIf').querySelector('b').textContent = state.demo.expected;
+      if (!busy) $('go').textContent = `Run it ${state.n} times`;
+    }
 
-    function fmtMs(ms) { return ms == null ? '-' : (ms / 1000).toFixed(2) + 's'; }
+    function clear() { runs = []; recorded = null; $('result').hidden = true; $('rec').hidden = true; $('time').textContent = ''; }
+
+    const secs = ms => ms == null ? '-' : (ms / 1000).toFixed(2) + 's';
+
+    function verdictLine(s) {
+      if (!s.total) return '';
+      if (s.verdict === 'Demo-ready') return '<b>Show it live.</b> Every run passed and the slowest stayed under 4 seconds.';
+      if (s.verdict.startsWith('Reliable')) return '<b>Right every time, but slow.</b> Warm it up first or keep the recorded run ready.';
+      if (s.verdict.startsWith('Needs')) return '<b>Keep a fallback.</b> It misses sometimes; the misses are below.';
+      return '<b>Not ready to show.</b> The misses are below.';
+    }
 
     function render() {
-      const budgetMs = Number($('budget').value) * 1000;
-      const s = summarize(runs, { latencyBudgetMs: budgetMs });
-      $('out').hidden = false;
-      $('tRate').textContent = s.total ? Math.round(s.rate * 100) + '%' : '-';
-      $('tRuns').textContent = `${s.passed}/${s.total}`;
-      $('tP50').textContent = fmtMs(s.p50);
-      $('tP95').textContent = fmtMs(s.p95);
-      const v = $('verdict');
-      v.textContent = s.verdict;
-      v.className = 'verdict ' + (s.verdict === 'Demo-ready' ? 'good' : s.verdict.startsWith('Not') ? 'bad' : 'warn');
-      $('rows').innerHTML = runs.map((r, i) => `<tr>
-        <td>${i + 1}</td>
-        <td class="${r.status}">${r.status === 'running' ? '...' : r.status}</td>
-        <td>${fmtMs(r.ms)}</td>
-        <td>${esc(r.reason || '')}</td>
-        <td>${r.raw ? `<details><summary>view</summary><pre>${esc(r.raw)}</pre></details>` : ''}</td>
-      </tr>`).join('');
-      if (fallback) {
-        $('fallback').hidden = false;
-        $('fallbackSum').textContent = `Recorded passing run (${fallback.model}, ${fallback.at})`;
-        $('fallbackPre').textContent = fallback.raw;
+      const s = summarize(runs, { latencyBudgetMs: BUDGET_MS });
+      $('result').hidden = false;
+      $('runs').innerHTML = runs.map((r, i) =>
+        `<li class="${r.status}" title="Run ${i + 1}: ${r.status}${r.ms != null ? ', ' + secs(r.ms) : ''}">${r.status === 'fail' ? '×' : r.status === 'error' ? '!' : ''}</li>`).join('');
+      const done = runs.filter(r => r.status !== 'running').length;
+      $('score').innerHTML = s.total ? `${s.passed} of ${s.total} <span>· p95 ${secs(s.p95)}</span>` : '';
+      $('verdict').innerHTML = done === runs.length ? verdictLine(s) : '';
+      $('misses').innerHTML = '';
+      runs.forEach((r, i) => {
+        if (r.status !== 'fail' && r.status !== 'error') return;
+        const li = document.createElement('li'); li.className = 'miss';
+        li.innerHTML = `<div class="row"><span class="n">#${i + 1}</span><span class="why"></span><span class="ms">${secs(r.ms)}</span></div>`;
+        li.querySelector('.why').textContent = r.reason || r.status;
+        if (r.raw) {
+          const b = document.createElement('button'); b.type = 'button'; b.className = 'btn quiet sm'; b.textContent = 'Output';
+          const pre = document.createElement('pre'); pre.className = 'raw'; pre.textContent = r.raw; pre.hidden = true;
+          b.addEventListener('click', () => { pre.hidden = !pre.hidden; });
+          li.querySelector('.row').appendChild(b); li.appendChild(pre);
+        }
+        $('misses').appendChild(li);
+      });
+      $('recBtn').hidden = !recorded;
+      if (recorded) {
+        $('recNote').textContent = `Recorded ${recorded.at} on ${recorded.label}. Show this, labelled as recorded, if the live run misses.`;
+        $('recPre').textContent = recorded.raw;
       }
     }
 
-    async function callClaude(key, model) {
+    async function callClaude(key) {
       const t0 = performance.now();
       const r = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -187,8 +234,8 @@
           'anthropic-dangerous-direct-browser-access': 'true',
         },
         body: JSON.stringify({
-          model, max_tokens: 600, system: current.system, tools: current.tools,
-          messages: [{ role: 'user', content: current.user }],
+          model: state.model, max_tokens: 600, system: state.demo.system, tools: state.demo.tools,
+          messages: [{ role: 'user', content: state.demo.user }],
         }),
       });
       const ms = performance.now() - t0;
@@ -197,56 +244,56 @@
       return { res: body, ms };
     }
 
-    async function runOne(idx, key, model) {
-      const run = runs[idx];
+    async function runOne(i, key) {
+      const run = runs[i];
       try {
-        const { res, ms } = await callClaude(key, model);
-        const c = current.check(res);
-        run.ms = ms; run.status = c.pass ? 'pass' : 'fail'; run.reason = c.reason;
-        run.raw = JSON.stringify(res.content, null, 2);
-        if (c.pass && !fallback) fallback = { raw: run.raw, model, at: new Date().toLocaleString() };
+        const { res, ms } = await callClaude(key);
+        const c = state.demo.check(res);
+        Object.assign(run, { ms, status: c.pass ? 'pass' : 'fail', reason: c.reason, raw: JSON.stringify(res.content, null, 2) });
+        if (c.pass && !recorded) recorded = { raw: run.raw, at: new Date().toLocaleString(), label: MODELS.find(m => m[0] === state.model)[1] };
       } catch (e) {
-        run.status = 'error'; run.ms = e.ms ?? null; run.reason = e.message;
-        if (e.status === 401) stopFlag = true;
+        Object.assign(run, { status: 'error', ms: e.ms ?? null, reason: e.message });
+        if (e.status === 401 || e.status === 403) stopFlag = true;
       }
+      const left = runs.filter(r => r.status === 'running').length;
+      $('time').innerHTML = left ? `<b>${runs.length - left}</b> of ${runs.length} back` : '';
       render();
     }
 
     $('go').addEventListener('click', async () => {
       const key = $('key').value.trim();
-      if (!key) { $('key').focus(); $('key').placeholder = 'Paste an API key to run'; return; }
-      const n = Math.max(1, Math.min(20, Number($('runs').value) || 10));
-      const model = $('model').value;
-      resetResults(); stopFlag = false;
-      runs = Array.from({ length: n }, () => ({ status: 'running' }));
+      if (!key) { $('key').focus(); $('key').placeholder = 'Paste a key to run it'; return; }
+      clear(); busy = true; stopFlag = false;
+      runs = Array.from({ length: state.n }, () => ({ status: 'running' }));
+      $('go').disabled = true; $('go').textContent = 'Running'; $('stop').hidden = false;
       render();
-      $('go').disabled = true; $('stop').disabled = false;
       let next = 0;
-      const worker = async () => { while (!stopFlag && next < n) { const i = next++; await runOne(i, key, model); } };
+      const worker = async () => { while (!stopFlag && next < runs.length) { const i = next++; await runOne(i, key); } };
       await Promise.all([worker(), worker()]); // two at a time, gentle on rate limits
       runs = runs.filter(r => r.status !== 'running');
-      render();
-      $('go').disabled = false; $('stop').disabled = true;
+      busy = false; $('go').disabled = false; $('stop').hidden = true; $('time').textContent = '';
+      draw(); render();
+      const s = summarize(runs, { latencyBudgetMs: BUDGET_MS });
+      $('said').textContent = `${s.passed} of ${s.total} passed.`;
     });
 
     $('stop').addEventListener('click', () => { stopFlag = true; });
-    $('budget').addEventListener('change', () => { if (runs.length) render(); });
+    $('recBtn').addEventListener('click', () => { $('rec').hidden = !$('rec').hidden; });
 
     $('copy').addEventListener('click', async () => {
-      const s = summarize(runs, { latencyBudgetMs: Number($('budget').value) * 1000 });
+      const s = summarize(runs, { latencyBudgetMs: BUDGET_MS });
+      const label = MODELS.find(m => m[0] === state.model)[1];
       const lines = [
-        `# Demo Check: ${current.title}`,
-        `Model: ${$('model').value} · Runs: ${s.total} · Pass rate: ${Math.round(s.rate * 100)}%`,
-        `p50 ${fmtMs(s.p50)} · p95 ${fmtMs(s.p95)} · Verdict: ${s.verdict}`,
-        '', '| # | Result | Time | Why |', '|---|---|---|---|',
-        ...runs.map((r, i) => `| ${i + 1} | ${r.status} | ${fmtMs(r.ms)} | ${r.reason || ''} |`),
+        `Demo Check: ${SHORT[state.demo.id]} on ${label}`,
+        `${s.passed} of ${s.total} passed · p50 ${secs(s.p50)} · p95 ${secs(s.p95)}`,
+        ...runs.map((r, i) => `#${i + 1} ${r.status} ${secs(r.ms)} ${r.reason || ''}`),
       ];
       try { await navigator.clipboard.writeText(lines.join('\n')); $('copy').textContent = 'Copied'; }
       catch { $('copy').textContent = 'Copy failed'; }
       setTimeout(() => { $('copy').textContent = 'Copy report'; }, 1500);
     });
 
-    drawScenarios();
+    draw();
   </script>
 </body>
 </html>
