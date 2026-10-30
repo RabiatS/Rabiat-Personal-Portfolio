@@ -1,224 +1,269 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Demo Check · Rabiat's Lab</title>
-  <meta name="description" content="Run a Claude demo ten times before you show it once. Every answer is checked by code.">
-  <meta property="og:title" content="Demo Check · Rabiat's Lab" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Demo Check | Rabiat Sadiq</title>
+  <meta name="description" content="Run a Claude demo ten times before you show it once. Code checks every answer." />
+  <link rel="canonical" href="https://www.rabiatsadiq.com/lab/demo-check/" />
+  <meta property="og:title" content="Demo Check | Rabiat Sadiq" />
   <meta property="og:description" content="Run a Claude demo ten times before you show it once." />
-  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="../../assets/rabiat-kit.css">
-  <link rel="stylesheet" href="../frame/frame.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <!-- Prevent theme flash & minimalist Rabiat -->
+  <script>
+    (function(){
+      var g = localStorage.getItem('glassLevel');
+      var legacy = { clear: 0, 'default': 50, frosted: 100 };
+      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
+      if (!isFinite(t)) t = 50;
+      t = Math.min(100, Math.max(0, t)) / 100;
+      var st = document.documentElement.style;
+      st.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+      st.setProperty('--glass-lens', (1 - t).toFixed(3));
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css" />
+  <script src="../../assets/script.js" defer></script>
   <style>
-    body { background: radial-gradient(1000px 620px at 50% 0%, #161616, var(--r-void) 70%) fixed; }
-    main { max-width: 760px; }
-    h1 { font: 700 clamp(44px, 8vw, 84px)/.92 var(--f-display); text-transform: uppercase; margin: 18px 0 30px; }
+    .dc-head { padding-top: 48px; padding-bottom: 8px; }
+    .dc { padding-bottom: 72px; }
+    .dc > * { max-width: 760px; }
+    .dc-pick { border: 0; margin: 8px 0 0; padding: 0; }
+    .dc-pick legend { font-weight: 600; font-size: 17px; color: var(--text); margin-bottom: 10px; padding: 0; }
+    .dc-opt { display: flex; gap: 12px; align-items: baseline; padding: 10px 0; cursor: pointer; border-top: 1px solid var(--border); }
+    .dc-opt:last-child { border-bottom: 1px solid var(--border); }
+    .dc-opt input { accent-color: var(--primary); transform: translateY(2px); }
+    .dc-opt strong { font-weight: 600; color: var(--text); margin-right: 6px; }
+    .dc-opt span { color: var(--text-muted); }
+    .dc-peek { margin: 16px 0 28px; }
+    .dc-peek summary { cursor: pointer; color: var(--text-muted); font-size: 15px; }
+    .dc-peek[open] summary { margin-bottom: 10px; }
+    .dc-say { white-space: pre-wrap; margin: 0 0 8px; padding-left: 14px; border-left: 3px solid var(--border-strong); color: var(--text); }
+    .dc-say.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; }
+    .dc-form select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); font: inherit; min-width: 0; }
+    .dc-form select:focus-visible { outline: 2px solid var(--primary-readable); outline-offset: 2px; border-color: var(--primary-readable); }
+    .dc-fine { font-size: 14px; margin-top: 12px; }
 
-    .lbl { display: block; font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
-    .field { margin-bottom: 22px; }
-    .kinds { display: flex; gap: 6px; flex-wrap: wrap; }
-    .kind[aria-checked="true"] { color: var(--text); border-color: var(--r-bone); }
-
-    /* What the user says: reads like the situation box on Help me decide */
-    .say { border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface); padding: 14px 16px; font: 18px/1.55 var(--f-body); color: var(--text-2); white-space: pre-wrap; }
-    .say.mono { font: 14px/1.6 var(--f-mono); }
-    .pass-if { font: 13px var(--f-mono); color: var(--muted); margin: 10px 2px 0; }
-    .pass-if b { color: var(--text); font-weight: 500; }
-
-    input.key { width: 100%; display: block; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface); color: var(--text); font: 16px var(--f-mono); padding: 12px 16px; }
-    input.key:focus { outline: none; border-color: var(--r-bone); }
-    input.key::placeholder { color: var(--subtle); }
-
-    .pair { display: flex; gap: 28px; flex-wrap: wrap; }
-
-    .go { display: flex; align-items: center; gap: 16px; margin-top: 26px; flex-wrap: wrap; }
-    .time { font: 13px var(--f-mono); color: var(--muted); }
-    .time b { color: var(--text); font-weight: 500; }
-
-    /* Results: one square per run, filled when it passes */
-    .result { margin-top: 38px; padding-top: 22px; border-top: 1px solid var(--border); }
-    .runs { list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; flex-wrap: wrap; }
-    .runs li { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border-strong); display: grid; place-items: center; font: 500 11px var(--f-mono); color: var(--subtle); }
-    .runs li.running { animation: breathe 1.2s ease-in-out infinite; }
-    @keyframes breathe { 50% { border-color: var(--r-ash); } }
-    .runs li.pass { background: var(--r-bone); border-color: var(--r-bone); color: var(--r-void); }
-    .runs li.fail { border-color: var(--r-bloodline-light); color: var(--r-bloodline-light); }
-    .runs li.error { border-style: dashed; color: var(--muted); }
-    .score { font: 700 clamp(34px, 6vw, 56px)/1 var(--f-display); text-transform: uppercase; margin: 22px 0 6px; }
-    .score span { color: var(--muted); text-transform: none; }
-    .verdict { font: 13px var(--f-mono); color: var(--muted); margin: 0; }
-    .verdict b { color: var(--text); font-weight: 500; }
-
-    .misses { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 8px; }
-    .miss { border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface); padding: 12px 8px 12px 14px; }
-    .miss .row { display: flex; align-items: center; gap: 12px; }
-    .miss .n { font: 500 12px var(--f-mono); color: var(--subtle); min-width: 2.2em; }
-    .miss .why { flex: 1; font: 16px/1.4 var(--f-body); color: var(--text-2); }
-    .miss .ms { font: 13px var(--f-mono); color: var(--muted); }
-    pre.raw { margin: 10px 0 2px; padding: 12px; border-radius: 8px; background: var(--r-void); font: 12px/1.55 var(--f-mono); color: var(--text-2); white-space: pre-wrap; word-break: break-word; max-height: 280px; overflow: auto; }
-    .after { display: flex; gap: 6px; flex-wrap: wrap; margin: 18px 0 0 -10px; }
-    .rec-note { font: 12.5px var(--f-mono); color: var(--muted); margin: 6px 0 0; }
-
-    @media (max-width: 520px) {
-      h1 { margin: 6px 0 24px; }
-      .say { font-size: 17px; }
-      .pair { gap: 18px; }
-    }
-    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .dc-result { margin-top: 48px; }
+    .dc-result h2 { margin: 0 0 6px; }
+    .dc-result #verdict { margin: 0; color: var(--text); font-size: 17px; }
+    .dc-runs { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 18px 0 8px; }
+    .dc-runs li { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border-strong); }
+    .dc-runs li.pass { background: var(--text); border-color: var(--text); }
+    .dc-runs li.fail { border-color: #dc2626; background: transparent; }
+    .dc-runs li.error { border-style: dashed; }
+    .dc-runs li.running { opacity: .5; }
+    .dc-times { font-size: 14px; margin: 0; }
+    .dc-misses { list-style: none; padding: 0; margin: 20px 0 0; }
+    .dc-misses li { padding: 10px 0; border-top: 1px solid var(--border); }
+    .dc-misses li:last-child { border-bottom: 1px solid var(--border); }
+    .dc-misses .n { color: var(--text-muted); margin-right: 8px; }
+    .dc-link { background: none; border: 0; padding: 0; font: inherit; font-size: 15px; color: var(--primary); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; margin-right: 18px; }
+    .dc-link:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+    .dc-after { margin: 18px 0 0; }
+    .dc-raw { white-space: pre-wrap; word-break: break-word; font: 13px/1.55 ui-monospace, Menlo, Consolas, monospace; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; max-height: 280px; overflow: auto; margin: 8px 0 0; }
+    @media (max-width: 640px) { .dc-opt { flex-wrap: nowrap; } }
   </style>
 </head>
 <body>
-  <header class="top">
-    <a class="brand" href="../"><span class="b1">Rabiat's Lab</span><span class="b2">Demo Check</span></a>
-    <div class="spacer"></div>
-    <div class="info">
-      <button class="info-btn" aria-controls="about" aria-label="About this page">i</button>
-      <div class="pop" id="about" hidden>
-        <h4>Run it ten times, show it once</h4>
-        <p>A live AI demo is a promise about what the model can do. This sends the same demo to Claude again and again, and code checks every answer, so you see the misses before an audience does.</p>
-        <p>Each square is one run. A filled square passed. The last demo is the honest one: the answer is not in the document, and Claude only passes if it says so.</p>
-        <p>Show it live when every run passes and the slowest 5% still answer within 4 seconds. Otherwise keep the recorded run ready.</p>
-        <p class="fine">Built on the Claude API with your own key. The key stays in this tab, goes only to api.anthropic.com, and is never saved. Ten runs on Haiku cost a few cents.</p>
-      </div>
+  <header class="header">
+    <a class="brand" href="../../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../../index.html" class="nav-pill">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="../../projects.html" class="nav-pill">
+        <span class="nav-icon">🚀</span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="../../coursework.html" class="nav-pill">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="../" class="nav-pill" aria-current="page">
+        <span class="nav-icon">🧪</span>
+        <span class="nav-text">Lab</span>
+      </a>
+      <a href="../../cool.html" class="nav-pill">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../../contact.html" class="nav-pill">
+        <span class="nav-icon">📧</span>
+        <span class="nav-text">Contact</span>
+      </a>
+    </nav>
+    <div class="header-controls">
+      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn">in</a>
+      <button class="toggle" id="funToggle" title="Fun colors">🎨</button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
     </div>
-    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
   </header>
 
-  <main>
-    <h1>Will it hold up?</h1>
-
-    <div class="field">
-      <span class="lbl" id="demoLbl">The demo</span>
-      <div class="kinds" role="radiogroup" aria-labelledby="demoLbl" id="demos"></div>
-    </div>
-
-    <div class="field">
-      <span class="lbl">What the user says</span>
-      <div class="say" id="say"></div>
-      <p class="pass-if" id="passIf"></p>
-    </div>
-
-    <div class="field">
-      <label class="lbl" for="key">Your Anthropic key</label>
-      <input class="key" id="key" type="password" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
-    </div>
-
-    <div class="pair">
-      <div class="field">
-        <span class="lbl" id="modelLbl">Model</span>
-        <div class="kinds" role="radiogroup" aria-labelledby="modelLbl" id="models"></div>
-      </div>
-      <div class="field">
-        <span class="lbl" id="runsLbl">Runs</span>
-        <div class="kinds" role="radiogroup" aria-labelledby="runsLbl" id="counts"></div>
-      </div>
-    </div>
-
-    <div class="go">
-      <button type="button" class="btn primary lg" id="go">Run it 10 times</button>
-      <button type="button" class="btn quiet" id="stop" hidden>Stop</button>
-      <span class="time" id="time"></span>
-    </div>
-    <p class="lab-gate">Your key stays in this tab and goes only to api.anthropic.com.</p>
-
-    <section class="result" id="result" hidden>
-      <ol class="runs" id="runs" aria-label="Runs"></ol>
-      <p class="score" id="score"></p>
-      <p class="verdict" id="verdict"></p>
-      <ul class="misses" id="misses"></ul>
-      <div class="after">
-        <button type="button" class="btn quiet sm" id="recBtn" hidden>Recorded run</button>
-        <button type="button" class="btn quiet sm" id="copy">Copy report</button>
-      </div>
-      <div id="rec" hidden>
-        <p class="rec-note" id="recNote"></p>
-        <pre class="raw" id="recPre"></pre>
+  <main style="padding-top: var(--header-height);">
+    <section class="container section-head dc-head">
+      <div>
+        <h1>Demo Check</h1>
+        <p class="lead" style="margin-top: 16px;">Before you show an AI demo to a room, run it ten times. This sends the same request to Claude over and over and checks every answer with code, so you see the misses first.</p>
       </div>
     </section>
-    <div class="sr" aria-live="polite" id="said"></div>
+
+    <section class="container dc">
+      <fieldset class="dc-pick">
+        <legend>Pick a demo</legend>
+        <div id="demos"></div>
+      </fieldset>
+      <details class="dc-peek">
+        <summary>What Claude is asked</summary>
+        <p id="say" class="dc-say"></p>
+        <p id="rule" class="muted"></p>
+      </details>
+
+      <div class="contact-form dc-form">
+        <div class="field field--full">
+          <label for="key">Your Anthropic API key</label>
+          <input id="key" type="password" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+        </div>
+        <div class="field">
+          <label for="model">Model</label>
+          <select id="model"></select>
+        </div>
+        <div class="field">
+          <label for="count">Runs</label>
+          <select id="count"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option></select>
+        </div>
+        <div class="field--full contact-actions">
+          <button class="btn" type="button" id="go">Run 10 times</button>
+          <button class="btn secondary" type="button" id="stop" hidden>Stop</button>
+        </div>
+      </div>
+      <p class="muted dc-fine">Your key stays in this browser tab and is only sent to api.anthropic.com. Ten runs on Haiku cost a few cents.</p>
+
+      <div class="dc-result" id="result" hidden>
+        <h2 id="score"></h2>
+        <p id="verdict"></p>
+        <ol class="dc-runs" id="runs" aria-label="Each run"></ol>
+        <p class="muted dc-times" id="facts"></p>
+        <ul class="dc-misses" id="misses"></ul>
+        <p class="dc-after">
+          <button type="button" class="dc-link" id="recBtn" hidden>Show the recorded run</button>
+          <button type="button" class="dc-link" id="copy" hidden>Copy report</button>
+        </p>
+        <div id="rec" hidden>
+          <p class="muted" id="recNote"></p>
+          <pre class="dc-raw" id="recPre"></pre>
+        </div>
+      </div>
+      <div class="sr-only" aria-live="polite" id="said" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></div>
+    </section>
   </main>
 
-  <script src="../../assets/rabiat-kit.js" defer></script>
   <script type="module">
     import { SCENARIOS, summarize } from './scenarios.js';
 
     const $ = id => document.getElementById(id);
     const MODELS = [
-      ['claude-haiku-4-5-20251001', 'Haiku 4.5'],
-      ['claude-sonnet-5-5', 'Sonnet 5.5'],
-      ['claude-opus-5-5', 'Opus 5.5'],
+      ['claude-haiku-4-5-20251001', 'Claude Haiku 4.5'],
+      ['claude-sonnet-5-5', 'Claude Sonnet 5.5'],
+      ['claude-opus-5-5', 'Claude Opus 5.5'],
     ];
-    const COUNTS = [5, 10, 20];
-    const SHORT = { schedule: 'Schedule a call', receipt: 'Read a receipt', grounded: 'Not in the doc' };
+    const DEMOS = {
+      schedule: ['Book a call', 'Turn "next Tuesday at 2pm" into a calendar invite with the right date.'],
+      receipt:  ['Read a receipt', 'Pull the store, date, total and item count off a messy receipt.'],
+      grounded: ['Admit it', 'The answer is not in the document. Does it say so, or make one up?'],
+    };
+    const RULES = {
+      schedule: 'Passes only if the invite is for Tuesday, November 3 at 2:00 pm, 30 minutes, with priya@acme.com.',
+      receipt: 'Passes only if it reads Blue Bottle Coffee, October 27, 2026, $21.32 and 4 items.',
+      grounded: 'Passes only if it says the policy does not cover chairs. Any dollar limit is a miss.',
+    };
     const BUDGET_MS = 4000;
 
-    const state = { demo: SCENARIOS[0], model: MODELS[0][0], n: 10 };
-    let runs = [], stopFlag = false, recorded = null, busy = false;
+    let demo = SCENARIOS[0], runs = [], stopFlag = false, recorded = null, busy = false;
+    const model = () => $('model').value;
+    const modelName = () => MODELS.find(m => m[0] === model())[1];
+    const count = () => Number($('count').value);
+    const secs = ms => ms == null ? '-' : (ms / 1000).toFixed(1) + ' s';
 
-    function radios(el, items, isOn, onPick) {
-      el.innerHTML = '';
-      items.forEach(([value, label]) => {
-        const b = document.createElement('button');
-        b.type = 'button'; b.className = 'btn sm kind'; b.setAttribute('role', 'radio');
-        b.textContent = label; b.setAttribute('aria-checked', String(isOn(value)));
-        b.addEventListener('click', () => { if (busy) return; onPick(value); });
-        el.appendChild(b);
-      });
+    $('model').innerHTML = MODELS.map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+    $('demos').innerHTML = SCENARIOS.map((s, i) => `
+      <label class="dc-opt"><input type="radio" name="demo" value="${s.id}" ${i === 0 ? 'checked' : ''}>
+        <p style="margin:0"><strong></strong><span></span></p></label>`).join('');
+    $('demos').querySelectorAll('.dc-opt').forEach((el, i) => {
+      el.querySelector('strong').textContent = DEMOS[SCENARIOS[i].id][0];
+      el.querySelector('span').textContent = DEMOS[SCENARIOS[i].id][1];
+    });
+
+    function showPrompt() {
+      $('say').textContent = demo.user;
+      $('say').classList.toggle('mono', demo.id === 'receipt');
+      $('rule').textContent = RULES[demo.id];
     }
+    function label() { if (!busy) $('go').textContent = `Run ${count()} times`; }
+    function clear() { runs = []; recorded = null; $('result').hidden = true; $('rec').hidden = true; }
 
-    function draw() {
-      radios($('demos'), SCENARIOS.map(s => [s.id, SHORT[s.id]]), v => v === state.demo.id,
-        v => { state.demo = SCENARIOS.find(s => s.id === v); clear(); draw(); });
-      radios($('models'), MODELS, v => v === state.model, v => { state.model = v; clear(); draw(); });
-      radios($('counts'), COUNTS.map(c => [c, String(c)]), v => v === state.n, v => { state.n = v; draw(); });
-      $('say').textContent = state.demo.user;
-      $('say').classList.toggle('mono', state.demo.id === 'receipt');
-      $('passIf').innerHTML = 'passes if <b></b>';
-      $('passIf').querySelector('b').textContent = state.demo.expected;
-      if (!busy) $('go').textContent = `Run it ${state.n} times`;
-    }
-
-    function clear() { runs = []; recorded = null; $('result').hidden = true; $('rec').hidden = true; $('time').textContent = ''; }
-
-    const secs = ms => ms == null ? '-' : (ms / 1000).toFixed(2) + 's';
-
-    function verdictLine(s) {
-      if (!s.total) return '';
-      if (s.verdict === 'Demo-ready') return '<b>Show it live.</b> Every run passed and the slowest stayed under 4 seconds.';
-      if (s.verdict.startsWith('Reliable')) return '<b>Right every time, but slow.</b> Warm it up first or keep the recorded run ready.';
-      if (s.verdict.startsWith('Needs')) return '<b>Keep a fallback.</b> It misses sometimes; the misses are below.';
-      return '<b>Not ready to show.</b> The misses are below.';
-    }
+    $('demos').addEventListener('change', e => {
+      demo = SCENARIOS.find(s => s.id === e.target.value); showPrompt(); clear();
+    });
+    $('model').addEventListener('change', clear);
+    $('count').addEventListener('change', label);
 
     function render() {
       const s = summarize(runs, { latencyBudgetMs: BUDGET_MS });
-      $('result').hidden = false;
-      $('runs').innerHTML = runs.map((r, i) =>
-        `<li class="${r.status}" title="Run ${i + 1}: ${r.status}${r.ms != null ? ', ' + secs(r.ms) : ''}">${r.status === 'fail' ? '×' : r.status === 'error' ? '!' : ''}</li>`).join('');
       const done = runs.filter(r => r.status !== 'running').length;
-      $('score').innerHTML = s.total ? `${s.passed} of ${s.total} <span>· p95 ${secs(s.p95)}</span>` : '';
-      $('verdict').innerHTML = done === runs.length ? verdictLine(s) : '';
+      const finished = done === runs.length && !busy;
+      $('result').hidden = false;
+      $('score').textContent = finished ? `${s.passed} of ${s.total} passed` : `Running ${done} of ${runs.length}`;
+      let v = '';
+      if (finished && s.total) {
+        if (s.verdict === 'Demo-ready') v = 'Ready to show live.';
+        else if (s.verdict.startsWith('Reliable')) v = 'Right every time, but slow. Run it once before you present, or show the recorded run.';
+        else if (s.verdict.startsWith('Needs')) v = 'Mostly right. Keep the recorded run ready in case it misses live.';
+        else v = 'Not ready to show yet. Here is what went wrong.';
+      }
+      $('verdict').textContent = v;
+      const times = runs.filter(r => r.ms != null && r.status !== 'error').map(r => r.ms);
+      $('facts').textContent = times.length ? `Typical answer in ${secs(s.p50)}, slowest in ${secs(Math.max(...times))}, on ${modelName()}.` : '';
+      $('runs').innerHTML = runs.map((r, i) =>
+        `<li class="${r.status}" title="Run ${i + 1}: ${r.status === 'pass' ? 'passed' : r.status === 'running' ? 'running' : 'missed'}"></li>`).join('');
       $('misses').innerHTML = '';
       runs.forEach((r, i) => {
         if (r.status !== 'fail' && r.status !== 'error') return;
-        const li = document.createElement('li'); li.className = 'miss';
-        li.innerHTML = `<div class="row"><span class="n">#${i + 1}</span><span class="why"></span><span class="ms">${secs(r.ms)}</span></div>`;
-        li.querySelector('.why').textContent = r.reason || r.status;
+        const li = document.createElement('li');
+        li.innerHTML = '<span class="n"></span><span class="why"></span> ';
+        li.querySelector('.n').textContent = `Run ${i + 1}`;
+        li.querySelector('.why').textContent = r.reason || 'Something went wrong.';
         if (r.raw) {
-          const b = document.createElement('button'); b.type = 'button'; b.className = 'btn quiet sm'; b.textContent = 'Output';
-          const pre = document.createElement('pre'); pre.className = 'raw'; pre.textContent = r.raw; pre.hidden = true;
+          const b = document.createElement('button'); b.type = 'button'; b.className = 'dc-link'; b.textContent = 'what it said';
+          b.style.marginLeft = '10px';
+          const pre = document.createElement('pre'); pre.className = 'dc-raw'; pre.textContent = r.raw; pre.hidden = true;
           b.addEventListener('click', () => { pre.hidden = !pre.hidden; });
-          li.querySelector('.row').appendChild(b); li.appendChild(pre);
+          li.append(b, pre);
         }
         $('misses').appendChild(li);
       });
-      $('recBtn').hidden = !recorded;
+      $('recBtn').hidden = !(finished && recorded);
+      $('copy').hidden = !finished;
       if (recorded) {
-        $('recNote').textContent = `Recorded ${recorded.at} on ${recorded.label}. Show this, labelled as recorded, if the live run misses.`;
+        $('recNote').textContent = `Recorded ${recorded.at} on ${recorded.label}. If the live demo misses, show this and say it is a recording.`;
         $('recPre').textContent = recorded.raw;
       }
     }
@@ -234,8 +279,8 @@
           'anthropic-dangerous-direct-browser-access': 'true',
         },
         body: JSON.stringify({
-          model: state.model, max_tokens: 600, system: state.demo.system, tools: state.demo.tools,
-          messages: [{ role: 'user', content: state.demo.user }],
+          model: model(), max_tokens: 600, system: demo.system, tools: demo.tools,
+          messages: [{ role: 'user', content: demo.user }],
         }),
       });
       const ms = performance.now() - t0;
@@ -248,52 +293,59 @@
       const run = runs[i];
       try {
         const { res, ms } = await callClaude(key);
-        const c = state.demo.check(res);
+        const c = demo.check(res);
         Object.assign(run, { ms, status: c.pass ? 'pass' : 'fail', reason: c.reason, raw: JSON.stringify(res.content, null, 2) });
-        if (c.pass && !recorded) recorded = { raw: run.raw, at: new Date().toLocaleString(), label: MODELS.find(m => m[0] === state.model)[1] };
+        if (c.pass && !recorded) recorded = { raw: run.raw, at: new Date().toLocaleString(), label: modelName() };
       } catch (e) {
-        Object.assign(run, { status: 'error', ms: e.ms ?? null, reason: e.message });
+        const msg = e.status === 401 ? 'That key did not work. Check it and try again.' : e.message;
+        Object.assign(run, { status: 'error', ms: e.ms ?? null, reason: msg });
         if (e.status === 401 || e.status === 403) stopFlag = true;
       }
-      const left = runs.filter(r => r.status === 'running').length;
-      $('time').innerHTML = left ? `<b>${runs.length - left}</b> of ${runs.length} back` : '';
       render();
     }
 
     $('go').addEventListener('click', async () => {
       const key = $('key').value.trim();
-      if (!key) { $('key').focus(); $('key').placeholder = 'Paste a key to run it'; return; }
+      if (!key) { $('key').focus(); $('key').placeholder = 'Paste a key first'; return; }
       clear(); busy = true; stopFlag = false;
-      runs = Array.from({ length: state.n }, () => ({ status: 'running' }));
+      runs = Array.from({ length: count() }, () => ({ status: 'running' }));
       $('go').disabled = true; $('go').textContent = 'Running'; $('stop').hidden = false;
       render();
       let next = 0;
       const worker = async () => { while (!stopFlag && next < runs.length) { const i = next++; await runOne(i, key); } };
       await Promise.all([worker(), worker()]); // two at a time, gentle on rate limits
       runs = runs.filter(r => r.status !== 'running');
-      busy = false; $('go').disabled = false; $('stop').hidden = true; $('time').textContent = '';
-      draw(); render();
+      busy = false; $('go').disabled = false; $('stop').hidden = true; label();
+      render();
       const s = summarize(runs, { latencyBudgetMs: BUDGET_MS });
       $('said').textContent = `${s.passed} of ${s.total} passed.`;
     });
 
     $('stop').addEventListener('click', () => { stopFlag = true; });
     $('recBtn').addEventListener('click', () => { $('rec').hidden = !$('rec').hidden; });
-
     $('copy').addEventListener('click', async () => {
       const s = summarize(runs, { latencyBudgetMs: BUDGET_MS });
-      const label = MODELS.find(m => m[0] === state.model)[1];
       const lines = [
-        `Demo Check: ${SHORT[state.demo.id]} on ${label}`,
-        `${s.passed} of ${s.total} passed · p50 ${secs(s.p50)} · p95 ${secs(s.p95)}`,
-        ...runs.map((r, i) => `#${i + 1} ${r.status} ${secs(r.ms)} ${r.reason || ''}`),
+        `Demo Check: ${DEMOS[demo.id][0]} on ${modelName()}`,
+        `${s.passed} of ${s.total} passed. p50 ${secs(s.p50)}, p95 ${secs(s.p95)}.`,
+        ...runs.map((r, i) => `Run ${i + 1}: ${r.status}, ${secs(r.ms)}${r.reason ? ', ' + r.reason : ''}`),
       ];
       try { await navigator.clipboard.writeText(lines.join('\n')); $('copy').textContent = 'Copied'; }
       catch { $('copy').textContent = 'Copy failed'; }
       setTimeout(() => { $('copy').textContent = 'Copy report'; }, 1500);
     });
 
-    draw();
+    showPrompt(); label();
   </script>
+
+  <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
 </body>
 </html>

@@ -37,14 +37,14 @@ export const SCENARIOS = [
     expected: 'create_event on 2026-11-03 at 14:00 for 30 minutes with priya@acme.com',
     check(res) {
       const t = toolCall(res, 'create_event');
-      if (!t) return fail('No create_event call');
+      if (!t) return fail('Never made the calendar invite');
       const i = t.input || {};
-      if (i.date !== '2026-11-03') return fail(`Wrong date: ${i.date}`);
-      if (String(i.start_time).padStart(5, '0') !== '14:00') return fail(`Wrong time: ${i.start_time}`);
-      if (Number(i.duration_minutes) !== 30) return fail(`Wrong length: ${i.duration_minutes}`);
+      if (i.date !== '2026-11-03') return fail(`Booked the wrong day: ${i.date}`);
+      if (String(i.start_time).padStart(5, '0') !== '14:00') return fail(`Booked the wrong time: ${i.start_time}`);
+      if (Number(i.duration_minutes) !== 30) return fail(`Made it ${i.duration_minutes} minutes instead of 30`);
       const guests = (i.attendees || []).map(s => String(s).toLowerCase());
-      if (!guests.includes('priya@acme.com')) return fail('Guest missing');
-      return ok('Right date, time, length and guest');
+      if (!guests.includes('priya@acme.com')) return fail('Left priya@acme.com off the invite');
+      return ok('Right day, time, length and guest');
     },
   },
   {
@@ -83,13 +83,13 @@ export const SCENARIOS = [
     expected: 'Blue Bottle Coffee, 2026-10-27, 21.32, 4 items',
     check(res) {
       const t = toolCall(res, 'record_receipt');
-      if (!t) return fail('No record_receipt call');
+      if (!t) return fail('Never filled in the receipt');
       const i = t.input || {};
-      if (!/blue bottle/i.test(String(i.merchant))) return fail(`Wrong merchant: ${i.merchant}`);
-      if (i.date !== '2026-10-27') return fail(`Wrong date: ${i.date}`);
-      if (Math.abs(Number(i.total) - 21.32) > 0.001) return fail(`Wrong total: ${i.total}`);
-      if (Number(i.item_count) !== 4) return fail(`Wrong item count: ${i.item_count}`);
-      return ok('All four fields exact');
+      if (!/blue bottle/i.test(String(i.merchant))) return fail(`Got the store wrong: ${i.merchant}`);
+      if (i.date !== '2026-10-27') return fail(`Got the date wrong: ${i.date}`);
+      if (Math.abs(Number(i.total) - 21.32) > 0.001) return fail(`Got the total wrong: ${i.total}`);
+      if (Number(i.item_count) !== 4) return fail(`Counted ${i.item_count} items instead of 4`);
+      return ok('Store, date, total and items all right');
     },
   },
   {
@@ -115,12 +115,12 @@ export const SCENARIOS = [
       const t = toolCall(res, 'answer');
       if (!t) {
         const txt = textOf(res);
-        return /\$\s?\d/.test(txt) ? fail('Invented a dollar limit without the tool') : fail('No answer call');
+        return /\$\s?\d/.test(txt) ? fail('Made up a dollar limit') : fail('Did not give an answer');
       }
       const i = t.input || {};
       if (i.found !== false) return fail('Claimed the policy covers chairs');
-      if (/\$\s?\d/.test(String(i.text)) && !/monitor|internet/i.test(String(i.text))) return fail('Gave a dollar figure for chairs');
-      return ok('Said it is not in the policy');
+      if (/\$\s?\d/.test(String(i.text)) && !/monitor|internet/i.test(String(i.text))) return fail('Made up a dollar limit for chairs');
+      return ok('Said the policy does not cover it');
     },
   },
 ];
