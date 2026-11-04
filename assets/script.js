@@ -6,14 +6,16 @@
 window.applyGlassLevel = function (value) {
   const t = Math.min(100, Math.max(0, Number(value) || 0)) / 100;
   const r = document.documentElement.style;
-  // At t=0 this is the css.glass "plain pane" recipe: barely any blur, no fill,
-  // just a hairline edge. At t=1 it is a heavy frosted panel.
-  r.setProperty('--glass-blur', (1.6 + t * 38).toFixed(2) + 'px');
+  // At t=0 this is a plain pane: no blur, just the lens and a lit rim. The
+  // default (t=0.5) keeps about 3px so the lens has something sharp to bend.
+  // At t=1 it is a heavy frosted panel.
+  r.setProperty('--glass-blur', (40 * Math.pow(t, 3.75)).toFixed(2) + 'px');
   r.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
   r.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
   // Drives the specular rim: strongest when clear, where a real pane would
   // catch light on its edges instead of diffusing it.
   r.setProperty('--glass-lens', (1 - t).toFixed(3));
+  if (window.LiquidGlass) window.LiquidGlass.refresh();
 };
 
 // THEME TOGGLE with SECRET RAINBOW MODE
@@ -2274,4 +2276,27 @@ window.resetPlainMode = function() {
   navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
     if (supported) setXrDevice();
   }).catch(() => {});
+})();
+
+// ============================================
+// LIQUID GLASS: the floating header surfaces, on desktop widths. Phones keep
+// the solid bar, so they never fetch this. See assets/liquid-glass.js.
+// ============================================
+(function () {
+  const script = document.currentScript;
+  const wide = window.matchMedia('(min-width: 901px)');
+  if (!script || !document.querySelector('.header .nav')) return;
+  let requested = false;
+  function load() {
+    if (requested || !wide.matches) return;
+    requested = true;
+    const glass = document.createElement('script');
+    glass.src = new URL('liquid-glass.js', script.src).href;
+    glass.onload = () => {
+      document.querySelectorAll('.header .nav, .header .brand, .header-controls .toggle, .project-search, .filters .pill, .btn, .scroll-cue').forEach(window.LiquidGlass.attach);
+    };
+    document.head.append(glass);
+  }
+  load();
+  wide.addEventListener('change', load);
 })();
