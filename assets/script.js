@@ -23,7 +23,8 @@ window.applyGlassLevel = function (value) {
   const btn = document.getElementById('themeToggle');
   let hoverTimeout = null;
   let secretTooltip = null;
-  let isRainbowMode = localStorage.getItem('rainbowMode') === 'true';
+  const inMinimalMode = localStorage.getItem('plainMode') === 'true';
+  let isRainbowMode = !inMinimalMode && localStorage.getItem('rainbowMode') === 'true';
   
   // Party mode is desktop-only: the stained-glass panels and the animated
   // gradients are heavy on phones and the effect is not readable at that size.
@@ -153,7 +154,7 @@ window.applyGlassLevel = function (value) {
   // New visitors start dark, whatever their system setting says.
   const initial = localStorage.getItem('theme') || 'dark';
   
-  if (initial === 'rainbow' || isRainbowMode) {
+  if (!inMinimalMode && (initial === 'rainbow' || isRainbowMode)) {
     setTheme('rainbow');
   } else {
     setTheme(initial);
@@ -162,6 +163,7 @@ window.applyGlassLevel = function (value) {
   if (btn && !isSmallViewport()){
     // Long hover detection (3 seconds)
     btn.addEventListener('mouseenter', () => {
+      if (document.documentElement.classList.contains('plain-mode')) return;
       hoverTimeout = setTimeout(() => {
         showSecretTooltip();
       }, 3000);
@@ -176,32 +178,10 @@ window.applyGlassLevel = function (value) {
     });
     
     btn.addEventListener('click', (e) => {
-      // Check if plain mode is active - disable theme toggle
-      const isPlainMode = document.documentElement.classList.contains('plain-mode');
-      if (isPlainMode) {
-        const tooltip = document.createElement('div');
-        tooltip.textContent = document.documentElement.classList.contains('plain-mode--rabiat')
-          ? 'Theme is fixed while Rabiat minimal mode is on'
-          : 'Dark mode disabled in Minimalist Mode';
-        tooltip.style.cssText = `
-          position: fixed;
-          top: 100px;
-          left: 50%;
-          transform: translateX(-50%);
-          background: #000000;
-          color: #ffffff;
-          padding: 12px 24px;
-          border-radius: 4px;
-          font-size: 13px;
-          z-index: 10003;
-          pointer-events: none;
-        `;
-        document.body.appendChild(tooltip);
-        setTimeout(() => {
-          tooltip.style.opacity = '0';
-          tooltip.style.transition = 'opacity 0.3s ease';
-          setTimeout(() => tooltip.remove(), 300);
-        }, 2000);
+      // In minimalist mode this button switches between Classic and Rabiat.
+      const root = document.documentElement;
+      if (root.classList.contains('plain-mode')) {
+        window.setMinimalMode?.(root.classList.contains('plain-mode--rabiat') ? 'classic' : 'rabiat');
         return;
       }
       
@@ -286,8 +266,7 @@ window.applyGlassLevel = function (value) {
   
   const PLAIN_VARIANT_CLASSIC = 'classic';
   const PLAIN_VARIANT_RABIAT = 'rabiat';
-  const RABIAT_VOID = '#0a0a0f';
-  const RABIAT_TRAIL = 'rgba(184, 30, 44, 0.45)';
+  const RABIAT_TRAIL = 'rgba(214, 40, 40, 0.45)';
 
   let currentScheme = parseInt(localStorage.getItem('colorScheme') || '0');
   let isPlainMode = localStorage.getItem('plainMode') === 'true';
@@ -380,66 +359,8 @@ window.applyGlassLevel = function (value) {
   let plainCursorTrailColor = '#000000';
   let hoverTimeout = null;
   let plainModePopup = null;
-  let hoverStartTime = null;
   
   function applyScheme(index) {
-    // Remove plain mode if active
-    if (isPlainMode) {
-      document.documentElement.classList.remove('plain-mode');
-      document.documentElement.classList.remove('plain-mode--rabiat');
-      isPlainMode = false;
-      localStorage.setItem('plainMode', 'false');
-      localStorage.removeItem('plainModeVariant');
-      
-      // Re-enable nebula canvas
-      const nebula = document.getElementById('nebula');
-      if (nebula) {
-        nebula.style.display = '';
-      }
-      
-      // Re-enable VR eye (combine both restorations)
-      const vrEye = document.getElementById('vrEye');
-      if (vrEye) {
-        vrEye.style.display = '';
-        vrEye.style.visibility = '';
-        vrEye.style.pointerEvents = '';
-      }
-      
-      // Remove cursor trail
-      removeCursorTrail();
-      
-      // Re-enable the header controls that plain mode greys out
-      setPlainModeControls(false);
-      
-      // Restore eyebrow emoji (reload page or restore from original)
-      const eyebrow = document.querySelector('.eyebrow');
-      if (eyebrow && !eyebrow.textContent.includes('👋')) {
-        eyebrow.textContent = 'Hey there! 👋🏾';
-      }
-      
-      // Force cleanup of ::before pseudo-elements by triggering reflow
-      const sectionsWithBefore = document.querySelectorAll('#skills, #education');
-      sectionsWithBefore.forEach(section => {
-        // Force browser to recalculate styles
-        void section.offsetHeight;
-      });
-      
-      // Restore dark mode if it was active before plain mode
-      const themeBeforePlain = localStorage.getItem('themeBeforePlain');
-      if (themeBeforePlain === 'dark') {
-        document.documentElement.classList.add('dark');
-        document.body.classList.add('dark');
-        document.documentElement.style.colorScheme = 'dark';
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        document.body.classList.remove('dark');
-        document.documentElement.style.colorScheme = 'light';
-        localStorage.setItem('theme', 'light');
-      }
-      localStorage.removeItem('themeBeforePlain');
-    }
-    
     const scheme = colorSchemes[index];
     const root = document.documentElement;
     root.style.setProperty('--primary', scheme.primary);
@@ -459,203 +380,91 @@ window.applyGlassLevel = function (value) {
   
   function createPlainModePopup() {
     if (plainModePopup) return;
-    
+
     plainModePopup = document.createElement('div');
     plainModePopup.className = 'plain-mode-popup';
+    plainModePopup.setAttribute('role', 'dialog');
+    plainModePopup.setAttribute('aria-labelledby', 'plainPopupTitle');
     plainModePopup.innerHTML = `
-      <div class="plain-mode-popup-content">
-        <p style="margin-bottom: 8px; font-size: 14px; font-weight: 600;">Minimalist Mode</p>
-        <p style="margin-bottom: 14px; font-size: 12px; color: #444; line-height: 1.4;">Pick a look. Both stay minimal (no galaxy, no VR hero).</p>
-        <button type="button" id="activatePlainClassic" class="plain-mode-btn" style="
-          background: #000;
-          color: #fff;
-          border: 1px solid #000;
-          padding: 8px 16px;
-          cursor: pointer;
-          font-size: 13px;
-          width: 100%;
-        ">Classic light</button>
-        <button type="button" id="activatePlainRabiat" class="plain-mode-btn" style="
-          background: #0a0a0f;
-          color: #ececee;
-          border: 1px solid #b81e2c;
-          padding: 8px 16px;
-          cursor: pointer;
-          font-size: 13px;
-          width: 100%;
-          margin-top: 8px;
-        ">Rabiat theme (brand)</button>
-        <button type="button" id="cancelPlainMode" class="plain-mode-btn" style="
-          background: transparent;
-          color: #000;
-          border: 1px solid #000;
-          padding: 8px 16px;
-          cursor: pointer;
-          font-size: 13px;
-          width: 100%;
-          margin-top: 8px;
-        ">Cancel</button>
+      <p class="plain-popup-title" id="plainPopupTitle">Minimalist mode</p>
+      <p class="plain-popup-sub">No galaxy, no glass. Pick a look.</p>
+      <div class="plain-popup-options">
+        <button type="button" class="plain-option plain-option--classic" data-variant="${PLAIN_VARIANT_CLASSIC}">
+          <span class="plain-option-swatch" aria-hidden="true">Aa</span>
+          <span>Classic</span>
+        </button>
+        <button type="button" class="plain-option plain-option--rabiat" data-variant="${PLAIN_VARIANT_RABIAT}">
+          <span class="plain-option-swatch" aria-hidden="true">Aa</span>
+          <span>Rabiat</span>
+        </button>
       </div>
-    `;
-    plainModePopup.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #ffffff;
-      border: 2px solid #000000;
-      padding: 24px;
-      z-index: 10002;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      min-width: 200px;
+      <button type="button" class="plain-popup-cancel">Cancel</button>
     `;
     document.body.appendChild(plainModePopup);
-    
-    document.getElementById('activatePlainClassic').addEventListener('click', () => {
-      applyPlainMode(PLAIN_VARIANT_CLASSIC);
-      removePlainModePopup();
+
+    plainModePopup.querySelectorAll('[data-variant]').forEach((option) => {
+      option.addEventListener('click', () => setMinimalMode(option.dataset.variant));
     });
-    document.getElementById('activatePlainRabiat').addEventListener('click', () => {
-      applyPlainMode(PLAIN_VARIANT_RABIAT);
-      removePlainModePopup();
+    plainModePopup.querySelector('.plain-popup-cancel').addEventListener('click', removePlainModePopup);
+    plainModePopup.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') removePlainModePopup();
     });
-    
-    document.getElementById('cancelPlainMode').addEventListener('click', () => {
-      removePlainModePopup();
-      hoverStartTime = null;
-    });
+    plainModePopup.querySelector('[data-variant]').focus();
   }
-  
+
   function removePlainModePopup() {
     if (plainModePopup) {
       plainModePopup.remove();
       plainModePopup = null;
+      btn.focus();
     }
   }
-  
-  function applyPlainMode(variant) {
-    const rabiat = variant === PLAIN_VARIANT_RABIAT;
-    const wasDarkBefore =
-      document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
-    if (wasDarkBefore) {
-      localStorage.setItem('themeBeforePlain', 'dark');
+
+  // Minimalist mode is saved in localStorage and applied on page load, here and
+  // in each page's pre-paint script. Switching reloads the page, because the
+  // galaxy, nav glider, lens and the rest only set themselves up once, on load.
+  // Pass a variant to enter or switch, or null to exit.
+  function setMinimalMode(variant) {
+    if (variant) {
+      if (!document.documentElement.classList.contains('plain-mode')) {
+        // Remember the theme to come back to on exit.
+        const saved = localStorage.getItem('theme');
+        const theme = saved === 'rainbow' ? localStorage.getItem('themeBeforeRainbow') : saved;
+        if (theme === 'dark') localStorage.setItem('themeBeforePlain', 'dark');
+        else localStorage.removeItem('themeBeforePlain');
+      }
+      localStorage.setItem('rainbowMode', 'false');
+      localStorage.setItem('plainMode', 'true');
+      localStorage.setItem('plainModeVariant', variant);
+      localStorage.setItem('theme', variant === PLAIN_VARIANT_RABIAT ? 'dark' : 'light');
     } else {
+      localStorage.setItem('theme', localStorage.getItem('themeBeforePlain') === 'dark' ? 'dark' : 'light');
+      localStorage.setItem('plainMode', 'false');
+      localStorage.removeItem('plainModeVariant');
       localStorage.removeItem('themeBeforePlain');
     }
-
-    document.documentElement.classList.add('plain-mode');
-    if (rabiat) {
-      document.documentElement.classList.add('plain-mode--rabiat');
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('dark');
-      document.documentElement.style.colorScheme = 'dark';
-      plainCursorTrailColor = RABIAT_TRAIL;
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('plain-mode--rabiat');
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
-      document.documentElement.style.colorScheme = 'light';
-      plainCursorTrailColor = '#000000';
-      localStorage.setItem('theme', 'light');
-    }
-
-    isPlainMode = true;
-    localStorage.setItem('plainMode', 'true');
-    localStorage.setItem('plainModeVariant', variant);
-
-    const root = document.documentElement;
-    if (rabiat) {
-      root.style.setProperty('--primary', '#b81e2c');
-      root.style.setProperty('--accent', '#4a8f8f');
-      applyReadableTokens('#b81e2c', '#4a8f8f');
-    } else {
-      root.style.setProperty('--primary', '#000000');
-      root.style.setProperty('--accent', '#000000');
-      applyReadableTokens('#000000', '#000000');
-    }
-
-    const hero = document.querySelector('.hero--fullscreen');
-    if (hero) {
-      hero.style.background = rabiat ? RABIAT_VOID : '#ffffff';
-      hero.style.backgroundSize = '100% 100%';
-    }
-    
-    // Hide nebula canvas
-    const nebula = document.getElementById('nebula');
-    if (nebula) {
-      nebula.style.display = 'none';
-    }
-    
-    // Hide VR eye but keep space
-    const vrEye = document.getElementById('vrEye');
-    if (vrEye) {
-      vrEye.style.visibility = 'hidden';
-      vrEye.style.pointerEvents = 'none';
-    }
-    
-    // Remove emojis from eyebrow
-    const eyebrow = document.querySelector('.eyebrow');
-    if (eyebrow) {
-      eyebrow.textContent = eyebrow.textContent.replace(/[👋🏾👋]/g, '').trim();
-      if (!eyebrow.textContent) {
-        eyebrow.textContent = 'Hello';
-      }
-    }
-    
-    // Initialize cursor trail
-    initCursorTrail();
-    
-    // Add exit button to header
-    setPlainModeControls(true);
-    
-    removePlainModePopup();
+    location.reload();
   }
-  
-  /* Plain mode used to drop a fixed "Exit Minimalist Mode" button at top-right,
-     which sat directly on top of the header controls and blocked them. Instead
-     we grey out the controls that genuinely do not apply (the theme toggle is
-     already a no-op in plain mode) and leave the palette button, which is what
-     exits, fully usable. */
-  function setPlainModeControls(active) {
-    // Clear any button left over from a previously cached session.
-    const stale = document.getElementById('exitPlainMode');
-    if (stale) stale.remove();
+  window.setMinimalMode = setMinimalMode;
 
+  // Two ways out of minimalist mode: the palette button and this button, which
+  // sits bottom-left, away from the header controls and the nav.
+  function setPlainModeControls(rabiat) {
     const themeBtn = document.getElementById('themeToggle');
     if (themeBtn) {
-      themeBtn.setAttribute('data-disabled', String(active));
-      themeBtn.setAttribute('aria-disabled', String(active));
-      themeBtn.title = active ? 'Theme locked in minimalist mode' : '';
+      const label = rabiat ? 'Switch to Classic' : 'Switch to Rabiat';
+      themeBtn.title = label;
+      themeBtn.setAttribute('aria-label', label);
     }
-
-    const funBtn = document.getElementById('funToggle');
-    if (funBtn) {
-      funBtn.title = active ? 'Exit minimalist mode' : 'Fun colors';
-    }
-
-    // A visible way out that does not sit on top of anything: a low-profile
-    // chip in the bottom-left, away from the header controls and the nav.
-    const existing = document.getElementById('plainExitChip');
-    if (!active) {
-      if (existing) existing.remove();
-      return;
-    }
-    if (existing) return;
+    btn.title = 'Exit minimalist mode';
+    btn.setAttribute('aria-label', 'Exit minimalist mode');
 
     const chip = document.createElement('button');
     chip.id = 'plainExitChip';
     chip.type = 'button';
     chip.className = 'plain-exit-chip';
     chip.innerHTML = '<span aria-hidden="true">←</span> Exit minimalist mode';
-    chip.addEventListener('click', () => {
-      currentScheme = 0;
-      isPlainMode = false;
-      localStorage.setItem('plainMode', 'false');
-      localStorage.removeItem('plainModeVariant');
-      applyScheme(currentScheme);
-      chip.remove();
-    });
+    chip.addEventListener('click', () => setMinimalMode(null));
     document.body.appendChild(chip);
   }
 
@@ -740,111 +549,53 @@ window.applyGlassLevel = function (value) {
   
   // Apply saved state on load
   if (isPlainMode) {
-    if (!localStorage.getItem('plainModeVariant')) {
-      localStorage.setItem('plainModeVariant', PLAIN_VARIANT_CLASSIC);
-    }
-    const variant = localStorage.getItem('plainModeVariant') || PLAIN_VARIANT_CLASSIC;
-    const rabiat = variant === PLAIN_VARIANT_RABIAT;
-    document.documentElement.classList.add('plain-mode');
-    if (rabiat) {
-      document.documentElement.classList.add('plain-mode--rabiat');
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('dark');
-      document.documentElement.style.colorScheme = 'dark';
-      plainCursorTrailColor = RABIAT_TRAIL;
-    } else {
-      document.documentElement.classList.remove('plain-mode--rabiat');
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
-      document.documentElement.style.colorScheme = 'light';
-      plainCursorTrailColor = '#000000';
-    }
-
+    const rabiat = localStorage.getItem('plainModeVariant') === PLAIN_VARIANT_RABIAT;
     const root = document.documentElement;
-    if (rabiat) {
-      root.style.setProperty('--primary', '#b81e2c');
-      root.style.setProperty('--accent', '#4a8f8f');
-      applyReadableTokens('#b81e2c', '#4a8f8f');
-    } else {
-      root.style.setProperty('--primary', '#000000');
-      root.style.setProperty('--accent', '#000000');
-      applyReadableTokens('#000000', '#000000');
-    }
+    root.classList.add('plain-mode');
+    root.classList.toggle('plain-mode--rabiat', rabiat);
+    root.classList.toggle('dark', rabiat);
+    document.body.classList.toggle('dark', rabiat);
+    root.style.colorScheme = rabiat ? 'dark' : 'light';
+    plainCursorTrailColor = rabiat ? RABIAT_TRAIL : '#000000';
 
-    const hero = document.querySelector('.hero--fullscreen');
-    if (hero) {
-      hero.style.background = rabiat ? RABIAT_VOID : '#ffffff';
-      hero.style.backgroundSize = '100% 100%';
-    }
-    
-    // Hide nebula canvas
+    const primary = rabiat ? '#D62828' : '#000000';
+    const accent = rabiat ? '#5EEAD4' : '#000000';
+    root.style.setProperty('--primary', primary);
+    root.style.setProperty('--accent', accent);
+    applyReadableTokens(primary, accent);
+
+    // No galaxy and no VR eye in either look.
     const nebula = document.getElementById('nebula');
-    if (nebula) {
-      nebula.style.display = 'none';
-    }
-    
-    // Hide VR eye but keep space
+    if (nebula) nebula.style.display = 'none';
     const vrEye = document.getElementById('vrEye');
-    if (vrEye) {
-      vrEye.style.visibility = 'hidden';
-      vrEye.style.pointerEvents = 'none';
-    }
-    
-    // Remove emojis from eyebrow
-    const eyebrow = document.querySelector('.eyebrow');
-    if (eyebrow) {
-      eyebrow.textContent = eyebrow.textContent.replace(/[👋🏾👋]/g, '').trim();
-      if (!eyebrow.textContent) {
-        eyebrow.textContent = 'Hello';
-      }
-    }
-    
-    // Initialize cursor trail
+    if (vrEye) vrEye.style.display = 'none';
+
     initCursorTrail();
-    
-    // Add exit button
-    setPlainModeControls(true);
+    setPlainModeControls(rabiat);
   } else {
     applyScheme(currentScheme);
   }
   
-  // Click handler for color scheme cycling or exiting plain mode
+  // Click handler for color scheme cycling or exiting minimalist mode
   btn.addEventListener('click', () => {
-    // Check actual state, not just variable
-    const actuallyInPlainMode = document.documentElement.classList.contains('plain-mode');
-    
-    if (actuallyInPlainMode) {
-      // Exit plain mode - go back to first color scheme
-      currentScheme = 0;
-      isPlainMode = false;
-      localStorage.setItem('plainMode', 'false');
-      applyScheme(currentScheme);
-      
-      setPlainModeControls(false);
-      
-      // Fun animation on button
-      btn.style.transform = 'scale(1.2) rotate(180deg)';
-      setTimeout(() => {
-        btn.style.transform = '';
-      }, 300);
-    } else {
-      currentScheme = (currentScheme + 1) % colorSchemes.length;
-      applyScheme(currentScheme);
-      
-      // Fun animation on button
-      btn.style.transform = 'scale(1.2) rotate(180deg)';
-      setTimeout(() => {
-        btn.style.transform = '';
-      }, 300);
+    if (document.documentElement.classList.contains('plain-mode')) {
+      setMinimalMode(null);
+      return;
     }
+    currentScheme = (currentScheme + 1) % colorSchemes.length;
+    applyScheme(currentScheme);
+
+    // Fun animation on button
+    btn.style.transform = 'scale(1.2) rotate(180deg)';
+    setTimeout(() => {
+      btn.style.transform = '';
+    }, 300);
   });
   
   // Hover handler for plain mode unlock
   btn.addEventListener('mouseenter', () => {
     const actuallyInPlainMode = document.documentElement.classList.contains('plain-mode');
     if (actuallyInPlainMode || plainModePopup) return;
-    hoverStartTime = Date.now();
-    
     hoverTimeout = setTimeout(() => {
       createPlainModePopup();
     }, 5000);
@@ -856,15 +607,13 @@ window.applyGlassLevel = function (value) {
       clearTimeout(hoverTimeout);
       hoverTimeout = null;
     }
-    hoverStartTime = null;
     // Don't remove popup on mouse leave - let user click buttons
   });
   
   // Close popup when clicking outside
   document.addEventListener('click', (e) => {
-    if (plainModePopup && !plainModePopup.contains(e.target) && e.target !== btn) {
+    if (plainModePopup && !plainModePopup.contains(e.target) && !btn.contains(e.target)) {
       removePlainModePopup();
-      hoverStartTime = null;
     }
   });
 })();
@@ -1651,7 +1400,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // GLOBAL TILT LOADER with header UI (desktop/mobile/off)
 (function(){
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce) return;
+  if (reduce || document.documentElement.classList.contains('plain-mode')) return;
 
   const body = document.body;
   const SELECTOR = body?.dataset?.tiltSelector || '.img-card, .card.tilt';
@@ -1753,42 +1502,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 })();
 
-// Global reset function - can be called from console: resetPlainMode()
-window.resetPlainMode = function() {
-  localStorage.setItem('plainMode', 'false');
-  localStorage.removeItem('plainModeVariant');
-  document.documentElement.classList.remove('plain-mode');
-  document.documentElement.classList.remove('plain-mode--rabiat');
-  document.body.classList.remove('dark');
-  document.documentElement.classList.remove('dark');
-  document.documentElement.style.colorScheme = 'light';
-  
-  // Re-enable nebula
-  const nebula = document.getElementById('nebula');
-  if (nebula) nebula.style.display = '';
-  
-  // Re-enable VR eye
-  const vrEye = document.getElementById('vrEye');
-  if (vrEye) {
-    vrEye.style.display = '';
-    vrEye.style.visibility = '';
-    vrEye.style.pointerEvents = '';
-  }
-  
-  // Remove exit button
-  const exitBtn = document.getElementById('exitPlainMode');
-  if (exitBtn) exitBtn.remove();
-  
-  // Restore eyebrow
-  const eyebrow = document.querySelector('.eyebrow');
-  if (eyebrow && !eyebrow.textContent.includes('👋')) {
-    eyebrow.textContent = 'Hey there! 👋🏾';
-  }
-  
-  // Reload page to apply color scheme
-  location.reload();
-};
-
 // AI chat placeholder, double-click footer tagline to open
 (function initAiChatPlaceholder() {
   const tagline = document.querySelector('.footer-tagline');
@@ -1883,7 +1596,7 @@ window.resetPlainMode = function() {
   wrap.className = 'settings-wrap';
   wrap.innerHTML = `
     <button type="button" class="toggle settings-btn" id="settingsBtn"
-            aria-expanded="false" aria-haspopup="dialog" title="Settings" aria-label="Settings">⚙</button>
+            aria-expanded="false" aria-haspopup="dialog" title="Settings" aria-label="Settings"><span class="ico" data-icon="settings" aria-hidden="true"></span></button>
     <div class="settings-panel" role="dialog" aria-label="Display settings">
       <div class="settings-group">
         <span class="settings-label" id="tiltLabel">Card tilt</span>
@@ -1981,6 +1694,8 @@ window.resetPlainMode = function() {
   const soundGroup = wrap.querySelector('[data-seg="sound"]').closest('.settings-group');
   if (!window.AmbientSound) {
     soundGroup.hidden = true;
+    // Minimalist mode has no tilt or glass, so the panel would open empty.
+    if (document.documentElement.classList.contains('plain-mode')) wrap.style.display = 'none';
   } else {
     paint('sound', window.AmbientSound.enabled() ? 'on' : 'off');
     wrap.querySelectorAll('[data-seg="sound"] button').forEach((b) => {
@@ -2053,6 +1768,8 @@ window.resetPlainMode = function() {
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     backdrop.hidden = !open;
+    // The glider measured itself while the menu was closed and had no size.
+    if (open) nav.dispatchEvent(new Event('nav-menu-open'));
   };
 
   const closeMenu = () => setOpen(false);
@@ -2178,6 +1895,7 @@ window.resetPlainMode = function() {
   });
 
   window.addEventListener('resize', () => moveGlider(gliderTarget || getActivePill(), false));
+  nav.addEventListener('nav-menu-open', () => moveGlider(getActivePill(), false));
 
   const header = nav.closest('.header');
   if (header) {
@@ -2286,6 +2004,7 @@ window.resetPlainMode = function() {
   const script = document.currentScript;
   const wide = window.matchMedia('(min-width: 901px)');
   if (!script || !document.querySelector('.header .nav')) return;
+  if (document.documentElement.classList.contains('plain-mode')) return;
   let requested = false;
   function load() {
     if (requested || !wide.matches) return;

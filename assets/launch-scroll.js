@@ -9,7 +9,7 @@ let ctx = null;
 let resizeTimer = 0;
 
 export function initLaunchScroll() {
-  if (ctx) return;
+  if (ctx || document.documentElement.classList.contains('plain-mode')) return;
 
   gsap.registerPlugin(ScrollTrigger);
 

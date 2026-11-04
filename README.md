@@ -67,6 +67,8 @@ Rabiat-Personal-Portfolio/
 - **Responsive Design**: Fluid layout with a real mobile nav (hamburger menu) below 900px
 - **Dark Mode**: New visitors start in dark mode with clear glass; the theme toggle and glass slider save their choice in localStorage
 - **Secret Rainbow Mode**: Hidden party mode activated by holding the theme toggle button
+- **Minimalist Mode**: Hold the pointer on the palette button for 5 seconds to pick Classic or Rabiat. In either look the theme button switches between them, and the palette button or the bottom-left button exits. Switching saves the choice and reloads the page (`setMinimalMode` in `script.js`)
+- **Header Icons**: One single-colour line icon set in `style.css` (`.ico[data-icon]`), drawn as masks so each takes the text colour around it
 - **Interactive Galaxy Canvas**: Animated nebula background with parallax effect and shooting stars
 - **VR Eye Animation**: Interactive VR headset with eyes that follow cursor movement — click it to open the HQ Daily Planner
 - **View in VR (WebXR)**: On supported headsets (Quest Browser, etc.), a header link opens [`vr.html`](vr.html) — an immersive 3D version of the home hero and featured projects (A-Frame)
