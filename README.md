@@ -65,7 +65,7 @@ Rabiat-Personal-Portfolio/
 - **Search Functionality**: Real-time search across project titles and descriptions
 - **Case Studies**: Detailed case study pages for major projects with rich content
 - **Responsive Design**: Fluid layout with a real mobile nav (hamburger menu) below 900px
-- **Dark Mode**: Theme toggle with system preference detection and localStorage persistence
+- **Dark Mode**: New visitors start in dark mode with clear glass; the theme toggle and glass slider save their choice in localStorage
 - **Secret Rainbow Mode**: Hidden party mode activated by holding the theme toggle button
 - **Interactive Galaxy Canvas**: Animated nebula background with parallax effect and shooting stars
 - **VR Eye Animation**: Interactive VR headset with eyes that follow cursor movement — click it to open the HQ Daily Planner

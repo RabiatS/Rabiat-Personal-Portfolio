@@ -24,7 +24,7 @@
       var plain = localStorage.getItem('plainMode') === 'true';
       if (plain) return;
       var saved = localStorage.getItem('theme');
-      var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var dark = !saved || saved === 'dark';
       if (dark) {
         document.documentElement.classList.add('dark');
         document.documentElement.style.colorScheme = 'dark';

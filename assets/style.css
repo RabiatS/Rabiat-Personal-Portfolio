@@ -56,10 +56,10 @@
      --glass-alpha-boost is folded into the scroll-reactive alphas further down
      so the panel can be made more or less see-through without rewriting every
      rule. */
-  --glass-blur: 3px;
-  --glass-saturate: 1.58;
-  --glass-alpha-boost: 0;
-  --glass-lens: 0.5;
+  --glass-blur: 0px;
+  --glass-saturate: 1.05;
+  --glass-alpha-boost: -0.055;
+  --glass-lens: 1;
   --glass-bg: color-mix(in srgb, var(--bg-elevated) 58%, transparent);
   --glass-border: color-mix(in srgb, var(--border) 40%, rgba(255, 255, 255, 0.5));
   --glass-shine: rgba(255, 255, 255, 0.72);

@@ -6,9 +6,9 @@
 window.applyGlassLevel = function (value) {
   const t = Math.min(100, Math.max(0, Number(value) || 0)) / 100;
   const r = document.documentElement.style;
-  // At t=0 this is a plain pane: no blur, just the lens and a lit rim. The
-  // default (t=0.5) keeps about 3px so the lens has something sharp to bend.
-  // At t=1 it is a heavy frosted panel.
+  // At t=0, the default for new visitors, this is a plain pane: no blur, just
+  // the lens and a lit rim. At t=0.5 about 3px of blur remains. At t=1 it is a
+  // heavy frosted panel.
   r.setProperty('--glass-blur', (40 * Math.pow(t, 3.75)).toFixed(2) + 'px');
   r.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
   r.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
@@ -150,8 +150,8 @@ window.applyGlassLevel = function (value) {
     }, 3000);
   };
   
-  const initial = localStorage.getItem('theme') ||
-    (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  // New visitors start dark, whatever their system setting says.
+  const initial = localStorage.getItem('theme') || 'dark';
   
   if (initial === 'rainbow' || isRainbowMode) {
     setTheme('rainbow');
@@ -1935,7 +1935,7 @@ window.resetPlainMode = function() {
     const legacy = { clear: 0, default: 50, frosted: 100 };
     if (saved in legacy) return legacy[saved];
     const n = parseInt(saved, 10);
-    return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 50;
+    return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 0;
   }
 
   function applyGlass(value) {
