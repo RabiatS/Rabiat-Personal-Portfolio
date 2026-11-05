@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<title>Audio Lab · Rabiat's Lab</title>
+<meta name="description" content="Learn sound and digital audio by listening and playing: pressure waves, pitch, decibels, harmonics, the spectrum, sampling, bit depth, filters, EQ, codecs, stereo and latency. Runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../study/kit/kit.css">
+<style>
+  /* Audio Lab extras: the sound bar at the top of every chapter panel */
+  .a-bar { border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 10px 12px; background: rgba(10,10,10,.55); display: grid; gap: 8px; }
+  .a-bar .a-play { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .a-bar .a-vol { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; }
+  .a-bar .a-vol label { font: 600 11px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .a-bar .a-vol input { width: 100%; }
+  .a-bar .a-note { font: 500 11.5px/1.4 var(--f-mono); color: var(--muted); }
+  .a-bar .a-note.warn { color: var(--c2); }
+  .btn.live, .btn.live:hover:not(:disabled) { background: var(--surface-2); color: var(--text); border-color: var(--c1); color: var(--text); }
+  .btn.live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--c1); box-shadow: 0 0 8px var(--c1); }
+  .a-table { width: 100%; border-collapse: collapse; font: 500 12.5px/1.4 var(--f-mono); }
+  .a-table td, .a-table th { padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+  .a-table th { font: 600 11px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .a-table td.r, .a-table th.r { text-align: right; font-variant-numeric: tabular-nums; }
+  .a-pads { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; }
+  .a-mix { display: grid; gap: 6px; }
+  .a-mix .trk { display: grid; grid-template-columns: 64px 1fr auto auto; gap: 8px; align-items: center; }
+  .a-mix .trk b { font: 600 12.5px var(--f-display); letter-spacing: .1em; text-transform: uppercase; }
+  .a-mix .trk input { width: 100%; }
+</style>
+</head>
+<body>
+<script type="module">
+import { createLab } from '../study/kit/kit.js';
+const ch = (id, title, group, blurb) => ({ id, title, group, blurb, load: () => import(`./chapters/${id}.js`) });
+createLab({
+  id: 'audio',
+  title: 'Audio Lab',
+  intro: 'Sound and digital audio from air pressure to bits, one hands on demo at a time.',
+  overview: 'Sound is air pushing on your ears. Digital audio is a long list of numbers that describes that push. Each chapter here is one idea you can hear and see: slide a pitch up past your hearing, build a square wave out of sines, watch your voice as a spectrogram, make a tone fold back above Nyquist, crush the bits, EQ a little band and feel latency in your own fingers. Start at the top if this is new, or jump to what you are curious about. Headphones help, and start with the volume low.',
+  about: '<p>Every chapter has a live demo you can hear, a plain words explanation, a going deeper section for people who already know the basics, and a short check at the end.</p><p>All sound is made live in your browser with the Web Audio API. Nothing plays until you press a button, and the microphone is only used when you ask for it. It never leaves your device.</p>',
+  chapters: [
+    ch('what-is-sound', 'What sound is', 'The physics of sound', 'Air pressure waves, compressions and a speaker cone.'),
+    ch('frequency', 'Frequency and pitch', 'The physics of sound', 'Hertz, notes, the range of hearing and your own limit.'),
+    ch('loudness', 'Amplitude and loudness', 'The physics of sound', 'Decibels, the log scale and safe listening.'),
+    ch('timbre', 'Waveforms and timbre', 'The physics of sound', 'Harmonics, and building a square wave out of sines.'),
+    ch('spectrum', 'The spectrum', 'Seeing sound', 'FFT, time versus frequency, and a live spectrogram.'),
+    ch('sampling', 'Sampling and sample rate', 'Digital audio', 'Samples, Nyquist and aliasing you can hear.'),
+    ch('bit-depth', 'Bit depth and quantisation', 'Digital audio', 'Steps, quantisation noise, dither and dynamic range.'),
+    ch('filters', 'Bandwidth and filters', 'Shaping sound', 'Low pass, high pass, band pass, notch and the telephone.'),
+    ch('eq-mixing', 'EQ and mixing', 'Shaping sound', 'A live band to balance with faders, pan and a 5 band EQ.'),
+    ch('formats', 'Compression and file formats', 'Storing sound', 'Bitrate, lossless and lossy, masking, and file sizes.'),
+    ch('stereo-space', 'Stereo, phase and space', 'Space and systems', 'Panning, cancellation, echo, reverb and binaural cues.'),
+    ch('signal-chain', 'In and out', 'Space and systems', 'Microphone to speaker, and the latency in between.'),
+  ],
+});
+</script>
+</body>
+</html>
