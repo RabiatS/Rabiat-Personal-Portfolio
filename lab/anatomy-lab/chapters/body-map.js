@@ -75,6 +75,7 @@ export default {
       b.style.opacity = '0.6';
       await body.set(k, on[k]);
       b.style.opacity = '';
+      for (const lb of v.labels) lb.hidden = !on.bones;
       if (on.skin && v.packs.skin) v.packs.skin.opacity(on.bones || on.muscles || on.organs || on.vessels || on.nerves ? 0.16 : 0.6);
     }, { multi: true, value: on });
     const vg = group(ctx, 'View', [['front', 'Front'], ['side', 'Side'], ['back', 'Back']], (k) => view(k));
