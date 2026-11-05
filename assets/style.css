@@ -2,7 +2,7 @@
    MODERN PORTFOLIO DESIGN - FRESH START
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Rajdhani:wght@500;600;700&family=DM+Mono:wght@400;500&display=swap');
+/* Fonts (Lora, Rajdhani, DM Mono) are loaded by a <link> in each page's head, not @import, so they download in parallel. */
 
 :root {
   /* Personal portfolio palette - warmer, more inviting */

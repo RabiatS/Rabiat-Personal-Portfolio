@@ -680,13 +680,23 @@ document.addEventListener('DOMContentLoaded', () => {
     return null;
   }
 
+  // Theme colours are read once and cached; refreshed when the theme or the root
+  // inline style / class changes (scheme setters write --primary on <html>), not every frame.
+  let themeColors = null;
   function getThemeColors() {
+    if (themeColors) return themeColors;
     const style = getComputedStyle(document.documentElement);
-    return {
+    themeColors = {
       primary: parseCssColor(style.getPropertyValue('--primary')) || { r: 124, g: 58, b: 237 },
       accent: parseCssColor(style.getPropertyValue('--accent')) || { r: 236, g: 72, b: 153 }
     };
+    return themeColors;
   }
+  const invalidateThemeColors = () => { themeColors = null; };
+  window.addEventListener('themechange', invalidateThemeColors);
+  new MutationObserver(invalidateThemeColors).observe(document.documentElement, { attributes: true, attributeFilter: ['style', 'class'] });
+  document.addEventListener('DOMContentLoaded', invalidateThemeColors);
+  window.addEventListener('load', invalidateThemeColors);
 
   const canvasOrbs = [
     { nx: 0.2, ny: 0.3, r: 0.38, role: 'primary', phase: 0, speed: 0.11 },
@@ -936,7 +946,23 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.fill();
     }
 
-    requestAnimationFrame(draw);
+    scheduleDraw();
+  }
+
+  // Run the loop only while the canvas is on screen and the tab is visible.
+  let rafId = 0; let canvasOnScreen = true;
+  function scheduleDraw(){
+    rafId = 0;
+    if (!canvasOnScreen || document.hidden) return;
+    rafId = requestAnimationFrame(draw);
+  }
+  function resumeDraw(){ if (!rafId && canvasOnScreen && !document.hidden) rafId = requestAnimationFrame(draw); }
+  document.addEventListener('visibilitychange', resumeDraw);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      canvasOnScreen = entries[entries.length - 1].isIntersecting;
+      resumeDraw();
+    }).observe(canvas);
   }
 
   function setTargetFrom(e){
@@ -966,7 +992,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('resize', resize);
   window.addEventListener('orientationchange', resize);
-  resize(); requestAnimationFrame(draw);
+  resize(); resumeDraw();
 })();
 
 // VR EYE THAT FOLLOWS CURSOR
@@ -1426,6 +1452,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints>0);
     if (mode==='off'){ destroy(); return; }
     if (mode==='desktop' && !canHover){ destroy(); return; }
+    // No tilt targets on this page (yet): skip downloading vanilla-tilt. renderProjects calls enableTilt() after it adds cards.
+    if (!nodes().length) return;
     loadTilt(()=> init(mode==='all' && isTouch));
   }
 

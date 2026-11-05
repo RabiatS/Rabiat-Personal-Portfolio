@@ -174,8 +174,11 @@ export function createRipple(canvas, opts = {}) {
   }
 
   let quiet = 0;
+  // Pause the loop while the canvas is off screen or the tab is hidden; pick it back up on return.
+  let onScreen = true; let paused = false;
   function frame() {
     if (destroyed) return;
+    if (!onScreen || document.hidden) { awake = false; paused = true; return; }
     const peak = step();
     upload(); draw();
     o.onFrame?.();
@@ -235,6 +238,10 @@ export function createRipple(canvas, opts = {}) {
   const ro = new ResizeObserver(() => resize());
   ro.observe(canvas);
   resize();
+  const resume = () => { if (onScreen && !document.hidden && (paused || o.keepAwake)) { paused = false; wake(); } };
+  document.addEventListener('visibilitychange', resume);
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver((en) => { onScreen = en[en.length - 1].isIntersecting; resume(); }) : null;
+  io?.observe(canvas);
 
   return {
     drop,
@@ -247,7 +254,8 @@ export function createRipple(canvas, opts = {}) {
     },
     get size() { return { w: W, h: H }; },
     destroy() {
-      destroyed = true; cancelAnimationFrame(raf); ro.disconnect();
+      destroyed = true; cancelAnimationFrame(raf); ro.disconnect(); io?.disconnect();
+      document.removeEventListener('visibilitychange', resume);
       o.input.removeEventListener('pointermove', onMove);
       o.input.removeEventListener('pointerdown', onDown);
       o.input.removeEventListener('pointerleave', onLeave);
