@@ -64,7 +64,6 @@ Rabiat-Personal-Portfolio/
 │   └── img/                  # Image assets (projects/, portrait, etc.)
 │
 └── files/                    # PDFs, videos, and other downloadable documents
-    ├── Rabiat_Sadiq_Resume_DEC_2025.pdf
     ├── amazon-music/
     └── ctrl-alt-elite/
 ```
