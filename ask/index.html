@@ -64,8 +64,10 @@
       background-size: 220% 220%;
       animation: heroBreath 24s ease-in-out infinite;
     }
+    /* A short fade into the page, so the last row of chips stays on the dark sky in light mode too. */
+    .ask-hero.hero--fullscreen::after { height: 40px; }
     .ask-hero .hero-inner { position: relative; z-index: 3; width: 100%; max-width: 760px; margin: 0 auto; }
-    .ask-hero h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1.08; margin: 0 0 16px; }
+    .ask-hero h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1.08; margin: 0 0 16px; text-wrap: balance; }
     .ask-hero .lead { margin: 0 auto 28px; font-size: clamp(16px, 2.2vw, 19px); }
 
     /* The question box: a liquid-glass pill on the dark sky. */
@@ -95,7 +97,7 @@
     }
     .ask-field input::placeholder { color: rgba(255, 255, 255, 0.62); }
     .ask-field input::-webkit-search-cancel-button { filter: invert(1); opacity: .7; }
-    .ask-field .btn { flex: none; padding: 12px 22px; border-radius: 999px; }
+    .ask-field .btn { flex: none; width: auto; padding: 12px 22px; border-radius: 999px; }
 
     .ask-suggest { margin-top: 22px; }
     .ask-suggest-label { margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.7); }
@@ -141,6 +143,8 @@
       .ask-field input { font-size: 16px; padding: 10px 2px; }
       .ask-field .btn { padding: 10px 16px; }
       .ask-hero .ask-chip { font-size: 13px; padding: 7px 12px; }
+      /* Six suggestions are enough on a phone; the rest are a scroll away in results. */
+      .ask-hero .ask-chip:nth-child(n+7) { display: none; }
       .ask-main { padding-left: 16px; padding-right: 16px; }
     }
     @media (prefers-reduced-motion: reduce) { .ask-hero.hero--fullscreen { animation: none; } }

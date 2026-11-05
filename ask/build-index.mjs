@@ -50,7 +50,7 @@ const MONTH = '(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*';
 function tidy(s) {
   return s
     .replace(new RegExp(`(\\d{4}|${MONTH})\\s*[\\u2013\\u2014]\\s*(?=\\d|${MONTH}|Present|Now)`, 'g'), '$1 to ')
-    .replace(/\s*[–—]\s*/g, ' - ')
+    .replace(/\s*[\u2013\u2014]\s*/g, ' - ')
     .replace(/[←-⇿↗]/g, '') // arrows from link labels
     .replace(/\p{Extended_Pictographic}[\u{1F3FB}-\u{1F3FF}️]?/gu, '')
     .replace(/\s+([.,;:!?])/g, '$1')
@@ -106,7 +106,9 @@ const frag = (s) => '#:~:text=' + encodeURIComponent(s.split(/\s+/).slice(0, 8).
 // ---------- collect ----------
 const docs = [];
 const seen = new Map();
-function add(kind, title, url, body, { min = 6 } = {}) {
+// meta: tags, technologies, dates. Searched, but never shown as the snippet,
+// so a snippet is always a sentence from the page and not a tag list.
+function add(kind, title, url, body, { min = 6, meta = '' } = {}) {
   body = tidy(body);
   if (words(body) < min) return;
   const parts = split(body);
@@ -115,7 +117,7 @@ function add(kind, title, url, body, { min = 6 } = {}) {
     let id = parts.length > 1 ? `${base}-${i + 1}` : base;
     const k = seen.get(id) || 0; seen.set(id, k + 1);
     if (k) id += `-${k + 1}`;
-    docs.push({ id, kind, title: tidy(title), url, text: part });
+    docs.push({ id, kind, title: tidy(title), url, text: part, ...(meta ? { meta: tidy(meta) } : {}) });
   });
 }
 
@@ -140,7 +142,7 @@ const pieces = (html, open) => html.split(open).slice(1);
     const tg = [...li.matchAll(/<span class="tag"[^>]*>([\s\S]*?)<\/span>/g)].map((m) => text(m[1]));
     // Scroll to the role itself: the first words of its heading.
     const anchor = role.split(' · ')[0];
-    add('Experience', role, `index.html${frag(anchor)}`, `${role}. ${when}. ${what}${tg.length ? ` Areas: ${tg.join(', ')}.` : ''}`);
+    add('Experience', role, `index.html${frag(anchor)}`, `${role}. ${when}. ${what}`, { meta: tg.length ? `Areas: ${tg.join(', ')}.` : '' });
   }
 
   const cards = (id) => pieces(section(html, id), '<article class="card">').map((a) => ({
@@ -176,7 +178,7 @@ for (const p of projects) {
     p.tags?.length ? `Tags: ${p.tags.join(', ')}.` : '',
     p.technologies?.length ? `Built with ${p.technologies.join(', ')}.` : '',
   ].filter(Boolean).join(' ');
-  add('Project', p.title, projectUrl(p), `${p.title}: ${p.subtitle || ''}. ${p.description || ''} ${p.longDescription || ''} ${extra}`);
+  add('Project', p.title, projectUrl(p), `${p.title}: ${p.subtitle || ''}. ${p.description || ''} ${p.longDescription || ''}`, { meta: extra });
 }
 
 // ---------- writing ----------
@@ -187,7 +189,7 @@ const writing = JSON.parse(read('assets/writing.json')).pieces;
   add('Writing', 'Field Notes', 'writing.html', text(intro));
 }
 for (const w of writing) {
-  add(w.kind, w.title, w.href, `${w.title}. ${w.kind}, ${w.date ? w.date.slice(0, 7) : ''}, ${w.readTime || ''} read. ${w.blurb} Topics: ${(w.topics || []).join(', ')}.`);
+  add(w.kind, w.title, w.href, `${w.title}. ${w.blurb}`, { meta: `${w.kind}, ${w.date ? w.date.slice(0, 7) : ''}, ${w.readTime || ''} read. Topics: ${(w.topics || []).join(', ')}.` });
 }
 
 // ---------- case studies, one passage per heading section ----------
@@ -235,8 +237,7 @@ for (const f of fs.readdirSync(path.join(root, 'case-studies')).filter((f) => f.
       m.try || '',
       m.params ? `${m.params} parameters.` : '',
       page ? 'Runs on your own device in the browser, nothing uploaded.' : m.why ? `Too big to run here: ${m.why}` : '',
-      m.license?.name ? `Licence: ${m.license.name}.` : '',
-    ].filter(Boolean).join(' '));
+    ].filter(Boolean).join(' '), { meta: m.license?.name ? `Licence: ${m.license.name}.` : '' });
   }
   // Hand-made cards with no models.json entry (Demo Check, Study Lab).
   for (const a of pieces(html, '<article class="card lab-card')) {
@@ -266,7 +267,8 @@ for (const f of fs.readdirSync(path.join(root, 'case-studies')).filter((f) => f.
       .map((m) => `${m[1].replace(/\\'/g, "'")}: ${m[3].replace(/\\'/g, "'")}`);
     if (chapters.length) {
       const title = str(src, 'title') || s.name;
-      add('Study Lab', `${title}: what it covers`, s.href, `${title}. ${str(src, 'intro')} ${str(src, 'overview')}`);
+      const desc = decode(inner(src, /<meta name="description" content="([^"]*)"/i));
+      add('Study Lab', `${title}: what it covers`, s.href, `${title}. ${str(src, 'intro')} ${str(src, 'overview')}`, { meta: desc });
       add('Study Lab', `${title}: chapters`, s.href, `${title} chapters. ${chapters.join('. ')}.`);
     } else {
       const desc = decode(inner(src, /<meta name="description" content="([^"]*)"/i));
@@ -325,7 +327,7 @@ for (const f of fs.readdirSync(path.join(root, 'case-studies')).filter((f) => f.
 // ---------- write ----------
 const out = { built: new Date().toISOString().slice(0, 10), count: docs.length, docs };
 const json = JSON.stringify(out, null, 0).replace(/\},\{/g, '},\n{');
-if (/[–—]/.test(json)) throw new Error('A long dash slipped into the index');
+if (/[\u2013\u2014]/.test(json)) throw new Error('A long dash slipped into the index');
 fs.writeFileSync(path.join(here, 'index.json'), json + '\n');
 const byKind = docs.reduce((m, d) => ((m[d.kind] = (m[d.kind] || 0) + 1), m), {});
 const lens = docs.map((d) => words(d.text)).sort((a, b) => a - b);

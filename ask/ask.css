@@ -141,6 +141,8 @@
 .ask-none-text:last-child { margin-bottom: 0; }
 .ask-none-text a { color: var(--ask-link); font-weight: 600; }
 .ask-none .ask-chips { margin-bottom: 12px; }
+.ask-none + .ask-sub { margin-top: 24px; }
+.ask-hits--loose .ask-hit { opacity: 0.85; }
 
 /* ---------- question chips ---------- */
 .ask-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -170,6 +172,12 @@
 .ask--compact .ask-title { font-size: 15.5px; }
 .ask--compact .ask-snip { font-size: 13.5px; }
 .ask--compact .ask-more { margin-top: 6px; font-size: 13px; }
+
+@media (max-width: 600px) {
+  .ask-answer { padding: 18px 18px 14px; }
+  .ask-answer-text { font-size: 16px; line-height: 1.6; }
+  .ask-hit { padding: 16px 16px 14px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .ask-hit, .ask-chip { animation: none; transition: none; }

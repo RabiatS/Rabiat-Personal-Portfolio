@@ -51,7 +51,7 @@
     {
       "id": "study-lab",
       "q": ["What is the Study Lab?", "What can I learn on this site?", "What subjects are in the Study Lab?"],
-      "a": "The Study Lab is a set of hands on study labs, each built around one subject: machine learning (from regression to LLMs and agents), audio, circuits, VR and XR, design, physics, biology for pre-med, muscles on a 3D body, and the elements. Every chapter has a live demo, a plain words explanation, a going deeper part and a short check. Everything runs on your device and your scores stay in your browser.",
+      "a": "The Study Lab is a set of hands on study labs, each built around one subject, among them machine learning (from regression to LLMs and agents), audio, circuits, VR and XR, design, physics, biology for pre-med, muscles on a 3D body, and the elements. Every chapter has a live demo, a plain words explanation, a going deeper part and a short check. Everything runs on your device and your scores stay in your browser.",
       "link": "lab/study/",
       "source": "lab/study/index.html, lab/index.html Study Lab card",
       "status": "published"
@@ -82,7 +82,7 @@
     },
     {
       "id": "skills",
-      "q": ["What skills does Rabiat have?", "What technologies does she use?", "What programming languages does she know?", "What is her tech stack?"],
+      "q": ["What skills does Rabiat have?", "What technologies does she use?", "What programming languages does she know?", "What is her tech stack?", "Does she know Python?", "Does she use Unity?", "Does she know Swift?", "Does she use PyTorch?"],
       "a": "From the skills section: Python, PyTorch, scikit-learn, OpenCV and TensorFlow for ML and computer vision; Ray, Databricks, PySpark, MLflow and FFmpeg for data pipelines; Unity (C#), the Meta XR SDK, VR prototyping and AR; Swift for iOS, Core ML, HealthKit, AWS and GCP; React, TypeScript, FastAPI and JavaScript on the web; microcontrollers, ESP32 and sensor and signal processing in hardware; and research methods from user-centered research and UX evaluation to experimental design and qualitative analysis.",
       "link": "index.html#skills",
       "source": "index.html #skills",

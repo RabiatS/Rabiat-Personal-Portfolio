@@ -147,7 +147,9 @@ export function createAsk({
       smartOn = false;
       storage.set('askSmart', null);
       smartToggle?.setAttribute('aria-pressed', 'false');
-      setSmartStatus(`Could not load the model here (${err?.message || err}). Keyword search still works.`);
+      console.warn('Smarter search could not load:', err);
+      const why = /room/.test(err?.message || '') ? ' This device does not have room for it.' : ' Check your connection and try again.';
+      setSmartStatus(`Could not load the model.${why} Keyword search still works.`);
     } finally {
       smartToggle?.removeAttribute('aria-busy');
     }
@@ -306,13 +308,19 @@ export function createAsk({
     }
     if (!res.answer && !n) {
       const box = el('div', 'ask-none');
-      box.append(el('p', 'ask-none-title', 'I could not find that on the site.'));
+      box.append(el('p', 'ask-none-title', res.loose?.length ? 'I could not find a clear answer on the site.' : 'I could not find that on the site.'));
       box.append(el('p', 'ask-none-text', 'This only quotes what Rabiat has published, so it would rather say nothing than guess. Try asking another way, or one of these:'));
       box.append(chipRow(data.engine.related(q0(res)), el('div', 'ask-chips')));
       const p = el('p', 'ask-none-text');
       p.append('Or ', link('contact.html', 'ask Rabiat directly'), '.');
       box.append(p);
       parts.push(box);
+      // Passages that mention the words only in passing: offered, clearly labelled, never as the answer.
+      if (res.loose?.length) {
+        const ol = el('ol', 'ask-hits ask-hits--loose');
+        ol.append(...res.loose.map((h) => hitItem(h, res.weights)));
+        parts.push(el('h2', 'ask-sub', 'Loose matches, in case they help'), ol);
+      }
     }
     body.replaceChildren(...parts);
     results.classList.add('has-results');
@@ -320,7 +328,7 @@ export function createAsk({
     const msg = res.answer
       ? `An answer and ${n} passage${n === 1 ? '' : 's'} from the site, ${how}.`
       : n ? `${n} passage${n === 1 ? '' : 's'} from the site, ${how}.`
-      : `Nothing on the site matches "${res.query}".`;
+      : `Nothing on the site clearly answers "${res.query}".`;
     status.textContent = msg;
   }
   const q0 = (res) => res.query;

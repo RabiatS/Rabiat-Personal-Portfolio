@@ -116,7 +116,7 @@ const GROUPS = [
   ['build', 'make', 'create', 'develop', 'code'],
   ['write', 'essay', 'article', 'blog', 'fieldnotes', 'post'],
   ['tool', 'app', 'utility'],
-  ['game', 'gaming', 'xbox', 'playstation'],
+  ['game', 'gaming', 'gameplay', 'videogame'],
   ['skill', 'technology', 'stack', 'language', 'framework'],
   ['research', 'researcher'],
   ['resume', 'cv'],
@@ -146,7 +146,7 @@ export function createEngine(docs, answers = []) {
   const df = new Map();
   const rows = docs.map((d) => {
     // The title counts twice: a question that names a project should land on it.
-    const toks = [...tokenize(d.title), ...tokenize(d.title), ...tokenize(d.kind), ...tokenize(d.text)];
+    const toks = [...tokenize(d.title), ...tokenize(d.title), ...tokenize(d.kind), ...tokenize(d.text), ...tokenize(d.meta || '')];
     const tf = new Map();
     for (const t of toks) tf.set(t, (tf.get(t) || 0) + 1);
     for (const t of tf.keys()) df.set(t, (df.get(t) || 0) + 1);
@@ -177,6 +177,21 @@ export function createEngine(docs, answers = []) {
       else if ([...(SYN.get(t) || [])].some(has)) got += w * 0.6;
     }
     return total ? got / total : 0;
+  }
+
+  // A passage really is about the question when a question word is in its
+  // title, or the question words occur more than once. One passing mention of
+  // "tall" in a design essay is not an answer to "How tall is she?".
+  const titleToks = new WeakMap();
+  function strong(base, row) {
+    let t = titleToks.get(row);
+    if (!t) { t = new Set([...tokenize(row.doc.title), ...tokenize(row.doc.meta || '')]); titleToks.set(row, t); }
+    let n = 0;
+    for (const b of base) {
+      if (t.has(b) || [...(SYN.get(b) || [])].some((s) => t.has(s))) return true;
+      n += row.tf.get(b) || 0;
+    }
+    return n >= 2;
   }
 
   function score(row, weights) {
@@ -220,7 +235,7 @@ export function createEngine(docs, answers = []) {
   function search(q, { limit = 3, minCoverage = 0.6 } = {}) {
     const { base, weights } = terms(q);
     const answer = bestAnswer(base);
-    if (!base.length) return { query: q, terms: [], answer, hits: [], confident: false, ranked: [] };
+    if (!base.length) return { query: q, terms: [], answer, hits: [], loose: [], confident: false, ranked: [] };
     const ranked = [];
     for (const row of rows) {
       const s = score(row, weights);
@@ -235,16 +250,25 @@ export function createEngine(docs, answers = []) {
       if (seenPages.has(k)) continue;
       seenPages.add(k);
       r.coverage = coverage(base, (t) => r.row.tf.has(t));
+      r.strong = strong(base, r.row);
       pool.push(r);
       if (pool.length >= limit * 5) break;
     }
     // Confident when some passage covers most of the question. Then passages
     // that cover a little less can sit under it; on their own they would not show.
-    const confident = pool.some((h) => h.coverage >= minCoverage);
-    const hits = confident ? pool.filter((h) => h.coverage >= minCoverage * 0.8).slice(0, limit) : [];
+    const confident = pool.some((h) => h.coverage >= minCoverage && h.strong);
+    // Among those, a passage that answers all of the question beats a longer one that answers half.
+    const rankKey = (h) => h.score * (0.4 + 0.6 * h.coverage);
+    const hits = confident
+      ? pool.filter((h) => h.coverage >= minCoverage * 0.8).sort((x, y) => rankKey(y) - rankKey(x)).slice(0, limit)
+      : [];
+    // Loose: passages that do contain the words, but only in passing. Shown
+    // as "loose matches" under an honest "not found", never as an answer.
+    const loose = confident ? [] : pool.filter((h) => h.coverage >= minCoverage).slice(0, limit);
     return {
       query: q, terms: base, weights, answer, confident,
       hits: hits.map(({ row, ...h }) => h),
+      loose: loose.map(({ row, ...h }) => h),
       ranked: ranked.map(({ row, ...h }) => h),
     };
   }
@@ -322,7 +346,8 @@ export function snippet(text, weights, size = 34) {
   for (let k = bestAt; k > Math.max(0, bestAt - 8); k--) {
     if (k === 0 || /[.!?]["')]?$/.test(parts[wordsAt[k - 1]])) { from = k; break; }
   }
-  const to = Math.min(wordsAt.length, from + size);
+  // Never let the step back to a sentence start push the best words out of view.
+  const to = Math.min(wordsAt.length, Math.max(from + size, bestAt + size));
   const out = [];
   if (from > 0) out.push({ text: '... ', mark: false });
   for (let k = from; k < to; k++) {
