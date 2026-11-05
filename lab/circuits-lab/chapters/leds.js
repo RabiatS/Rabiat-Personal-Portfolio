@@ -51,7 +51,7 @@ export default {
         const ly = r.y + r.h + 30;
         const msg = D.burnt ? 'LED burnt out: no current' : !forward() ? 'LED reversed: it blocks, almost no current' : D.i > 0.04 ? `${fmt(D.i, 'A')}: far off the top of the graph` : 'yellow dot: where the LED is working';
         g.fillStyle = D.burnt || D.i > 0.03 ? C.c4 : C.muted; g.fillText(msg, r.x, ly);
-        if (side.w > 300) { g.fillStyle = '#7A7A75'; g.textAlign = 'right'; g.fillText('dashed: resistor line', r.x + r.w, ly); }
+        if (side.w > 460) { g.fillStyle = '#7A7A75'; g.textAlign = 'right'; g.fillText('dashed: resistor line', r.x + r.w, ly); }
         g.restore();
       },
     });

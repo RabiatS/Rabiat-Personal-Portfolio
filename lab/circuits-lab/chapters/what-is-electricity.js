@@ -43,7 +43,7 @@ export default {
       g.fillStyle = 'rgba(20,20,20,.55)'; g.strokeStyle = '#2A2A2A'; g.lineWidth = 1;
       g.beginPath(); g.roundRect(s.x, s.y, s.w, s.h, 12); g.fill(); g.stroke();
       g.font = '500 11px "DM Mono", monospace'; g.fillStyle = C.muted; g.textAlign = 'left'; g.textBaseline = 'top';
-      g.fillText('The same circuit, as water', s.x + 10, s.y + 8);
+      g.fillText(s.w < 440 ? 'As water' : 'The same circuit, as water', s.x + 10, s.y + 8);
       g.lineCap = 'round'; g.lineJoin = 'round';
       const seg = (A, B, wdt, col) => { g.strokeStyle = col; g.lineWidth = wdt; g.beginPath(); g.moveTo(A[0], A[1]); g.lineTo(B[0], B[1]); g.stroke(); };
       // pipe walls then water

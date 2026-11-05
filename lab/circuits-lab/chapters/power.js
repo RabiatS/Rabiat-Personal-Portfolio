@@ -39,7 +39,7 @@ export default {
           });
           g.fillStyle = C.muted; g.textBaseline = 'bottom'; g.fillText(`energy from battery ${fmt(energy, 'J')}`, side.x + 10, side.y + side.h - 8);
         } else {
-          const top = side.y + 36; const bot = side.y + side.h - 64; const bw = Math.min(46, (side.w - 50) / 3);
+          const top = side.y + 36; const bot = side.y + side.h - 86; const bw = Math.min(46, (side.w - 50) / 3);
           items.forEach(([p, col], k) => {
             const x = side.x + side.w / 2 + (k ? 8 : -bw - 8); const P = Math.max(0, p.p); const hgt = (bot - top) * Math.min(1, P / pmax);
             g.fillStyle = '#242424'; g.fillRect(x, top, bw, bot - top); g.fillStyle = col; g.fillRect(x, bot - hgt, bw, hgt);

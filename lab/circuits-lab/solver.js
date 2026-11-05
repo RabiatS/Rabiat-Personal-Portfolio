@@ -262,7 +262,7 @@ export function step(parts, h) {
 export function fmt(v, unit = '', digits = 3) {
   if (!isFinite(v)) return `-- ${unit}`;
   const a = Math.abs(v);
-  if (a < 1e-12) return `0 ${unit}`.trim();
+  if (a < 5e-10) return `0 ${unit}`.trim(); // leakage below a nanoamp reads as zero
   const pre = [[1e6, 'M'], [1e3, 'k'], [1, ''], [1e-3, 'm'], [1e-6, 'µ'], [1e-9, 'n']];
   let [s, p] = pre[pre.length - 1];
   for (const [ss, pp] of pre) if (a >= ss * 0.9995) { s = ss; p = pp; break; }

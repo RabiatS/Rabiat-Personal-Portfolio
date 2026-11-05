@@ -66,7 +66,7 @@ export default {
         const ly = r.y + r.h + 30;
         g.fillStyle = Cc.c1; g.fillText('voltage', r.x, ly);
         g.fillStyle = Cc.c2; g.fillText(rec.mode === 'charge' ? 'current (scaled)' : 'current (scaled, flows back)', r.x + 66, ly);
-        g.fillStyle = '#7A7A75'; if (side.w > 300) g.fillText('theory', r.x + (rec.mode === 'charge' ? 196 : 270), ly);
+        g.fillStyle = '#7A7A75'; if (side.w > 380) g.fillText('theory', r.x + (rec.mode === 'charge' ? 196 : 270), ly);
         g.restore();
       },
     });

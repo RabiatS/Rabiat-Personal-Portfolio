@@ -142,7 +142,7 @@ export function createBoard(ctx, o = {}) {
     const tp = topDock ? topDock.offsetHeight + 8 : 4; const bp = botDock.offsetHeight + 8;
     avail = { x: 0, y: tp, w: W, h: Math.max(60, H - tp - bp) };
     rect = opt.layout ? opt.layout(avail, W, H) : avail;
-    cell = Math.max(10, Math.min(rect.w / (cols + 0.9), rect.h / (rows + 0.9), 76));
+    cell = Math.max(10, Math.min((rect.w - 76) / cols, (rect.h - 30) / rows, rect.w / (cols + 0.9), 76)); // room for value labels at the sides
     ox = rect.x + (rect.w - cols * cell) / 2; oy = rect.y + (rect.h - rows * cell) / 2;
     insp.style.top = `${tp}px`;
     hint.style.top = `${tp + 2}px`;
@@ -655,6 +655,7 @@ export function createBoard(ctx, o = {}) {
     if (p.type === 'ammeter') return fmt(p.i, 'A');
     if (p.type === 'voltmeter') return fmt(p.v, 'V');
     if (!opt.labels) return p.label || '';
+    if (p.label && cell < 38 && p.type !== 'battery') return p.label; // small screens: name only, tap for values
     const pre = p.label ? `${p.label} ` : '';
     switch (p.type) {
       case 'battery': return `${pre}${fmt(p.V, 'V')}`;
@@ -854,7 +855,12 @@ export function plot(g, r, { xmin, xmax, ymin, ymax, series, xlabel, ylabel, xti
   g.fillStyle = 'rgba(20,20,20,.6)'; g.strokeStyle = '#2A2A2A'; g.lineWidth = 1;
   g.beginPath(); g.roundRect(r.x - 8, r.y - 8, r.w + 16, r.h + 16, 10); g.fill(); g.stroke();
   g.font = '500 10.5px "DM Mono", monospace'; g.fillStyle = C.muted; g.strokeStyle = '#2E2E2C';
-  for (const [v, l] of yticks) { const y = Y(v); g.beginPath(); g.moveTo(r.x, y); g.lineTo(r.x + r.w, y); g.stroke(); g.textAlign = 'left'; const top = y - r.y < 14; g.textBaseline = top ? 'top' : 'bottom'; g.fillText(l, r.x + 3, top ? y + 2 : y - 2); }
+  let lastY = -1e9;
+  for (const [v, l] of yticks) {
+    const y = Y(v); g.beginPath(); g.moveTo(r.x, y); g.lineTo(r.x + r.w, y); g.stroke();
+    if (Math.abs(y - lastY) < 24) continue; // too crowded for a label
+    lastY = y; g.textAlign = 'left'; const top = y - r.y < 14; g.textBaseline = top ? 'top' : 'bottom'; g.fillText(l, r.x + 3, top ? y + 2 : y - 2);
+  }
   for (const [v, l] of xticks) { const x = X(v); g.beginPath(); g.moveTo(x, r.y); g.lineTo(x, r.y + r.h); g.stroke(); g.textAlign = 'center'; g.textBaseline = 'top'; g.fillText(l, x, r.y + r.h + 3); }
   g.strokeStyle = '#5A5A55'; g.beginPath(); g.moveTo(r.x, r.y); g.lineTo(r.x, r.y + r.h); g.lineTo(r.x + r.w, r.y + r.h); g.stroke();
   g.beginPath(); g.rect(r.x, r.y - 4, r.w, r.h + 8); g.clip();
