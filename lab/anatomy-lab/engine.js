@@ -296,6 +296,13 @@ export class Viewer {
   }
   _drawOverlay() {
     const o = this.ov; const g = o.ctx; if (!o.w) return;
+    const any = this.labels.some((l) => !l.hidden) || !!this.onOverlay;
+    if (!any) {
+      // a bare clear is sometimes not shown by the compositor, so reset the canvas once when the last label goes
+      if (this._ovHad) { o.el.width = o.el.width; g.setTransform(o.dpr, 0, 0, o.dpr, 0, 0); this._ovHad = false; }
+      return;
+    }
+    this._ovHad = true;
     g.clearRect(0, 0, o.w, o.h);
     if (this.onOverlay) this.onOverlay(g, o.w, o.h);
     if (!this.labels.length) return;

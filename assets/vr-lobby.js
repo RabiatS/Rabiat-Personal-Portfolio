@@ -66,7 +66,7 @@ function readTheme() {
       btn: [1, 1, 1], btnAlpha: [0.1, 0.07],
       hoverTint: [0.3, 0.27, 0.4], edge: 0.26, glow: 0.12, sheen: 0.07,
       skyTop: [0.024, 0.02, 0.043], skyHor: mixRgb([0.1, 0.075, 0.16], p, 0.12), skyLow: [0.035, 0.03, 0.05],
-      floor: [0.04, 0.035, 0.06], grid: mixRgb([0.6, 0.55, 0.8], p, 0.3), neb: 1,
+      floor: [0.06, 0.05, 0.085], grid: mixRgb([0.6, 0.55, 0.8], p, 0.3), neb: 1,
     };
   }
   return {
@@ -1316,7 +1316,7 @@ function lookAtPanel(panel) {
   view.tp = clamp(Math.atan2(dy, Math.hypot(dx, dz)), -1.1, 1.1);
 }
 
-// Angle of a span that starts at `startDeg` and has `offset` metres before it
+// Angle in degrees covered by an arc of `m` metres at radius `r`
 const arcDeg = (m, r = R) => (m / r) / DEG;
 
 function buildUI(data, projects) {
@@ -1768,8 +1768,8 @@ function makeLaser(color) {
   g.rotateX(-Math.PI / 2);
   const m = new THREE.ShaderMaterial({
     vertexShader: 'varying float vT; void main() { vT = -position.z; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: `uniform vec3 uColor; uniform float uLen; varying float vT; void main() { gl_FragColor = vec4(uColor, mix(0.9, 0.2, vT)); }`,
-    uniforms: { uColor: { value: v3(color) }, uLen: { value: 1 } },
+    fragmentShader: `uniform vec3 uColor; varying float vT; void main() { gl_FragColor = vec4(uColor, mix(0.9, 0.2, vT)); }`,
+    uniforms: { uColor: { value: v3(color) } },
     transparent: true,
     depthWrite: false,
   });
@@ -2009,7 +2009,6 @@ window.__vrLobby = {
   },
   keys: () => panels.map((p) => p.key),
   detailOpen: () => !!detail,
-  debug: (key) => { const p = panels.find((x) => x.key === key); return p && { fade: p.fade, op: p.mat.uniforms.uOpacity.value, hover: p.hover, focus: p.focus, vis: p.mesh.visible, ro: p.mesh.renderOrder }; },
 };
 
 boot();

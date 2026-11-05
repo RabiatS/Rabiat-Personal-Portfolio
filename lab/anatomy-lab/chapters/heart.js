@@ -86,8 +86,8 @@ export default {
       const H = k === 'heart';
       packs.sk.opacity(H ? 0.07 : 0.1);
       packs.ves.filter((it) => !H || GREAT.test(it.name));
-      packs.ves.opacity(H ? 1 : 0.45);
-      packs.wall.opacity(H ? 0.32 : 0.6);
+      packs.ves.opacity(H ? 0.5 : 0.45);
+      packs.wall.opacity(H ? 0.24 : 0.6);
       packs.lung?.opacity(H ? 0.0 : 0.13);
       v.labels = H ? chamberLabels() : [];
       view('front');
@@ -157,7 +157,8 @@ export default {
       const base = 0.07 * (bpm / 70) * (reducedMotion ? 0.5 : 1);
       const pos = pts.geometry.attributes.position.array; const col = pts.geometry.attributes.color.array;
       const sizeK = mode === 'heart' ? 0.45 : 1;
-      pts.material.size = 0.011 * sizeK;
+      const camD = v.camera.position.distanceTo(v.controls.target);
+      pts.material.size = (mode === 'heart' ? 9 : 5.5) * camD / Math.max(200, v.h / 2) * (window.devicePixelRatio > 1 ? 1 : 1);
       for (let i = 0; i < N; i++) {
         const p = parts[i]; const L = loops[p.li];
         let r = sample(L, p.s, pv3);
