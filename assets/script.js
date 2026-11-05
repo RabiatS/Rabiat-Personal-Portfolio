@@ -1505,6 +1505,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // AI chat placeholder, double-click footer tagline to open
 (function initAiChatPlaceholder() {
+  // "Talk to AI me": the Ask my portfolio search (ask/ask.js), quoting the site only, never generating text
+  const scriptSrc = (document.currentScript && document.currentScript.src) || new URL('assets/script.js', location.href).href;
   const tagline = document.querySelector('.footer-tagline');
   if (!tagline) return;
 
@@ -1528,21 +1530,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <button type="button" class="ai-chat-close" data-ai-close aria-label="Close">×</button>
       </header>
       <div class="ai-chat-body">
-        <div class="ai-chat-bubble ai-chat-bubble--user">What XR projects have you built?</div>
-        <div class="ai-chat-bubble ai-chat-bubble--assistant">
-          I will learn from this portfolio and answer soon.
-          <div class="ai-chat-coming-soon" role="status">
-            <span class="ai-chat-coming-soon-dot" aria-hidden="true"></span>
-            <span class="ai-chat-coming-soon-dot" aria-hidden="true"></span>
-            <span class="ai-chat-coming-soon-dot" aria-hidden="true"></span>
-            Coming soon
-          </div>
-        </div>
+        <div class="ai-chat-chips"></div>
+        <div class="ai-chat-results"></div>
       </div>
       <footer class="ai-chat-footer">
         <div class="ai-chat-input-wrap">
-          <input class="ai-chat-input" type="text" disabled placeholder="Ask about my work…" aria-disabled="true" tabindex="-1" />
-          <button type="button" class="ai-chat-send" disabled aria-label="Send (coming soon)" tabindex="-1">↑</button>
+          <input class="ai-chat-input" type="text" placeholder="Ask about my work…" aria-label="Ask about my work" />
+          <button type="button" class="ai-chat-send" aria-label="Ask">↑</button>
         </div>
       </footer>
     </div>
@@ -1552,14 +1546,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeEls = portal.querySelectorAll('[data-ai-close]');
   let lastFocus = null;
 
+  let asker = null;
+  function mountAsk() {
+    if (asker) return;
+    asker = import(new URL('../ask/ask.js', scriptSrc).href).then(({ createAsk }) => {
+      const input = portal.querySelector('.ai-chat-input');
+      const ask = createAsk({
+        input, results: portal.querySelector('.ai-chat-results'), chips: portal.querySelector('.ai-chat-chips'),
+        compact: true, limit: 2,
+        suggestions: ['What does Rabiat work on?', 'What XR projects has she built?', 'How is this site built?', 'What is the Study Lab?'],
+      });
+      portal.querySelector('.ai-chat-send').addEventListener('click', () => ask.ask(input.value));
+      return ask;
+    }).catch(() => {
+      portal.querySelector('.ai-chat-results').innerHTML = '<p class="muted">Search did not load. Try <a href="/ask/">the Ask page</a>.</p>';
+    });
+  }
+
   function openPanel() {
     window.rkEgg?.('ai-me');
+    mountAsk();
     lastFocus = document.activeElement;
     portal.classList.add('is-open');
     portal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-    const closeBtn = portal.querySelector('.ai-chat-close');
-    if (closeBtn) closeBtn.focus();
+    const field = portal.querySelector('.ai-chat-input');
+    if (field) setTimeout(() => field.focus(), 60);
   }
 
   function closePanel() {
@@ -1815,7 +1827,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const u = new URL(path, window.location.origin);
     const parts = u.pathname.split('/').filter(Boolean);
     const file = parts.pop();
-    if (!file || u.pathname.endsWith('/')) return 'index.html';
+    if (!file) return 'index.html';
+    // Folder pages (lab/, ask/) are their own page, not the homepage
+    if (u.pathname.endsWith('/')) return `${file}/`;
     return file;
   }
 
