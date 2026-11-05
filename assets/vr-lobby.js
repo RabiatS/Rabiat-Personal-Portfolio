@@ -832,7 +832,7 @@ void main() {
   col = mix(col, uGrid, grid * (uDark > 0.5 ? 0.22 : 0.3));
   col = mix(col, ringCol, clamp(ring, 0.0, 1.0) * (uDark > 0.5 ? 0.85 : 0.6));
   // Glossy falloff: the floor picks up the horizon glow as it recedes
-  col = mix(col, uHor, pow(smoothstep(0.8, 26.0, r), 0.65));
+  col = mix(col, uHor, pow(smoothstep(0.5, 20.0, r), 0.45));
   float a = 1.0 - smoothstep(20.0, 34.0, r);
   float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
   gl_FragColor = vec4((col + (n - 0.5) / 255.0) * a, a);
@@ -1252,7 +1252,7 @@ function resize() {
   const h = innerHeight;
   const aspect = w / h;
   // Keep about 90 degrees across on wide screens and enough of the hero on phones
-  const hfov = aspect >= 1.2 ? 80 : 56;
+  const hfov = aspect >= 1.2 ? 80 : 50;
   camera.fov = clamp(2 * Math.atan(Math.tan((hfov * DEG) / 2) / aspect) / DEG, 50, 92);
   camera.aspect = aspect;
   camera.updateProjectionMatrix();
