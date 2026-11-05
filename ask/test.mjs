@@ -62,7 +62,7 @@ for (const [q, wantAnswer, wantTop] of CASES) {
   const top = r.hits[0]?.doc;
   const got = r.answer?.answer.id || null;
   const answerOk = got === wantAnswer;
-  const topOk = wantTop ? !!top && wantTop(top.url) : !r.hits.length && !r.answer;
+  const topOk = wantTop ? !!top && wantTop(top.url) : !r.hits.length && (wantAnswer ? true : !r.answer);
   row(answerOk && topOk, `${q}\n       answer: ${got || '-'}   top: ${top ? `[${top.kind}] ${top.title} -> ${top.url}` : 'nothing found'}`);
   if (top) {
     const snip = snippet(top.text, r.weights);
