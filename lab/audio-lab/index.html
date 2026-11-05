@@ -21,6 +21,8 @@
   .a-bar .a-note.warn { color: var(--c2); }
   .btn.live, .btn.live:hover:not(:disabled) { background: var(--surface-2); color: var(--text); border-color: var(--c1); color: var(--text); }
   .btn.live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--c1); box-shadow: 0 0 8px var(--c1); }
+  /* long chapter names in the Next button must wrap on phones instead of widening the page */
+  .k-side .k-nav .btn { min-width: 0; white-space: normal; text-align: center; line-height: 1.2; }
   .a-table { width: 100%; border-collapse: collapse; font: 500 12.5px/1.4 var(--f-mono); }
   .a-table td, .a-table th { padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
   .a-table th { font: 600 11px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }

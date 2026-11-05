@@ -25,7 +25,7 @@ export default {
     // teleport arc and target
     const arcGeo = new THREE.BufferGeometry(); const arcPos = new Float32Array(40 * 3);
     arcGeo.setAttribute('position', new THREE.BufferAttribute(arcPos, 3));
-    const arc = new THREE.Points(arcGeo, new THREE.PointsMaterial({ color: C.c2, size: 0.09 }));
+    const arc = new THREE.Points(arcGeo, new THREE.PointsMaterial({ color: C.c2, size: 5, sizeAttenuation: false }));
     const ring = mesh(new THREE.TorusGeometry(0.35, 0.03, 8, 40), basic(C.c2)); ring.rotation.x = Math.PI / 2;
     scene.add(arc, ring);
 
@@ -109,7 +109,7 @@ export default {
       arc.visible = ring.visible = !!showArc;
       if (showArc) {
         const r = new THREE.Vector3(Math.cos(me.yaw), 0, -Math.sin(me.yaw));
-        const start = new THREE.Vector3(me.x, 1.15, me.z).addScaledVector(r, 0.25).addScaledVector(fwd, 0.3);
+        const start = new THREE.Vector3(me.x, 1.2, me.z).addScaledVector(r, 0.25).addScaledVector(fwd, 0.6);
         const end = new THREE.Vector3(tp.x, 0.02, tp.z);
         for (let i = 0; i < 40; i++) { const t = i / 39; const p = start.clone().lerp(end, t); p.y = lerp(start.y, end.y, t) + Math.sin(t * Math.PI) * 1.1; arcPos.set([p.x, p.y, p.z], i * 3); }
         arcGeo.attributes.position.needsUpdate = true;

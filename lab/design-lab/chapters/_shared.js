@@ -680,7 +680,7 @@ export function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = 
 export function drawPlot(cv, C, o) {
   const g = cv.ctx; const { w, h } = cv; if (!w) return;
   g.clearRect(0, 0, w, h);
-  const L = 46; const R = 14; const T = 14; const B = 34;
+  const L = 46; const R = 14; const T = 24; const B = 34;
   const xMin = o.xMin ?? Math.min(...o.xs, 0); const xMax = o.xMax ?? Math.max(...o.xs, 1);
   const yMaxRaw = Math.max(...(o.ys.length ? o.ys : [1]), ...(o.means || []).map((m) => m[1]), 1);
   const yStep = [50, 100, 200, 250, 500, 1000, 2000].find((s) => yMaxRaw / s <= 5) || 2000;
@@ -695,7 +695,7 @@ export function drawPlot(cv, C, o) {
   const xt = o.xTicks || []; g.textAlign = 'center';
   for (const t of xt) { g.fillStyle = C.muted; g.fillText(typeof t === 'number' ? t.toFixed(1) : t[1], X(typeof t === 'number' ? t : t[0]), h - B + 16); }
   g.fillStyle = C.muted; g.textAlign = 'right'; g.fillText(o.xLabel || '', w - R, h - 4);
-  g.save(); g.translate(11, T); g.textAlign = 'left'; g.fillText(o.yLabel || '', 0, 0); g.restore();
+  g.textAlign = 'left'; g.fillText(o.yLabel || '', 4, 11);
   if (o.fit) {
     g.strokeStyle = C.c2; g.lineWidth = 2; g.beginPath(); g.moveTo(X(xMin), Y(o.fit.a + o.fit.b * xMin)); g.lineTo(X(xMax), Y(o.fit.a + o.fit.b * xMax)); g.stroke();
   }

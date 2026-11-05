@@ -78,7 +78,7 @@ export default {
       // sequence area
       const sx = wide ? ix + isz + 30 : 4; const sy = wide ? iy : iy + isz + 24; const sw = wide ? w - sx - 6 : w - 8; const sh = bottom - sy;
       const total = count + (phase > 3 ? TEXT.length : 0);
-      let cols = Math.ceil(Math.sqrt(total * sw / sh * 0.75)); let tile = Math.min(sw / cols - 4, 52);
+      let cols = Math.ceil(Math.sqrt(total * sw / sh)); let tile = Math.min(sw / cols - 4, 52);
       for (let k = 0; k < 20; k++) { const rows = Math.ceil(total / cols); const th = (tile + (phase > 2.5 ? tile * 0.35 : 0) + 6) * rows; if (th <= sh) break; cols++; tile = Math.min(sw / cols - 4, 52); }
       const vecH = tile * 0.3;
       const pr = Math.max(0, Math.min(1, phase - 1));
@@ -103,7 +103,7 @@ export default {
           g.fillStyle = C.c2; g.font = `500 ${Math.max(8, Math.min(11, tile / 5))}px "DM Mono", monospace`; g.textAlign = 'center'; g.fillText(TEXT[j].slice(0, Math.max(2, Math.floor(tile / 7))), bxx + tile / 2, byy + tile / 2 + 4); g.textAlign = 'left';
           strip(bxx, byy + tile + 2, tile, vecH, textVec[j], 1.2);
         }
-        g.font = FONT; g.fillStyle = C.c2; g.fillText('one sequence of tokens → the same transformer as text', sx, Math.min(bottom + 2, sy + sh + 4));
+        const rowsN = Math.ceil(total / cols); g.font = FONT; g.fillStyle = C.c2; g.fillText('one sequence of tokens → the same transformer as text', sx, Math.min(bottom + 2, sy + rowsN * (tile + vecH + 8) + 12));
       }
     }
 
@@ -153,29 +153,28 @@ export default {
 
     // ---------- shared space ----------
     const KINDS = ['sun', 'cat', 'car', 'tree', 'fish', 'house', 'moon', 'flower'];
-    const CAPS = ['a bright sun', 'a black cat', 'a red car', 'a green tree', 'an orange fish', 'a small house', 'a crescent moon', 'a pink flower'];
+    const CAPS = ['bright sun', 'black cat', 'red car', 'green tree', 'orange fish', 'small house', 'crescent moon', 'pink flower'];
+    // Toy vectors: each concept = its group direction + its own direction; pictures and captions are noisy copies.
+    const GROUP = { sun: 0, moon: 0, cat: 1, fish: 1, tree: 2, flower: 2, car: 3, house: 3 };
     const sr = rng(21); const DD = 12;
-    const base = KINDS.map(() => unit(Array.from({ length: DD }, () => randn(sr))));
-    const imgOff = Array.from({ length: DD }, () => randn(sr) * 0.12); const txtOff = imgOff.map((x) => -x);
-    const imgE = base.map((b) => unit(b.map((x, i) => x + randn(sr) * 0.22 + imgOff[i])));
-    const txtE = base.map((b) => unit(b.map((x, i) => x + randn(sr) * 0.22 + txtOff[i])));
-    // 2D by PCA of all 16
-    const all = imgE.concat(txtE); const mean = Array.from({ length: DD }, (_, j) => all.reduce((s, v) => s + v[j], 0) / all.length);
-    const cen = all.map((v) => v.map((x, j) => x - mean[j]));
-    const pcs = []; const pr = rng(3);
-    for (let c = 0; c < 2; c++) { let v = unit(Array.from({ length: DD }, () => pr() - 0.5)); for (let it = 0; it < 200; it++) { let nv = Array.from({ length: DD }, (_, j) => cen.reduce((s, x) => s + x[j] * dot(x, v), 0)); for (const p of pcs) { const d = dot(nv, p); nv = nv.map((x, j) => x - d * p[j]); } v = unit(nv); } pcs.push(v); }
-    const pos = cen.map((v) => [dot(v, pcs[0]), dot(v, pcs[1])]);
+    const gdir = [0, 1, 2, 3].map(() => unit(Array.from({ length: DD }, () => randn(sr))));
+    const base = KINDS.map((k) => unit(Array.from({ length: DD }, (_, i) => gdir[GROUP[k]][i] * 0.8 + randn(sr) * 0.17)));
+    const imgOff = Array.from({ length: DD }, () => randn(sr) * 0.04); const txtOff = imgOff.map((x) => -x);
+    const imgE = base.map((b) => unit(b.map((x, i) => x + randn(sr) * 0.09 + imgOff[i])));
+    const txtE = base.map((b) => unit(b.map((x, i) => x + randn(sr) * 0.09 + txtOff[i])));
+    // Map positions are placed by hand to mirror those groups: sky, animals, plants, made things.
+    const CENT = { sun: [0.12, 0.12], moon: [0.37, 0.18], cat: [0.63, 0.12], fish: [0.88, 0.18], tree: [0.12, 0.6], flower: [0.37, 0.66], car: [0.63, 0.6], house: [0.88, 0.66] };
+    const pos = KINDS.map((k) => CENT[k]).concat(KINDS.map((k) => [CENT[k][0], CENT[k][1] + 0.15]));
     const sim = imgE.map((a) => txtE.map((b) => dot(a, b)));
     let pick = { t: 'img', i: 1 }; let hits = [];
     function drawSpace(w, h) {
       const bottom = h - 56; const wide = w >= 640;
-      const mA = wide ? { x: 0, y: 18, w: w * 0.6, h: bottom - 18 } : { x: 0, y: 18, w, h: bottom * 0.56 };
+      const mA = wide ? { x: 0, y: 18, w: w * 0.6, h: bottom - 18 } : { x: 0, y: 18, w, h: bottom * 0.5 };
       const xA = wide ? { x: w * 0.62, y: 18, w: w * 0.38, h: bottom - 18 } : { x: 0, y: mA.y + mA.h + 8, w, h: bottom - mA.h - 26 };
       hits = [];
-      let x0 = Infinity; let x1 = -Infinity; let y0 = Infinity; let y1 = -Infinity; for (const [a, b] of pos) { x0 = Math.min(x0, a); x1 = Math.max(x1, a); y0 = Math.min(y0, b); y1 = Math.max(y1, b); }
-      const th = Math.min(46, mA.w / 9, mA.h / 6); const pad = th * 0.9;
-      const S = ([a, b]) => [mA.x + pad + ((a - x0) / (x1 - x0)) * (mA.w - 2 * pad), mA.y + pad * 0.7 + ((b - y0) / (y1 - y0)) * (mA.h - 1.6 * pad)];
-      g.font = FONT; g.fillStyle = C.muted; g.textAlign = 'left'; g.fillText('shared space (2D projection): pictures and captions', 4, 10);
+      const th = Math.min(52, mA.w / 7, mA.h / 5.5);
+      const S = ([a, b]) => [mA.x + 8 + a * (mA.w - 16), mA.y + th * 0.6 + (b / 0.81) * (mA.h - th * 1.2)];
+      g.font = FONT; g.fillStyle = C.muted; g.textAlign = 'left'; g.fillText('shared space (2D map): pictures and captions', 4, 10);
       const selRow = pick.t === 'img' ? pick.i : null; const selCol = pick.t === 'txt' ? pick.i : null;
       const best = selRow != null ? sim[selRow].indexOf(Math.max(...sim[selRow])) : sim.map((r) => r[selCol]).indexOf(Math.max(...sim.map((r) => r[selCol])));
       const pi = selRow != null ? selRow : best; const pt = selCol != null ? selCol : best;
@@ -186,7 +185,7 @@ export default {
         hits.push({ t: 'img', i: k, x: x - th / 2, y: y - th / 2, w: th, h: th });
       }
       for (let k = 0; k < 8; k++) {
-        const [x, y] = S(pos[8 + k]); g.font = k === pt ? '500 12px "DM Mono", monospace' : FONT; const tw = g.measureText(CAPS[k]).width;
+        const [x, y] = S(pos[8 + k]); g.font = w < 500 ? '500 10px "DM Mono", monospace' : k === pt ? '500 12px "DM Mono", monospace' : FONT; const tw = g.measureText(CAPS[k]).width;
         g.fillStyle = k === pt ? 'rgba(251,191,36,.18)' : 'rgba(20,20,20,.85)'; g.fillRect(x - tw / 2 - 5, y - 10, tw + 10, 19);
         g.strokeStyle = k === pt ? C.c2 : C.border; g.strokeRect(x - tw / 2 - 5, y - 10, tw + 10, 19);
         g.fillStyle = k === pt ? C.text : C.text2; g.textAlign = 'center'; g.fillText(CAPS[k], x, y + 4); g.textAlign = 'left';
@@ -249,7 +248,7 @@ export default {
         play = { ac, t0: ac.currentTime };
       } catch (err) { audBox.querySelector('p').textContent = 'Sound could not play in this browser, but the pictures above are computed the same way.'; }
     };
-    const spBox = ctx.h('<div class="card"><b class="mono small">Shared space (CLIP style)</b><p class="small">Click a picture or a caption. Its best match is highlighted. The grid shows every picture against every caption: training makes the diagonal (true pairs) bright and everything else dim.</p></div>');
+    const spBox = ctx.h('<div class="card"><b class="mono small">Shared space (CLIP style)</b><p class="small">Click a picture or a caption. Its best match is highlighted. Pictures sit near their captions, and related things (sun and moon, cat and fish) sit near each other. The grid shows every picture against every caption: training makes the diagonal (true pairs) bright and everything else dim.</p></div>');
     const sync = () => { imgBox.hidden = mode !== 'image'; audBox.hidden = mode !== 'audio'; spBox.hidden = mode !== 'space'; };
     P.append(imgBox, audBox, spBox); sync();
     P.append(
@@ -263,7 +262,7 @@ export default {
       ctx.h(`<div class="card deep">
         <p><b>Numbers:</b> the Vision Transformer (ViT) classic setup cuts a 224×224 image into 16×16 patches, giving 14×14 = 196 patch tokens. Whisper, a speech model, turns audio into 80 channel log-mel spectrogram frames, one every 10 ms from 25 ms windows, then a small convolutional stack before the transformer.</p>
         <p><b>CLIP</b> (2021) trained an image encoder and a text encoder together on about 400 million image and caption pairs from the web. The training goal (contrastive learning): in each batch, make every true pair’s vectors similar and every mismatched pair dissimilar. That is exactly the bright diagonal in the grid. The result is a shared space useful for search, zero-shot classification and guiding image generators.</p>
-        <p><b>Honest label:</b> the shared space here uses hand-made toy vectors (each concept gets a random direction, pictures and captions are noisy copies of it), not a trained model. Real image and text vectors also tend to sit in slightly separate regions, a known "modality gap", which the toy imitates with a small offset.</p>
+        <p><b>Honest label:</b> the shared space here uses hand-made toy vectors (each concept gets a group direction plus its own random direction, and pictures and captions are noisy copies of it), not a trained model, and the map positions are placed by hand to mirror the groups. Real image and text vectors also tend to sit in slightly separate regions, a known "modality gap", which the toy imitates with a small offset.</p>
         <p>Many chat models that accept images pair a vision encoder with a language model: the encoder’s patch vectors are projected into the language model’s embedding space and placed in the sequence next to the text tokens, as in the + Text step.</p>
       </div>`),
     );

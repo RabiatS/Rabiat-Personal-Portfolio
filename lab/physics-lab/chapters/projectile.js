@@ -149,7 +149,7 @@ export default {
         }
         g.fillStyle = s.color; g.beginPath(); g.arc(X(p[0]), Y(p[1]), old ? 3 : 6, 0, 7); g.fill();
         if (!old) {
-          const vs = 1.6;
+          const vs = 3;
           arrow(g, X(p[0]), Y(p[1]), X(p[0]) + p[2] * vs, Y(p[1]), C.c5, 1.6, 7);
           arrow(g, X(p[0]), Y(p[1]), X(p[0]), Y(p[1]) - p[3] * vs, C.c4, 1.6, 7);
           arrow(g, X(p[0]), Y(p[1]), X(p[0]) + p[2] * vs, Y(p[1]) - p[3] * vs, C.text, 1.8, 8);

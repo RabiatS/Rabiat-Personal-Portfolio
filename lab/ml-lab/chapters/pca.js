@@ -76,7 +76,7 @@ export default {
     sg.fillStyle = '#fff'; sg.beginPath(); sg.arc(32, 32, 28, 0, 7); sg.fill();
     const spriteTex = new THREE.CanvasTexture(sc);
     const ptsGeo = new THREE.BufferGeometry();
-    const ptsMat = new THREE.PointsMaterial({ size: 0.13, vertexColors: true, map: spriteTex, transparent: true, alphaTest: 0.4, sizeAttenuation: true });
+    const ptsMat = new THREE.PointsMaterial({ size: 0.15, vertexColors: true, map: spriteTex, transparent: true, alphaTest: 0.4, sizeAttenuation: true });
     const points = new THREE.Points(ptsGeo, ptsMat); root.add(points);
 
     // axes as thin cylinders
@@ -136,7 +136,7 @@ export default {
         const a = arrows[i]; a.position.set(...mean); a.userData.shaft.scale.set(1, 1, len); a.userData.head.position.set(0, 0, len);
         a.lookAt(mean[0] + pc.vec[0], mean[1] + pc.vec[1], mean[2] + pc.vec[2]); a.userData.len = len + 0.35;
       });
-      const e1 = pcs[0].vec.map((v) => v * 3.2); const e2 = pcs[1].vec.map((v) => v * 2.2);
+      const e1 = pcs[0].vec.map((v) => v * 2.8); const e2 = pcs[1].vec.map((v) => v * 1.9);
       const corner = (s, t) => mean.map((m, k) => m + s * e1[k] + t * e2[k]);
       const quad = [corner(-1, -1), corner(1, -1), corner(1, 1), corner(-1, -1), corner(1, 1), corner(-1, 1)].flat();
       planeGeo.attributes.position.array.set(quad); planeGeo.attributes.position.needsUpdate = true;
@@ -161,9 +161,9 @@ export default {
     let W = 0; let H = 0;
     ctx.onResize((w, h) => {
       W = w; H = h; if (renderer) { renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
-      const s = Math.round(Math.max(120, Math.min(260, Math.min(w, h) * (w < 640 ? 0.38 : 0.34))));
+      const s = Math.round(Math.max(120, Math.min(260, Math.min(w, h) * (w < 640 ? 0.32 : 0.34))));
       inset.style.width = `${s}px`; inset.style.height = `${s}px`;
-      dist = w < 640 ? 10.5 : 9;
+      dist = w < 640 ? 11 : 10;
     });
     const v3 = new THREE.Vector3();
     function place(el, x, y, z) {
@@ -261,8 +261,8 @@ export default {
       if (projDir) { prog = Math.max(0, Math.min(1, prog + projDir * dt * (reduce ? 10 : 0.8))); if (prog === 0 || prog === 1) projDir = 0; updatePositions(); }
       else if (keep < 3 && prog < 1 && !projDir && prog === 0) { /* waits for Project */ }
       projB.textContent = prog >= 0.99 ? 'Unproject' : 'Project';
-      planeMat.opacity = keep === 2 ? 0.08 + 0.1 * prog : 0;
-      arrows[2].visible = true;
+      planeMat.opacity = keep === 2 ? 0.05 + 0.08 * prog : 0;
+      arrows[2].visible = !(keep < 3 && prog > 0.4); arrows[1].visible = !(keep < 2 && prog > 0.4);
       if (camTarget) {
         let dAz = camTarget[0] - az; dAz = Math.atan2(Math.sin(dAz), Math.cos(dAz));
         az += dAz * Math.min(1, dt * 3); el += (camTarget[1] - el) * Math.min(1, dt * 3);

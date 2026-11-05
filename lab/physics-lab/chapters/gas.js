@@ -8,7 +8,7 @@ const RAD = 0.45; // nm, collision radius
 const DT = 0.05; // ps
 const BOXH = 40; // nm
 const SIM_RATE = 40; // ps of simulated time per real second
-const VMAX = 2.5; // nm/ps, histogram range
+const VMAX = 1.6; // nm/ps, histogram range
 const BINS = 25;
 
 export default {
@@ -116,7 +116,7 @@ export default {
         const P = (impulse * MASS * vToMS) / ((pTime * 1e-12) * per);
         pMeas = pMeas ? pMeas * 0.6 + P * 0.4 : P;
         impulse = 0; pTime = 0;
-        pHist.push([simT, P, idealP()]); while (pHist.length && pHist[0][0] < simT - 1500) pHist.shift();
+        pHist.push([simT, P, idealP()]); while (pHist.length && pHist[0][0] < simT - 400) pHist.shift();
       }
     }
     const idealP = () => (px.length * KB * tempOf()) / (wall * BOXH * 1e-18);
@@ -172,7 +172,7 @@ export default {
       }
       for (let b = 0; b < BINS; b++) ymax = Math.max(ymax, hist[b]);
       const box = lay.c1;
-      chart(g, box, [{ data: mb, color: C.c3, width: 2 }], { xmin: 0, xmax: VMAX * 1000, ymin: 0, ymax: ymax * 1.15, title: 'speeds: atoms (bars) vs Maxwell-Boltzmann', titleColor: C.c3, ylab: false, xlab: `speed 0 to ${VMAX * 1000} m/s` });
+      chart(g, box, [{ data: mb, color: C.c3, width: 2 }], { xmin: 0, xmax: VMAX * 1000, ymin: 0, ymax: ymax * 1.15, title: box.w < 300 ? 'speeds vs M-B curve' : 'speeds: atoms (bars) vs Maxwell-Boltzmann', titleColor: C.c3, ylab: false, xlab: box.w < 300 ? `0 to ${VMAX * 1000} m/s` : `speed 0 to ${VMAX * 1000} m/s` });
       g.save(); g.beginPath(); g.rect(box.x, box.y, box.w, box.h); g.clip();
       for (let b = 0; b < BINS; b++) {
         const x0 = box.x + (b / BINS) * box.w; const hh = (hist[b] / (ymax * 1.15)) * box.h;
@@ -185,7 +185,7 @@ export default {
       chart(g, lay.c2, [
         { data: pHist.map((q) => [q[0], q[2] * 1000]), color: C.text, dash: [4, 4], width: 1.2 },
         { data: pHist.map((q) => [q[0], q[1] * 1000]), color: C.c2, dot: true },
-      ], { xmin: Math.max(0, simT - 1500), xmax: Math.max(1500, simT), ymin: 0, ymax: pm * 1000, title: 'pressure (mN/m): measured vs NkT/A dashed', titleColor: C.c2, yd: 2 });
+      ], { xmin: Math.max(0, simT - 400), xmax: Math.max(400, simT), ymin: 0, ymax: pm * 1000, title: lay.c2.w < 300 ? 'pressure (mN/m)' : 'pressure (mN/m): measured vs NkT/A dashed', titleColor: C.c2, yd: 2 });
     }
 
     let acc = 0; let lastR = 0;
@@ -225,7 +225,7 @@ export default {
       ctx.h(`<div class="card tip"><p>Every dot is an atom moving in a straight line until it hits another atom or a wall. Each wall hit gives the wall a tiny push. Billions of tiny pushes per second add up to a steady <b>pressure</b>.</p><p>Heat the gas and the atoms move faster: they hit the walls more often and harder, so pressure rises. Squeeze the box and they hit the walls more often too. Add atoms and there are more hits. That is the whole ideal gas law, built from collisions.</p><p>Not every atom has the same speed. Collisions shuffle energy around until speeds settle into a typical spread, the <b>Maxwell-Boltzmann distribution</b>.</p></div>`),
       ctx.h(`<div class="card try"><ul>
         <li>Press <b>Restart, all the same speed</b> and watch the histogram: one spike at first, then within a fraction of a nanosecond it spreads into the violet curve. Nobody forced it to, collisions did.</li>
-        <li>Double the temperature. Pressure doubles (watch PA/NkT stay near 1). The histogram spreads to higher speeds.</li>
+        <li>Double the temperature. Pressure roughly doubles (PA/NkT barely moves). The histogram spreads to higher speeds.</li>
         <li>Halve the box width. Pressure doubles: Boyle's law.</li>
         <li>Turn off the heat bath, then push the piston in. The atoms bounce off a wall moving toward them and speed up, so the gas warms. That is why a bike pump gets hot.</li>
       </ul></div>`),
@@ -234,7 +234,7 @@ export default {
         <div class="formula">P A = N k T &nbsp; ½ m ⟨v²⟩ = k T<span>the 2D version simulated here: area for volume, force per length for pressure</span></div>
         <div class="formula">f(v) = (m v / kT) e^(−m v² / 2kT)<span>2D Maxwell-Boltzmann speed distribution</span></div>
         <p class="small">In 3D, ⟨½ m v²⟩ = (3/2) k T and the speed distribution has a v² in front instead of v, but the reasoning is identical. Pressure here is measured, not computed: the simulation adds up 2 m v for every wall bounce and divides by the time and the wall length.</p>
-        <p class="small muted">The atoms are argon (40 u), drawn as hard disks of radius 0.45 nm in a 40 nm tall box, stepped every 0.05 ps. Because the disks take up some room, measured pressure sits a few percent above NkT/A, more so when crowded. That is the start of the van der Waals correction for real gases. The heat bath is a Berendsen thermostat, which gently rescales speeds toward the bath temperature.</p>
+        <p class="small muted">The atoms are argon (40 u), drawn as hard disks of radius 0.45 nm in a 40 nm tall box, stepped every 0.05 ps. Because the disks take up some room, measured pressure sits above NkT/A (around 10 percent with 150 atoms), more so when crowded. That is the start of the van der Waals correction for real gases. The heat bath is a Berendsen thermostat, which gently rescales speeds toward the bath temperature.</p>
       </div>`),
     );
 

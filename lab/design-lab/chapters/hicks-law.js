@@ -20,7 +20,7 @@ export default {
     P.append(ctx.h('<h2 class="k-h">Hick\'s law</h2>'), ctx.h('<p class="lede">The more choices you give people, the longer they take to choose. Not linearly, but with the logarithm of the number of choices.</p>'));
     const prog = ctx.h('<p class="hint"></p>');
     const reset = ctx.h('<button class="btn ghost sm" style="align-self:flex-start">Clear my results</button>');
-    const stat = ctx.h('<div class="stat"></div>');
+    const stat = ctx.h('<div class="stat" style="grid-template-columns:repeat(4,1fr)"></div>');
     const fitBox = ctx.h('<div class="formula"></div>');
     P.append(prog, stat, fitBox, reset);
     P.append(ctx.h('<div class="card tip"><p>Each decision has to rule out the other options. If you halve the options each time (is it in the top half or the bottom?), the work grows with log<sub>2</sub> of the number of choices. Going from 2 to 4 options adds about as much time as going from 4 to 8.</p></div>'));
@@ -35,7 +35,7 @@ export default {
       for (const n of NS) { const x = Math.log2(n + 1); for (const t of data[n]) { xs.push(x); ys.push(t); } if (data[n].length) means.push([x, mean(data[n])]); }
       const fit = means.length >= 2 ? linfit(means.map((m) => m[0]), means.map((m) => m[1])) : null;
       drawPlot(cv, ctx.colors, { xs, ys, means, fit, xMin: 0.8, xMax: 3.4, xTicks: NS.map((n) => [Math.log2(n + 1), `N=${n}`]), xLabel: 'log2(N + 1)', yLabel: 'ms', empty: 'Press Start to measure yourself' });
-      stat.innerHTML = NS.map((n) => `<div><b>${data[n].length ? Math.round(mean(data[n])) : '·'}</b><span>N = ${n} (ms)</span></div>`).join('');
+      stat.innerHTML = NS.map((n) => `<div><b>${data[n].length ? Math.round(mean(data[n])) : '-'}</b><span>N = ${n} (ms)</span></div>`).join('');
       fitBox.innerHTML = fit ? `RT ≈ ${Math.round(fit.a)} + ${Math.round(fit.b)} · log2(N + 1) ms<span>R² = ${fit.r2.toFixed(2)} · ${Math.round(fit.b)} ms per bit of choice</span>` : 'RT = a + b · log2(N + 1)<span>Your fit appears after two blocks.</span>';
     }
     cv.onResize(render);

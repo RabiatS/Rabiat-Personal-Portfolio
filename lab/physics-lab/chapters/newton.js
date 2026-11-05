@@ -75,7 +75,7 @@ export default {
     function draw(dt) {
       const w = cv.w; const h = cv.h;
       g.clearRect(0, 0, w, h);
-      camX += (x - camX) * (1 - Math.exp(-dt * 3));
+      camX += (x - camX) * (1 - Math.exp(-dt * 8));
       const fl = lay.floor;
       // floor
       const surfCol = st.ms <= 0.15 ? C.c5 : st.ms >= 0.8 ? C.c4 : C.c2;
@@ -92,7 +92,7 @@ export default {
       const bx = w / 2 + (x - camX) * PX; const by = fl - side;
       g.fillStyle = '#1E1E1E'; g.strokeStyle = dragging ? C.text : '#5A5A55'; g.lineWidth = 1.5;
       rrect(g, bx - side / 2, by, side, side, 6); g.fill(); g.stroke();
-      text(g, `${st.m} kg`, bx, by + side / 2 + 4, C.muted, 'center', 'alphabetic', MONO_S);
+      text(g, `${st.m} kg`, bx, by + side * 0.38, C.muted, 'center', 'alphabetic', MONO_S);
       // rope while dragging
       if (Math.abs(st.F) > 0) {
         const dir = Math.sign(st.F);
