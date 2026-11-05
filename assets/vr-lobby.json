@@ -4,51 +4,166 @@
     "name": "I'm Rabiat.",
     "headline": "Professional mad scientist.",
     "lead": "Engineering, research, and design, building things that sense and respond to people.",
-    "tags": ["Applied ML", "XR & Spatial", "HCI Research", "Computer Vision"]
+    "tags": [
+      "Applied ML",
+      "XR & Spatial",
+      "HCI Research",
+      "Computer Vision"
+    ]
   },
   "ctas": [
-    { "label": "Projects", "href": "projects.html", "icon": "rocket", "primary": true },
-    { "label": "Resume", "href": "assets/Rabiat_Sadiq_Resume.pdf", "icon": "document", "external": true },
-    { "label": "Contact", "href": "contact.html", "icon": "mail" },
-    { "label": "Back to 2D site", "href": "index.html", "icon": "back" }
+    {
+      "label": "Projects",
+      "href": "projects.html",
+      "icon": "rocket",
+      "primary": true
+    },
+    {
+      "label": "Resume",
+      "href": "assets/Rabiat_Sadiq_Resume.pdf",
+      "icon": "document",
+      "external": true
+    },
+    {
+      "label": "Contact",
+      "href": "contact.html",
+      "icon": "mail"
+    },
+    {
+      "label": "Back to 2D site",
+      "href": "index.html",
+      "icon": "back"
+    }
   ],
   "featured": {
     "title": "Featured work",
     "allHref": "projects.html",
     "items": [
-      { "id": "visionpro-wrist-haptics", "title": "Wrist Haptics", "line": "Apple Watch haptics for Vision Pro" },
-      { "id": "amazon-music-capstone", "title": "Amazon Music", "line": "Adaptive UI that rewards loyal fans" },
-      { "id": "xr-pain-perception", "title": "XR Pain Study", "line": "Body tracked XR cues for a pain lab" },
-      { "id": "magic-mitts", "title": "Magic Mitts", "line": "Affordable haptic VR gloves" },
-      { "id": "perspective", "title": "Perspective", "line": "Any dataset, mapped into 3D" },
-      { "id": "lantern", "title": "Lantern", "line": "An LLM that runs fully on iPhone" },
-      { "id": "vr-music-visualizer", "title": "Music Visualizer", "line": "Audio reactive worlds for Quest" },
-      { "id": "assuage", "title": "Assuage", "line": "Distress prediction, on device" }
+      {
+        "id": "visionpro-wrist-haptics",
+        "title": "Wrist Haptics",
+        "line": "Apple Watch haptics for Vision Pro"
+      },
+      {
+        "id": "amazon-music-capstone",
+        "title": "Amazon Music",
+        "line": "Adaptive UI that rewards loyal fans"
+      },
+      {
+        "id": "xr-pain-perception",
+        "title": "XR Pain Study",
+        "line": "Body tracked XR cues for a pain lab"
+      },
+      {
+        "id": "magic-mitts",
+        "title": "Magic Mitts",
+        "line": "Affordable haptic VR gloves"
+      },
+      {
+        "id": "perspective",
+        "title": "Perspective",
+        "line": "Any dataset, mapped into 3D"
+      },
+      {
+        "id": "lantern",
+        "title": "Lantern",
+        "line": "An LLM that runs fully on iPhone"
+      },
+      {
+        "id": "vr-music-visualizer",
+        "title": "Music Visualizer",
+        "line": "Audio reactive worlds for Quest"
+      },
+      {
+        "id": "assuage",
+        "title": "Assuage",
+        "line": "Distress prediction, on device"
+      }
     ]
   },
   "experience": {
     "title": "Experience",
     "items": [
-      { "role": "AI Research Engineer", "when": "2026 to now", "line": "Xbox x CMU: measuring social play with AI" },
-      { "role": "Research Assistant", "when": "2025 to now", "line": "CMU Augmented Perception Lab, XR pain study" },
-      { "role": "Project Manager and Engineer", "when": "Jan to Jul 2026", "line": "Amazon Music capstone, adaptive loyalty UI" },
-      { "role": "Applied ML Intern", "when": "Summer 2025", "line": "PlayStation (SIE), score extraction at scale" }
+      {
+        "role": "AI Research Engineer",
+        "when": "2026 to now",
+        "line": "Xbox x CMU: measuring social play with AI"
+      },
+      {
+        "role": "Research Assistant",
+        "when": "2025 to now",
+        "line": "CMU Augmented Perception Lab, XR pain study"
+      },
+      {
+        "role": "Project Manager and Engineer",
+        "when": "Jan to Jul 2026",
+        "line": "Amazon Music capstone, adaptive loyalty UI"
+      },
+      {
+        "role": "Applied ML Intern",
+        "when": "Summer 2025",
+        "line": "PlayStation (SIE), score extraction at scale"
+      }
     ]
   },
   "links": [
-    { "label": "GitHub", "href": "https://github.com/RabiatS", "icon": "code", "external": true },
-    { "label": "LinkedIn", "href": "https://www.linkedin.com/in/rabiat-sadiq/", "icon": "link", "external": true }
+    {
+      "label": "GitHub",
+      "href": "https://github.com/RabiatS",
+      "icon": "code",
+      "external": true
+    },
+    {
+      "label": "LinkedIn",
+      "href": "https://www.linkedin.com/in/rabiat-sadiq/",
+      "icon": "link",
+      "external": true
+    }
   ],
   "labs": [
-    { "title": "The Lab", "line": "Open ML models running in your browser", "image": "lab/previews/robot.jpg", "href": "lab/" },
-    { "title": "Study Lab", "line": "Hands on lessons from ML to physics", "image": "lab/study/ml.jpg", "href": "lab/study/" }
+    {
+      "title": "The Lab",
+      "line": "Open ML models you can try in the browser",
+      "image": "lab/previews/robot.jpg",
+      "href": "lab/"
+    },
+    {
+      "title": "Study Lab",
+      "line": "Hands on lessons from ML to physics",
+      "image": "lab/study/ml.jpg",
+      "href": "lab/study/"
+    }
   ],
   "nav": [
-    { "label": "Home", "href": "index.html", "icon": "home" },
-    { "label": "Projects", "href": "projects.html", "icon": "rocket" },
-    { "label": "Coursework", "href": "coursework.html", "icon": "cap" },
-    { "label": "Lab", "href": "lab/", "icon": "flask" },
-    { "label": "Cool", "href": "cool.html", "icon": "sparkle" },
-    { "label": "Contact", "href": "contact.html", "icon": "mail" }
+    {
+      "label": "Home",
+      "href": "index.html",
+      "icon": "home"
+    },
+    {
+      "label": "Projects",
+      "href": "projects.html",
+      "icon": "rocket"
+    },
+    {
+      "label": "Coursework",
+      "href": "coursework.html",
+      "icon": "cap"
+    },
+    {
+      "label": "Lab",
+      "href": "lab/",
+      "icon": "flask"
+    },
+    {
+      "label": "Cool",
+      "href": "cool.html",
+      "icon": "sparkle"
+    },
+    {
+      "label": "Contact",
+      "href": "contact.html",
+      "icon": "mail"
+    }
   ]
 }

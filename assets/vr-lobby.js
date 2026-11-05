@@ -208,18 +208,19 @@ function drawImageBox(ctx, entry, x, y, w, h, r, pal, fallbackLabel) {
     const ba = w / h;
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    if (ia / ba < 0.72) {
+    if (ia / ba < 0.7 || ia / ba > 1.5) {
       // Blurred backdrop, then the whole image
       ctx.save();
       ctx.filter = `blur(${Math.round(h * 0.06)}px) saturate(1.2)`;
-      const bw = w * 1.2;
-      const bh = bw / ia;
-      ctx.drawImage(img, x - w * 0.1, y + (h - bh) / 2, bw, bh);
+      const bh = Math.max(h * 1.2, (w * 1.2) / ia);
+      const bw = bh * ia;
+      ctx.drawImage(img, x + (w - bw) / 2, y + (h - bh) / 2, bw, bh);
       ctx.restore();
       ctx.fillStyle = pal.dark ? 'rgba(10,8,16,0.45)' : 'rgba(255,255,255,0.25)';
       ctx.fillRect(x, y, w, h);
-      const dh = h * 0.92;
-      const dw = dh * ia;
+      let dh = h * 0.92;
+      let dw = dh * ia;
+      if (dw > w * 0.92) { dw = w * 0.92; dh = dw / ia; }
       ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
     } else {
       let sw = img.naturalWidth;
@@ -498,7 +499,8 @@ class Panel {
     this.mat = panelMaterial(o.style, this.w, this.h, this.margin, (o.radius ?? 0.05) * this.k, this.tex);
     this.mesh = new THREE.Mesh(geo, this.mat);
     this.mesh.userData.panel = this;
-    this.mesh.renderOrder = o.renderOrder || 0;
+    // Children always draw after the glass they sit on
+    this.mesh.renderOrder = o.renderOrder ?? (parentPanel ? parentPanel.mesh.renderOrder + 1 : 0);
     this.item.add(this.mesh);
 
     this.hover = 0;
@@ -545,7 +547,7 @@ class Panel {
     const u = this.mat.uniforms;
     u.uHover.value = this.hover;
     u.uFocus.value = this.focus;
-    const o = this.fade * (this.layer === 'main' ? 1 - 0.78 * dim : 1);
+    const o = this.fade * (this.layer === 'main' ? 1 - 0.85 * dim : 1);
     u.uOpacity.value = o;
     this.mesh.visible = this.visible && o > 0.003;
   }
@@ -689,19 +691,21 @@ function layoutExperience(d, pal, w) {
 function layoutLabTile(lab, pal, w, h) {
   const pad = 0.032;
   const iw = w - pad * 2;
-  const imgH = h - pad * 2 - 0.205;
+  const imgH = h - pad * 2 - 0.27;
   const ops = [{ t: 'img', entry: loadImage(lab.image), x: pad, y: pad, w: iw, h: imgH, r: 0.026, label: lab.title }];
   let y = pad + imgH + 0.03;
   ops.push(text(lab.title, pad, base(y, SZ.title, 1.15), SZ.title, { weight: 700, color: pal.text }));
   ops.push({ t: 'icon', name: 'external', x: w - pad - 0.052, y: y + 0.012, size: 0.052, color: pal.soft, weight: 2 });
   y += SZ.title * 1.15 + 0.008;
-  const ls = fitSize(lab.line, 400, 0.058, 0.05, iw);
-  ops.push(text(ellipsize(lab.line, ls, 400, iw), pad, base(y, 0.058, 1.3), ls, { color: pal.muted }));
+  for (const l of wrap(lab.line, 0.058, 400, iw, 2)) {
+    ops.push(text(l, pad, base(y, 0.058, 1.3), 0.058, { color: pal.muted }));
+    y += 0.058 * 1.3;
+  }
   return ops;
 }
 
 function layoutDetail(p, pal) {
-  const w = 1.78;
+  const w = 1.84;
   const pad = 0.075;
   const imgW = 0.7;
   const x0 = pad + imgW + 0.065;
@@ -709,7 +713,7 @@ function layoutDetail(p, pal) {
   const ops = [];
   let y = pad;
   const meta = [p.category, p.year].filter(Boolean).map(clean).join('  ·  ');
-  ops.push(text(ellipsize(meta.toUpperCase(), 0.046, 600, cw), x0, base(y, 0.046), 0.046, { weight: 600, color: pal.accentText, track: 0.06 }));
+  ops.push(text(ellipsize(meta.toUpperCase(), 0.046, 600, cw - 0.13), x0, base(y, 0.046), 0.046, { weight: 600, color: pal.accentText, track: 0.06 }));
   y += 0.046 * 1.3 + 0.018;
   for (const l of wrap(clean(p.title), 0.088, 700, cw, 2)) {
     ops.push(text(l, x0, base(y, 0.088, 1.15), 0.088, { weight: 700, color: pal.text, track: -0.01 }));
@@ -827,7 +831,8 @@ void main() {
   col = mix(col, poolCol, pool * (uDark > 0.5 ? 0.22 : 0.12));
   col = mix(col, uGrid, grid * (uDark > 0.5 ? 0.22 : 0.3));
   col = mix(col, ringCol, clamp(ring, 0.0, 1.0) * (uDark > 0.5 ? 0.85 : 0.6));
-  col = mix(col, uHor, smoothstep(4.0, 26.0, r));
+  // Glossy falloff: the floor picks up the horizon glow as it recedes
+  col = mix(col, uHor, pow(smoothstep(0.8, 26.0, r), 0.65));
   float a = 1.0 - smoothstep(20.0, 34.0, r);
   float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
   gl_FragColor = vec4((col + (n - 0.5) / 255.0) * a, a);
@@ -1031,7 +1036,7 @@ function buildMascot(renderer, pal) {
   const root = new THREE.Group();
   const head = new THREE.Group();
   root.add(head);
-  head.scale.setScalar(0.125);
+  head.scale.setScalar(0.145);
   const rrect = (w, h, r) => {
     const s = new THREE.Shape();
     const x = -w / 2;
@@ -1247,7 +1252,7 @@ function resize() {
   const h = innerHeight;
   const aspect = w / h;
   // Keep about 90 degrees across on wide screens and enough of the hero on phones
-  const hfov = aspect >= 1.2 ? 92 : 56;
+  const hfov = aspect >= 1.2 ? 80 : 56;
   camera.fov = clamp(2 * Math.atan(Math.tan((hfov * DEG) / 2) / aspect) / DEG, 50, 92);
   camera.aspect = aspect;
   camera.updateProjectionMatrix();
@@ -1329,11 +1334,18 @@ function buildUI(data, projects) {
     parent: ui, key: 'hero', theta: 0, y: centerY, w: hero.w, h: hero.h, radius: 0.07, margin: 0.07,
     style: styles.glass, paint: (ctx, s) => runOps(ctx, s, hero.ops, pal),
   });
-  mascot.root.position.y = centerY + hero.h / 2 + 0.24;
+  mascot.root.position.y = centerY + hero.h / 2 + 0.26;
 
-  const ctaLayouts = data.ctas.map((c) => ({ c, l: layoutButton(c.label, c.icon, pal, c.primary) }));
-  const ctaGap = 0.03;
-  let total = ctaLayouts.reduce((s, x) => s + x.l.w, 0) + ctaGap * (ctaLayouts.length - 1);
+  // Shrink the button row until it fits inside the hero
+  const ctaGap = 0.028;
+  let ctaSize = SZ.label;
+  let ctaLayouts;
+  let total;
+  do {
+    ctaLayouts = data.ctas.map((c) => ({ c, l: layoutButton(c.label, c.icon, pal, c.primary, ctaSize) }));
+    total = ctaLayouts.reduce((s, x) => s + x.l.w, 0) + ctaGap * (ctaLayouts.length - 1);
+    ctaSize *= 0.97;
+  } while (total > HERO_W - 0.14 && ctaSize > 0.042);
   let x = (HERO_W - total) / 2;
   const btnY = hero.h / 2 - hero.buttonsTop - 0.065;
   for (const { c, l } of ctaLayouts) {
@@ -1466,7 +1478,7 @@ function buildUI(data, projects) {
 
   // ----- Navigation dock below eye level, tilted toward the viewer -----
   const nav = data.nav || [];
-  const itemW = 0.232;
+  const itemW = 0.255;
   const itemH = 0.158;
   const dockPad = 0.018;
   const dockW = nav.length * itemW + (nav.length - 1) * 0.01 + dockPad * 2;
@@ -1484,7 +1496,7 @@ function buildUI(data, projects) {
       style: styles.ghost,
       paint: (ctx, s) => runOps(ctx, s, [
         { t: 'icon', name: n.icon, x: (itemW - icon) / 2, y: 0.026, size: icon, color: pal.text, weight: 1.9 },
-        text(n.label, itemW / 2, 0.132, 0.046, { weight: 600, color: pal.muted, align: 'center' }),
+        text(n.label, itemW / 2, 0.132, fitSize(n.label, 600, 0.046, 0.038, itemW - 0.024), { weight: 600, color: pal.muted, align: 'center' }),
       ], pal),
       onSelect: () => go(n), label: n.label,
     });
@@ -1518,7 +1530,7 @@ function openDetail(entry, fromPanel) {
   const y = clamp(pos.y - 0.06, 0.9, 2.2);
   const main = new Panel({
     parent: detailRoot, layer: 'detail', key: 'detail', theta: 0, y, r, tilt: 0, scale: k, w: L.w, h: L.h, radius: 0.07, margin: 0.08,
-    style: { ...styles.glass, fillA: v4(pal.glassA, Math.min(0.95, pal.glassAlpha[0] + 0.14)), fillB: v4(pal.glassB, Math.min(0.96, pal.glassAlpha[1] + 0.12)), glow: pal.glow + 0.1 },
+    style: { ...styles.glass, fillA: v4(pal.glassA, 0.97), fillB: v4(pal.glassB, 0.98), glow: pal.glow + 0.12 },
     paint: (ctx, s) => runOps(ctx, s, L.ops, pal), renderOrder: 5,
   });
   const img = loadImage(p.image);
@@ -1528,22 +1540,38 @@ function openDetail(entry, fromPanel) {
   else if (p.demo) links.push({ label: 'Open demo', href: p.demo, icon: 'external', primary: true, external: /^https?:/.test(p.demo) || /\.pdf$/i.test(p.demo) });
   else links.push({ label: 'View project', href: `projects.html#${p.id}`, icon: 'rocket', primary: true });
   if (p.github) links.push({ label: 'GitHub', href: p.github, icon: 'code', external: true });
-  links.push({ label: 'Close', icon: 'close', close: true });
   let bx = L.x0;
-  const buttons = links.map((lnk) => {
-    const l = layoutButton(lnk.label, lnk.icon, pal, lnk.primary);
+  const colW = L.w - L.x0 - 0.075;
+  let bSize = SZ.label;
+  let bl;
+  do {
+    bl = links.map((lnk) => layoutButton(lnk.label, lnk.icon, pal, lnk.primary, bSize));
+    bSize *= 0.97;
+  } while (bl.reduce((a, l) => a + l.w, 0) + 0.03 * (bl.length - 1) > colW && bSize > 0.04);
+  const buttons = links.map((lnk, i) => {
+    const l = bl[i];
     const cx = (bx + l.w / 2 - L.w / 2) * k;
     const by = (L.h / 2 - L.buttonsTop - 0.065) * k;
     bx += l.w + 0.03;
     const btn = new Panel({
-      parent: main, layer: 'detail', key: `detail:${lnk.close ? 'close' : lnk.primary ? 'primary' : 'github'}`, theta: arcDeg(cx, r), y: by, scale: k,
+      parent: main, layer: 'detail', key: `detail:${lnk.primary ? 'primary' : 'github'}`, theta: arcDeg(cx, r), y: by, scale: k,
       w: l.w, h: l.h, radius: l.h / 2, margin: 0.04, lift: 0.02 * k, style: lnk.primary ? styles.primary : styles.button,
       paint: (ctx, s) => runOps(ctx, s, l.ops, pal), renderOrder: 6, label: lnk.label,
-      onSelect: () => (lnk.close ? closeDetail() : go(lnk)),
+      onSelect: () => go(lnk),
     });
-    addA11y(btn, 'detail', lnk.close ? `Close ${p.title}` : `${lnk.label}: ${p.title}`, lnk.close ? null : lnk);
+    addA11y(btn, 'detail', `${lnk.label}: ${p.title}`, lnk);
     return btn;
   });
+  // Round close button in the top right corner
+  const cs = 0.11;
+  const close = new Panel({
+    parent: main, layer: 'detail', key: 'detail:close', theta: arcDeg((L.w / 2 - 0.075 - cs / 2 + 0.02) * k, r), y: (L.h / 2 - 0.075 - cs / 2 + 0.02) * k, scale: k,
+    w: cs, h: cs, radius: cs / 2, margin: 0.03, lift: 0.02 * k, style: styles.button, renderOrder: 6, label: 'Close',
+    paint: (ctx, s) => runOps(ctx, s, [{ t: 'icon', name: 'close', x: cs * 0.22, y: cs * 0.22, size: cs * 0.56, color: pal.text, weight: 2.2 }], pal),
+    onSelect: () => closeDetail(),
+  });
+  addA11y(close, 'detail', `Close ${p.title}`);
+  buttons.push(close);
   if (!REDUCE) { detailRoot.scale.setScalar(0.96); }
   detail = { main, buttons, from: fromPanel };
   dimT = 1;
@@ -1981,6 +2009,7 @@ window.__vrLobby = {
   },
   keys: () => panels.map((p) => p.key),
   detailOpen: () => !!detail,
+  debug: (key) => { const p = panels.find((x) => x.key === key); return p && { fade: p.fade, op: p.mat.uniforms.uOpacity.value, hover: p.hover, focus: p.focus, vis: p.mesh.visible, ro: p.mesh.renderOrder }; },
 };
 
 boot();
