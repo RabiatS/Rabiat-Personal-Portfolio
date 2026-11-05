@@ -179,7 +179,7 @@ const _a = new THREE.Vector3(); const _b = new THREE.Vector3(); const _c = new T
 
 export class Viewer {
   constructor(ctx, opts = {}) {
-    this.ctx = ctx; this.opts = opts;
+    this.ctx = ctx; this.opts = opts; window.__anatViewer = this;
     const host = document.createElement('div');
     host.style.cssText = 'position:absolute;inset:0;touch-action:none;';
     ctx.stage.append(host); this.host = host;
