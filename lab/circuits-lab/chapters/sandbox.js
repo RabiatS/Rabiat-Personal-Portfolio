@@ -11,10 +11,14 @@ export default {
     const b = createBoard(ctx, { circuit: start, palette: ALL, dotScale: 'auto' });
     b.segDock('Dots', [['auto', 'Auto'], [4, 'Fixed']], 'auto', (v) => { b.opt.dotScale = v; });
     b.segDock('Speed', [[1, '1×'], [5, '5×']], 1, (v) => { b.opt.timeScale = v; });
-    let dirty = false; let tick = 0;
-    b.opt.onChange = () => { dirty = true; };
-    ctx.loop((t, dt) => { tick += dt; if (tick > 1.5) { tick = 0; ctx.store.set('sandbox:last', b.serialize()); dirty = false; } });
-    void dirty;
+    // Autosave every 1.5 s, but only write storage when the circuit actually changed.
+    // Compared by snapshot because switch taps and inspector edits do not all fire onChange.
+    let tick = 0; let lastSaved = JSON.stringify(start);
+    ctx.loop((t, dt) => {
+      tick += dt; if (tick <= 1.5) return; tick = 0;
+      const snap = b.serialize(); const json = JSON.stringify(snap);
+      if (json !== lastSaved) { lastSaved = json; ctx.store.set('sandbox:last', snap); }
+    });
 
     ctx.panel.append(
       ctx.h('<h2 class="k-h">Sandbox</h2>'),

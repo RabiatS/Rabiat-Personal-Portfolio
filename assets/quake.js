@@ -7,7 +7,8 @@
   const brand = document.querySelector('.header .brand');
   if (!brand || !document.body.classList.contains('page-home')) return;
 
-  const MATTER_URL = 'https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js';
+  // Self-hosted copy of matter-js 0.19.0 (MIT), resolved next to this script.
+  const MATTER_URL = new URL('vendor/matter.min.js', (document.currentScript && document.currentScript.src) || location.href.replace(/[^/]*$/, 'assets/')).href;
   const NEEDED = 10;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let clicks = 0; let lastClick = 0; let busy = false; let fallen = null; let matterP = null;

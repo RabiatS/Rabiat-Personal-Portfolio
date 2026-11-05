@@ -2,7 +2,7 @@
    MODERN PORTFOLIO DESIGN - FRESH START
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Rajdhani:wght@500;600;700&family=DM+Mono:wght@400;500&display=swap');
+/* Fonts (Lora, Rajdhani, DM Mono) are loaded by a <link> in each page's head, not @import, so they download in parallel. */
 
 :root {
   /* Personal portfolio palette - warmer, more inviting */
@@ -4867,6 +4867,10 @@ input[type="search"]:focus {
   height: 3px;
   background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary-light));
   background-size: 200% 100%;
+}
+
+/* Only animate while the chat is open so the hidden panel costs nothing. */
+.ai-chat-portal.is-open .ai-chat-panel::before {
   animation: aiChatBarShift 6s ease-in-out infinite;
 }
 
@@ -5025,6 +5029,9 @@ input[type="search"]:focus {
   height: 6px;
   border-radius: 50%;
   background: var(--accent);
+}
+
+.ai-chat-portal.is-open .ai-chat-coming-soon-dot {
   animation: aiChatPulse 1.6s ease-in-out infinite;
 }
 
@@ -5117,8 +5124,8 @@ input[type="search"]:focus {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ai-chat-panel::before,
-  .ai-chat-coming-soon-dot {
+  .ai-chat-portal.is-open .ai-chat-panel::before,
+  .ai-chat-portal.is-open .ai-chat-coming-soon-dot {
     animation: none;
   }
 

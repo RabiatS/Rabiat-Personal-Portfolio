@@ -44,7 +44,10 @@ export function canUseBuilderMode() {
 export function hasWebGL() {
   try {
     const canvas = document.createElement('canvas');
-    return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    // Release the probe context right away so it does not count against the browser's live WebGL context limit.
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    return !!gl;
   } catch {
     return false;
   }

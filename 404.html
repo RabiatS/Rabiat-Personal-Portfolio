@@ -139,7 +139,7 @@
   requestAnimationFrame(loop);
 
   var s = document.createElement('script');
-  s.src = 'https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js';
+  s.src = '/assets/vendor/matter.min.js';
   s.onerror = staticLayout;
   s.onload = function () { physics(window.Matter); };
   document.head.appendChild(s);
