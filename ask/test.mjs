@@ -48,7 +48,7 @@ const CASES = [
   ['Which Lab model does speech to text?', null, (u) => /moonshine|voxtral/.test(u)],
   // Made-up or unanswered: must say so instead of guessing.
   ['What is her favorite food?', null, null],
-  ['Is Rabiat open to work?', null, null],
+  ['Is Rabiat open to work?', 'open-to-work', null],
   ['How tall is Rabiat?', null, null],
   ['asdfgh qwerty', null, null],
 ];

@@ -214,6 +214,8 @@ export function createEngine(docs, answers = []) {
     if (!base.length) return null;
     let best = null;
     for (const r of answerRows) {
+      // Optional "must": the question has to mention one of these words (after stemming)
+      if (Array.isArray(r.a.must) && r.a.must.length && !r.a.must.some((w) => tokenize(w).some((t) => base.includes(t)))) continue;
       for (const v of r.variants) {
         if (!v.size) continue;
         const has = (t) => v.has(t);
