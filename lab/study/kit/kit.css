@@ -88,7 +88,7 @@ a.brand:hover .b2 { color: #fff; }
 .k-stage canvas { display: block; }
 .k-side { position: absolute; z-index: 10; top: 92px; right: max(18px, env(safe-area-inset-right, 0px)); bottom: max(18px, env(safe-area-inset-bottom, 0px)); width: var(--side-w); overflow-y: auto; border-radius: 14px; padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 14px; scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
 .k-side .k-nav { display: flex; gap: 8px; margin-top: auto; padding-top: 6px; }
-.k-side .k-nav .btn { flex: 1; justify-content: center; }
+.k-side .k-nav .btn { flex: 1; justify-content: center; white-space: normal; min-width: 0; text-align: center; }
 .k-loading { position: absolute; inset: 0; display: grid; place-items: center; font: 500 12px var(--f-mono); color: var(--muted); }
 
 /* Panel content */
