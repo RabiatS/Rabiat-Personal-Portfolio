@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<title>Design Lab · Rabiat's Lab</title>
+<meta name="description" content="Learn digital and UI design by seeing it: one live interface restyled as skeuomorphism, flat, material, neumorphism, glass, clay, brutalism and Swiss style, plus white space, hierarchy, grids, Gestalt, colour, type and UX laws you can measure on yourself.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&family=Nunito:wght@600;700;800;900&family=Fraunces:opsz,wght@9..144,300..900&display=swap">
+<link rel="stylesheet" href="../study/kit/kit.css">
+<link rel="stylesheet" href="design.css">
+</head>
+<body>
+<script type="module">
+import { createLab } from '../study/kit/kit.js';
+const ch = (id, title, group, blurb) => ({ id, title, group, blurb, load: () => import(`./chapters/${id}.js`) });
+createLab({
+  id: 'design',
+  title: 'Design Lab',
+  intro: 'Interface design you can see and measure: styles, principles and the laws behind them.',
+  overview: 'Good interface design is a set of choices you can learn to see. Every chapter here uses the same small live interface (a card, buttons, a switch, a slider, a text field and a nav bar) and restyles it, so you can compare skeuomorphism, flat, material, glass and more side by side. Then the principles that make any style work, and a handful of UX laws you can test on yourself, with your own reaction times.',
+  about: '<p>Every style chapter gives you the CSS recipe that is actually rendering on screen, so you can copy it. The UX law chapters measure you: your clicks, your timings, your memory.</p><p>Nothing is sent anywhere. All of it runs in your browser.</p>',
+  chapters: [
+    ch('skeuomorphism', 'Skeuomorphism', 'Visual styles', 'Leather, stitching and glossy buttons: the real world, drawn.'),
+    ch('flat', 'Flat design', 'Visual styles', 'Strip the texture, keep the colour. Fast, clean, and easy to get wrong.'),
+    ch('material', 'Material design', 'Visual styles', 'Paper and ink: elevation, shadows that mean something, ripples.'),
+    ch('neumorphism', 'Neumorphism', 'Visual styles', 'Soft UI pressed out of the background, and its contrast problem.'),
+    ch('glassmorphism', 'Glassmorphism', 'Visual styles', 'Frosted panels over colour, and keeping text readable on them.'),
+    ch('claymorphism', 'Claymorphism', 'Visual styles', 'Puffy, pastel, friendly. Inner shadows doing the modelling.'),
+    ch('brutalism', 'Brutalism', 'Visual styles', 'Raw HTML honesty and its loud cousin, neo-brutalism.'),
+    ch('minimalism', 'Minimalism and Swiss style', 'Visual styles', 'Less but better. Grids, type and one accent colour.'),
+    ch('style-morpher', 'Style morpher', 'Visual styles', 'Slide between every style and watch each property move.'),
+    ch('white-space', 'White space', 'Principles', 'Padding, line height and margins on a real layout.'),
+    ch('hierarchy', 'Visual hierarchy', 'Principles', 'Size, weight, colour and position. Squint to test it.'),
+    ch('grids', 'Alignment and grids', 'Principles', 'A 12 column grid, snapping, and finding near misses.'),
+    ch('gestalt', 'Gestalt principles', 'Principles', 'Why the eye groups dots: proximity, similarity, closure and more.'),
+    ch('colour', 'Colour', 'Principles', 'HSL, harmony rules, 60-30-10 and WCAG contrast.'),
+    ch('typography', 'Typography', 'Principles', 'Type scales, line length and pairing typefaces.'),
+    ch('hicks-law', "Hick's law", 'UX laws', 'More choices, slower decisions. Time yourself.'),
+    ch('fitts-law', "Fitts's law", 'UX laws', 'Small, far targets are slow. Fit your own line.'),
+    ch('millers-law', "Miller's law and chunking", 'UX laws', 'Remember a phone number, chunked and not.'),
+    ch('laws-gallery', 'Laws gallery', 'UX laws', 'Jakob, Tesler, Doherty, aesthetics, isolation, serial position, peak-end.'),
+  ],
+});
+</script>
+</body>
+</html>
