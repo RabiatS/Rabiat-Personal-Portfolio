@@ -58,7 +58,7 @@ export default {
       chips.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', Math.abs(+c.dataset.r - ratio) < 0.002));
       $('.ty-scale').innerHTML = STEPS.map(([k, n]) => {
         const px = base * ratio ** k; const head = k >= 1;
-        return `<div class="ty-step"><span class="k">${n}<br>${px.toFixed(1)}px<br>${(px / 16).toFixed(3)}rem</span><span class="s" style="font-size:${px}px;line-height:${head ? 1.15 : 1.5};font-family:${head ? pr.h : pr.b};font-weight:${head ? pr.hw : 400}">${head ? 'Walk the long way home' : 'Pack light and walk further every weekend'}</span></div>`;
+        return `<div class="ty-step"><span class="k">${n}<br>${px.toFixed(1)}px<br>${(px / 16).toFixed(3)}rem</span><span class="s" style="font-size:min(${px}px, ${head ? 11 : 6}vw);line-height:${head ? 1.15 : 1.5};font-family:${head ? pr.h : pr.b};font-weight:${head ? pr.hw : 400}">${head ? 'Walk the long way home' : 'Pack light and walk further every weekend'}</span></div>`;
       }).join('');
       const p = $('.ty-p'); p.style.maxWidth = `${measure}ch`; p.style.fontFamily = pr.b;
       requestAnimationFrame(() => {

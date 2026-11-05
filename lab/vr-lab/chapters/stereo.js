@@ -181,7 +181,8 @@ export default {
 
     // Top down diagram: two eyes, lines of sight converging on the chosen target
     function drawInset(g, W, H) {
-      const iw = Math.min(210, W * 0.42); const ih = 150;
+      const iw = Math.min(210, W * 0.5); let ih = 150;
+      if (mode === 'sbs' && W < 600) { const hw = (W - 8) / 2; const free = (H - Math.min(H, hw * 1.05)) / 2; ih = clamp(free - 12, 96, 150); }
       const x0 = 10; const y0 = H - ih - 10;
       g.fillStyle = 'rgba(10,10,10,.78)'; g.strokeStyle = 'rgba(255,255,255,.14)'; g.lineWidth = 1;
       g.beginPath(); g.roundRect(x0, y0, iw, ih, 10); g.fill(); g.stroke();

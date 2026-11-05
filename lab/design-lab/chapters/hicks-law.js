@@ -26,7 +26,7 @@ export default {
     P.append(ctx.h('<div class="card tip"><p>Each decision has to rule out the other options. If you halve the options each time (is it in the top half or the bottom?), the work grows with log<sub>2</sub> of the number of choices. Going from 2 to 4 options adds about as much time as going from 4 to 8.</p></div>'));
     P.append(ctx.h(`<div class="card try"><p>Press <b>Start</b>. You will do four short blocks (1, 2, 4 and 8 options, in random order), ${PER} trials each. Rest your pointer on <b>Ready</b>, click it, wait for a colour name in the middle, then click that option as fast as you can. All options sit the same distance from the centre, so movement time is the same in every block and only the decision changes.</p></div>`));
     P.append(ctx.h(`<div class="card deep"><div class="formula">RT = a + b · log2(N + 1)<span>a: time that does not depend on choice (seeing, moving). b: time per bit of information.</span></div>
-      <p>William Edmund Hick (1952) and Ray Hyman (1953) measured it with lamps and keys. The <b>+1</b> accounts for the extra uncertainty of whether a stimulus will appear at all. Lab values of b are often in the region of 150 ms per bit with practice and with compatible stimulus response mappings; yours includes moving the pointer, so expect bigger numbers.</p>
+      <p>William Edmund Hick (1952) and Ray Hyman (1953) measured it with lamps and keys. The <b>+1</b> accounts for the extra uncertainty of whether a stimulus will appear at all. The slope b shrinks with practice and with natural mappings between stimulus and response. Your times also include moving the pointer, which mostly lands in a, since every option is the same distance away.</p>
       <p><b>Where it applies.</b> Hick's law holds when options are familiar and the person knows what they want, like picking a known item from a well learned menu. When people have to read and search an unfamiliar list, time grows more like linearly with the number of items, so a long unsorted menu is worse than the log curve suggests.</p>
       <p><b>In design:</b> fewer primary actions, progressive disclosure (show advanced options later), sensible defaults, grouping and ordering menus so people can skip whole sections.</p></div>`));
 
@@ -36,13 +36,13 @@ export default {
       const fit = means.length >= 2 ? linfit(means.map((m) => m[0]), means.map((m) => m[1])) : null;
       drawPlot(cv, ctx.colors, { xs, ys, means, fit, xMin: 0.8, xMax: 3.4, xTicks: NS.map((n) => [Math.log2(n + 1), `N=${n}`]), xLabel: 'log2(N + 1)', yLabel: 'ms', empty: 'Press Start to measure yourself' });
       stat.innerHTML = NS.map((n) => `<div><b>${data[n].length ? Math.round(mean(data[n])) : '-'}</b><span>N = ${n} (ms)</span></div>`).join('');
-      fitBox.innerHTML = fit ? `RT ≈ ${Math.round(fit.a)} + ${Math.round(fit.b)} · log2(N + 1) ms<span>R² = ${fit.r2.toFixed(2)} · ${Math.round(fit.b)} ms per bit of choice</span>` : 'RT = a + b · log2(N + 1)<span>Your fit appears after two blocks.</span>';
+      fitBox.innerHTML = fit ? `RT ≈ ${Math.round(fit.a)} ${fit.b < 0 ? '-' : '+'} ${Math.abs(Math.round(fit.b))} · log2(N + 1) ms<span>R² = ${fit.r2.toFixed(2)} · ${Math.round(fit.b)} ms per bit of choice</span>` : 'RT = a + b · log2(N + 1)<span>Your fit appears after two blocks.</span>';
     }
     cv.onResize(render);
 
     function layout() {
       arena.querySelectorAll('.lx-opt').forEach((o) => o.remove());
-      const r = arena.getBoundingClientRect(); const R = Math.min(r.width / 2 - 56, r.height / 2 - 34);
+      const r = arena.getBoundingClientRect(); const R = Math.min(r.width / 2 - 56, r.height / 2 - 50);
       const n = opts.length;
       opts.forEach(([name, col], i) => {
         const a = -Math.PI / 2 + (i * Math.PI * 2) / n + (n === 2 ? Math.PI / 2 : 0);

@@ -134,7 +134,7 @@ export default {
         for (let i = 0; i < segs; i++) { const a0 = (i / segs) * Math.PI * 2 - Math.PI / 2; g.beginPath(); g.arc(ax, ay, R, a0, a0 + (Math.PI * 2 / segs) * frac); g.stroke(); }
         label(`${Math.round(st.cgap * 100)}% of the outline missing`, ax, ay + R + 28);
         // Kanizsa triangle
-        const bx = w < 560 ? cx : cx + S * 0.24; const by = w < 560 ? cy + S * 0.22 : cy + S * 0.02; const T = S * 0.2; const pr = S * 0.065;
+        const bx = w < 560 ? cx : cx + S * 0.24; const by = w < 560 ? cy + S * 0.22 : cy + S * 0.02; const T = S * 0.17; const pr = S * 0.088;
         const v = [[bx, by - T], [bx - T * 0.87, by + T * 0.5], [bx + T * 0.87, by + T * 0.5]];
         v.forEach(([x, y]) => {
           const toC = Math.atan2(by - y, bx - x); const m = (st.mouth * Math.PI) / 180;
@@ -143,14 +143,14 @@ export default {
         label(st.mouth > 0 ? 'no triangle is drawn' : 'mouths closed: the triangle is gone', bx, by + T * 0.5 + pr + 28);
       } else if (mode === 'continuity') {
         const L = Math.min(w * 0.8, 560); const x0 = cx - L / 2; const amp = S * 0.22;
-        const curve1 = (t) => [x0 + t * L, cy + Math.sin(t * Math.PI * 2) * amp * 0.9];
-        const curve2 = (t) => [x0 + t * L, cy - Math.sin(t * Math.PI * 2) * amp * 0.9 + (t - 0.5) * 20];
+        const curve1 = (t) => [x0 + t * L, cy + (t - 0.5) * amp * 1.4];
+        const curve2 = (t) => [x0 + t * L, cy - Math.sin((t - 0.5) * Math.PI) * amp];
         const sample = (fn) => { const out = []; let acc = 0; let prev = fn(0); out.push([prev, 0]); for (let k = 1; k <= 600; k++) { const t = k / 600; const p = fn(t); acc += Math.hypot(p[0] - prev[0], p[1] - prev[1]); if (acc >= st.spacing) { out.push([p, t]); acc = 0; } prev = p; } return out; };
         const a = sample(curve1); const b = sample(curve2);
         // smooth reading: colour per curve. Corner reading: swap colours at each crossing (t = 0.5)
         a.forEach(([p, t]) => dot(p[0], p[1], 4.5, st.cont ? C.c1 : (t < 0.5 ? C.c1 : C.c2)));
         b.forEach(([p, t]) => dot(p[0], p[1], 4.5, st.cont ? C.c2 : (t < 0.5 ? C.c2 : C.c1)));
-        label(st.cont ? 'two smooth curves crossing' : 'the same dots read as two bent shapes that touch', cx, h - 24);
+        label(st.cont ? 'a line and a curve crossing' : 'the same dots read as two bent shapes touching at a corner', cx, h - 24);
       } else if (mode === 'region') {
         const n = 10; const L = Math.min(w * 0.86, 620); const x0 = cx - L / 2;
         // dots in pairs by proximity: 0-1 close, 1-2 far, ...
@@ -169,14 +169,24 @@ export default {
       } else if (mode === 'figure') {
         const Hh = Math.min(h * 0.78, 520); const top = cy - Hh / 2; const Wd = Math.min(w * 0.86, Hh * 1.05);
         const A = st.swap ? '#f5f5f0' : '#141414'; const B = st.swap ? '#141414' : '#f5f5f0';
-        // half width profile of the vase (fraction of Wd), from top to bottom
-        const prof = [[0, 0.34], [0.06, 0.33], [0.14, 0.27], [0.26, 0.2], [0.35, 0.25], [0.45, 0.12], [0.53, 0.17], [0.59, 0.12], [0.64, 0.16], [0.7, 0.12], [0.8, 0.2], [0.88, 0.15], [0.95, 0.24], [1, 0.3]];
-        const hw = (t) => { let i = 0; while (i < prof.length - 2 && prof[i + 1][0] < t) i++; const [t0, v0] = prof[i]; const [t1, v1] = prof[i + 1]; const u = (t - t0) / (t1 - t0); const s = u * u * (3 - 2 * u); return (v0 + (v1 - v0) * s) * st.vw; };
+        // half width profile of the vase (fraction of the box width) from top to bottom: brow, eye, nose, lips, chin
+        const prof = [[0, 0.3], [0.07, 0.3], [0.15, 0.22], [0.3, 0.165], [0.37, 0.21], [0.48, 0.085], [0.54, 0.15], [0.6, 0.11], [0.64, 0.15], [0.68, 0.115], [0.76, 0.19], [0.84, 0.14], [0.92, 0.22], [1, 0.3]];
+        const ext = [prof[0], ...prof, prof[prof.length - 1]]; const curve = [];
+        for (let i = 1; i < ext.length - 2; i++) {
+          const [p0, p1, p2, p3] = [ext[i - 1], ext[i], ext[i + 1], ext[i + 2]];
+          for (let k = 0; k < 12; k++) {
+            const u = k / 12; const u2 = u * u; const u3 = u2 * u;
+            const cr = (a0, a1, a2, a3) => 0.5 * (2 * a1 + (-a0 + a2) * u + (2 * a0 - 5 * a1 + 4 * a2 - a3) * u2 + (-a0 + 3 * a1 - 3 * a2 + a3) * u3);
+            curve.push([cr(p0[0], p1[0], p2[0], p3[0]), cr(p0[1], p1[1], p2[1], p3[1])]);
+          }
+        }
+        curve.push(prof[prof.length - 1]);
         g.fillStyle = A; g.beginPath(); g.roundRect(cx - Wd / 2, top, Wd, Hh, 14); g.fill();
+        g.save(); g.beginPath(); g.roundRect(cx - Wd / 2, top, Wd, Hh, 14); g.clip();
         g.fillStyle = B; g.beginPath();
-        for (let k = 0; k <= 120; k++) { const t = k / 120; const xw = hw(t) * Wd * 0.5 * 2 / 2; g.lineTo(cx - Math.min(Wd / 2, xw * 1.0 + 0), top + t * Hh); }
-        for (let k = 120; k >= 0; k--) { const t = k / 120; const xw = hw(t) * Wd * 0.5 * 2 / 2; g.lineTo(cx + Math.min(Wd / 2, xw), top + t * Hh); }
-        g.closePath(); g.fill();
+        curve.forEach(([t, v]) => g.lineTo(cx - Math.min(Wd / 2, v * st.vw * Wd * 0.75), top + t * Hh));
+        [...curve].reverse().forEach(([t, v]) => g.lineTo(cx + Math.min(Wd / 2, v * st.vw * Wd * 0.75), top + t * Hh));
+        g.closePath(); g.fill(); g.restore();
         label('a vase, or two faces?', cx, top + Hh + 22);
       }
     }

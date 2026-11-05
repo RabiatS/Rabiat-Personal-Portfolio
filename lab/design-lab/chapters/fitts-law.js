@@ -29,7 +29,7 @@ export default {
       const ids = [...new Set(data.map((d) => d.id.toFixed(2)))];
       const means = ids.map((k) => { const s = data.filter((d) => d.id.toFixed(2) === k); return [+k, mean(s.map((d) => d.mt))]; });
       drawPlot(pcv, C, { xs: data.map((d) => d.id), ys: data.map((d) => d.mt), means, fit, xMin: 0, xMax: Math.max(6, ...data.map((d) => d.id + 0.3)), xTicks: [1, 2, 3, 4, 5, 6], xLabel: 'ID (bits)', yLabel: 'ms', empty: 'Your trials will appear here' });
-      fitBox.innerHTML = fit ? `MT ≈ ${Math.round(fit.a)} + ${Math.round(fit.b)} · ID ms<span>R² = ${fit.r2.toFixed(2)} from ${data.length} trials</span>` : 'MT = a + b · log2(D / W + 1)<span>Your fit appears after a few trials.</span>';
+      fitBox.innerHTML = fit ? `MT ≈ ${Math.round(fit.a)} ${fit.b < 0 ? '-' : '+'} ${Math.abs(Math.round(fit.b))} · ID ms<span>R² = ${fit.r2.toFixed(2)} from ${data.length} trials</span>` : 'MT = a + b · log2(D / W + 1)<span>Your fit appears after a few trials.</span>';
       const tp = data.length ? mean(data.map((d) => d.id / (d.mt / 1000))) : 0;
       stat.innerHTML = `<div><b>${data.length}</b><span>Trials</span></div><div><b>${tp ? tp.toFixed(1) : '-'}</b><span>Bits / s</span></div><div><b>${data.length ? Math.round(mean(data.map((d) => d.mt))) : '-'}</b><span>Mean ms</span></div>`;
     }

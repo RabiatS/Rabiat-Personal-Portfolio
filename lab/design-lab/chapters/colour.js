@@ -127,14 +127,15 @@ export default {
     $('.co-fix7').addEventListener('click', () => fix(7), { signal: ctx.signal });
 
     function measure() {
-      const R = kit.root.getBoundingClientRect(); const tot = R.width * R.height; if (!tot) return;
+      const R = kit.root.getBoundingClientRect(); if (!R.width) return;
       const area = (sel) => [...kit.root.querySelectorAll(sel)].reduce((a, e) => { const r = e.getBoundingClientRect(); return a + r.width * r.height; }, 0);
       const acc = area('.button.primary') + area('.switch[aria-checked="true"]') + area('.fill') + area('.thumb') + area('.tab.on');
-      const sec = area('.nav') + area('.card.sec') + area('.media') - area('.nav .tab.on') - area('.card.sec .button.primary') - area('.card.sec .switch[aria-checked="true"]') - area('.card.sec .range');
+      const tot = R.width * R.height - area('.media');
+      const sec = area('.card.sec') - area('.card.sec .button.primary') - area('.card.sec .switch[aria-checked="true"]') - area('.card.sec .range');
       const dom = tot - sec - acc;
       const p = [dom, sec, acc].map((v) => (v / tot) * 100);
       $('.co-bar').innerHTML = `<span style="flex-grow:${p[0]};background:${pal.dom};color:${pal.text}">${Math.round(p[0])}%</span><span style="flex-grow:${p[1]};background:${pal.sec};color:${pal.text}">${Math.round(p[1])}%</span><span style="flex-grow:${p[2]};background:${pal.acc};color:${pal.accInk}">${Math.round(p[2])}%</span>`;
-      $('.co-meas').textContent = `Measured from the rendered layout: dominant ${Math.round(p[0])}%, secondary ${Math.round(p[1])}%, accent ${Math.round(p[2])}%. The target is roughly 60 / 30 / 10.`;
+      $('.co-meas').textContent = `Measured from the rendered layout (photo excluded): dominant ${Math.round(p[0])}%, secondary ${Math.round(p[1])}%, accent ${Math.round(p[2])}%. The target is roughly 60 / 30 / 10.`;
     }
 
     let first = true;
@@ -153,7 +154,8 @@ export default {
       pal.accInk = contrast('#ffffff', pal.acc) >= contrast('#111111', pal.acc) ? '#ffffff' : '#111111';
       const base = hslHex(H, S, L);
       injectCSS('palette', `.dl-ui.s-palette { background: ${pal.dom}; color: ${pal.text}; font-family: "Inter", system-ui, sans-serif; }
-.dl-ui.s-palette .nav, .dl-ui.s-palette .card.sec { background: ${pal.sec}; border-radius: 14px; }
+.dl-ui.s-palette .nav { background: ${pal.card}; border-radius: 14px; }
+.dl-ui.s-palette .card.sec { background: ${pal.sec}; border-radius: 14px; }
 .dl-ui.s-palette .card { background: ${pal.card}; border-radius: 14px; }
 .dl-ui.s-palette .text, .dl-ui.s-palette .label, .dl-ui.s-palette .field, .dl-ui.s-palette .tab { color: ${pal.muted}; }
 .dl-ui.s-palette .card.sec .label, .dl-ui.s-palette .card.sec .field, .dl-ui.s-palette .setting, .dl-ui.s-palette .nav .tab { color: ${pal.text}; }

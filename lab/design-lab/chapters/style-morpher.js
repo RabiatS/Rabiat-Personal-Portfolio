@@ -1,4 +1,4 @@
-import { makeKit, scrollStage, injectCSS, scopeCSS, hexToRgb, recipeBlock, clamp } from './_shared.js';
+import { makeKit, scrollStage, injectCSS, scopeCSS, hexToRgb, recipeBlock, clamp, contrast, over } from './_shared.js';
 
 // Every style described by the same set of numbers. The morpher interpolates between neighbours.
 const F = { serif: 'Georgia, serif', inter: '"Inter", system-ui, sans-serif', roboto: '"Roboto", system-ui, sans-serif', nunito: '"Nunito", system-ui, sans-serif', grotesk: '"Space Grotesk", system-ui, sans-serif' };
@@ -24,6 +24,10 @@ function mix(t) {
     o[k] = COLOR_KEYS.includes(k) ? hexToRgb(A[k]).map((v, j) => Math.round(lerp(v, hexToRgb(B[k])[j], f))) : lerp(A[k], B[k], f);
   }
   o.font = f < 0.5 ? A.font : B.font;
+  // text colours are not mixed: mid greys on mid tones are unreadable. Pick whichever end reads better on the mixed surface.
+  const surf = over(o.card, o.cardA, o.pageA);
+  const better = (k, bg) => { const a = hexToRgb(A[k]); const b = hexToRgb(B[k]); return contrast(a, bg) >= contrast(b, bg) ? a : b; };
+  o.ink = better('ink', surf); o.muted = better('muted', surf); o.accInk = better('accInk', o.acc);
   o.from = A.name; o.to = B.name; o.f = f; o.near = f < 0.5 ? A.name : B.name;
   return o;
 }

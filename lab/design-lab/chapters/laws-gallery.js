@@ -156,8 +156,8 @@ export default {
 
       aesthetic() {
         const fields = [['Full name', 'Ada Lovelace'], ['Email', 'ada@example.com'], ['Card number', '4242 4242 4242 4242']];
-        const ugly = `<div style="background:#c0c0c0;padding:10px;border:2px outset #fff;font:13px 'Times New Roman',serif;color:#000;display:grid;gap:4px"><b style="font:bold 15px Arial;background:#000080;color:#fff;padding:2px 6px">PAYMENT FORM</b>${fields.map(([l, p]) => `<label>${l}:<br><input style="width:100%;border:2px inset #fff;font:13px 'Courier New';padding:2px" placeholder="${p}"></label>`).join('')}<button style="justify-self:start;margin-top:4px;border:2px outset #fff;background:#c0c0c0;font:13px Arial;padding:2px 10px">Submit</button></div>`;
-        const pretty = `<div style="background:#fff;padding:18px;border-radius:14px;font-family:Inter,sans-serif;color:#18181b;display:grid;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.25)"><b style="font:700 17px Inter">Payment</b>${fields.map(([l, p]) => `<label style="display:grid;gap:4px;font:500 12.5px Inter;color:#52525b">${l}<input style="border:1px solid #e4e4e7;border-radius:8px;padding:9px 10px;font:14px Inter" placeholder="${p}"></label>`).join('')}<button style="margin-top:4px;border:0;border-radius:10px;background:#18181b;color:#fff;font:600 14px Inter;padding:11px">Submit</button></div>`;
+        const ugly = `<div style="background:#c0c0c0;padding:10px;border:2px outset #fff;font:13px 'Times New Roman',serif;color:#000;display:grid;gap:4px"><b style="font:bold 15px Arial;background:#000080;color:#fff;padding:2px 6px">PAYMENT FORM</b>${fields.map(([l, p]) => `<label>${l}:<br><input style="width:100%;border:2px inset #fff;font:13px 'Courier New';padding:2px;background:#fff;color:#000;color-scheme:light" placeholder="${p}"></label>`).join('')}<button style="justify-self:start;margin-top:4px;border:2px outset #fff;background:#c0c0c0;font:13px Arial;padding:2px 10px">Submit</button></div>`;
+        const pretty = `<div style="background:#fff;padding:18px;border-radius:14px;font-family:Inter,sans-serif;color:#18181b;display:grid;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.25)"><b style="font:700 17px Inter">Payment</b>${fields.map(([l, p]) => `<label style="display:grid;gap:4px;font:500 12.5px Inter;color:#52525b">${l}<input style="border:1px solid #e4e4e7;border-radius:8px;padding:9px 10px;font:14px Inter;background:#fff;color:#18181b;color-scheme:light" placeholder="${p}"></label>`).join('')}<button style="margin-top:4px;border:0;border-radius:10px;background:#18181b;color:#fff;font:600 14px Inter;padding:11px">Submit</button></div>`;
         const s = sheet('Rate before you use', `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
           <div style="display:grid;gap:10px">${ugly}<div class="row ae-a"><span class="dl-mono">Looks easy?</span>${[1, 2, 3, 4, 5].map((n) => `<button class="chip" data-v="${n}">${n}</button>`).join('')}</div></div>
           <div style="display:grid;gap:10px">${pretty}<div class="row ae-b"><span class="dl-mono">Looks easy?</span>${[1, 2, 3, 4, 5].map((n) => `<button class="chip" data-v="${n}">${n}</button>`).join('')}</div></div></div>
@@ -179,7 +179,7 @@ export default {
         const cv = ctx.canvas({ parent: s.querySelector('.pk-plot') }); const g = cv.ctx; const C = ctx.colors;
         const PRE = { checkout: [1, 2, 1, 0, 1, 2, 1, 0, -2, -4], fixed: [1, 2, 1, 0, 1, 2, 1, 0, 2, 3] };
         let v = PRE.checkout.slice(); let drag = -1;
-        const geo = () => { const { w, h } = cv; const L = 40; const R = 16; const T = 14; const B = 26; return { L, R, T, B, X: (i) => L + (i / Math.max(1, v.length - 1)) * (w - L - R), Y: (y) => T + ((5 - y) / 10) * (h - T - B) }; };
+        const geo = () => { const { w, h } = cv; const L = 62; const R = 16; const T = 14; const B = 26; return { L, R, T, B, X: (i) => L + (i / Math.max(1, v.length - 1)) * (w - L - R), Y: (y) => T + ((5 - y) / 10) * (h - T - B) }; };
         function stats() {
           const avg = mean(v); let pk = v[0]; for (const x of v) if (Math.abs(x) > Math.abs(pk)) pk = x;
           const pe = (pk + v[v.length - 1]) / 2;
@@ -224,17 +224,18 @@ export default {
       let list = []; let isoAt = -1;
       function plot() {
         const { w, h } = cv; if (!w) return; g.clearRect(0, 0, w, h);
-        const L = 34; const B = 22; const bw = (w - L - 8) / 12;
+        const L = 40; const B = 22; const T = 28; const bw = (w - L - 8) / 12;
         g.font = '500 11px "DM Mono", monospace';
-        g.fillStyle = C.muted; g.textAlign = 'right'; g.fillText('100%', L - 4, 12); g.fillText('0', L - 4, h - B);
+        g.fillStyle = C.muted; g.textAlign = 'right'; g.fillText('100%', L - 6, T + 4); g.fillText('0', L - 6, h - B);
+        g.strokeStyle = 'rgba(255,255,255,.07)'; g.beginPath(); g.moveTo(L, T); g.lineTo(w - 8, T); g.moveTo(L, h - B); g.lineTo(w - 8, h - B); g.stroke();
         for (let i = 0; i < 12; i++) {
-          const r = hist.runs ? hist.hits[i] / hist.runs : 0; const bh = r * (h - B - 8);
+          const r = hist.runs ? hist.hits[i] / hist.runs : 0; const bh = r * (h - B - T);
           g.fillStyle = i < 3 ? C.c1 : i > 8 ? C.c5 : 'rgba(232,232,227,.55)';
           g.fillRect(L + i * bw + 3, h - B - bh, bw - 6, bh);
           g.fillStyle = C.muted; g.textAlign = 'center'; g.fillText(String(i + 1), L + i * bw + bw / 2, h - 6);
         }
         g.textAlign = 'left'; g.fillStyle = C.muted;
-        g.fillText(hist.runs ? `recall by position over ${hist.runs} run${hist.runs > 1 ? 's' : ''}${isolate && hist.isoRuns ? ` · isolated word recalled ${Math.round((hist.iso / hist.isoRuns) * 100)}%` : ''}` : 'your recall by list position will appear here', L, 12);
+        g.fillText(hist.runs ? `recall by position over ${hist.runs} run${hist.runs > 1 ? 's' : ''}${isolate && hist.isoRuns ? ` · isolated word recalled ${Math.round((hist.iso / hist.isoRuns) * 100)}%` : ''}` : 'your recall by list position will appear here', 0, 11);
       }
       cv.onResize(plot);
       s.querySelector('.mm-go').addEventListener('click', () => {

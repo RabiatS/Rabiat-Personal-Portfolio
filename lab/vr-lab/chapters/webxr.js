@@ -82,7 +82,7 @@ export default {
       ctx.h('<h2 class="k-h">Build for VR on the web</h2>'),
       ctx.h('<p class="lede">Everything in this lab runs in a browser. With the WebXR Device API, the same page can open on a headset and put you inside the scene, no app store needed.</p>'),
     );
-    const sup = ctx.h(`<div class="card"><h3>Your browser</h3><div class="stat">
+    const sup = ctx.h(`<div class="card"><h3>Your browser</h3><div class="stat" style="grid-template-columns:repeat(2,1fr)">
       <div><b class="x-s">…</b><span>Secure context</span></div>
       <div><b class="x-x">…</b><span>navigator.xr</span></div>
       <div><b class="x-v">…</b><span>Immersive VR</span></div>

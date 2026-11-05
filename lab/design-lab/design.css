@@ -98,8 +98,8 @@
 .ws-art li b { display: block; font-weight: 600; }
 .ws-art li span { color: #5a5a55; font-size: 14px; }
 .ws-art .cta { align-self: flex-start; background: #1d1d1b; color: #fff; border: 0; border-radius: 10px; padding: 11px 18px; font: 600 14px "Inter", sans-serif; }
-.ws-art.show { box-shadow: inset 0 0 0 var(--pad) rgba(251,113,133,.22); background: rgba(94,234,212,.22); }
-.ws-art.show .ws-g { background: rgba(167,139,250,.3); }
+.ws-art.show { box-shadow: inset 0 0 0 var(--pad) #f8c9d2; background: #bfeee6; }
+.ws-art.show .ws-g { background: #ddd3fb; }
 .ws-art.show .ws-g > * { background: #fbfaf7; }
 .ws-art.show .ws-g > .cta { background: #1d1d1b; }
 
@@ -158,7 +158,7 @@
 .ty-pair small { font: 500 10.5px "DM Mono", monospace; color: #77776f; }
 
 /* ---------- Law experiments ---------- */
-.lx-arena { position: relative; width: 100%; height: 360px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); overflow: hidden; touch-action: manipulation; }
+.lx-arena { position: relative; width: 100%; height: 380px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); overflow: hidden; touch-action: manipulation; }
 .lx-opt { position: absolute; transform: translate(-50%, -50%); min-width: 84px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--text); font: 600 14px var(--f-display); letter-spacing: .06em; text-transform: uppercase; display: inline-flex; gap: 7px; align-items: center; justify-content: center; }
 .lx-opt i { width: 10px; height: 10px; border-radius: 50%; }
 .lx-opt:hover { border-color: var(--text-2); }
