@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<title>Light Lab · Rabiat's Lab</title>
+<meta name="description" content="Light for artists and builders: mixing light versus paint, colour temperature, drawing shadows, light shows and projection mapping. Runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../study/kit/kit.css">
+  <!-- Privacy friendly visit counts (no cookies): https://rabiatsadiq.goatcounter.com -->
+  <script data-goatcounter="https://rabiatsadiq.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</head>
+<body>
+<script type="module">
+import { createLab } from '../study/kit/kit.js';
+const ch = (id, title, group, blurb) => ({ id, title, group, blurb, load: () => import(`./chapters/${id}.js`) });
+createLab({
+  id: 'light',
+  title: 'Light Lab',
+  intro: 'How light makes colour, form and shows, for painters, illustrators and builders.',
+  overview: 'Light is the thing every picture is really about. Mix coloured spotlights and paint side by side, warm and cool a scene, move a lamp around a sphere and watch every shadow an artist names, then run a light show and map a projection onto a 3D object.',
+  about: '<p>Each chapter is a live demo you can drag and change, with a plain words explanation and a short check.</p>',
+  chapters: [
+    ch('mixing', 'Light versus paint', 'Colour', 'Why red and green light make yellow, but red and green paint make mud.'),
+    ch('temperature', 'Warm and cool light', 'Colour', 'Colour temperature, white balance and warm light with cool shadows.'),
+    ch('shadows', 'Drawing shadows', 'Form', 'Highlight, core shadow, reflected light and cast shadow on a sphere.'),
+    ch('light-shows', 'Light shows', 'Shows', 'Beams, haze and moving heads, mixed live.'),
+    ch('projection', 'Projection mapping', 'Shows', 'Fit an image onto a real object and fix keystone distortion.'),
+  ],
+});
+</script>
+</body>
+</html>

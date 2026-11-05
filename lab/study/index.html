@@ -93,6 +93,10 @@
       <img src="bio.jpg" alt="A 3D DNA double helix" width="1200" height="800" loading="lazy">
       <div class="copy"><span class="tag">New</span><h2>Biology</h2><p>Cells, DNA, protein synthesis, genetics, the heart, neurons and homeostasis. Built for pre-med study.</p><span class="prog" id="prog-bio"></span></div>
     </a>
+    <a class="subject" href="../light-lab/" style="--focus:50% 45%">
+      <img src="light.jpg" alt="A lit sphere with its highlight, core shadow and cast shadow labelled" width="1200" height="800" loading="lazy">
+      <div class="copy"><span class="tag">New</span><h2>Light</h2><p>Light for artists and builders: light versus paint, warm and cool light, drawing shadows, light shows and projection mapping.</p><span class="prog" id="prog-light"></span></div>
+    </a>
     <a class="subject" href="../anatomy-lab/" style="--focus:50% 45%">
       <img src="anatomy.jpg" alt="A 3D human skull with cranial and facial bones coloured" width="1200" height="800" loading="lazy">
       <div class="copy"><span class="tag">New</span><h2>Anatomy</h2><p>The whole body in 3D: skeleton and skull, circulation with blood flow, brain and nerves, pain pathways, organs and female and male anatomy.</p><span class="prog" id="prog-anatomy"></span></div>
@@ -117,7 +121,7 @@
     const elements = Object.keys(read('elements:stats')).filter((k) => /^z\d+$/.test(k)).length;
     if (elements) set('elements', `${elements} elements tried`);
     // Kit based labs keep a list of finished chapters under <id>:done
-    for (const id of ['ml', 'audio', 'circuits', 'vr', 'design', 'physics', 'bio', 'anatomy']) {
+    for (const id of ['ml', 'audio', 'circuits', 'vr', 'design', 'physics', 'bio', 'anatomy', 'light']) {
       const d = read(`${id}:done`);
       const n = Array.isArray(d) ? d.length : 0;
       if (n) set(id, `${n} chapter${n === 1 ? '' : 's'} done`);
