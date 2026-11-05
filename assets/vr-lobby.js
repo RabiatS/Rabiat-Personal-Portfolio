@@ -1,11 +1,14 @@
 // VR portfolio for vr.html, built on plain three.js and WebXR.
 // Curved glass panels sit around the viewer at about 2.2 m. Every label is drawn
-// into a canvas texture with the site's system font stack, so text stays crisp
-// in a headset. The sky is a nebula baked once into a texture, the floor is a
+// into a canvas texture in Inter (self hosted in assets/vr/fonts, OFL), styled
+// like the site's hero: weight 800 headings with tight tracking, pill tags and
+// buttons. Textures are only drawn once the font has loaded, so text stays crisp
+// and on brand in a headset. The sky is a nebula baked once into a texture, the floor is a
 // shader grid that fades into the horizon, and the homepage headset mascot
 // floats above the hero and watches whatever you point at.
-// Inputs: XR controllers or hands (laser + pinch), mouse drag and click,
-// arrow keys and Tab, touch drag, and phone motion.
+// Inputs: XR controllers or hands (laser + pinch, grip to move panels, stick to
+// snap turn and browse), mouse drag with inertia, wheel, click, arrow keys and
+// Tab, touch drag, and phone motion. Quiet synthesized UI ticks, mutable.
 // Content lives in assets/vr-lobby.json, project details in assets/projects.json.
 import * as THREE from 'three';
 
@@ -14,7 +17,11 @@ const EYE = 1.6; // standing eye height the layout is designed for
 const PPM = 900; // canvas pixels per metre of panel
 const MAX_TEX = 2048;
 const DEG = Math.PI / 180;
-const FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif';
+// 'InterVR' is declared with @font-face in vr.html; the rest is the site's stack
+const FONT_FAMILY = 'InterVR';
+const FONT = `${FONT_FAMILY}, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`;
+const FONT_WEIGHTS = [400, 500, 600, 700, 800];
+const NATIVE_TRACK = typeof CanvasRenderingContext2D !== 'undefined' && 'letterSpacing' in CanvasRenderingContext2D.prototype;
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = (id) => document.getElementById(id);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -52,15 +59,22 @@ function readTheme() {
   if (plain && variant === 'rabiat') { p = rgb('#d62828'); a = rgb('#5eead4'); }
   if (saturation(p) < 0.08 && saturation(a) < 0.08) { p = rgb('#7c3aed'); a = rgb('#ec4899'); }
   const dark = root.classList.contains('dark') || (plain && variant === 'rabiat');
+  const rainbow = !plain && store('rainbowMode') === 'true';
   const W = [1, 1, 1];
   const K = [0, 0, 0];
+  // Text on the brand gradient: black or white, whichever reads (like --on-primary)
+  const lum = (c) => c.map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)).reduce((s, v, i) => s + v * [0.2126, 0.7152, 0.0722][i], 0);
+  const onFill = 1.05 / (lum(mixRgb(p, a, 0.5)) + 0.05) >= 4.5 ? '#ffffff' : '#111111';
+  // The site's .grad: white to #e0e7ff on the dark hero, the brand sweep in rainbow mode
+  const rainbowGrad = [[1, 0, 0.43], [0.51, 0.22, 0.93], [0.23, 0.53, 1]];
   if (dark) {
     return {
-      dark, p, a,
-      gradA: mixRgb(p, W, 0.38), gradB: mixRgb(a, W, 0.28),
-      text: '#f7f5fb', muted: '#bfb9ce', soft: '#8e889f', onFill: '#ffffff',
+      dark, p, a, onFill,
+      grad: rainbow ? rainbowGrad : [[1, 1, 1], [0.878, 0.906, 1]],
+      heading: '#ffffff', lead: 'rgba(255,255,255,0.86)', eyebrow: 'rgba(255,255,255,0.92)',
+      text: '#f7f5fb', muted: '#bfb9ce', soft: '#8e889f',
       accentText: css(mixRgb(a, W, 0.35)),
-      chip: 'rgba(255,255,255,0.09)', chipEdge: 'rgba(255,255,255,0.12)', chipText: '#ebe7f3',
+      chip: 'rgba(255,255,255,0.05)', chipEdge: 'rgba(255,255,255,0.14)', chipText: 'rgba(255,255,255,0.94)',
       rule: 'rgba(255,255,255,0.09)',
       glassA: mixRgb([0.16, 0.14, 0.22], p, 0.06), glassB: mixRgb([0.08, 0.07, 0.12], p, 0.04), glassAlpha: [0.74, 0.8],
       btn: [1, 1, 1], btnAlpha: [0.1, 0.07],
@@ -70,11 +84,12 @@ function readTheme() {
     };
   }
   return {
-    dark, p, a,
-    gradA: mixRgb(p, K, 0.05), gradB: mixRgb(a, K, 0.12),
-    text: '#1b1726', muted: '#544f63', soft: '#7a7489', onFill: '#ffffff',
+    dark, p, a, onFill,
+    grad: rainbow ? rainbowGrad : [[0.106, 0.09, 0.149], mixRgb(p, [0.106, 0.09, 0.149], 0.35)],
+    heading: '#1b1726', lead: '#3d3850', eyebrow: '#544f63',
+    text: '#1b1726', muted: '#544f63', soft: '#7a7489',
     accentText: css(mixRgb(a, K, 0.25)),
-    chip: 'rgba(124,58,237,0.08)', chipEdge: 'rgba(124,58,237,0.14)', chipText: '#2e2840',
+    chip: css(mixRgb([1, 1, 1], p, 0.09)), chipEdge: css(mixRgb([0.9, 0.9, 0.92], p, 0.22)), chipText: '#1b1726',
     rule: 'rgba(27,23,38,0.09)',
     glassA: [1, 1, 1], glassB: mixRgb([0.97, 0.96, 0.99], p, 0.02), glassAlpha: [0.8, 0.86],
     btn: mixRgb([1, 1, 1], p, 0.04), btnAlpha: [0.92, 0.9],
@@ -89,14 +104,25 @@ function readTheme() {
 // ---------------------------------------------------------------------------
 const fontOf = (size, weight = 400) => `${weight} ${size}px ${FONT}`;
 const measureCtx = document.createElement('canvas').getContext('2d');
-function mw(str, size, weight = 400) {
+// Width in metres; `track` is letter spacing in em, as in CSS
+function mw(str, size, weight = 400, track = 0) {
   measureCtx.font = fontOf(size * 1000, weight);
-  return measureCtx.measureText(str).width / 1000;
+  return measureCtx.measureText(str).width / 1000 + track * size * Math.max(0, str.length - 1);
 }
-function fitSize(str, weight, size, min, maxW) {
+function fitSize(str, weight, size, min, maxW, track = 0) {
   let s = size;
-  while (s > min && mw(str, s, weight) > maxW) s *= 0.97;
+  while (s > min && mw(str, s, weight, track) > maxW) s *= 0.97;
   return Math.max(s, min);
+}
+// Resolves true when every weight of the VR font is ready. `ready` gives up
+// after a few seconds so the scene never waits forever; `done` settles later.
+function loadFonts() {
+  if (!document.fonts || !document.fonts.load) return { ready: Promise.resolve(false), done: Promise.resolve(false) };
+  const done = Promise.all(FONT_WEIGHTS.map((w) => document.fonts.load(`${w} 64px ${FONT_FAMILY}`)))
+    .then((list) => list.every((f) => f.length > 0))
+    .catch(() => false);
+  const ready = Promise.race([done, new Promise((res) => setTimeout(() => res(null), 3500))]);
+  return { ready, done };
 }
 function ellipsize(str, size, weight, maxW) {
   if (mw(str, size, weight) <= maxW) return str;
@@ -157,6 +183,12 @@ const ICONS = {
   external: ['M14 4.5h5.5V10', 'M19.5 4.5 11 13', 'M17.5 14v4.5a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-11a1 1 0 0 1 1-1H10'],
   code: ['M8.5 7 3.5 12l5 5', 'M15.5 7l5 5-5 5', 'M13.5 4.5l-3 15'],
   link: ['M10 13.5a4.5 4.5 0 0 0 6.4.4l2.8-2.8a4.5 4.5 0 0 0-6.4-6.4l-1.3 1.3', 'M14 10.5a4.5 4.5 0 0 0-6.4-.4l-2.8 2.8a4.5 4.5 0 0 0 6.4 6.4l1.3-1.3'],
+  recenter: ['M12 5a7 7 0 1 1 0 14a7 7 0 1 1 0-14', 'M12 2.5v3', 'M12 18.5v3', 'M2.5 12h3', 'M18.5 12h3', 'M13.2 12a1.2 1.2 0 1 1-2.4 0a1.2 1.2 0 1 1 2.4 0'],
+  sound: ['M4 9.5h3.5L12 5.5v13l-4.5-4H4z', 'M15.5 9.2a4 4 0 0 1 0 5.6', 'M18 6.8a7.4 7.4 0 0 1 0 10.4'],
+  mute: ['M4 9.5h3.5L12 5.5v13l-4.5-4H4z', 'M16 9.5l5 5', 'M21 9.5l-5 5'],
+  trigger: ['M12 3.5v6', 'M8.5 7.5 12 3.5l3.5 4', 'M7 13.5a5 5 0 0 0 10 0v-1H7z'],
+  grip: ['M8 5.5v13', 'M12 4v16', 'M16 5.5v13'],
+  stick: ['M12 4.5a3.2 3.2 0 1 1 0 6.4a3.2 3.2 0 1 1 0-6.4', 'M12 11v6', 'M7 19.5h10', 'M4.5 7.5 2.5 9.5l2 2', 'M19.5 7.5l2 2-2 2'],
 };
 const pathCache = new Map();
 function drawIcon(ctx, name, x, y, size, color, weight = 1.9) {
@@ -252,35 +284,19 @@ function drawImageBox(ctx, entry, x, y, w, h, r, pal, fallbackLabel) {
 function runOps(ctx, s, ops, pal) {
   for (const o of ops) {
     if (o.t === 'text') {
-      ctx.font = fontOf(o.size * s, o.weight || 400);
-      ctx.textAlign = o.align || 'left';
-      ctx.textBaseline = 'alphabetic';
-      if ('letterSpacing' in ctx) ctx.letterSpacing = `${(o.track || 0) * o.size * s}px`;
-      if (o.grad) {
-        const w = mw(o.str, o.size, o.weight || 400) * s;
-        const x0 = o.align === 'center' ? o.x * s - w / 2 : o.align === 'right' ? o.x * s - w : o.x * s;
-        const g = ctx.createLinearGradient(x0, 0, x0 + w, 0);
-        g.addColorStop(0, css(o.grad[0]));
-        g.addColorStop(1, css(o.grad[1]));
-        ctx.fillStyle = g;
-      } else ctx.fillStyle = o.color;
-      ctx.fillText(o.str, o.x * s, o.y * s);
-      if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+      drawText(ctx, o, s);
     } else if (o.t === 'chip') {
+      // Same proportions as the site's .tag: 13px text, 8px 16px padding, full pill
       rrPath(ctx, o.x * s, o.y * s, o.w * s, o.h * s, (o.h / 2) * s);
       ctx.fillStyle = pal.chip;
       ctx.fill();
       ctx.strokeStyle = pal.chipEdge;
-      ctx.lineWidth = Math.max(1, 0.0022 * s);
+      ctx.lineWidth = Math.max(1, 0.0024 * s);
       ctx.stroke();
-      ctx.font = fontOf(o.size * s, 500);
-      ctx.fillStyle = pal.chipText;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(o.str, (o.x + o.w / 2) * s, (o.y + o.h / 2 + o.size * 0.04) * s);
+      drawText(ctx, { str: o.str, x: o.x + o.w / 2, y: o.y + o.h / 2 + o.size * 0.36, size: o.size, weight: 500, color: pal.chipText, align: 'center' }, s);
     } else if (o.t === 'rule') {
       ctx.fillStyle = pal.rule;
-      ctx.fillRect(o.x * s, o.y * s, o.w * s, Math.max(1, 0.002 * s));
+      ctx.fillRect(o.x * s, o.y * s, Math.max(1, o.w * s), Math.max(1, (o.h || 0.002) * s));
     } else if (o.t === 'dot') {
       ctx.beginPath();
       ctx.arc(o.x * s, o.y * s, o.r * s, 0, Math.PI * 2);
@@ -296,14 +312,46 @@ function runOps(ctx, s, ops, pal) {
     }
   }
 }
+// Text with CSS style letter spacing. Native canvas letterSpacing where the
+// browser has it; otherwise each glyph is placed at the width of the text before
+// it plus the spacing, which keeps kerning.
+function drawText(ctx, o, s) {
+  const size = o.size * s;
+  const weight = o.weight || 400;
+  const sp = (o.track || 0) * size;
+  ctx.font = fontOf(size, weight);
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  const W = mw(o.str, o.size, weight, o.track || 0) * s;
+  const x0 = o.align === 'center' ? o.x * s - W / 2 : o.align === 'right' ? o.x * s - W : o.x * s;
+  const y = o.y * s;
+  if (o.grad) {
+    // linear-gradient(135deg, ...) across the text box, as on the site
+    const H = size;
+    const cx = x0 + W / 2;
+    const cy = y - size * 0.36;
+    const half = ((W + H) * 0.7071) / 2;
+    const g = ctx.createLinearGradient(cx - half * 0.7071, cy - half * 0.7071, cx + half * 0.7071, cy + half * 0.7071);
+    o.grad.forEach((c, i) => g.addColorStop(i / (o.grad.length - 1), css(c)));
+    ctx.fillStyle = g;
+  } else ctx.fillStyle = o.color;
+  if (!sp) { ctx.fillText(o.str, x0, y); return; }
+  if (NATIVE_TRACK) {
+    ctx.letterSpacing = `${sp}px`;
+    ctx.fillText(o.str, x0, y);
+    ctx.letterSpacing = '0px';
+    return;
+  }
+  for (let i = 0; i < o.str.length; i++) ctx.fillText(o.str[i], x0 + ctx.measureText(o.str.slice(0, i)).width + i * sp, y);
+}
 function text(str, x, y, size, opts = {}) { return { t: 'text', str, x, y, size, ...opts }; }
-// Baseline for a line box whose top is at y
-const base = (y, size, lh = 1.3) => y + size * (0.78 + (lh - 1) / 2);
+// Baseline for a line box whose top is at y (Inter cap height is about 0.73 em)
+const base = (y, size, lh = 1.3) => y + size * (lh / 2 + 0.35);
 
 function chipRow(tags, x, y, maxW, size, align = 'left') {
-  const h = size * 1.75;
-  const pad = size * 0.75;
-  const gap = size * 0.4;
+  const h = size * 2.4;
+  const pad = size * 1.2;
+  const gap = size * 0.6;
   const chips = [];
   let total = 0;
   for (const t of tags) {
@@ -467,6 +515,9 @@ class Panel {
     this.w = o.w * this.k;
     this.h = o.h * this.k;
     const parentPanel = o.parent instanceof Panel ? o.parent : null;
+    this.parentPanel = parentPanel;
+    // Movable group (hero, left, right, dock) this panel belongs to
+    this.group = parentPanel ? parentPanel.group : o.group || null;
     this.r = parentPanel ? parentPanel.r : o.r || R;
     this.margin = (o.margin ?? 0.05) * this.k;
     this.pivot = new THREE.Group();
@@ -510,6 +561,8 @@ class Panel {
     this.press = 0;
     this.fade = o.fadeIn === false ? 1 : 0;
     this.fadeT = 1;
+    this.rise = 0; // intro: 1 = starts lower, eases up to 0
+    this.wait = 0; // intro stagger in seconds
     this.visible = true;
     this.onSelect = o.onSelect || null;
     this.label = o.label || '';
@@ -535,14 +588,20 @@ class Panel {
   }
 
   update(dt, dim) {
-    const k = REDUCE ? 30 : 14;
+    const k = REDUCE ? 30 : 11;
     this.hover += (this.hoverT - this.hover) * damp(k, dt);
     this.focus += (this.focusT - this.focus) * damp(k, dt);
-    this.fade += (this.fadeT - this.fade) * damp(REDUCE ? 40 : 9, dt);
-    this.press = Math.max(0, this.press - dt * 5);
-    const lifted = this.lift + 0.02 * Math.max(this.hover, this.focus) - 0.008 * this.press;
+    if (this.wait > 0) this.wait -= dt;
+    else {
+      this.fade += (this.fadeT - this.fade) * damp(REDUCE ? 40 : 7, dt);
+      this.rise -= this.rise * damp(5.5, dt);
+    }
+    this.press = Math.max(0, this.press - dt * 4);
+    const h = Math.max(this.hover, this.focus);
+    const lifted = this.lift + 0.02 * h - 0.01 * Math.sin(Math.PI * this.press);
     this.item.position.copy(this.basePos).addScaledVector(this.normal, lifted);
-    const sc = 1 + 0.012 * this.hover - 0.01 * this.press;
+    if (this.rise > 0.0005) this.item.position.y -= 0.09 * this.rise;
+    const sc = 1 + 0.018 * this.hover - 0.02 * Math.sin(Math.PI * this.press);
     this.item.scale.setScalar(sc);
     const u = this.mat.uniforms;
     u.uHover.value = this.hover;
@@ -603,7 +662,9 @@ function makeStyles(pal) {
 // Layouts (all sizes in metres at R; text sizes are em heights)
 // Body text 0.062 m gives a cap height of about 4.5 cm, roughly 1.2 degrees at 2.2 m.
 // ---------------------------------------------------------------------------
-const SZ = { display: 0.15, headline: 0.092, title: 0.074, body: 0.062, label: 0.056, small: 0.052 };
+const SZ = { display: 0.14, h2: 0.082, title: 0.072, body: 0.062, label: 0.054, small: 0.052, tag: 0.046 };
+// Tracking in em, matching the site: h1 -0.04, h2 and card titles a little looser
+const TR = { display: -0.04, h2: -0.03, title: -0.02, eyebrow: 0.15 };
 
 function layoutHero(d, pal, w) {
   const pad = 0.085;
