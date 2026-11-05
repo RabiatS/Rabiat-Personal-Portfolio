@@ -217,7 +217,7 @@ export function createEngine(docs, answers = []) {
   // is the exception: experience, education and skills are different answers.
   const pageKey = (u) => (u.startsWith('index.html') ? u : u.split('#')[0]);
 
-  function search(q, { limit = 3, minCoverage = 0.5 } = {}) {
+  function search(q, { limit = 3, minCoverage = 0.6 } = {}) {
     const { base, weights } = terms(q);
     const answer = bestAnswer(base);
     if (!base.length) return { query: q, terms: [], answer, hits: [], confident: false, ranked: [] };
@@ -227,23 +227,24 @@ export function createEngine(docs, answers = []) {
       if (s > 0) ranked.push({ doc: row.doc, score: s, row });
     }
     ranked.sort((a, b) => b.score - a.score);
-    const hits = [];
+    // Best passage per page, then keep the ones that cover enough of the question.
+    const pool = [];
     const seenPages = new Set();
     for (const r of ranked) {
       const k = pageKey(r.doc.url);
       if (seenPages.has(k)) continue;
       seenPages.add(k);
       r.coverage = coverage(base, (t) => r.row.tf.has(t));
-      hits.push(r);
-      if (hits.length >= limit) break;
+      pool.push(r);
+      if (pool.length >= limit * 5) break;
     }
-    const top = hits[0]?.coverage ?? 0;
-    // Weak hits under a strong first one stay; weak hits on their own do not.
-    const shown = hits.filter((h, i) => i === 0 ? h.coverage >= minCoverage : h.coverage >= minCoverage * 0.8);
+    // Confident when some passage covers most of the question. Then passages
+    // that cover a little less can sit under it; on their own they would not show.
+    const confident = pool.some((h) => h.coverage >= minCoverage);
+    const hits = confident ? pool.filter((h) => h.coverage >= minCoverage * 0.8).slice(0, limit) : [];
     return {
-      query: q, terms: base, weights, answer,
-      hits: shown.map(({ row, ...h }) => h),
-      confident: top >= minCoverage,
+      query: q, terms: base, weights, answer, confident,
+      hits: hits.map(({ row, ...h }) => h),
       ranked: ranked.map(({ row, ...h }) => h),
     };
   }
@@ -262,7 +263,14 @@ export function createEngine(docs, answers = []) {
     return [...new Set([...hit, ...scored.map((x) => x.q)])].slice(0, n);
   }
 
-  return { search, related, terms, tokenize, size: N, answers: published };
+  // Coverage of a question by one passage, for the optional model reranker.
+  const byId = new Map(rows.map((r) => [r.doc.id, r]));
+  function coverageOf(q, id) {
+    const r = byId.get(id);
+    return r ? coverage(terms(q).base, (t) => r.tf.has(t)) : 0;
+  }
+
+  return { search, related, terms, coverageOf, tokenize, size: N, answers: published };
 }
 
 // ---------- snippets ----------
@@ -292,6 +300,17 @@ export function snippet(text, weights, size = 34) {
     }
     return w;
   });
+  // Two-word names joined into one token ("Magic Mitts" -> magicmitts) light up both words.
+  for (let k = 0; k + 1 < wordsAt.length; k++) {
+    const pair = parts[wordsAt[k]] + ' ' + parts[wordsAt[k + 1]];
+    const one = new Set([...tokenize(parts[wordsAt[k]]), ...tokenize(parts[wordsAt[k + 1]])]);
+    for (const s of tokenize(pair)) {
+      if (!one.has(s) && want.has(s)) {
+        const w = want.get(s);
+        hitW[k] = Math.max(hitW[k], w); hitW[k + 1] = Math.max(hitW[k + 1], w);
+      }
+    }
+  }
   let best = 0, bestAt = 0, sum = 0;
   for (let i = 0; i < hitW.length; i++) {
     sum += hitW[i];

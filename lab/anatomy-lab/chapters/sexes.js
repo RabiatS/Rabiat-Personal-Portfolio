@@ -72,7 +72,7 @@ export default {
     const Mg = new THREE.Group(); const Fg = new THREE.Group(); v.root.add(Mg, Fg);
     const box = new THREE.Box3(new THREE.Vector3(-0.36, -0.13, -0.12), new THREE.Vector3(0.36, 0.12, 0.12));
     const views = { front: [0, 0.02, 1], above: [0, 1, 0.25], side: [1, 0.1, 0.2], back: [0, 0.1, -1] };
-    const vg = group(ctx, 'View', [['front', 'Front'], ['above', 'Above'], ['side', 'Side'], ['back', 'Back']], (k) => { view = k; v.frame(box, { dir: views[k], pad: 1.1 }); });
+    const vg = group(ctx, 'View', [['front', 'Front'], ['above', 'Above'], ['side', 'Side'], ['back', 'Back']], (k) => { view = k; for (const l of v.labels) if (l.fixed) l.hidden = k === 'above'; v.frame(box, { dir: views[k], pad: 1.1 }); });
     let showOrg = true;
     const og = group(ctx, '', [['org', 'Organs']], (k, b) => { showOrg = !showOrg; b.classList.toggle('on', showOrg); apply(); }, { multi: true, value: { org: true } });
     dock(ctx, [vg, og]);
