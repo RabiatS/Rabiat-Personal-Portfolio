@@ -97,15 +97,16 @@ function hexToRgb(hex) { return [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255]
 // Material whose colour and visibility come per structure from the state texture.
 function packMaterial(tex, W, H, opts = {}) {
   const mat = new THREE.MeshStandardMaterial({ roughness: opts.roughness ?? 0.62, metalness: 0, transparent: !!opts.transparent, opacity: opts.opacity ?? 1, depthWrite: opts.depthWrite ?? true, side: opts.side ?? THREE.FrontSide });
-  mat.userData.u = { uState: { value: tex }, uSize: { value: new THREE.Vector2(W, H) }, uHl: { value: -1 }, uHl2: { value: -1 }, uHlCol: { value: new THREE.Color(HI) }, uRim: { value: opts.rim ?? 0.0 }, uRimCol: { value: new THREE.Color(opts.rimColor ?? 0xffffff) } };
+  mat.userData.u = { uOff: { value: opts.offTex || null }, uExp: { value: 0 }, uState: { value: tex }, uSize: { value: new THREE.Vector2(W, H) }, uHl: { value: -1 }, uHl2: { value: -1 }, uHlCol: { value: new THREE.Color(HI) }, uRim: { value: opts.rim ?? 0.0 }, uRimCol: { value: new THREE.Color(opts.rimColor ?? 0xffffff) } };
   mat.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, mat.userData.u);
     sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\nattribute float pid; uniform sampler2D uState; uniform vec2 uSize; uniform float uHl; uniform float uHl2; varying vec4 vSt; varying float vHl;')
+      .replace('#include <common>', '#include <common>\nattribute float pid; uniform sampler2D uState; uniform sampler2D uOff; uniform float uExp; uniform vec2 uSize; uniform float uHl; uniform float uHl2; varying vec4 vSt; varying float vHl;')
       .replace('#include <begin_vertex>', `#include <begin_vertex>
         vec2 suv = vec2((mod(pid, uSize.x) + 0.5) / uSize.x, (floor(pid / uSize.x) + 0.5) / uSize.y);
         vSt = texture2D(uState, suv);
         vHl = (abs(pid - uHl) < 0.5 || abs(pid - uHl2) < 0.5) ? 1.0 : 0.0;
+        if (uExp > 0.0) transformed += texture2D(uOff, suv).xyz * uExp;
         if (vSt.a < 0.02) transformed = vec3(0.0);`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', '#include <common>\nvarying vec4 vSt; varying float vHl; uniform vec3 uHlCol; uniform float uRim; uniform vec3 uRimCol;')
@@ -126,7 +127,11 @@ export class PackView {
     this.state = new Uint8Array(W * H * 4);
     this.tex = new THREE.DataTexture(this.state, W, H, THREE.RGBAFormat, THREE.UnsignedByteType);
     this.tex.colorSpace = THREE.SRGBColorSpace; this.tex.magFilter = THREE.NearestFilter; this.tex.minFilter = THREE.NearestFilter;
-    this.mat = packMaterial(this.tex, W, H, opts);
+    this.off = new Float32Array(W * H * 4);
+    this.offTex = new THREE.DataTexture(this.off, W, H, THREE.RGBAFormat, THREE.FloatType);
+    this.offTex.magFilter = THREE.NearestFilter; this.offTex.minFilter = THREE.NearestFilter; this.offTex.needsUpdate = true;
+    this.exp = 0;
+    this.mat = packMaterial(this.tex, W, H, { ...opts, offTex: this.offTex });
     this.mesh = new THREE.Mesh(pack.geo, this.mat);
     this.mesh.frustumCulled = false;
     this.mesh.renderOrder = opts.renderOrder || 0;
@@ -155,6 +160,10 @@ export class PackView {
     this.mat.opacity = a; this.mat.depthWrite = !t || a > 0.6; this.mesh.visible = a > 0.005; this.viewer.dirty = true;
   }
   show(v) { this.mesh.visible = v; this.viewer.dirty = true; }
+  // Per structure offsets (for exploded views), scaled by explode(k)
+  setOffsets(fn) { for (let i = 0; i < this.items.length; i++) { const o = fn(this.items[i]) || [0, 0, 0]; this.off[i * 4] = o[0]; this.off[i * 4 + 1] = o[1]; this.off[i * 4 + 2] = o[2]; } this.offTex.needsUpdate = true; this.viewer.dirty = true; }
+  explode(k) { this.exp = k; this.mat.userData.u.uExp.value = k; this.viewer.dirty = true; }
+  offsetOf(it) { return this.exp ? new THREE.Vector3(this.off[it.k * 4], this.off[it.k * 4 + 1], this.off[it.k * 4 + 2]).multiplyScalar(this.exp) : new THREE.Vector3(); }
   get shown() { return this.mesh.visible; }
   // World space bounds of the visible (or given) structures
   bounds(fn) {
@@ -162,7 +171,7 @@ export class PackView {
     for (let i = 0; i < this.items.length; i++) if (fn ? fn(this.items[i]) : this.vis[i]) b.union(this.items[i].box);
     return b.applyMatrix4(this.mesh.matrixWorld);
   }
-  worldCenter(it) { return it.center.clone().applyMatrix4(this.mesh.matrixWorld); }
+  worldCenter(it) { return it.center.clone().add(this.offsetOf(it)).applyMatrix4(this.mesh.matrixWorld); }
 }
 
 const _ray = new THREE.Ray(); const _inv = new THREE.Matrix4();
@@ -208,7 +217,7 @@ export class Viewer {
     ctx.loop((t, dt) => this._frame(t, dt));
     ctx.signal.addEventListener('abort', () => {
       ro.disconnect(); this.controls.dispose();
-      for (const pv of Object.values(this.packs)) { pv.mat.dispose(); pv.tex.dispose(); }
+      for (const pv of Object.values(this.packs)) { pv.mat.dispose(); pv.tex.dispose(); pv.offTex.dispose(); }
       this.scene.traverse((o) => { if (o.userData.own) { o.geometry?.dispose(); o.material?.dispose?.(); } });
       r.dispose(); r.forceContextLoss();
     });
@@ -335,12 +344,15 @@ export class Viewer {
       pv.mesh.updateMatrixWorld();
       _inv.copy(pv.mesh.matrixWorld).invert(); _ray.copy(rc2.ray).applyMatrix4(_inv);
       const P = pv.pack.geo.attributes.position.array; const I = pv.pack.geo.index.array;
+      const base = _ray.clone();
       for (const it of pv.items) {
-        if (!pv.vis[it.k] || !_ray.intersectsBox(it.box)) continue;
+        if (!pv.vis[it.k]) continue;
+        const off = pv.offsetOf(it); _ray.origin.copy(base.origin).sub(off);
+        if (!_ray.intersectsBox(it.box)) continue;
         for (let i = it.i0; i < it.i0 + it.ni; i += 3) {
           _a.fromArray(P, I[i] * 3); _b.fromArray(P, I[i + 1] * 3); _c.fromArray(P, I[i + 2] * 3);
           if (!_ray.intersectTriangle(_a, _b, _c, false, _hit)) continue;
-          const w = _hit.clone().applyMatrix4(pv.mesh.matrixWorld);
+          const w = _hit.clone().add(off).applyMatrix4(pv.mesh.matrixWorld);
           if (this.clip && this.clip.distanceToPoint(w) < 0) continue;
           const d = w.distanceTo(rc2.ray.origin);
           if (!best || d < best.d) best = { d, key, pv, item: it, point: w };

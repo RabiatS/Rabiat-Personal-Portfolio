@@ -125,9 +125,9 @@ function wrap(str, size, weight, maxW, maxLines = 99) {
 // Copy from projects.json can contain dashes; the site rule is to show none.
 function clean(str) {
   return String(str || '')
-    .replace(/(\d|[A-Z][a-z]{2})\s*[–—]\s*(\d|[A-Z][a-z]{2}|now|present)/g, '$1 to $2')
-    .replace(/\s+[–—]\s+/g, ', ')
-    .replace(/[–—]/g, '-');
+    .replace(/(\d|[A-Z][a-z]{2})\s*[\u2013\u2014]\s*(\d|[A-Z][a-z]{2}|now|present)/g, '$1 to $2')
+    .replace(/\s+[\u2013\u2014]\s+/g, ', ')
+    .replace(/[\u2013\u2014]/g, '-');
 }
 
 function rrPath(ctx, x, y, w, h, r) {
@@ -648,7 +648,7 @@ function layoutButton(label, icon, pal, primary, size = SZ.label) {
 function layoutCard(item, project, pal, w, h) {
   const pad = 0.032;
   const ops = [];
-  const imgH = 0.3;
+  const imgH = 0.285;
   const iw = w - pad * 2;
   ops.push({ t: 'img', entry: loadImage(project.image), x: pad, y: pad, w: iw, h: imgH, r: 0.026, label: project.title });
   let y = pad + imgH + 0.034;
@@ -771,7 +771,7 @@ void main() {
   float cloud = smoothstep(0.38, 0.9, n1 * 0.7 + n2 * 0.42);
   float m = cloud * (0.25 + 0.75 * band);
   // Calmer behind the panels: in front and near eye level
-  float front = smoothstep(0.15, 0.8, -d.z) * (1.0 - smoothstep(0.2, 0.62, y)) * (1.0 - smoothstep(0.0, 0.25, -y) * 0.0);
+  float front = smoothstep(0.15, 0.8, -d.z) * (1.0 - smoothstep(0.2, 0.62, y));
   m *= 1.0 - 0.6 * front;
   m *= smoothstep(-0.08, 0.12, y);
   vec3 neb = mix(uP, uA, smoothstep(0.35, 0.75, n2));
@@ -841,8 +841,7 @@ uniform float uTime; uniform float uTwinkle; uniform float uDrift; uniform float
 varying vec2 vC; varying float vA; varying vec3 vCol;
 void main() {
   vec3 c = position;
-  c.y = mod(c.y + uTime * aInfo.w * uDrift, uRange) + (uDrift > 0.0 ? 0.15 : 0.0) * 0.0;
-  if (uDrift == 0.0) c.y = position.y;
+  if (uDrift > 0.0) c.y = mod(position.y + uTime * aInfo.w, uRange);
   vec4 mv = modelViewMatrix * vec4(c, 1.0);
   mv.xy += corner * aInfo.x;
   gl_Position = projectionMatrix * mv;
@@ -1141,7 +1140,7 @@ function buildMascot(renderer, pal) {
       state.look.y += (ly - state.look.y) * damp(10, dt);
       eyeMat.uniforms.uLook.value.copy(state.look);
       if (!REDUCE) {
-        head.position.y = Math.sin(t * 1.4) * 0.35;
+        head.position.y = Math.sin(t * 1.4) * 0.012;
         if (t > state.nextBlink && state.blinkT < 0) state.blinkT = 0;
         if (state.blinkT >= 0) {
           state.blinkT += dt;
@@ -1359,7 +1358,7 @@ function buildUI(data, projects) {
   const perPage = 4;
   const pages = Math.max(1, Math.ceil(featured.length / perPage));
   let page = 0;
-  const CARD_H = 0.74;
+  const CARD_H = 0.75;
   const blockH = CARD_H * 2 + GAP;
   const leftStart = -(sideStart + arcDeg(ARC_W));
   const colTheta = (c, startDeg) => startDeg + arcDeg(c * (COL_W + GAP) + COL_W / 2);
@@ -1639,7 +1638,7 @@ function setupInput() {
     else if (e.key === 'ArrowUp') { view.tp = clamp(view.tp + 10 * DEG, -1.2, 1.2); e.preventDefault(); }
     else if (e.key === 'ArrowDown') { view.tp = clamp(view.tp - 10 * DEG, -1.2, 1.2); e.preventDefault(); }
     else if (e.key === 'Escape' && detail) { closeDetail(); e.preventDefault(); }
-    else if (e.key === 'Tab' && document.activeElement === document.body) {
+    else if (e.key === 'Tab' && (document.activeElement === document.body || document.activeElement === canvas)) {
       const first = a11y.querySelector('a:not([hidden]), button:not([hidden])');
       if (first && !e.shiftKey) { first.focus(); e.preventDefault(); }
     }
@@ -1741,7 +1740,7 @@ function makeLaser(color) {
   g.rotateX(-Math.PI / 2);
   const m = new THREE.ShaderMaterial({
     vertexShader: 'varying float vT; void main() { vT = -position.z; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: `uniform vec3 uColor; uniform float uLen; varying float vT; void main() { float a = (1.0 - smoothstep(0.0, 1.0, vT)) * 0.85; gl_FragColor = vec4(uColor, a); }`,
+    fragmentShader: `uniform vec3 uColor; uniform float uLen; varying float vT; void main() { gl_FragColor = vec4(uColor, mix(0.9, 0.2, vT)); }`,
     uniforms: { uColor: { value: v3(color) }, uLen: { value: 1 } },
     transparent: true,
     depthWrite: false,
@@ -1848,6 +1847,9 @@ function onSessionEnd() {
   xrSession = null;
   xrAlign = null;
   ui.position.set(0, 0, 0);
+  env.floor.position.y = 0;
+  env.floor.material.uniforms.uCenter.value.set(0, 0);
+  camera.position.set(0, EYE, 0);
   controllers.forEach((s) => { s.cursor.visible = false; s.hit = null; });
   if (pendingNav) { const href = pendingNav; pendingNav = null; location.href = href; return; }
   overlay.classList.remove('is-hidden');
@@ -1860,10 +1862,11 @@ function alignToViewer() {
   if (xrAlign.frames < 4) return;
   const cam = renderer.xr.getCamera();
   const p = new THREE.Vector3().setFromMatrixPosition(cam.matrixWorld);
-  if (!xrAlign.floor) p.y += 0; // a 'local' space puts the head at the origin
-  const headY = xrAlign.floor ? p.y : 0;
-  ui.position.set(p.x, clamp(headY - EYE, -0.7, 0.4) + (xrAlign.floor ? 0 : -EYE), p.z);
-  env.floor.position.y = xrAlign.floor ? 0 : -EYE;
+  // With 'local-floor' y is the real eye height (seated or standing). A plain
+  // 'local' space puts the head near y = 0, so the floor goes one eye height down.
+  const offY = xrAlign.floor ? clamp(p.y - EYE, -0.7, 0.4) : p.y - EYE;
+  ui.position.set(p.x, offY, p.z);
+  env.floor.position.y = xrAlign.floor ? 0 : p.y - EYE;
   env.floor.material.uniforms.uCenter.value.set(p.x, p.z);
   xrAlign.done = true;
 }
