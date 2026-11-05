@@ -60,7 +60,7 @@ function injectCss() {
 
 let uid = 0;
 export function makePart(type, pts, props = {}) {
-  return { id: props.id || `${type}-${++uid}`, type, pts: pts.map((p) => [p[0], p[1]]), ...JSON.parse(JSON.stringify(DEFAULTS[type] || {})), ...props };
+  return { id: props.id || `${type}-${(++uid).toString(36)}${Math.random().toString(36).slice(2, 6)}`, type, pts: pts.map((p) => [p[0], p[1]]), ...JSON.parse(JSON.stringify(DEFAULTS[type] || {})), ...props };
 }
 function clonePart(p) {
   const o = {};
@@ -678,7 +678,7 @@ export function createBoard(ctx, o = {}) {
       if (nrm[1] > 0.01 || (Math.abs(nrm[1]) <= 0.01 && nrm[0] > 0)) nrm = [-nrm[0], -nrm[1]];
       const vert = Math.abs(nrm[0]) > 0.7;
       const off = (p.type === 'ammeter' || p.type === 'voltmeter') ? cell * 0.62 : p.type === 'battery' ? cell * 0.62 : cell * 0.5;
-      if (p.type === 'ammeter' || p.type === 'voltmeter') nrm = [-nrm[0], -nrm[1]];
+      if ((p.type === 'ammeter' || p.type === 'voltmeter') !== !!p.flipLabel) nrm = [-nrm[0], -nrm[1]];
       M = [M[0] + nrm[0] * off, M[1] + nrm[1] * off];
       g.textAlign = vert ? (nrm[0] < 0 ? 'right' : 'left') : 'center';
     }
@@ -818,6 +818,7 @@ export function createBoard(ctx, o = {}) {
     hint: (text) => { hint.textContent = text || ''; },
   };
   if (opt.circuit) load(opt.circuit);
+  if (/[?&]debug\b/.test(location.search)) window.__board = api; // used by automated tests only
   return api;
 }
 
@@ -853,7 +854,7 @@ export function plot(g, r, { xmin, xmax, ymin, ymax, series, xlabel, ylabel, xti
   g.fillStyle = 'rgba(20,20,20,.6)'; g.strokeStyle = '#2A2A2A'; g.lineWidth = 1;
   g.beginPath(); g.roundRect(r.x - 8, r.y - 8, r.w + 16, r.h + 16, 10); g.fill(); g.stroke();
   g.font = '500 10.5px "DM Mono", monospace'; g.fillStyle = C.muted; g.strokeStyle = '#2E2E2C';
-  for (const [v, l] of yticks) { const y = Y(v); g.beginPath(); g.moveTo(r.x, y); g.lineTo(r.x + r.w, y); g.stroke(); g.textAlign = 'left'; g.textBaseline = 'bottom'; g.fillText(l, r.x + 2, y - 2); }
+  for (const [v, l] of yticks) { const y = Y(v); g.beginPath(); g.moveTo(r.x, y); g.lineTo(r.x + r.w, y); g.stroke(); g.textAlign = 'left'; const top = y - r.y < 14; g.textBaseline = top ? 'top' : 'bottom'; g.fillText(l, r.x + 3, top ? y + 2 : y - 2); }
   for (const [v, l] of xticks) { const x = X(v); g.beginPath(); g.moveTo(x, r.y); g.lineTo(x, r.y + r.h); g.stroke(); g.textAlign = 'center'; g.textBaseline = 'top'; g.fillText(l, x, r.y + r.h + 3); }
   g.strokeStyle = '#5A5A55'; g.beginPath(); g.moveTo(r.x, r.y); g.lineTo(r.x, r.y + r.h); g.lineTo(r.x + r.w, r.y + r.h); g.stroke();
   g.beginPath(); g.rect(r.x, r.y - 4, r.w, r.h + 8); g.clip();
@@ -865,7 +866,7 @@ export function plot(g, r, { xmin, xmax, ymin, ymax, series, xlabel, ylabel, xti
   g.setLineDash([]);
   g.restore();
   g.save(); g.font = '500 10.5px "DM Mono", monospace'; g.fillStyle = C.muted;
-  if (ylabel) { g.textAlign = 'left'; g.textBaseline = 'bottom'; g.fillText(ylabel, r.x, r.y - 10); }
+  if (ylabel) { g.textAlign = 'left'; g.textBaseline = 'bottom'; g.fillText(ylabel, r.x - 4, r.y - 12); }
   if (xlabel) { g.textAlign = 'right'; g.textBaseline = 'top'; g.fillText(xlabel, r.x + r.w, r.y + r.h + 14); }
   g.restore();
   return { X, Y };
@@ -879,5 +880,6 @@ export function split(avail, frac = 0.42, min = 220) {
     return { circuit: { x: avail.x, y: avail.y, w: avail.w, h: avail.h - hh - 8 }, side: { x: avail.x + 12, y: avail.y + avail.h - hh + 4, w: avail.w - 24, h: hh - 8 }, narrow };
   }
   const ww = Math.max(min, avail.w * frac);
-  return { circuit: { x: avail.x, y: avail.y, w: avail.w - ww - 10, h: avail.h }, side: { x: avail.x + avail.w - ww, y: avail.y + 10, w: ww - 14, h: avail.h - 20 }, narrow };
+  const sh = Math.min(avail.h - 20, Math.max(280, (ww - 14) * 1.05));
+  return { circuit: { x: avail.x, y: avail.y, w: avail.w - ww - 10, h: avail.h }, side: { x: avail.x + avail.w - ww, y: avail.y + (avail.h - sh) / 2, w: ww - 14, h: sh }, narrow };
 }

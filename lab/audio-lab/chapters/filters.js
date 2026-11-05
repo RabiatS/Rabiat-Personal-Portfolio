@@ -98,7 +98,7 @@ export default {
     }
     const start = async () => {
       const ac = A.ac;
-      inAn = A.analyser(8192, 0.7); outAn = A.analyser(8192, 0.7); ib = new Float32Array(inAn.frequencyBinCount); ob = new Float32Array(outAn.frequencyBinCount);
+      inAn = A.analyser(8192, 0.85); outAn = A.analyser(8192, 0.85); ib = new Float32Array(inAn.frequencyBinCount); ob = new Float32Array(outAn.frequencyBinCount);
       const out = A.gain(1); outAn.connect(out); out.connect(A.out);
       biq = ac.createBiquadFilter(); A.add(biq); biq.connect(outAn);
       tel = [['highpass', 300], ['highpass', 300], ['lowpass', 3400], ['lowpass', 3400]].map(([t, f]) => { const b = ac.createBiquadFilter(); b.type = t; b.frequency.value = f; b.Q.value = -3.01; A.add(b); return b; });

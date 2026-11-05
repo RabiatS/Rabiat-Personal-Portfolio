@@ -102,13 +102,13 @@ export default {
       const { w, h } = cv; if (!w) return;
       g.clearRect(0, 0, w, h);
       hits.length = 0;
-      const cw = w < 500 ? 13 : w < 900 ? 16 : 19; const gap = 6; const cwid = cw * 3 + gap;
+      const cw = w < 500 ? 12.5 : w < 900 ? 16 : 19; const gap = 6; const cwid = cw * 3 + gap;
       const left = 64; const per = Math.max(3, Math.floor((w - left - 12) / cwid));
       const nCod = Math.ceil(Math.max(HBB.length, mut.length) / 3);
       const po = translate(HBB); const pm = translate(mut);
-      const rowH = cw * 1.6; const blockH = rowH * 4 + 18;
+      const rowH = cw * (w < 500 ? 1.45 : 1.6); const blockH = rowH * 4 + 18;
       const blocks = Math.ceil(nCod / per);
-      let y0 = Math.max(10, (h - 52 - blocks * blockH) / 2);
+      let y0 = Math.max(14, (h - 56 - blocks * blockH) / 2);
       const stoppedAt = pm.indexOf('*');
       for (let b = 0; b < blocks; b++) {
         const yy = y0 + b * blockH;
@@ -146,15 +146,15 @@ export default {
       }
       // red cell icon: sickled if HbS (valine at codon 7 with the frame intact)
       const hbs = pm[6] === 'V' && mut.length === HBB.length;
-      const cx = w - 50; const cy = h - 96;
-      g.save(); g.translate(cx, cy); g.scale(1.4, 1.4);
+      const small = w < 500; const cx = w - (small ? 34 : 50); const cy = small ? y0 + (blocks - 1) * blockH + rowH * 1.6 : h - 96;
+      g.save(); g.translate(cx, cy); g.scale(small ? 0.9 : 1.4, small ? 0.9 : 1.4);
       g.fillStyle = rgba('#FB7185', 0.75); g.strokeStyle = '#FB7185'; g.lineWidth = 1.5;
       if (hbs) { g.beginPath(); g.moveTo(-26, 6); g.quadraticCurveTo(0, -30, 26, 6); g.quadraticCurveTo(0, -12, -26, 6); g.fill(); g.stroke(); }
       else { g.beginPath(); g.ellipse(0, 0, 22, 22, 0, 0, 7); g.fill(); g.fillStyle = rgba('#7f1d1d', 0.6); g.beginPath(); g.ellipse(0, 0, 9, 9, 0, 0, 7); g.fill(); }
       g.restore();
       g.font = MONO(10); g.fillStyle = '#A0A09A'; g.textAlign = 'center';
-      g.fillText(hbs ? 'sickled red cell' : 'red cell', cx - 6, cy + 44);
-      g.textAlign = 'left'; g.fillText('Tap a base, then use the buttons below', 4, h - 58 + (w < 500 ? 0 : 0));
+      g.fillText(hbs ? 'sickled red cell' : 'red cell', cx - (small ? 14 : 6), cy + (small ? 30 : 44));
+      g.textAlign = 'left'; if (!small) g.fillText('Tap a base, then use the buttons below', 4, h - 58);
     }
     cv.onResize(draw);
     update();

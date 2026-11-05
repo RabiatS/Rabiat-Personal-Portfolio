@@ -3,7 +3,7 @@ import { MONO, MONO_S, chart, text, tag, pointer, fmt, rgba, clamp } from './_ut
 // Waves: a 1D string solved with the leapfrog finite difference wave equation (absorbing, fixed or free far end),
 // and a 2D ripple tank on a 200 x 150 grid with a damping sponge at the edges.
 const N = 300; const LEN = 6; const DX = LEN / N; const DT = 0.004;
-const NX = 200; const NY = 150; const TANK_DT = 1 / 240; const TANK_C = 0.5; // cells per step (Courant 0.5)
+const NX = 240; const NY = 180; const TANK_DT = 1 / 240; const TANK_C = 0.5; // cells per step (Courant 0.5)
 const MM = 1; // one tank cell is 1 mm
 
 export default {
@@ -22,7 +22,7 @@ export default {
     const damp = new Float32Array(NX * NY);
     for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
       const d = Math.min(i, j, NX - 1 - i, NY - 1 - j);
-      damp[j * NX + i] = d < 22 ? 1 - 0.12 * ((22 - d) / 22) ** 2 : 1;
+      damp[j * NX + i] = d < 34 ? 0.25 * ((34 - d) / 34) ** 2 : 0; // sponge strength σ
     }
     let tt2 = 0;
     const off = document.createElement('canvas'); off.width = NX; off.height = NY;
@@ -54,7 +54,7 @@ export default {
     }
 
     function srcs() {
-      const sx = 34; const cy = NY / 2;
+      const sx = 52; const cy = NY / 2;
       return st.two ? [[sx, Math.round(cy - st.sep / 2)], [sx, Math.round(cy + st.sep / 2)]] : [[sx, Math.round(cy)]];
     }
     function stepTank() {
@@ -63,7 +63,7 @@ export default {
         const row = j * NX;
         for (let i = 1; i < NX - 1; i++) {
           const k = row + i;
-          an[k] = (2 * a[k] - ap[k] + c2 * (a[k + 1] + a[k - 1] + a[k + NX] + a[k - NX] - 4 * a[k])) * damp[k];
+          an[k] = a[k] + (1 - damp[k]) * (a[k] - ap[k]) + c2 * (a[k + 1] + a[k - 1] + a[k + NX] + a[k - NX] - 4 * a[k]);
         }
       }
       tt2 += TANK_DT;
@@ -131,14 +131,14 @@ export default {
           const v = Math.min(1, Math.sqrt(I[k]) * 2.2);
           r = 20 + 220 * v * 0.37; gg = 20 + 214 * v; b = 20 + 192 * v;
         } else {
-          const v = clamp(a[k] * 1.6, -1, 1);
-          if (v > 0) { r = 18 + 76 * v; gg = 22 + 212 * v; b = 30 + 182 * v; } else { r = 18 + 10 * v; gg = 22 + 10 * v; b = 30 - 20 * v * 1.5; }
+          const v = (0.5 + 0.5 * clamp(a[k] * 2.2, -1, 1)) ** 1.6;
+          r = 7 + 152 * v; gg = 16 + 229 * v; b = 21 + 209 * v;
         }
         if (st.nodal && S.length === 2) {
           const i = k % NX; const j = (k - i) / NX;
           const dd = Math.abs(Math.hypot(i - S[0][0], j - S[0][1]) - Math.hypot(i - S[1][0], j - S[1][1])) / lam;
           const fr = dd - Math.floor(dd);
-          if (Math.abs(fr - 0.5) < 0.035 && i > S[0][0]) { r = 251; gg = 113; b = 133; }
+          if (Math.abs(fr - 0.5) < 0.03 && i > S[0][0]) { r = 251; gg = 113; b = 133; }
         }
         d[p] = r; d[p + 1] = gg; d[p + 2] = b; d[p + 3] = 255;
       }
@@ -147,7 +147,7 @@ export default {
       g.drawImage(off, lay.tx, lay.ty, NX * lay.ts, NY * lay.ts);
       for (const [i, j] of S) { g.strokeStyle = C.c2; g.lineWidth = 2; g.beginPath(); g.arc(lay.tx + (i + 0.5) * lay.ts, lay.ty + (j + 0.5) * lay.ts, 5, 0, 7); g.stroke(); }
       // scale bar 10 mm
-      const sb = 20 * lay.ts;
+      const sb = 20 * lay.ts; // 20 cells = 2 cm
       g.strokeStyle = C.muted; g.lineWidth = 1; g.beginPath(); g.moveTo(lay.tx + 8, lay.ty + NY * lay.ts - 10); g.lineTo(lay.tx + 8 + sb, lay.ty + NY * lay.ts - 10); g.stroke();
       tag(g, '2 cm', lay.tx + 8 + sb + 6, lay.ty + NY * lay.ts - 10, C.muted, 'left', 'middle', MONO_S);
       tag(g, `f ${st.tf} Hz   λ ${fmt(lam / 10, 2)} cm   wave speed ${fmt((TANK_C * MM / TANK_DT) / 10, 0)} cm/s`, 12, 12, C.text, 'left');
@@ -238,7 +238,7 @@ export default {
         <div class="formula">∂²u/∂t² = v² ∂²u/∂x²<span>wave equation, solved here with finite differences</span></div>
         <div class="formula">|r₁ − r₂| = m λ (loud) &nbsp; (m + ½) λ (quiet)<span>two source interference</span></div>
         <p class="small">On a string, v = √(T/μ), tension over mass per metre. In the ripple tank the quiet lines are hyperbolas. Far from the sources they point at angles where d sin θ = (m + ½)λ, with d the separation. The same geometry explains Young's double slit experiment with light.</p>
-        <p class="small muted">The rope is 300 points stepped every 4 ms with the leapfrog scheme. The absorbing end uses a Mur boundary condition, which lets a wave leave the grid without reflecting. The tank is a 200 × 150 grid with 1 mm cells and a sponge layer at the edges, so ripples fade instead of bouncing back. Grid waves shorter than about ten cells travel a little slower than they should (numerical dispersion), which is one reason real solvers use fine grids.</p>
+        <p class="small muted">The rope is 300 points stepped every 4 ms with the leapfrog scheme. The absorbing end uses a Mur boundary condition, which lets a wave leave the grid without reflecting. The tank is a 240 × 180 grid with 1 mm cells and a sponge layer at the edges, so ripples fade instead of bouncing back. Grid waves shorter than about ten cells travel a little slower than they should (numerical dispersion), which is one reason real solvers use fine grids.</p>
       </div>`),
     );
 

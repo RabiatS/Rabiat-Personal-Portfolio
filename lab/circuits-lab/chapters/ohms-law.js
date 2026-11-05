@@ -21,6 +21,7 @@ export default {
     let side = null; const trail = [];
     const b = createBoard(ctx, {
       circuit: CIRCUIT, editable: false, dotScale: 6,
+      onReset() { sV.value = 6; sR.value = 12; trail.length = 0; },
       layout(avail) { const s = split(avail, 0.42, 240); side = s.side; return s.circuit; },
       draw(g) {
         if (!side) return;

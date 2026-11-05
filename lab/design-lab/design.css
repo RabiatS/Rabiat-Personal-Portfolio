@@ -124,8 +124,8 @@
 .gr-b.anim { transition: left .35s cubic-bezier(.3,1.2,.5,1), top .35s cubic-bezier(.3,1.2,.5,1); }
 .gr-b:hover { box-shadow: 0 0 0 2px rgba(94,234,212,.8); }
 .gr-b.drag { cursor: grabbing; box-shadow: 0 0 0 2px #5EEAD4, 0 12px 30px rgba(0,0,0,.18); z-index: 5; }
-.gr-miss { position: absolute; pointer-events: none; border-left: 2px dashed #e11d48; z-index: 6; }
-.gr-miss.h { border-left: 0; border-top: 2px dashed #e11d48; }
+.gr-miss { position: absolute; pointer-events: none; z-index: 6; background: repeating-linear-gradient(0deg, rgba(225,29,72,.75) 0 6px, rgba(225,29,72,.25) 6px 10px); }
+.gr-miss.h { background: repeating-linear-gradient(90deg, rgba(225,29,72,.75) 0 6px, rgba(225,29,72,.25) 6px 10px); }
 
 /* ---------- Colour ---------- */
 .co-row { display: flex; gap: 8px; flex-wrap: wrap; }

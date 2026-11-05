@@ -661,3 +661,45 @@ export function styleChapter(ctx, cfg) {
   ctx.quiz(cfg.quiz);
   return api;
 }
+
+/* ---------------- Measurement helpers ---------------- */
+export function linfit(xs, ys) {
+  const n = xs.length; if (n < 2) return null;
+  const mx = xs.reduce((a, b) => a + b, 0) / n; const my = ys.reduce((a, b) => a + b, 0) / n;
+  let sxy = 0; let sxx = 0; let syy = 0;
+  for (let i = 0; i < n; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) ** 2; syy += (ys[i] - my) ** 2; }
+  if (!sxx) return null;
+  const b = sxy / sxx; const a = my - b * mx;
+  return { a, b, r2: syy ? (sxy * sxy) / (sxx * syy) : 1 };
+}
+export const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : NaN);
+export function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+// A scatter plot with a fitted line, drawn on a kit canvas.
+// opts: { xs, ys, means: [[x, y]], fit, xLabel, yLabel, xMin, xMax, colors }
+export function drawPlot(cv, C, o) {
+  const g = cv.ctx; const { w, h } = cv; if (!w) return;
+  g.clearRect(0, 0, w, h);
+  const L = 46; const R = 14; const T = 14; const B = 34;
+  const xMin = o.xMin ?? Math.min(...o.xs, 0); const xMax = o.xMax ?? Math.max(...o.xs, 1);
+  const yMaxRaw = Math.max(...(o.ys.length ? o.ys : [1]), ...(o.means || []).map((m) => m[1]), 1);
+  const yStep = [50, 100, 200, 250, 500, 1000, 2000].find((s) => yMaxRaw / s <= 5) || 2000;
+  const yMax = Math.ceil(yMaxRaw / yStep) * yStep;
+  const X = (x) => L + ((x - xMin) / (xMax - xMin)) * (w - L - R);
+  const Y = (y) => h - B - (y / yMax) * (h - T - B);
+  g.font = '500 11px "DM Mono", monospace'; g.lineWidth = 1;
+  for (let y = 0; y <= yMax + 1e-6; y += yStep) {
+    g.strokeStyle = 'rgba(255,255,255,.07)'; g.beginPath(); g.moveTo(L, Y(y)); g.lineTo(w - R, Y(y)); g.stroke();
+    g.fillStyle = C.muted; g.textAlign = 'right'; g.fillText(`${y}`, L - 6, Y(y) + 4);
+  }
+  const xt = o.xTicks || []; g.textAlign = 'center';
+  for (const t of xt) { g.fillStyle = C.muted; g.fillText(typeof t === 'number' ? t.toFixed(1) : t[1], X(typeof t === 'number' ? t : t[0]), h - B + 16); }
+  g.fillStyle = C.muted; g.textAlign = 'right'; g.fillText(o.xLabel || '', w - R, h - 4);
+  g.save(); g.translate(11, T); g.textAlign = 'left'; g.fillText(o.yLabel || '', 0, 0); g.restore();
+  if (o.fit) {
+    g.strokeStyle = C.c2; g.lineWidth = 2; g.beginPath(); g.moveTo(X(xMin), Y(o.fit.a + o.fit.b * xMin)); g.lineTo(X(xMax), Y(o.fit.a + o.fit.b * xMax)); g.stroke();
+  }
+  o.xs.forEach((x, i) => { g.beginPath(); g.arc(X(x), Y(o.ys[i]), 3, 0, Math.PI * 2); g.fillStyle = 'rgba(94,234,212,.45)'; g.fill(); });
+  (o.means || []).forEach(([x, y]) => { g.beginPath(); g.arc(X(x), Y(y), 6, 0, Math.PI * 2); g.fillStyle = C.c1; g.fill(); g.strokeStyle = C.bg; g.lineWidth = 2; g.stroke(); });
+  if (!o.xs.length && !(o.means || []).length) { g.fillStyle = C.muted; g.textAlign = 'center'; g.fillText(o.empty || 'No data yet', (L + w - R) / 2, (T + h - B) / 2); }
+}

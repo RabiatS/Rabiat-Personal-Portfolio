@@ -19,6 +19,7 @@ export default {
     let side = null; let wheel = 0; let pump = 0; let flowPh = 0;
     const b = createBoard(ctx, {
       circuit: CIRCUIT, editable: false, dotScale: 5,
+      onReset() { sV.value = 6; sR.value = 12; },
       layout(avail) { const s = split(avail, 0.5, 260); side = s.side; return s.circuit; },
       draw(g, w, h, t) { drawWater(g, t); },
     });

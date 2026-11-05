@@ -33,8 +33,16 @@ export default {
       }
     });
 
-    function pivot() { return { x: lay.view.x + lay.view.w / 2, y: lay.view.y + 46 }; }
-    function pscale(len) { return (lay.view.h - 90) / len; }
+    function pivot() {
+      if (mode === 'double') return { x: lay.view.x + lay.view.w / 2, y: lay.view.y + lay.view.h / 2 + 10 };
+      return { x: lay.view.x + lay.view.w / 2, y: lay.view.y + 46 };
+    }
+    // fixed pixels per metre, so a longer pendulum really looks longer (2.5 m fills the view)
+    function pscale() {
+      if (mode === 'double') return (Math.min(lay.view.w, lay.view.h - 30) / 2 - 16) / 2.5;
+      if (mode === 'spring') return (lay.view.h - 90) / 1.6;
+      return Math.min(lay.view.h - 90, lay.view.w * 0.9) / 2.5;
+    }
 
     const fPend = (q) => [q[1], -(G / st.L) * Math.sin(q[0]) - (st.b / st.m) * q[1]];
     const fSpring = (q) => [q[1], -(st.k / st.m) * q[0] - (st.b / st.m) * q[1]];
@@ -74,7 +82,7 @@ export default {
       const x1 = p.x + l * Math.sin(q[0]); const y1 = p.y + l * Math.cos(q[0]);
       return [x1, y1, x1 + l * Math.sin(q[2]), y1 + l * Math.cos(q[2])];
     }
-    function springY() { const p = pivot(); return p.y + (lay.view.h - 90) * 0.5 + s[0] * pscale(1.6); }
+    function springY() { const p = pivot(); return p.y + (lay.view.h - 90) * 0.5 + s[0] * pscale(); }
 
     pointer(cv.el, {
       down(p) {
@@ -97,7 +105,7 @@ export default {
       move(p) {
         const pv = pivot();
         if (mode === 'pend') { s = [Math.atan2(p.x - pv.x, p.y - pv.y), 0]; amp0 = Math.abs(s[0]); }
-        else if (mode === 'spring') { s = [clamp((p.y - (pv.y + (lay.view.h - 90) * 0.5)) / pscale(1.6), -0.5, 0.5), 0]; amp0 = Math.abs(s[0]); }
+        else if (mode === 'spring') { s = [clamp((p.y - (pv.y + (lay.view.h - 90) * 0.5)) / pscale(), -0.5, 0.5), 0]; amp0 = Math.abs(s[0]); }
         else if (drag === 1) { d1[0] = Math.atan2(p.x - pv.x, p.y - pv.y); d1[1] = 0; d1[3] = 0; }
         else { const [x1, y1] = bobs(d1); d1[2] = Math.atan2(p.x - x1, p.y - y1); d1[1] = 0; d1[3] = 0; }
         if (mode === 'double') { d2 = [d1[0], 0, d1[2] + 0.001, 0]; }
@@ -110,6 +118,7 @@ export default {
       const w = cv.w; const h = cv.h;
       g.clearRect(0, 0, w, h);
       const pv = pivot();
+      g.save(); g.beginPath(); g.rect(lay.view.x, lay.view.y, lay.view.w, lay.view.h); g.clip();
       g.fillStyle = '#3A3A38'; g.fillRect(pv.x - 40, pv.y - 6, 80, 4);
       if (mode === 'pend') {
         const sc = pscale(st.L);
@@ -146,6 +155,7 @@ export default {
         tag(g, 'two pendulums, started 0.001 rad apart', lay.view.x + 12, 16, C.muted, 'left');
       }
 
+      g.restore();
       // charts
       const xmin = Math.max(0, t - 10); const xmax = Math.max(10, t);
       if (mode !== 'double') {
@@ -155,9 +165,10 @@ export default {
         chart(g, lay.c1, [{ data: hist.map((q) => [q[0], q[1]]), color: C.c1, dot: true }], { xmin, xmax, ymin: -A, ymax: A, title: isP ? 'angle θ (rad) vs time' : 'displacement x (m) vs time', titleColor: C.c1, xstep: 1, yd: 2 });
         chart(g, lay.c2, [{ data: hist.map((q) => [q[1], q[2]]), color: C.c3, dot: true }], { xmin: -A, xmax: A, ymin: -V, ymax: V, title: isP ? 'phase space: ω vs θ' : 'phase space: v vs x', titleColor: C.c3, yd: 2 });
       } else {
+        const brk = (k) => { const o = []; for (let i = 0; i < hist.length; i++) { if (i && Math.abs(hist[i][k] - hist[i - 1][k]) > Math.PI) o.push([hist[i][0], NaN]); o.push([hist[i][0], hist[i][k]]); } return o; };
         chart(g, lay.c1, [
-          { data: hist.map((q) => [q[0], q[1]]), color: C.c4 },
-          { data: hist.map((q) => [q[0], q[2]]), color: C.c1 },
+          { data: brk(1), color: C.c4 },
+          { data: brk(2), color: C.c1 },
         ], { xmin, xmax, ymin: -Math.PI * 1.3, ymax: Math.PI * 1.3, title: 'lower arm angle (rad)', yd: 1 });
         chart(g, lay.c2, [{ data: hist.map((q) => [q[0], q[3]]), color: C.c2, dot: true }], { xmin, xmax, ymin: -4, ymax: 1, title: 'log₁₀ gap between them (m)', titleColor: C.c2, yd: 0 });
       }
@@ -190,7 +201,7 @@ export default {
     const seg = ctx.seg([['pend', 'Pendulum'], ['spring', 'Spring'], ['double', 'Double pendulum']], mode, (m) => {
       mode = m; reset();
       if (m === 'pend') s = [0.5, 0]; if (m === 'spring') s = [0.2, 0];
-      if (m === 'double') { d1 = [2.2, 0, 2.6, 0]; d2 = [2.2, 0, 2.601, 0]; }
+      if (m === 'double') { d1 = [2.2, 0, 2.6, 0]; d2 = [2.2, 0, 2.601, 0]; st.L = 2; }
       amp0 = Math.abs(s[0]); controls();
     });
     ctx.panel.append(seg);
