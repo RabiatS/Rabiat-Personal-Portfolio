@@ -58,7 +58,7 @@ export default {
       });
       const ex = bx0 + 64 + (120 / maxDb) * (bw - 190);
       g.strokeStyle = hexA(C.c4, 0.7); g.setLineDash([3, 3]); g.beginPath(); g.moveTo(ex, d.y + 26); g.lineTo(ex, d.y + d.h - 8); g.stroke(); g.setLineDash([]);
-      txt(g, 'about 120 dB: quiet room to pain', ex + 4, d.y + d.h - 8, { color: C.c4, font: '500 10px "DM Mono", monospace' });
+      txt(g, d.w < 520 ? '~120 dB hearing' : 'about 120 dB: quiet room to pain', ex + 4, d.y + d.h - 8, { color: C.c4, font: '500 10px "DM Mono", monospace' });
     });
 
     function apply() {

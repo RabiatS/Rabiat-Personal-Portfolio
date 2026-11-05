@@ -75,17 +75,18 @@ export default {
       gr.addColorStop(0, hexA(C.c1, 0.5)); gr.addColorStop(80 / 140, hexA(C.c6, 0.5)); gr.addColorStop(85 / 140, hexA(C.c2, 0.6)); gr.addColorStop(110 / 140, hexA(C.c4, 0.7)); gr.addColorStop(1, hexA(C.c4, 0.9));
       g.fillStyle = gr; g.fillRect(ladX(q, 0), ay, ladX(q, 140) - ladX(q, 0), 4);
       for (let v = 0; v <= 140; v += 10) { const x = ladX(q, v); g.fillStyle = 'rgba(255,255,255,.3)'; g.fillRect(x, ay + 6, 1, 4); if (v % 20 === 0 || W > 600) txt(g, `${v}`, x, ay + 22, { align: 'center', font: '500 10px "DM Mono", monospace', color: C.subtle }); }
-      const avail = ay - (q.y + 80); const rows = W < 520 ? 5 : 4; const rowH = Math.min(36, avail / (rows + 0.3));
-      LADDER.forEach(([v, name], i) => {
+      const avail = ay - (q.y + 80); const rows = W < 520 ? 3 : 4; const rowH = Math.min(36, avail / (rows + 0.3));
+      const items = W < 520 ? LADDER.filter(([v]) => [0, 30, 60, 85, 110, 130].includes(v)) : LADDER;
+      items.forEach(([v, name], i) => {
         const x = ladX(q, v); const row = i % rows; const y = ay - 8 - (rows - 1 - row) * rowH;
         g.strokeStyle = 'rgba(255,255,255,.12)'; g.beginPath(); g.moveTo(x + 0.5, y + 2); g.lineTo(x + 0.5, ay); g.stroke();
         const right = x > q.x + q.w * 0.62;
         txt(g, W < 520 ? name.split(',')[0].replace('Front row at a rock concert', 'Rock concert').replace('Threshold of ', '') : name, right ? x - 4 : x + 4, y, { align: right ? 'right' : 'left', font: '500 10px "DM Mono", monospace', color: v >= 85 ? C.text2 : C.muted });
       });
       const hrs = 8 / Math.pow(2, (spl - 85) / 3);
-      const lim = spl < 85 ? 'no daily limit' : hrs >= 1 ? `about ${hrs.toFixed(hrs < 2 ? 1 : 0)} h a day` : hrs * 60 >= 1 ? `about ${Math.round(hrs * 60)} min a day` : `under a minute`;
+      const lim = spl < 85 ? 'over 8 h a day' : hrs >= 1 ? `about ${hrs.toFixed(hrs < 2 ? 1 : 0)} h a day` : hrs * 60 >= 1 ? `about ${Math.round(hrs * 60)} min a day` : `under a minute`;
       txt(g, `${spl} dB SPL`, q.x + 16, q.y + 48, { color: C.text, font: '600 22px "Rajdhani", sans-serif' });
-      txt(g, `safe exposure (NIOSH): ${lim}. Drag the dot.`, q.x + 16, q.y + 66, { color: spl >= 85 ? C.c2 : C.muted });
+      txt(g, W < 520 ? `NIOSH limit: ${lim}` : `safe exposure (NIOSH): ${lim}. Drag the dot.`, q.x + 16, q.y + 66, { color: spl >= 85 ? C.c2 : C.muted });
       const px = ladX(q, spl);
       g.fillStyle = C.text; g.beginPath(); g.arc(px, ay + 2, 7, 0, Math.PI * 2); g.fill(); g.fillStyle = C.bg; g.beginPath(); g.arc(px, ay + 2, 3, 0, Math.PI * 2); g.fill();
     });

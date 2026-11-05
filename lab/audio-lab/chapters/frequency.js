@@ -76,7 +76,7 @@ export default {
       const fx = ax0 + logPos(f, F0, F1) * aw;
       g.strokeStyle = C.text; g.lineWidth = 2; g.beginPath(); g.moveTo(fx, ay - 4); g.lineTo(fx, ay + ah); g.stroke();
       g.fillStyle = C.text; g.beginPath(); g.moveTo(fx - 5, ay - 9); g.lineTo(fx + 5, ay - 9); g.lineTo(fx, ay - 3); g.fill();
-      txt(g, fmtHz(f), Math.min(q.x + q.w - 50, Math.max(q.x + 60, fx)), q.y + 20, { align: 'center', color: C.text });
+      txt(g, fmtHz(f), q.x + q.w - 12, q.y + 20, { align: 'right', color: C.text });
 
       // 3. keyboard
       const k = l.kb; box(g, k.x, k.y, k.w, k.h, 'Piano keys (A0 to C8)');
