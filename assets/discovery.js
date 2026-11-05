@@ -287,6 +287,7 @@
 
   function openLab() {
     if (open) return;
+    window.rkEgg?.('signal');
     if (!portal) buildPortal();
 
     localStorage.setItem(STORAGE_KEY, 'true');
