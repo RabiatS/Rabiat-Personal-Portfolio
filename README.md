@@ -55,7 +55,7 @@ Rabiat-Personal-Portfolio/
 │   ├── cube-fall.js          # Click-to-drop animation for the builder cube
 │   ├── launch-scroll.js      # GSAP scroll reveals for builder-mode extras
 │   ├── timeline-scroll.js    # GSAP scroll reveals for the experience timeline
-│   ├── vr-lobby.js           # A-Frame scene builder for vr.html
+│   ├── vr-lobby.js           # three.js + WebXR scene for vr.html (curved panels, mascot, lasers)
 │   ├── vr-lobby.json         # Content model for the VR scene
 │   ├── projects.json         # Project data — source of truth, fetched at runtime
 │   ├── favicon.svg
@@ -81,7 +81,7 @@ Rabiat-Personal-Portfolio/
 - **Header Icons**: One single-colour line icon set in `style.css` (`.ico[data-icon]`), drawn as masks so each takes the text colour around it
 - **Interactive Galaxy Canvas**: Animated nebula background with parallax effect and shooting stars
 - **VR Eye Animation**: Interactive VR headset with eyes that follow cursor movement — click it to open the HQ Daily Planner
-- **View in VR (WebXR)**: On supported headsets (Quest Browser, etc.), a header link opens [`vr.html`](vr.html) — an immersive 3D version of the home hero and featured projects (A-Frame)
+- **View in VR (WebXR)**: On supported headsets (Quest Browser, etc.), a header link opens [`vr.html`](vr.html) — an immersive 3D version of the home hero and featured projects (three.js + WebXR)
 - **Card Tilt Effects**: 3D tilt animations on project cards (configurable: off, desktop-only, or all devices)
 - **Color Scheme Switcher**: 31 color schemes to customize the site's appearance. Every scheme derives a contrast-safe `--primary-readable` / `--on-primary` pair at runtime (see `applyReadableTokens` in `script.js`), so link and button text stays legible even on the lightest palettes.
 - **Signal Lab**: hidden easter egg — type `build` on the homepage, or triple-tap the scroll cue on mobile

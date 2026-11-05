@@ -90,7 +90,7 @@ export default {
       <div class="row"><button class="btn x-enter" disabled>Enter VR</button><button class="btn ghost x-ar" hidden>Enter AR</button></div>
       <p class="small muted x-note">Checking…</p></div>`);
     ctx.panel.append(sup);
-    ctx.panel.append(ctx.h(`<p class="small">Want a bigger example? The site has its own WebXR scene: <a href="/vr.html">open the VR version of this portfolio</a>, built with A-Frame on top of three.js.</p>`));
+    ctx.panel.append(ctx.h(`<p class="small">Want a bigger example? The site has its own WebXR scene: <a href="/vr.html">open the VR version of this portfolio</a>, built with three.js and WebXR.</p>`));
     ctx.panel.append(ctx.h(`<div class="card tip"><p><b>WebXR</b> is the browser's standard way to talk to VR and AR hardware. You ask whether a kind of session is supported, start one from a button click, and the browser hands you the head pose and one view per eye every frame. You draw each view with WebGL (or WebGPU), and the headset's compositor does the lens warp and timewarp for you.</p></div>`));
     ctx.panel.append(ctx.h('<p class="hint">The whole frame loop, in raw WebXR:</p>'));
     ctx.panel.append(ctx.h(`<pre class="code">${esc(CODE_RAW)}</pre>`));
