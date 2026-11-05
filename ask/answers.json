@@ -225,7 +225,7 @@
         "What roles is Rabiat looking for?",
         "What kind of team does she want to join?"
       ],
-      "a": "Her work spans several spaces, so no single title covers it. Roles built around prototyping fit her best: creative technologist, XR or prototyping engineer, and HCI or applied ML work where she can take an idea from first sketch to a working product.",
+      "a": "She is hard to fit in one box. Problem solver, builder and engineer all describe her, and her work spans prototyping, XR, accessibility, HCI and applied ML. The best fit is a role where she can take an idea from first sketch to a working product.",
       "link": "projects.html",
       "todo": "Titles you would answer to (research engineer, applied ML, XR prototyper, design engineer?), and what makes a team a good fit.",
       "status": "published"
@@ -313,7 +313,7 @@
         "What is her working style?",
         "What role does she usually take on a team?"
       ],
-      "a": "When she is passionate about a problem she makes sure it gets to completion. She likes knowing things across many fields, so she is open to collaborating with anyone, is never intimidated by what she does not know yet, and is always learning.",
+      "a": "When she is passionate about a problem she makes sure it gets to completion, and she gets very passionate about her work. She likes knowing things across many fields, so she is open to collaborating with anyone, is never intimidated by what she does not know yet, and is always learning.",
       "link": "contact.html",
       "todo": "How you like to work: prototype first, research first, what you usually own on a team.",
       "status": "published"
@@ -324,9 +324,11 @@
         "What does Rabiat do for fun?",
         "What are her hobbies?",
         "What does she like outside of work?",
-        "What are her interests?"
+        "What are her interests?",
+        "Does she like music?",
+        "Is Rabiat an audiophile?"
       ],
-      "a": "She is getting into running and likes climbing. She loves VR, audio products and testing new tech, and she has a perfume collection (she can identify scents surprisingly well). She plays games, loves good TV shows and raunchy comedies, and, contrary to popular belief, she likes sleeping. Mostly she keeps building projects and exploring what is out there.",
+      "a": "She is getting into running and likes climbing. She loves music and is an audiophile, so she loves testing audio products and new tech in general. She has a perfume collection (she can identify scents surprisingly well), plays games, loves good TV shows and raunchy comedies, and, contrary to popular belief, she likes sleeping. Mostly she keeps building projects and exploring what is out there.",
       "link": "cool.html",
       "todo": "Anything you are happy to share.",
       "status": "published"
@@ -337,7 +339,7 @@
         "Does Rabiat give talks or mentor?",
         "Can I invite her to speak?"
       ],
-      "a": "Yes. She is open to talks, mentoring and collaborations, has had great mentors herself, and is always down to start on a cool project.",
+      "a": "Yes. She is open to talks, mentoring and collaborations, has amazing mentors herself, and is always down to start on a cool project.",
       "link": "contact.html",
       "todo": "Talks, mentoring, collaborations you are open to.",
       "status": "published"
