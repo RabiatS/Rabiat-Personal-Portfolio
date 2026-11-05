@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+<script>/* Storage guard: if this browser blocks storage, use an in-memory stand-in so the site still works */(function(){function m(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}['localStorage','sessionStorage'].forEach(function(n){try{var s=window[n];s.setItem('__t','1');s.removeItem('__t')}catch(e){try{Object.defineProperty(window,n,{configurable:true,value:m()})}catch(_){}}})})();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Ripple · Rabiat</title>
   <meta name="description" content="A pool you can touch. Move to make ripples, click to splash.">
@@ -17,6 +18,8 @@
     #water { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
     .fallback { position: fixed; inset: 0; display: grid; place-items: center; color: var(--muted); font: 14px var(--f-mono); }
   </style>
+  <!-- Privacy friendly visit counts (no cookies): https://rabiatsadiq.goatcounter.com -->
+  <script data-goatcounter="https://rabiatsadiq.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
   <canvas id="water" aria-label="Water surface. Move the pointer to make ripples."></canvas>

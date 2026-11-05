@@ -27,6 +27,7 @@ Rabiat-Personal-Portfolio/
 │   ├── design-lab/          # Study Lab: UI styles, design principles and UX laws
 │   ├── physics-lab/         # Study Lab: mechanics, waves, light and gases
 │   ├── bio-lab/             # Study Lab: cells, DNA, genetics and body systems
+│   ├── anatomy-lab/         # Study Lab: full body 3D anatomy (BodyParts3D, Human Reference Atlas)
 │   ├── muscle-lab/          # Study Lab: 63 muscles on a 3D body
 │   ├── elements-lab/        # Study Lab: atoms and the periodic table
 │   ├── models.json            # Source of truth: sizes, variants per device, licence, mirror sha
@@ -55,7 +56,7 @@ Rabiat-Personal-Portfolio/
 │   ├── cube-fall.js          # Click-to-drop animation for the builder cube
 │   ├── launch-scroll.js      # GSAP scroll reveals for builder-mode extras
 │   ├── timeline-scroll.js    # GSAP scroll reveals for the experience timeline
-│   ├── vr-lobby.js           # A-Frame scene builder for vr.html
+│   ├── vr-lobby.js           # three.js + WebXR scene for vr.html (curved panels, mascot, lasers)
 │   ├── vr-lobby.json         # Content model for the VR scene
 │   ├── projects.json         # Project data — source of truth, fetched at runtime
 │   ├── favicon.svg
@@ -81,7 +82,7 @@ Rabiat-Personal-Portfolio/
 - **Header Icons**: One single-colour line icon set in `style.css` (`.ico[data-icon]`), drawn as masks so each takes the text colour around it
 - **Interactive Galaxy Canvas**: Animated nebula background with parallax effect and shooting stars
 - **VR Eye Animation**: Interactive VR headset with eyes that follow cursor movement — click it to open the HQ Daily Planner
-- **View in VR (WebXR)**: On supported headsets (Quest Browser, etc.), a header link opens [`vr.html`](vr.html) — an immersive 3D version of the home hero and featured projects (A-Frame)
+- **View in VR (WebXR)**: On supported headsets (Quest Browser, etc.), a header link opens [`vr.html`](vr.html) — an immersive 3D version of the home hero and featured projects (three.js + WebXR)
 - **Card Tilt Effects**: 3D tilt animations on project cards (configurable: off, desktop-only, or all devices)
 - **Color Scheme Switcher**: 31 color schemes to customize the site's appearance. Every scheme derives a contrast-safe `--primary-readable` / `--on-primary` pair at runtime (see `applyReadableTokens` in `script.js`), so link and button text stays legible even on the lightest palettes.
 - **Signal Lab**: hidden easter egg — type `build` on the homepage, or triple-tap the scroll cue on mobile
@@ -173,4 +174,5 @@ Study Lab subjects (except Muscle Lab and Elements Lab, which came first) share 
 
 1. Copy `lab/ml-lab/index.html` into `lab/<name>-lab/index.html`, change the `id`, `title`, intro and chapter list.
 2. Write each chapter as `lab/<name>-lab/chapters/<id>.js` exporting `{ mount(ctx) }`. The comment at the top of `lab/study/kit/kit.js` lists everything `ctx` offers (stage, panel, canvas, loop, sliders, quiz, storage).
-3. Add a card to `lab/study/index.html` with a 1200x800 JPG preview, and add the lab id to the progress list in its script.
+3. Embeds come free: every chapter has an Embed button that copies an iframe, and `?embed=1` shows a single chapter with a link back to the full lab.
+4. Add a card to `lab/study/index.html` with a 1200x800 JPG preview, and add the lab id to the progress list in its script.
