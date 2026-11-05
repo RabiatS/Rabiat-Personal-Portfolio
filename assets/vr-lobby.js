@@ -124,19 +124,19 @@ function loadFonts() {
   const ready = Promise.race([done, new Promise((res) => setTimeout(() => res(null), 3500))]);
   return { ready, done };
 }
-function ellipsize(str, size, weight, maxW) {
-  if (mw(str, size, weight) <= maxW) return str;
+function ellipsize(str, size, weight, maxW, track = 0) {
+  if (mw(str, size, weight, track) <= maxW) return str;
   let s = str;
-  while (s.length > 1 && mw(`${s}...`, size, weight) > maxW) s = s.slice(0, -1).trimEnd();
+  while (s.length > 1 && mw(`${s}...`, size, weight, track) > maxW) s = s.slice(0, -1).trimEnd();
   return `${s.replace(/[,.;:]$/, '')}...`;
 }
-function wrap(str, size, weight, maxW, maxLines = 99) {
+function wrap(str, size, weight, maxW, maxLines = 99, track = 0) {
   const words = String(str).split(/\s+/).filter(Boolean);
   const lines = [];
   let line = '';
   for (let i = 0; i < words.length; i++) {
     const test = line ? `${line} ${words[i]}` : words[i];
-    if (mw(test, size, weight) <= maxW || !line) { line = test; continue; }
+    if (mw(test, size, weight, track) <= maxW || !line) { line = test; continue; }
     lines.push(line);
     line = words[i];
     if (lines.length === maxLines) {
@@ -600,7 +600,7 @@ class Panel {
     const h = Math.max(this.hover, this.focus);
     const lifted = this.lift + 0.02 * h - 0.01 * Math.sin(Math.PI * this.press);
     this.item.position.copy(this.basePos).addScaledVector(this.normal, lifted);
-    if (this.rise > 0.0005) this.item.position.y -= 0.09 * this.rise;
+    if (Math.abs(this.rise) > 0.0005) this.item.position.y -= 0.09 * this.rise;
     const sc = 1 + 0.018 * this.hover - 0.02 * Math.sin(Math.PI * this.press);
     this.item.scale.setScalar(sc);
     const u = this.mat.uniforms;
@@ -667,40 +667,45 @@ const SZ = { display: 0.14, h2: 0.082, title: 0.072, body: 0.062, label: 0.054, 
 const TR = { display: -0.04, h2: -0.03, title: -0.02, eyebrow: 0.15 };
 
 function layoutHero(d, pal, w) {
-  const pad = 0.085;
+  const pad = 0.09;
   const inner = w - pad * 2;
   const cx = w / 2;
   const ops = [];
   let y = pad;
-  ops.push(text(d.eyebrow, cx, base(y, SZ.small), SZ.small, { weight: 600, color: pal.accentText, align: 'center', track: 0.06 }));
-  y += SZ.small * 1.3 + 0.02;
-  const ns = fitSize(d.name, 700, SZ.display, 0.1, inner);
-  ops.push(text(d.name, cx, base(y, ns, 1.1), ns, { weight: 700, color: pal.text, align: 'center', track: -0.015 }));
-  y += ns * 1.1;
-  const hs = fitSize(d.headline, 700, SZ.headline, 0.06, inner);
-  ops.push(text(d.headline, cx, base(y, hs, 1.2), hs, { weight: 700, grad: [pal.gradA, pal.gradB], align: 'center', track: -0.01 }));
-  y += hs * 1.2 + 0.035;
-  const lines = wrap(d.lead, SZ.body, 400, inner * 0.94, 3);
+  // Eyebrow: uppercase, 600, wide tracking, like the site's .eyebrow
+  ops.push(text(d.eyebrow.toUpperCase(), cx, base(y, SZ.tag), SZ.tag, { weight: 600, color: pal.eyebrow, align: 'center', track: TR.eyebrow }));
+  y += SZ.tag * 1.3 + 0.03;
+  // Both h1 lines share one size, weight 800 and -0.04em, as on the homepage
+  const hs = Math.min(
+    fitSize(d.name, 800, SZ.display, 0.08, inner, TR.display),
+    fitSize(d.headline, 800, SZ.display, 0.08, inner, TR.display),
+  );
+  ops.push(text(d.name, cx, base(y, hs, 1.08), hs, { weight: 800, color: pal.heading, align: 'center', track: TR.display }));
+  y += hs * 1.08;
+  ops.push(text(d.headline, cx, base(y, hs, 1.08), hs, { weight: 800, grad: pal.grad, align: 'center', track: TR.display }));
+  y += hs * 1.08 + 0.04;
+  const lines = wrap(d.lead, SZ.body, 400, inner * 0.9, 3);
   for (const l of lines) {
-    ops.push(text(l, cx, base(y, SZ.body, 1.38), SZ.body, { color: pal.muted, align: 'center' }));
-    y += SZ.body * 1.38;
+    ops.push(text(l, cx, base(y, SZ.body, 1.5), SZ.body, { color: pal.lead, align: 'center' }));
+    y += SZ.body * 1.5;
   }
-  y += 0.035;
-  const chips = chipRow(d.tags || [], pad, y, inner, 0.05, 'center');
+  y += 0.03;
+  const chips = chipRow(d.tags || [], pad, y, inner, SZ.tag, 'center');
   ops.push(...chips.ops);
   y += chips.h + 0.05;
   const buttonsTop = y;
-  y += 0.13 + 0.075;
+  y += SZ.label * 2.8 + 0.08;
   return { w, h: y, ops, buttonsTop };
 }
 
+// Pill button with the site's .btn proportions (600 weight, generous padding)
 function layoutButton(label, icon, pal, primary, size = SZ.label) {
-  const padX = size * 1.05;
-  const iconS = icon ? size * 1.05 : 0;
-  const gap = icon ? size * 0.45 : 0;
+  const padX = size * 1.45;
+  const iconS = icon ? size * 1.1 : 0;
+  const gap = icon ? size * 0.5 : 0;
   const tw = mw(label, size, 600);
   const w = padX * 2 + iconS + gap + tw;
-  const h = size * 2.3;
+  const h = size * 2.8;
   const color = primary ? pal.onFill : pal.text;
   const ops = [];
   if (icon) ops.push({ t: 'icon', name: icon, x: padX, y: (h - iconS) / 2, size: iconS, color, weight: 2 });
@@ -711,18 +716,18 @@ function layoutButton(label, icon, pal, primary, size = SZ.label) {
 function layoutCard(item, project, pal, w, h) {
   const pad = 0.032;
   const ops = [];
-  const imgH = 0.285;
+  const imgH = 0.27;
   const iw = w - pad * 2;
   ops.push({ t: 'img', entry: loadImage(project.image), x: pad, y: pad, w: iw, h: imgH, r: 0.026, label: project.title });
   let y = pad + imgH + 0.034;
-  const ts = fitSize(item.title, 700, SZ.title, 0.06, iw);
-  ops.push(text(ellipsize(item.title, ts, 700, iw), pad, base(y, ts, 1.15), ts, { weight: 700, color: pal.text }));
-  y += ts * 1.15 + 0.012;
-  for (const l of wrap(item.line, SZ.body, 400, iw, 2)) {
-    ops.push(text(l, pad, base(y, SZ.body, 1.3), SZ.body, { color: pal.muted }));
-    y += SZ.body * 1.3;
+  const ts = fitSize(item.title, 700, SZ.title, 0.058, iw, TR.title);
+  ops.push(text(item.title, pad, base(y, ts, 1.15), ts, { weight: 700, color: pal.text, track: TR.title }));
+  y += ts * 1.15 + 0.01;
+  for (const l of wrap(item.line, SZ.body * 0.96, 400, iw, 2)) {
+    ops.push(text(l, pad, base(y, SZ.body * 0.96, 1.32), SZ.body * 0.96, { color: pal.muted }));
+    y += SZ.body * 0.96 * 1.32;
   }
-  const chips = chipRow(project.tags.slice(0, 3), pad, h - pad - 0.0875, iw, 0.05);
+  const chips = chipRow(project.tags.slice(0, 3), pad, h - pad - SZ.tag * 2.4, iw, SZ.tag);
   ops.push(...chips.ops);
   return ops;
 }
@@ -734,17 +739,17 @@ function layoutExperience(d, pal, w) {
   const inner = w - padX * 2;
   d.items.forEach((it, i) => {
     if (i) { ops.push({ t: 'rule', x: padX, y: y - 0.026, w: inner }); }
-    ops.push({ t: 'dot', x: padX + 0.012, y: y + SZ.body * 0.62, r: 0.012 });
+    ops.push({ t: 'dot', x: padX + 0.012, y: y + 0.066 * 0.6, r: 0.011 });
     const tx = padX + 0.045;
-    const whenW = mw(it.when, SZ.small, 500);
+    const whenW = mw(it.when, SZ.tag, 500);
     const roleW = inner - 0.045 - whenW - 0.04;
-    const rs = fitSize(it.role, 700, 0.066, 0.054, roleW);
-    ops.push(text(ellipsize(it.role, rs, 700, roleW), tx, base(y, 0.066, 1.2), rs, { weight: 700, color: pal.text }));
-    ops.push(text(it.when, padX + inner, base(y, 0.066, 1.2), SZ.small, { weight: 500, color: pal.soft, align: 'right' }));
+    const rs = fitSize(it.role, 700, 0.066, 0.046, roleW, -0.015);
+    ops.push(text(ellipsize(it.role, rs, 700, roleW, -0.015), tx, base(y, 0.066, 1.2), rs, { weight: 700, color: pal.text, track: -0.015 }));
+    ops.push(text(it.when, padX + inner, base(y, 0.066, 1.2), SZ.tag, { weight: 500, color: pal.soft, align: 'right' }));
     y += 0.066 * 1.2 + 0.006;
-    const ls = fitSize(it.line, 400, 0.058, 0.05, inner - 0.045);
-    ops.push(text(ellipsize(it.line, ls, 400, inner - 0.045), tx, base(y, 0.058, 1.3), ls, { color: pal.muted }));
-    y += 0.058 * 1.3 + 0.052;
+    const ls = fitSize(it.line, 400, 0.056, 0.048, inner - 0.045);
+    ops.push(text(ellipsize(it.line, ls, 400, inner - 0.045), tx, base(y, 0.056, 1.3), ls, { color: pal.muted }));
+    y += 0.056 * 1.3 + 0.052;
   });
   return { w, h: y - 0.052 + 0.05, ops };
 }
@@ -755,12 +760,12 @@ function layoutLabTile(lab, pal, w, h) {
   const imgH = h - pad * 2 - 0.27;
   const ops = [{ t: 'img', entry: loadImage(lab.image), x: pad, y: pad, w: iw, h: imgH, r: 0.026, label: lab.title }];
   let y = pad + imgH + 0.03;
-  ops.push(text(lab.title, pad, base(y, SZ.title, 1.15), SZ.title, { weight: 700, color: pal.text }));
-  ops.push({ t: 'icon', name: 'external', x: w - pad - 0.052, y: y + 0.012, size: 0.052, color: pal.soft, weight: 2 });
+  ops.push(text(lab.title, pad, base(y, SZ.title, 1.15), SZ.title, { weight: 700, color: pal.text, track: TR.title }));
+  ops.push({ t: 'icon', name: 'external', x: w - pad - 0.05, y: y + 0.014, size: 0.05, color: pal.soft, weight: 2 });
   y += SZ.title * 1.15 + 0.008;
-  for (const l of wrap(lab.line, 0.058, 400, iw, 2)) {
-    ops.push(text(l, pad, base(y, 0.058, 1.3), 0.058, { color: pal.muted }));
-    y += 0.058 * 1.3;
+  for (const l of wrap(lab.line, 0.056, 400, iw, 2)) {
+    ops.push(text(l, pad, base(y, 0.056, 1.32), 0.056, { color: pal.muted }));
+    y += 0.056 * 1.32;
   }
   return ops;
 }
@@ -773,34 +778,58 @@ function layoutDetail(p, pal) {
   const cw = w - x0 - pad;
   const ops = [];
   let y = pad;
-  const meta = [p.category, p.year].filter(Boolean).map(clean).join('  ·  ');
-  ops.push(text(ellipsize(meta.toUpperCase(), 0.046, 600, cw - 0.13), x0, base(y, 0.046), 0.046, { weight: 600, color: pal.accentText, track: 0.06 }));
-  y += 0.046 * 1.3 + 0.018;
-  for (const l of wrap(clean(p.title), 0.088, 700, cw, 2)) {
-    ops.push(text(l, x0, base(y, 0.088, 1.15), 0.088, { weight: 700, color: pal.text, track: -0.01 }));
-    y += 0.088 * 1.15;
+  // Leave room on the right for the close button
+  const meta = [p.category, p.year].filter(Boolean).map(clean).join('  \u00b7  ');
+  ops.push(text(ellipsize(meta.toUpperCase(), 0.042, 600, cw - 0.17, 0.12), x0, base(y, 0.042), 0.042, { weight: 600, color: pal.accentText, track: 0.12 }));
+  y += 0.042 * 1.3 + 0.03;
+  for (const l of wrap(clean(p.title), 0.09, 800, cw, 2, TR.h2)) {
+    ops.push(text(l, x0, base(y, 0.09, 1.12), 0.09, { weight: 800, color: pal.heading, track: TR.h2 }));
+    y += 0.09 * 1.12;
   }
   if (p.subtitle) {
-    y += 0.006;
+    y += 0.008;
     for (const l of wrap(clean(p.subtitle), 0.058, 500, cw, 2)) {
       ops.push(text(l, x0, base(y, 0.058, 1.3), 0.058, { weight: 500, color: pal.text }));
       y += 0.058 * 1.3;
     }
   }
   y += 0.022;
-  for (const l of wrap(clean(p.description), 0.056, 400, cw, 6)) {
-    ops.push(text(l, x0, base(y, 0.056, 1.42), 0.056, { color: pal.muted }));
-    y += 0.056 * 1.42;
+  for (const l of wrap(clean(p.description), 0.055, 400, cw, 6)) {
+    ops.push(text(l, x0, base(y, 0.055, 1.5), 0.055, { color: pal.muted }));
+    y += 0.055 * 1.5;
   }
   y += 0.03;
-  const chips = chipRow((p.tags || []).slice(0, 4), x0, y, cw, 0.046);
+  const chips = chipRow((p.tags || []).slice(0, 4), x0, y, cw, 0.044);
   ops.push(...chips.ops);
   y += chips.h + 0.045;
-  const buttonsTop = y;
-  y += 0.13 + pad;
-  const h = Math.max(y, 0.86);
+  y += SZ.label * 2.8 + pad;
+  const h = Math.max(y, 0.88);
   ops.unshift({ t: 'img', entry: loadImage(p.image), x: pad, y: pad, w: imgW, h: h - pad * 2, r: 0.03, label: p.title });
-  return { w, h, ops, x0, buttonsTop: h - pad - 0.13 };
+  return { w, h, ops, x0, buttonsTop: h - pad - SZ.label * 2.8 };
+}
+
+// First visit in a headset: three short instructions
+function layoutHint(pal) {
+  const w = 1.36;
+  const pad = 0.07;
+  const ops = [];
+  let y = pad;
+  ops.push(text('GETTING AROUND', pad, base(y, 0.042), 0.042, { weight: 600, color: pal.accentText, track: 0.12 }));
+  y += 0.042 * 1.3 + 0.03;
+  const rows = [
+    ['trigger', 'Point and pull the trigger to select.'],
+    ['grip', 'Grip to move panels.'],
+    ['stick', 'Stick to turn.'],
+  ];
+  for (const [icon, str] of rows) {
+    ops.push({ t: 'icon', name: icon, x: pad, y: y + 0.004, size: 0.07, color: pal.text, weight: 1.9 });
+    ops.push(text(str, pad + 0.1, base(y, 0.062, 1.25), 0.062, { weight: 600, color: pal.heading, track: -0.01 }));
+    y += 0.062 * 1.25 + 0.03;
+  }
+  y += 0.01;
+  ops.push(text('Hold B or Y to recenter. Pull the trigger to dismiss.', pad, base(y, 0.046), 0.046, { color: pal.muted }));
+  y += 0.046 * 1.3 + pad;
+  return { w, h: y, ops };
 }
 
 // ---------------------------------------------------------------------------
@@ -1188,7 +1217,7 @@ function buildMascot(renderer, pal) {
   const local = new THREE.Vector3();
   return {
     root, lights,
-    update(dt, t, headPos, pointPos, happyTarget) {
+    update(dt, t, headPos, pointPos, happyTarget, intro = 0) {
       // Head turns toward the viewer, eyes toward whatever is being pointed at
       root.worldToLocal(local.copy(headPos));
       const ty = clamp(Math.atan2(local.x, local.z), -0.6, 0.6);
@@ -1206,8 +1235,11 @@ function buildMascot(renderer, pal) {
       state.look.x += (lx - state.look.x) * damp(10, dt);
       state.look.y += (ly - state.look.y) * damp(10, dt);
       eyeMat.uniforms.uLook.value.copy(state.look);
+      // Intro: grows in and floats up into place
+      root.scale.setScalar(1 - 0.35 * intro);
+      head.position.y = -0.09 * intro;
       if (!REDUCE) {
-        head.position.y = Math.sin(t * 1.4) * 0.012;
+        head.position.y += Math.sin(t * 1.4) * 0.012;
         if (t > state.nextBlink && state.blinkT < 0) state.blinkT = 0;
         if (state.blinkT >= 0) {
           state.blinkT += dt;
@@ -1228,7 +1260,7 @@ function buildMascot(renderer, pal) {
 // ---------------------------------------------------------------------------
 const canvas = $('vrCanvas');
 const overlay = $('vrOverlay');
-const hint = $('vrOverlayHint');
+const hintEl = $('vrOverlayHint');
 const enterBtn = $('enterVrBtn');
 const previewBtn = $('previewBtn');
 const hudTop = $('vrHudTop');
@@ -1240,22 +1272,102 @@ const a11y = $('vrA11y');
 let renderer;
 let scene;
 let camera;
+let dolly; // holds the camera and controllers; snap turn rotates it around the head
 let ui;
+let groups; // hero, left, right, dock: each can be grabbed and moved on the cylinder
 let env;
 let mascot;
 let pal;
 let styles;
+let content = null;
+let gallery = null;
 let xrSupported = false;
 let xrSession = null;
 let pendingNav = null;
 let dim = 0;
 let dimT = 0;
 let detail = null;
+let closing = null;
 let focused = null;
-const view = { yaw: 0, pitch: -4 * DEG, ty: 0, tp: -4 * DEG };
+let firstHint = null;
+let mascotIntro = 0;
+let mascotWait = 0;
+let frameId = 0;
+const view = { yaw: 0, pitch: -4 * DEG, ty: 0, tp: -4 * DEG, vy: 0, vp: 0 };
 
-function setHint(t) { if (hint) hint.textContent = t; }
+// Scratch objects so the frame loop allocates nothing
+const _v = new THREE.Vector3();
+const _v2 = new THREE.Vector3();
+const _d = new THREE.Vector3();
+const _wp = new THREE.Vector3();
+const _m = new THREE.Matrix4();
+const _m2 = new THREE.Matrix4();
+const _ray = new THREE.Ray();
+const _zero = new THREE.Vector3();
+const _qi = new THREE.Quaternion();
+const _s = new THREE.Vector3();
+const _up = new THREE.Vector3(0, 1, 0);
+const _euler = new THREE.Euler();
+const _yawQ = new THREE.Quaternion();
+const _hits = [];
+const _targets = [];
+const _hovered = [];
 
+function setHint(t) { if (hintEl) hintEl.textContent = t; }
+
+// ---------------------------------------------------------------------------
+// Sound: tiny synthesized ticks, very quiet, muted state remembered
+// ---------------------------------------------------------------------------
+const sound = { ctx: null, on: store('vrSound') !== 'off', last: 0 };
+function audio() {
+  try {
+    if (!sound.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      sound.ctx = new AC();
+    }
+    if (sound.ctx.state === 'suspended') sound.ctx.resume();
+  } catch { return null; }
+  return sound.ctx;
+}
+const TONES = {
+  hover: { type: 'sine', f0: 1850, f1: 1500, peak: 0.014, len: 0.045 },
+  click: { type: 'triangle', f0: 900, f1: 560, peak: 0.04, len: 0.08 },
+  open: { type: 'sine', f0: 520, f1: 880, peak: 0.03, len: 0.14 },
+  close: { type: 'sine', f0: 820, f1: 480, peak: 0.026, len: 0.12 },
+  grab: { type: 'triangle', f0: 420, f1: 360, peak: 0.03, len: 0.07 },
+  turn: { type: 'sine', f0: 300, f1: 240, peak: 0.018, len: 0.06 },
+};
+function tick(kind) {
+  if (!sound.on) return;
+  const ac = sound.ctx;
+  if (!ac || ac.state !== 'running') return;
+  const now = performance.now();
+  if (kind === 'hover' && now - sound.last < 70) return;
+  sound.last = now;
+  const tone = TONES[kind] || TONES.click;
+  const t = ac.currentTime;
+  const o = ac.createOscillator();
+  const g = ac.createGain();
+  o.type = tone.type;
+  o.frequency.setValueAtTime(tone.f0, t);
+  o.frequency.exponentialRampToValueAtTime(tone.f1, t + tone.len);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(tone.peak, t + 0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + tone.len);
+  o.connect(g).connect(ac.destination);
+  o.start(t);
+  o.stop(t + tone.len + 0.02);
+}
+function pulse(source, strength, ms) {
+  const act = source && source.gamepad && source.gamepad.hapticActuators && source.gamepad.hapticActuators[0];
+  if (!act) return;
+  try { act.pulse(strength, ms); } catch { /* not supported */ }
+}
+
+// ---------------------------------------------------------------------------
+// Boot
+// ---------------------------------------------------------------------------
 async function boot() {
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
@@ -1276,44 +1388,60 @@ async function boot() {
   styles = makeStyles(pal);
   scene = new THREE.Scene();
   scene.background = new THREE.Color().setRGB(...pal.skyHor, THREE.SRGBColorSpace);
+  dolly = new THREE.Group();
+  scene.add(dolly);
   camera = new THREE.PerspectiveCamera(64, innerWidth / innerHeight, 0.02, 200);
   camera.position.set(0, EYE, 0);
   camera.rotation.order = 'YXZ';
-  scene.add(camera);
+  dolly.add(camera);
   resize();
 
   env = buildEnvironment(renderer, scene, pal);
   ui = new THREE.Group();
   scene.add(ui);
+  groups = {};
+  for (const k of ['hero', 'left', 'right', 'dock']) {
+    const g = new THREE.Group();
+    g.name = k;
+    ui.add(g);
+    groups[k] = g;
+  }
   mascot = buildMascot(renderer, pal);
   mascot.root.position.set(0, 2.2, -2.03);
-  ui.add(mascot.root);
+  groups.hero.add(mascot.root);
   scene.add(mascot.lights);
+  camera.add(blink.mesh);
+  scene.add(mouseCursor);
 
   detectXR();
   setupInput();
   setupControllers();
   addEventListener('resize', resize);
 
-  let data;
-  let projects;
+  const fonts = loadFonts();
   try {
     const [a, b] = await Promise.all([fetch('assets/vr-lobby.json').then((r) => r.json()), fetch('assets/projects.json').then((r) => r.json())]);
-    data = a;
-    projects = b.projects || [];
+    content = { data: a, projects: b.projects || [] };
   } catch {
     setHint('Could not load the portfolio content. The 2D site still works.');
   }
-  if (data) buildUI(data, projects);
+  const fontState = await fonts.ready;
+  if (content) {
+    buildUI();
+    playIntro(0.1);
+    // Slow network: build with the fallback font now, then redraw in Inter
+    if (fontState === null) fonts.done.then((ok) => { if (ok) rebuildUI(); });
+  }
   renderer.setAnimationLoop(frame);
   window.__vrLobby.ready = true;
+  window.__vrLobby.fontLoaded = fontState === true;
 }
 
 function resize() {
   const w = innerWidth;
   const h = innerHeight;
   const aspect = w / h;
-  // Keep about 90 degrees across on wide screens and enough of the hero on phones
+  // About 80 degrees across on wide screens, enough of the hero on phones
   const hfov = aspect >= 1.2 ? 80 : 50;
   camera.fov = clamp(2 * Math.atan(Math.tan((hfov * DEG) / 2) / aspect) / DEG, 50, 92);
   camera.aspect = aspect;
@@ -1346,7 +1474,7 @@ function addA11y(panel, kind, label, link) {
     if (link.external) { el.target = '_blank'; el.rel = 'noopener'; }
   } else {
     el.type = 'button';
-    el.addEventListener('click', () => panel.onSelect && panel.onSelect());
+    el.addEventListener('click', () => { audio(); if (panel.onSelect) { tick('click'); panel.onSelect(); } });
   }
   el.dataset.kind = kind;
   el.addEventListener('focus', () => setFocus(panel, true));
@@ -1364,27 +1492,29 @@ function setFocus(panel, turn) {
     if (turn && !renderer.xr.isPresenting) lookAtPanel(panel);
   }
 }
-const _wp = new THREE.Vector3();
 function lookAtPanel(panel) {
   panel.item.getWorldPosition(_wp);
-  const dx = _wp.x - camera.position.x;
-  const dy = _wp.y - camera.position.y;
-  const dz = _wp.z - camera.position.z;
+  camera.getWorldPosition(_v);
+  const dx = _wp.x - _v.x;
+  const dy = _wp.y - _v.y;
+  const dz = _wp.z - _v.z;
   let yaw = Math.atan2(-dx, -dz);
   // Shortest turn from where the view is now
   while (yaw - view.ty > Math.PI) yaw -= Math.PI * 2;
   while (yaw - view.ty < -Math.PI) yaw += Math.PI * 2;
   view.ty = yaw;
   view.tp = clamp(Math.atan2(dy, Math.hypot(dx, dz)), -1.1, 1.1);
+  view.vy = view.vp = 0;
 }
 
 // Angle in degrees covered by an arc of `m` metres at radius `r`
 const arcDeg = (m, r = R) => (m / r) / DEG;
 
-function buildUI(data, projects) {
+function buildUI() {
+  const { data, projects } = content;
   const byId = new Map(projects.map((p) => [p.id, p]));
-  const HERO_W = 1.64;
-  const COL_W = 0.675;
+  const HERO_W = 1.84;
+  const COL_W = 0.64;
   const GAP = 0.05;
   const ARC_W = COL_W * 2 + GAP;
   const sideStart = arcDeg(HERO_W / 2) + 4.2; // degrees from centre to the side arcs
@@ -1393,23 +1523,23 @@ function buildUI(data, projects) {
   // ----- Hero -----
   const hero = layoutHero(data.hero, pal, HERO_W);
   const heroPanel = new Panel({
-    parent: ui, key: 'hero', theta: 0, y: centerY, w: hero.w, h: hero.h, radius: 0.07, margin: 0.07,
+    parent: groups.hero, group: groups.hero, key: 'hero', theta: 0, y: centerY, w: hero.w, h: hero.h, radius: 0.07, margin: 0.07,
     style: styles.glass, paint: (ctx, s) => runOps(ctx, s, hero.ops, pal),
   });
   mascot.root.position.y = centerY + hero.h / 2 + 0.26;
 
   // Shrink the button row until it fits inside the hero
-  const ctaGap = 0.028;
+  const ctaGap = 0.03;
   let ctaSize = SZ.label;
   let ctaLayouts;
   let total;
   do {
     ctaLayouts = data.ctas.map((c) => ({ c, l: layoutButton(c.label, c.icon, pal, c.primary, ctaSize) }));
     total = ctaLayouts.reduce((s, x) => s + x.l.w, 0) + ctaGap * (ctaLayouts.length - 1);
-    ctaSize *= 0.97;
-  } while (total > HERO_W - 0.14 && ctaSize > 0.042);
+    ctaSize *= 0.98;
+  } while (total > HERO_W - 0.16 && ctaSize > 0.042);
   let x = (HERO_W - total) / 2;
-  const btnY = hero.h / 2 - hero.buttonsTop - 0.065;
+  const btnY = hero.h / 2 - hero.buttonsTop - ctaLayouts[0].l.h / 2;
   for (const { c, l } of ctaLayouts) {
     const cx = x + l.w / 2 - HERO_W / 2;
     const p = new Panel({
@@ -1431,60 +1561,68 @@ function buildUI(data, projects) {
     .filter(Boolean);
   const perPage = 4;
   const pages = Math.max(1, Math.ceil(featured.length / perPage));
-  let page = 0;
   const CARD_H = 0.75;
   const blockH = CARD_H * 2 + GAP;
   const leftStart = -(sideStart + arcDeg(ARC_W));
   const colTheta = (c, startDeg) => startDeg + arcDeg(c * (COL_W + GAP) + COL_W / 2);
   const cards = [];
+  gallery = { featured, cards, perPage, pages, page: 0, showPage: null };
   for (let i = 0; i < perPage; i++) {
     const row = (i / 2) | 0;
     const col = i % 2;
     const card = new Panel({
-      parent: ui, key: `card:${i}`, theta: colTheta(col, leftStart), y: centerY + blockH / 2 - CARD_H / 2 - row * (CARD_H + GAP),
+      parent: groups.left, group: groups.left, key: `card:${i}`, theta: colTheta(col, leftStart), y: centerY + blockH / 2 - CARD_H / 2 - row * (CARD_H + GAP),
       w: COL_W, h: CARD_H, radius: 0.05, margin: 0.06, lift: 0.0, style: styles.card,
       paint: (ctx, s, self) => { if (self.entry) runOps(ctx, s, layoutCard(self.entry.item, self.entry.project, pal, COL_W, CARD_H), pal); },
-      onSelect: () => { if (card.entry) openDetail(card.entry, card); },
+      onSelect: () => {},
     });
     cards.push(card);
     addA11y(card, 'card', '');
   }
   const showPage = (n, animate) => {
-    page = (n + pages) % pages;
+    const prev = gallery.page;
+    gallery.page = (n + pages) % pages;
+    const dir = Math.sign(n - prev) || 1;
     cards.forEach((card, i) => {
-      const entry = featured[page * perPage + i] || null;
+      const index = gallery.page * perPage + i;
+      const entry = featured[index] || null;
       card.entry = entry;
       card.visible = !!entry;
-      card.onSelect = entry ? () => openDetail(entry, card) : null;
+      card.onSelect = entry ? () => openDetail(index, 'card') : null;
       if (card.a11y) {
         card.a11y.textContent = entry ? `Project: ${entry.item.title}. ${entry.item.line}` : '';
         card.a11y.hidden = !entry;
       }
       card.repaint();
-      if (animate && !REDUCE) card.fade = 0;
-      // Repaint again when the image arrives
+      if (animate && !REDUCE) {
+        // New page slides up into place, one card after another
+        card.fade = 0;
+        card.rise = dir > 0 ? 0.6 : -0.6;
+        card.wait = i * 0.04;
+      }
       const img = entry && loadImage(entry.project.image);
       if (img && !img.ok && !img.failed) img.waiters.push(() => { if (card.entry === entry) card.repaint(); });
     });
     pageLabel.repaint();
   };
+  gallery.showPage = showPage;
 
-  // Header row above the cards
+  // Header rows above the side arcs: h2 style, 800 and tight tracking
   const headerY = centerY + blockH / 2 + 0.1;
-  const headerLabel = (str, startDeg, key) => {
-    const w = mw(str, SZ.title + 0.004, 700) + 0.04;
+  const headerLabel = (str, startDeg, key, group) => {
+    const w = mw(str, SZ.h2, 800, TR.h2) + 0.04;
     return new Panel({
-      parent: ui, key, theta: startDeg + arcDeg(w / 2), y: headerY, w, h: 0.12, margin: 0.01, style: styles.label,
-      paint: (ctx, s) => runOps(ctx, s, [text(str, 0.0, 0.088, SZ.title + 0.004, { weight: 700, color: pal.text, track: -0.01 })], pal),
+      parent: group, group, key, theta: startDeg + arcDeg(w / 2), y: headerY, w, h: 0.12, margin: 0.01, style: styles.label,
+      paint: (ctx, s) => runOps(ctx, s, [text(str, 0.0, 0.09, SZ.h2, { weight: 800, color: pal.heading, track: TR.h2 })], pal),
     });
   };
-  headerLabel(data.featured.title, leftStart, 'head:featured');
+  headerLabel(data.featured.title, leftStart, 'head:featured', groups.left);
   const leftEnd = -sideStart;
   const pagerSize = 0.105;
   const pageLabelW = 0.17;
   const mkRound = (icon, deg, key, label, onSelect) => {
     const p = new Panel({
-      parent: ui, key, theta: deg, y: headerY, w: pagerSize, h: pagerSize, radius: pagerSize / 2, margin: 0.03, style: styles.button,
+      parent: groups.left, group: groups.left, key, theta: deg, y: headerY, w: pagerSize, h: pagerSize, radius: pagerSize / 2, margin: 0.03, style: styles.button,
       paint: (ctx, s) => runOps(ctx, s, [{ t: 'icon', name: icon, x: pagerSize * 0.2, y: pagerSize * 0.2, size: pagerSize * 0.6, color: pal.text, weight: 2.2 }], pal),
       onSelect, label,
     });
@@ -1495,31 +1633,31 @@ function buildUI(data, projects) {
   const labelDeg = nextDeg - arcDeg(pagerSize / 2 + pageLabelW / 2);
   const prevDeg = labelDeg - arcDeg(pageLabelW / 2 + pagerSize / 2);
   const pageLabel = new Panel({
-    parent: ui, key: 'pager:label', theta: labelDeg, y: headerY, w: pageLabelW, h: 0.1, margin: 0.01, style: styles.label,
-    paint: (ctx, s) => runOps(ctx, s, [text(`${page + 1} / ${pages}`, pageLabelW / 2, 0.07, SZ.small, { weight: 600, color: pal.muted, align: 'center' })], pal),
+    parent: groups.left, group: groups.left, key: 'pager:label', theta: labelDeg, y: headerY, w: pageLabelW, h: 0.1, margin: 0.01, style: styles.label,
+    paint: (ctx, s) => runOps(ctx, s, [text(`${gallery.page + 1} / ${pages}`, pageLabelW / 2, 0.07, SZ.small, { weight: 600, color: pal.muted, align: 'center' })], pal),
   });
   if (pages > 1) {
-    mkRound('chevL', prevDeg, 'pager:prev', 'Previous projects', () => showPage(page - 1, true));
-    mkRound('chevR', nextDeg, 'pager:next', 'More projects', () => showPage(page + 1, true));
+    mkRound('chevL', prevDeg, 'pager:prev', 'Previous projects', () => pageCards(-1));
+    mkRound('chevR', nextDeg, 'pager:next', 'More projects', () => pageCards(1));
   } else pageLabel.visible = false;
   showPage(0, false);
 
   // ----- Right arc: experience and the labs -----
   const rightStart = sideStart;
-  headerLabel(data.experience.title, rightStart, 'head:experience');
+  headerLabel(data.experience.title, rightStart, 'head:experience', groups.right);
   const exp = layoutExperience(data.experience, pal, ARC_W);
   const expTop = centerY + blockH / 2;
   new Panel({
-    parent: ui, key: 'experience', theta: rightStart + arcDeg(ARC_W / 2), y: expTop - exp.h / 2, w: ARC_W, h: exp.h, radius: 0.06, margin: 0.06,
+    parent: groups.right, group: groups.right, key: 'experience', theta: rightStart + arcDeg(ARC_W / 2), y: expTop - exp.h / 2, w: ARC_W, h: exp.h, radius: 0.06, margin: 0.06,
     style: styles.glass, paint: (ctx, s) => runOps(ctx, s, exp.ops, pal),
   });
   // Social links at the end of the header row
   let end = rightStart + arcDeg(ARC_W);
   [...(data.links || [])].reverse().forEach((lnk) => {
-    const l = layoutButton(lnk.label, lnk.icon, pal, false, 0.05);
+    const l = layoutButton(lnk.label, lnk.icon, pal, false, 0.046);
     const deg = end - arcDeg(l.w / 2);
     const p = new Panel({
-      parent: ui, key: `link:${lnk.label}`, theta: deg, y: headerY, w: l.w, h: l.h, radius: l.h / 2, margin: 0.03, style: styles.button,
+      parent: groups.right, group: groups.right, key: `link:${lnk.label}`, theta: deg, y: headerY, w: l.w, h: l.h, radius: l.h / 2, margin: 0.03, style: styles.button,
       paint: (ctx, s) => runOps(ctx, s, l.ops, pal), onSelect: () => go(lnk), label: lnk.label,
     });
     addA11y(p, 'link', lnk.label, lnk);
@@ -1529,7 +1667,7 @@ function buildUI(data, projects) {
   (data.labs || []).slice(0, 2).forEach((lab, i) => {
     const entry = loadImage(lab.image);
     const tile = new Panel({
-      parent: ui, key: `lab:${lab.title}`, theta: colTheta(i, rightStart), y: expTop - exp.h - GAP - tileH / 2,
+      parent: groups.right, group: groups.right, key: `lab:${lab.title}`, theta: colTheta(i, rightStart), y: expTop - exp.h - GAP - tileH / 2,
       w: COL_W, h: tileH, radius: 0.05, margin: 0.06, style: styles.card,
       paint: (ctx, s) => runOps(ctx, s, layoutLabTile(lab, pal, COL_W, tileH), pal),
       onSelect: () => go(lab), label: lab.title,
@@ -1539,59 +1677,256 @@ function buildUI(data, projects) {
   });
 
   // ----- Navigation dock below eye level, tilted toward the viewer -----
-  const nav = data.nav || [];
-  const itemW = 0.255;
+  // Site navigation, a divider, then Recenter and the sound toggle
+  const tools = [
+    { label: 'Recenter', icon: 'recenter', action: () => recenter() },
+    { label: 'Sound', icon: 'sound', toggle: true, action: () => toggleSound() },
+  ];
+  const items = [...(data.nav || []), { divider: true }, ...tools];
+  const DR = 2.0;
   const itemH = 0.158;
   const dockPad = 0.018;
-  const dockW = nav.length * itemW + (nav.length - 1) * 0.01 + dockPad * 2;
+  const labelSize = 0.044;
+  const widthOf = (n) => (n.divider ? 0.03 : Math.max(0.19, mw(n.toggle ? 'Muted' : n.label, labelSize, 600) + 0.07));
+  const dockW = items.reduce((s, n) => s + widthOf(n), 0) + (items.length - 1) * 0.008 + dockPad * 2;
   const dockH = itemH + dockPad * 2;
   const dockY = Math.min(0.64, centerY - hero.h / 2 - 0.36);
+  let dx = dockPad - dockW / 2;
+  const dockOps = [];
+  items.forEach((n) => { if (n.divider) dockOps.push({ t: 'rule', x: dx + dockW / 2 + 0.014, y: dockPad + 0.04, w: 0.0022, h: itemH - 0.08 }); dx += widthOf(n) + 0.008; });
   const dock = new Panel({
-    parent: ui, key: 'dock', theta: 0, y: dockY, r: 2.0, w: dockW, h: dockH, radius: dockH / 2, margin: 0.06,
-    style: styles.glass,
+    parent: groups.dock, group: groups.dock, key: 'dock', theta: 0, y: dockY, r: DR, w: dockW, h: dockH, radius: dockH / 2, margin: 0.06,
+    style: styles.glass, paint: (ctx, s) => runOps(ctx, s, dockOps, pal),
   });
-  nav.forEach((n, i) => {
-    const cx = dockPad + i * (itemW + 0.01) + itemW / 2 - dockW / 2;
+  dx = dockPad - dockW / 2;
+  items.forEach((n) => {
+    const iw = widthOf(n);
+    const cx = dx + iw / 2;
+    dx += iw + 0.008;
+    if (n.divider) return;
     const icon = 0.054;
     const p = new Panel({
-      parent: dock, key: `dock:${n.label}`, theta: arcDeg(cx, 2.0), y: 0, w: itemW, h: itemH, radius: 0.05, margin: 0.02, lift: 0.012,
+      parent: dock, key: `dock:${n.label}`, theta: arcDeg(cx, DR), y: 0, w: iw, h: itemH, radius: 0.05, margin: 0.02, lift: 0.012,
       style: styles.ghost,
-      paint: (ctx, s) => runOps(ctx, s, [
-        { t: 'icon', name: n.icon, x: (itemW - icon) / 2, y: 0.026, size: icon, color: pal.text, weight: 1.9 },
-        text(n.label, itemW / 2, 0.132, fitSize(n.label, 600, 0.046, 0.038, itemW - 0.024), { weight: 600, color: pal.muted, align: 'center' }),
-      ], pal),
-      onSelect: () => go(n), label: n.label,
+      paint: (ctx, s) => {
+        const name = n.toggle ? (sound.on ? 'sound' : 'mute') : n.icon;
+        const label = n.toggle ? (sound.on ? 'Sound' : 'Muted') : n.label;
+        runOps(ctx, s, [
+          { t: 'icon', name, x: (iw - icon) / 2, y: 0.026, size: icon, color: pal.text, weight: 1.9 },
+          text(label, iw / 2, 0.132, fitSize(label, 600, labelSize, 0.036, iw - 0.024), { weight: 600, color: pal.muted, align: 'center' }),
+        ], pal);
+      },
+      onSelect: () => (n.action ? n.action() : go(n)), label: n.label,
     });
-    addA11y(p, 'nav', n.label, n);
+    if (n.toggle) {
+      gallery.soundItem = p;
+      addA11y(p, 'tool', soundLabel());
+    } else addA11y(p, n.action ? 'tool' : 'nav', n.label, n.action ? null : n);
   });
 }
 
+function rebuildUI() {
+  closeDetail(true);
+  finishClose();
+  if (firstHint) { firstHint.dispose(); firstHint = null; }
+  [...panels].forEach((p) => p.dispose());
+  a11y.textContent = '';
+  focused = null;
+  buildUI();
+  playIntro(0);
+}
+
+// Panels rise and fade in: hero first, then the side arcs from the centre out, dock last
+function playIntro(base = 0) {
+  for (const p of panels) {
+    if (p.layer !== 'main') continue;
+    const top = p.parentPanel || p;
+    const theta = Math.abs(top.o.theta || 0);
+    let order = 0;
+    if (top.group === groups.dock) order = 0.45;
+    else if (top.group !== groups.hero) order = 0.16 + (theta / 62) * 0.22 + clamp(2.4 - (top.o.y || 0), 0, 2) * 0.05;
+    p.fade = 0;
+    p.wait = REDUCE ? 0 : base + order + (p.parentPanel ? 0.12 : 0);
+    p.rise = REDUCE || p.parentPanel ? 0 : 1;
+  }
+  mascotIntro = REDUCE ? 0 : 1;
+  mascotWait = base + 0.15;
+}
+
+function pageCards(dir) {
+  if (!gallery || gallery.pages < 2) return;
+  gallery.showPage(gallery.page + dir, true);
+  tick('click');
+}
+function soundLabel() { return sound.on ? 'Sound on. Select to mute.' : 'Sound muted. Select to unmute.'; }
+function toggleSound() {
+  sound.on = !sound.on;
+  try { localStorage.setItem('vrSound', sound.on ? 'on' : 'off'); } catch { /* private mode */ }
+  if (sound.on) { audio(); tick('click'); }
+  if (gallery && gallery.soundItem) {
+    gallery.soundItem.repaint();
+    if (gallery.soundItem.a11y) gallery.soundItem.a11y.textContent = soundLabel();
+  }
+}
+
 // ---------------------------------------------------------------------------
-// Project detail, opened in front of the viewer
+// Comfort: blink fade, snap turn, recenter
+// ---------------------------------------------------------------------------
+const blink = (() => {
+  const mat = new THREE.MeshBasicMaterial({ color: 0x07060b, transparent: true, opacity: 0, depthTest: false, depthWrite: false, side: THREE.BackSide });
+  const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 8), mat);
+  mesh.renderOrder = 1000;
+  mesh.frustumCulled = false;
+  mesh.visible = false;
+  return { mesh, mat, t: -1, fn: null };
+})();
+function blinkThen(fn) {
+  if (blink.t >= 0) return false;
+  blink.t = 0;
+  blink.fn = fn;
+  return true;
+}
+function updateBlink(dt) {
+  if (blink.t < 0) return;
+  blink.t += dt;
+  const IN = 0.08;
+  const HOLD = 0.04;
+  const OUT = 0.14;
+  let o;
+  if (blink.t < IN) o = blink.t / IN;
+  else {
+    if (blink.fn) { const f = blink.fn; blink.fn = null; f(); }
+    o = blink.t < IN + HOLD ? 1 : 1 - (blink.t - IN - HOLD) / OUT;
+  }
+  if (o <= 0) { blink.t = -1; blink.mesh.visible = false; return; }
+  blink.mat.opacity = clamp(o, 0, 1);
+  blink.mesh.visible = true;
+}
+
+// Rotate the viewer 30 degrees around their own head, hidden by a short blink
+function snapTurn(sign) {
+  const ok = blinkThen(() => {
+    _v.copy(camera.position).applyMatrix4(dolly.matrixWorld);
+    dolly.rotation.y += sign * 30 * DEG;
+    dolly.updateMatrixWorld();
+    _v2.copy(camera.position).applyMatrix4(dolly.matrixWorld);
+    dolly.position.add(_v.sub(_v2));
+    dolly.updateMatrixWorld();
+  });
+  if (ok) tick('turn');
+}
+
+// Put the layout back in front of wherever the viewer is facing
+function recenter() {
+  const apply = () => {
+    for (const k in groups) { groups[k].rotation.y = 0; groups[k].position.y = 0; }
+    if (renderer.xr.isPresenting) {
+      const cam = renderer.xr.getCamera();
+      _v.setFromMatrixPosition(cam.matrixWorld);
+      cam.getWorldDirection(_d);
+      ui.position.x = _v.x;
+      ui.position.z = _v.z;
+      ui.rotation.y = Math.atan2(-_d.x, -_d.z);
+      env.floor.material.uniforms.uCenter.value.set(_v.x, _v.z);
+    } else {
+      ui.rotation.y = 0;
+      view.ty = Math.round(view.ty / (Math.PI * 2)) * Math.PI * 2;
+      view.tp = -4 * DEG;
+      view.vy = view.vp = 0;
+    }
+  };
+  if (renderer.xr.isPresenting) blinkThen(apply);
+  else apply();
+  tick('click');
+}
+
+// ---------------------------------------------------------------------------
+// Project detail: flies out of its card, steps through projects, flies back
 // ---------------------------------------------------------------------------
 const detailRoot = new THREE.Group();
+const detailFly = new THREE.Group();
+detailRoot.add(detailFly);
+const fly = { u: 1, target: 1, p0: new THREE.Vector3(), q0: new THREE.Quaternion(), s0: 1 };
+const smoother = (u) => u * u * u * (u * (u * 6 - 15) + 10);
+
+function cardFor(index) {
+  if (!gallery) return null;
+  const c = gallery.cards[index - gallery.page * gallery.perPage];
+  return c && c.visible && c.entry === gallery.featured[index] ? c : null;
+}
+// Start transform for detailFly that lays the detail panel over `panel`
+function flyFrom(panel, main) {
+  detailFly.position.set(0, 0, 0);
+  detailFly.quaternion.identity();
+  detailFly.scale.setScalar(1);
+  detailRoot.updateMatrixWorld(true);
+  panel.item.updateWorldMatrix(true, false);
+  _m.copy(detailRoot.matrixWorld).invert();
+  _m2.copy(_m).multiply(main.item.matrixWorld).invert(); // rest of the detail, inverted
+  const sc = panel.w / main.w;
+  _m.multiply(panel.item.matrixWorld).multiply(new THREE.Matrix4().makeScale(sc, sc, sc)).multiply(_m2);
+  _m.decompose(fly.p0, fly.q0, _s);
+  fly.s0 = _s.x;
+}
+function applyFly() {
+  const e = smoother(fly.u);
+  detailFly.position.lerpVectors(fly.p0, _zero, e);
+  detailFly.quaternion.slerpQuaternions(fly.q0, _qi, e);
+  detailFly.scale.setScalar(fly.s0 + (1 - fly.s0) * e);
+}
+function updateFly(dt) {
+  const speed = REDUCE ? 5 : 1 / 0.36;
+  if (fly.target === 1 && fly.u < 1) { fly.u = Math.min(1, fly.u + speed * dt); applyFly(); }
+  else if (fly.target === 0 && fly.u > 0) {
+    fly.u = Math.max(0, fly.u - speed * dt);
+    applyFly();
+    if (fly.u === 0) finishClose();
+  }
+}
 function viewerPose(pos, dir) {
   const cam = renderer.xr.isPresenting ? renderer.xr.getCamera() : camera;
   cam.getWorldPosition(pos);
   cam.getWorldDirection(dir);
   return cam;
 }
-function openDetail(entry, fromPanel) {
-  closeDetail(true);
+function disposeDetail(d) { if (d) [d.main, ...d.buttons].forEach((p) => p.dispose()); }
+function finishClose() {
+  if (!closing) return;
+  disposeDetail(closing);
+  closing = null;
+}
+
+// mode: 'card' flies out of the card, 1 or -1 steps to the next or previous project
+function openDetail(index, mode = 'card') {
+  if (!gallery || !gallery.featured.length) return;
+  const n = gallery.featured.length;
+  index = ((index % n) + n) % n;
+  const entry = gallery.featured[index];
+  const active = document.activeElement;
+  const keepRole = active && active.parentElement === a11y ? active.dataset.role || 'primary' : null;
+  const stepping = !!detail && mode !== 'card';
+  finishClose();
+  disposeDetail(detail);
+  detail = null;
+  // The gallery follows along, so closing returns to the right card
+  const pg = Math.floor(index / gallery.perPage);
+  if (pg !== gallery.page) gallery.showPage(pg, false);
+  const fromPanel = cardFor(index);
+
   const { project, item } = entry;
   const p = { ...project, title: project.title || item.title };
   const L = layoutDetail(p, pal);
   const r = 1.8;
   const k = r / R;
-  const pos = new THREE.Vector3();
-  const dir = new THREE.Vector3();
-  viewerPose(pos, dir);
-  if (!detailRoot.parent) scene.add(detailRoot);
-  detailRoot.position.set(pos.x, 0, pos.z);
-  detailRoot.rotation.set(0, Math.atan2(-dir.x, -dir.z), 0);
-  const y = clamp(pos.y - 0.06, 0.9, 2.2);
+  if (!stepping) {
+    viewerPose(_v, _d);
+    if (!detailRoot.parent) scene.add(detailRoot);
+    detailRoot.position.set(_v.x, 0, _v.z);
+    detailRoot.rotation.set(0, Math.atan2(-_d.x, -_d.z), 0);
+    detailRoot.userData.y = clamp(_v.y - 0.06, 0.9, 2.2);
+  }
   const main = new Panel({
-    parent: detailRoot, layer: 'detail', key: 'detail', theta: 0, y, r, tilt: 0, scale: k, w: L.w, h: L.h, radius: 0.07, margin: 0.08,
+    parent: detailFly, layer: 'detail', key: 'detail', theta: 0, y: detailRoot.userData.y, r, tilt: 0, scale: k, w: L.w, h: L.h, radius: 0.07, margin: 0.08,
     style: { ...styles.glass, fillA: v4(pal.glassA, 0.97), fillB: v4(pal.glassB, 0.98), glow: pal.glow + 0.12 },
     paint: (ctx, s) => runOps(ctx, s, L.ops, pal), renderOrder: 5,
   });
@@ -1613,91 +1948,211 @@ function openDetail(entry, fromPanel) {
   const buttons = links.map((lnk, i) => {
     const l = bl[i];
     const cx = (bx + l.w / 2 - L.w / 2) * k;
-    const by = (L.h / 2 - L.buttonsTop - 0.065) * k;
+    const by = (L.h / 2 - L.buttonsTop - l.h / 2) * k;
     bx += l.w + 0.03;
+    const role = lnk.primary ? 'primary' : 'github';
     const btn = new Panel({
-      parent: main, layer: 'detail', key: `detail:${lnk.primary ? 'primary' : 'github'}`, theta: arcDeg(cx, r), y: by, scale: k,
+      parent: main, layer: 'detail', key: `detail:${role}`, theta: arcDeg(cx, r), y: by, scale: k,
       w: l.w, h: l.h, radius: l.h / 2, margin: 0.04, lift: 0.02 * k, style: lnk.primary ? styles.primary : styles.button,
       paint: (ctx, s) => runOps(ctx, s, l.ops, pal), renderOrder: 6, label: lnk.label,
       onSelect: () => go(lnk),
     });
-    addA11y(btn, 'detail', `${lnk.label}: ${p.title}`, lnk);
+    addA11y(btn, 'detail', `${lnk.label}: ${p.title}`, lnk).dataset.role = role;
     return btn;
   });
-  // Round close button in the top right corner
+  // Close in the top right corner; previous and next as large chevrons just
+  // outside the left and right edges, with a counter underneath
+  const round = (role, icon, label, cx, cy, cs, onSelect) => {
+    const b = new Panel({
+      parent: main, layer: 'detail', key: `detail:${role}`, theta: arcDeg(cx * k, r), y: cy * k, scale: k,
+      w: cs, h: cs, radius: cs / 2, margin: 0.03, lift: 0.02 * k, style: styles.button, renderOrder: 6, label,
+      paint: (ctx, s) => runOps(ctx, s, [{ t: 'icon', name: icon, x: cs * 0.22, y: cs * 0.22, size: cs * 0.56, color: pal.text, weight: 2.2 }], pal),
+      onSelect,
+    });
+    addA11y(b, 'detail', role === 'close' ? `Close ${p.title}` : label).dataset.role = role;
+    buttons.push(b);
+  };
   const cs = 0.11;
-  const close = new Panel({
-    parent: main, layer: 'detail', key: 'detail:close', theta: arcDeg((L.w / 2 - 0.075 - cs / 2 + 0.02) * k, r), y: (L.h / 2 - 0.075 - cs / 2 + 0.02) * k, scale: k,
-    w: cs, h: cs, radius: cs / 2, margin: 0.03, lift: 0.02 * k, style: styles.button, renderOrder: 6, label: 'Close',
-    paint: (ctx, s) => runOps(ctx, s, [{ t: 'icon', name: 'close', x: cs * 0.22, y: cs * 0.22, size: cs * 0.56, color: pal.text, weight: 2.2 }], pal),
-    onSelect: () => closeDetail(),
-  });
-  addA11y(close, 'detail', `Close ${p.title}`);
-  buttons.push(close);
-  if (!REDUCE) { detailRoot.scale.setScalar(0.96); }
-  detail = { main, buttons, from: fromPanel };
+  round('close', 'close', 'Close', L.w / 2 - 0.075 - cs / 2 + 0.02, L.h / 2 - 0.075 - cs / 2 + 0.02, cs, () => closeDetail());
+  if (n > 1) {
+    const ns = 0.14;
+    round('prev', 'chevL', 'Previous project', -L.w / 2 - 0.09 - ns / 2, 0, ns, () => stepDetail(-1));
+    round('next', 'chevR', 'Next project', L.w / 2 + 0.09 + ns / 2, 0, ns, () => stepDetail(1));
+    const counter = `${index + 1} / ${n}`;
+    const cw = mw(counter, 0.046, 600) + 0.11;
+    const chH = 0.046 * 2.4;
+    buttons.push(new Panel({
+      parent: main, layer: 'detail', key: 'detail:counter', theta: 0, y: (-L.h / 2 - 0.035 - chH / 2) * k, scale: k, w: cw, h: chH, radius: chH / 2, margin: 0.02, lift: 0.01 * k,
+      style: { ...styles.button, fillA: v4(pal.glassA, 0.9), fillB: v4(pal.glassB, 0.9) }, renderOrder: 6,
+      paint: (ctx, s) => runOps(ctx, s, [text(counter, cw / 2, chH / 2 + 0.046 * 0.36, 0.046, { weight: 600, color: pal.muted, align: 'center' })], pal),
+    }));
+  }
+
+  detail = { main, buttons, index };
+  // Stepping swaps content quickly; opening from a card fades with the flight
+  if (stepping && !REDUCE) for (const b of [main, ...buttons]) b.fade = 0.35;
   dimT = 1;
-  // Keyboard users land on the first action
-  if (document.activeElement && document.activeElement.parentElement === a11y) buttons[0].a11y.focus();
+  fly.target = 1;
+  if (REDUCE) { fly.u = 1; fly.p0.set(0, 0, 0); fly.q0.identity(); fly.s0 = 1; }
+  else if (stepping) {
+    // A short slide from the side the new project comes from
+    fly.u = 0;
+    fly.p0.set(mode * 0.22, 0, 0);
+    fly.q0.identity();
+    fly.s0 = 0.97;
+  } else if (fromPanel) { flyFrom(fromPanel, main); fly.u = 0; }
+  else { fly.u = 0; fly.p0.set(0, -0.04, 0.12); fly.q0.identity(); fly.s0 = 0.9; }
+  applyFly();
+  tick(stepping ? 'click' : 'open');
+  // Keyboard users keep their place
+  if (keepRole) {
+    const b = buttons.find((x) => x.a11y && x.a11y.dataset.role === keepRole) || buttons[0];
+    if (b && b.a11y) b.a11y.focus();
+  }
+}
+function stepDetail(dir) {
+  if (detail) openDetail(detail.index + dir, dir);
 }
 function closeDetail(instant) {
   if (!detail) return;
   const d = detail;
   detail = null;
   dimT = 0;
-  const back = d.from && d.from.a11y;
+  const back = cardFor(d.index);
   const hadFocus = d.buttons.some((b) => b.a11y === document.activeElement);
-  [d.main, ...d.buttons].forEach((p) => p.dispose());
-  if (hadFocus && back && !instant) back.focus();
-  if (focused && !panels.includes(focused)) focused = null;
+  for (const b of d.buttons) if (b.a11y) { b.a11y.remove(); b.a11y = null; }
+  if (focused && (focused.layer === 'detail')) focused = null;
+  if (hadFocus && back && back.a11y && !instant) back.a11y.focus();
+  if (instant) { disposeDetail(d); return; }
+  finishClose();
+  for (const p of [d.main, ...d.buttons]) p.fadeT = 0;
+  if (back && !REDUCE) flyFrom(back, d.main);
+  else { fly.p0.set(0, REDUCE ? 0 : -0.04, REDUCE ? 0 : 0.1); fly.q0.identity(); fly.s0 = REDUCE ? 1 : 0.92; }
+  fly.u = 1;
+  fly.target = 0;
+  closing = d;
+  tick('close');
 }
 
 // ---------------------------------------------------------------------------
-// Input: mouse, touch, keyboard, phone motion
+// First visit in a headset: a small hint that goes away on the first select
+// ---------------------------------------------------------------------------
+const hintRoot = new THREE.Group();
+function showFirstHint() {
+  if (store('vrHintSeen') === '1' || firstHint || !content) return;
+  viewerPose(_v, _d);
+  if (!hintRoot.parent) scene.add(hintRoot);
+  hintRoot.position.set(_v.x, 0, _v.z);
+  hintRoot.rotation.set(0, Math.atan2(-_d.x, -_d.z), 0);
+  const L = layoutHint(pal);
+  const r = 1.45;
+  const drop = 0.36;
+  firstHint = new Panel({
+    parent: hintRoot, layer: 'hint', key: 'hint', theta: 0, y: _v.y - drop, r, tilt: Math.atan2(drop, r), scale: r / R, w: L.w, h: L.h, radius: 0.06, margin: 0.07,
+    style: { ...styles.glass, fillA: v4(pal.glassA, 0.94), fillB: v4(pal.glassB, 0.95), glow: pal.glow + 0.1 },
+    paint: (ctx, s) => runOps(ctx, s, L.ops, pal), renderOrder: 7,
+  });
+  firstHint.wait = REDUCE ? 0 : 0.9;
+  firstHint.rise = REDUCE ? 0 : 1;
+}
+function dismissHint() {
+  if (!firstHint) return;
+  try { localStorage.setItem('vrHintSeen', '1'); } catch { /* private mode */ }
+  const h = firstHint;
+  firstHint = null;
+  h.fadeT = 0;
+  setTimeout(() => h.dispose(), 800);
+}
+
+// ---------------------------------------------------------------------------
+// Hit testing, shared by the mouse and the controllers
 // ---------------------------------------------------------------------------
 const raycaster = new THREE.Raycaster();
+raycaster.far = 20;
 const ndc = new THREE.Vector2();
-const mouse = { active: false, hit: null, point: new THREE.Vector3(), down: null, dragging: false, x: 0, y: 0, lastMove: 0 };
-const motion = { on: false, q: new THREE.Quaternion(), offset: 0, calibrated: false, has: false };
+const newHit = () => ({ panel: null, surface: null, point: new THREE.Vector3(), distance: 0 });
 
-function pickTargets() {
-  return interactives.filter((p) => p.visible && p.mesh.visible && (detail ? p.layer === 'detail' : p.layer === 'main'));
-}
-function hitTest(ray) {
+// Fills `out` with the nearest interactive panel (or glass surface) on the ray
+function hitTest(ray, out) {
   raycaster.ray.copy(ray);
-  raycaster.far = 20;
-  const list = pickTargets().map((p) => p.mesh);
-  const hits = raycaster.intersectObjects(list, false);
-  for (const h of hits) {
-    const p = h.object.userData.panel;
-    if (p && h.uv && p.contains(h.uv)) return { panel: p, point: h.point, distance: h.distance };
+  _targets.length = 0;
+  for (const p of panels) {
+    if (!p.mesh.visible || !p.visible) continue;
+    if (detail ? p.layer !== 'detail' : p.layer === 'detail') continue;
+    if (p.onSelect || p.mat.uniforms.uFillA.value.w > 0.05) _targets.push(p.mesh);
   }
-  // Report where the ray meets any panel so the cursor can sit on it
-  const all = panels.filter((p) => p.mesh.visible && p.mat.uniforms.uFillA.value.w > 0.05).map((p) => p.mesh);
-  const any = raycaster.intersectObjects(all, false).find((h) => h.uv && h.object.userData.panel.contains(h.uv));
-  return any ? { panel: null, point: any.point, distance: any.distance } : null;
+  _hits.length = 0;
+  raycaster.intersectObjects(_targets, false, _hits);
+  for (const h of _hits) {
+    const p = h.object.userData.panel;
+    if (!h.uv || !p.contains(h.uv)) continue;
+    out.panel = p.onSelect ? p : null;
+    out.surface = p;
+    out.point.copy(h.point);
+    out.distance = h.distance;
+    return true;
+  }
+  out.panel = null;
+  out.surface = null;
+  return false;
 }
+
+// Where a ray meets the cylinder of radius r around the layout's axis, in ui space
+function rayCylinder(ray, r, out) {
+  _m.copy(ui.matrixWorld).invert();
+  const o = _v2.copy(ray.origin).applyMatrix4(_m);
+  const d = _d.copy(ray.direction).transformDirection(_m);
+  const a = d.x * d.x + d.z * d.z;
+  const b = 2 * (o.x * d.x + o.z * d.z);
+  const c = o.x * o.x + o.z * o.z - r * r;
+  const disc = b * b - 4 * a * c;
+  if (a < 1e-6 || disc < 0) return false;
+  const t = (-b + Math.sqrt(disc)) / (2 * a);
+  if (t <= 0) return false;
+  out.copy(o).addScaledVector(d, t);
+  return true;
+}
+
+// ---------------------------------------------------------------------------
+// Input: mouse, touch, wheel, keyboard, phone motion
+// ---------------------------------------------------------------------------
+const mouse = { active: false, has: false, hit: newHit(), down: null, dragging: false, x: 0, y: 0, lastMove: 0 };
+const motion = { on: false, q: new THREE.Quaternion(), offset: 0, calibrated: false, has: false };
+const wheel = { acc: 0, lock: 0, last: 0 };
 
 function setupInput() {
   canvas.addEventListener('pointerdown', (e) => {
+    audio();
     if (renderer.xr.isPresenting) return;
     canvas.setPointerCapture(e.pointerId);
-    mouse.down = { x: e.clientX, y: e.clientY, yaw: view.yaw, pitch: view.pitch, offset: motion.offset, t: performance.now() };
-    mouse.dragging = false;
     updateMouse(e);
+    const onDetail = !!(detail && pointerHit() && mouse.hit.surface && mouse.hit.surface.layer === 'detail');
+    const now = performance.now();
+    mouse.down = { x: e.clientX, y: e.clientY, yaw: view.yaw, pitch: view.pitch, offset: motion.offset, lastX: e.clientX, lastY: e.clientY, lastT: now, onDetail };
+    mouse.dragging = false;
+    view.vy = view.vp = 0;
   });
   canvas.addEventListener('pointermove', (e) => {
     if (renderer.xr.isPresenting) return;
-    if (mouse.down) {
-      const dx = e.clientX - mouse.down.x;
-      const dy = e.clientY - mouse.down.y;
+    const d = mouse.down;
+    if (d) {
+      const dx = e.clientX - d.x;
+      const dy = e.clientY - d.y;
       if (!mouse.dragging && Math.hypot(dx, dy) > 6) mouse.dragging = true;
-      if (mouse.dragging) {
+      if (mouse.dragging && !d.onDetail) {
         const k = (camera.fov * DEG) / innerHeight;
-        if (motion.on) motion.offset = mouse.down.offset + dx * k;
+        if (motion.on) motion.offset = d.offset + dx * k;
         else {
-          view.yaw = view.ty = mouse.down.yaw + dx * k;
-          view.pitch = view.tp = clamp(mouse.down.pitch + dy * k, -1.2, 1.2);
+          view.yaw = view.ty = d.yaw + dx * k;
+          view.pitch = view.tp = clamp(d.pitch + dy * k, -1.2, 1.2);
+          // Velocity for the glide after release
+          const now = performance.now();
+          const sec = Math.max(0.004, (now - d.lastT) / 1000);
+          view.vy = view.vy * 0.6 + (((e.clientX - d.lastX) * k) / sec) * 0.4;
+          view.vp = view.vp * 0.6 + (((e.clientY - d.lastY) * k) / sec) * 0.4;
+          d.lastX = e.clientX;
+          d.lastY = e.clientY;
+          d.lastT = now;
         }
         canvas.classList.add('is-dragging');
       }
@@ -1705,28 +2160,53 @@ function setupInput() {
     updateMouse(e);
   });
   const end = (e) => {
-    if (!mouse.down) return;
+    const d = mouse.down;
+    if (!d) return;
     const wasDrag = mouse.dragging;
     mouse.down = null;
     mouse.dragging = false;
     canvas.classList.remove('is-dragging');
-    if (wasDrag) return;
+    if (wasDrag) {
+      const dx = e.clientX - d.x;
+      // Swipe across the open detail to change project
+      if (d.onDetail && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(e.clientY - d.y)) stepDetail(dx < 0 ? 1 : -1);
+      if (REDUCE || performance.now() - d.lastT > 90) view.vy = view.vp = 0;
+      return;
+    }
+    view.vy = view.vp = 0;
     updateMouse(e);
-    const h = mouse.hit;
-    if (h && h.panel) activate(h.panel);
+    if (pointerHit() && mouse.hit.panel) activate(mouse.hit.panel);
     else if (detail) closeDetail();
   };
   canvas.addEventListener('pointerup', end);
   canvas.addEventListener('pointercancel', () => { mouse.down = null; mouse.dragging = false; canvas.classList.remove('is-dragging'); });
   canvas.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && !mouse.down) mouse.active = false; });
 
+  // Wheel or trackpad: browse the project cards, or step through the open detail
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const now = performance.now();
+    if (now - wheel.last > 250) wheel.acc = 0;
+    wheel.last = now;
+    wheel.acc += Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    if (now < wheel.lock || Math.abs(wheel.acc) < 60) return;
+    const dir = Math.sign(wheel.acc);
+    wheel.acc = 0;
+    wheel.lock = now + 420;
+    if (detail) stepDetail(dir);
+    else pageCards(dir);
+  }, { passive: false });
+
   addEventListener('keydown', (e) => {
+    audio();
     if (renderer.xr.isPresenting || !overlay.classList.contains('is-hidden')) return;
     const step = 22 * DEG;
-    if (e.key === 'ArrowLeft') { view.ty += step; e.preventDefault(); }
-    else if (e.key === 'ArrowRight') { view.ty -= step; e.preventDefault(); }
+    if (detail && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { stepDetail(e.key === 'ArrowRight' ? 1 : -1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft') { view.ty += step; view.vy = 0; e.preventDefault(); }
+    else if (e.key === 'ArrowRight') { view.ty -= step; view.vy = 0; e.preventDefault(); }
     else if (e.key === 'ArrowUp') { view.tp = clamp(view.tp + 10 * DEG, -1.2, 1.2); e.preventDefault(); }
     else if (e.key === 'ArrowDown') { view.tp = clamp(view.tp - 10 * DEG, -1.2, 1.2); e.preventDefault(); }
+    else if (e.key === 'PageDown' || e.key === 'PageUp') { pageCards(e.key === 'PageDown' ? 1 : -1); e.preventDefault(); }
     else if (e.key === 'Escape' && detail) { closeDetail(); e.preventDefault(); }
     else if (e.key === 'Tab' && (document.activeElement === document.body || document.activeElement === canvas)) {
       const first = a11y.querySelector('a:not([hidden]), button:not([hidden])');
@@ -1769,13 +2249,22 @@ function updateMouse(e) {
   mouse.active = true;
   mouse.lastMove = performance.now();
 }
+// Raycast from the mouse position now (also used on press and release)
+function pointerHit() {
+  const r = canvas.getBoundingClientRect();
+  ndc.set(((mouse.x - r.left) / r.width) * 2 - 1, -((mouse.y - r.top) / r.height) * 2 + 1);
+  camera.updateMatrixWorld();
+  raycaster.setFromCamera(ndc, camera);
+  _ray.copy(raycaster.ray);
+  mouse.has = hitTest(_ray, mouse.hit);
+  return mouse.has;
+}
 
 function activate(panel, source) {
   if (!panel || !panel.onSelect) return;
   panel.press = 1;
-  if (source && source.gamepad && source.gamepad.hapticActuators && source.gamepad.hapticActuators[0]) {
-    try { source.gamepad.hapticActuators[0].pulse(0.5, 30); } catch { /* not supported */ }
-  }
+  pulse(source, 0.5, 30);
+  tick('click');
   panel.onSelect();
 }
 
@@ -1815,10 +2304,10 @@ function loadXRAddons() {
     controllers.forEach((c, i) => {
       const grip = renderer.xr.getControllerGrip(i);
       grip.add(cf.createControllerModel(grip));
-      scene.add(grip);
+      dolly.add(grip);
       const hand = renderer.xr.getHand(i);
       hand.add(hf.createHandModel(hand, 'mesh'));
-      scene.add(hand);
+      dolly.add(hand);
     });
   }).catch(() => null);
   return addonsLoaded;
@@ -1830,8 +2319,8 @@ function makeLaser(color) {
   g.rotateX(-Math.PI / 2);
   const m = new THREE.ShaderMaterial({
     vertexShader: 'varying float vT; void main() { vT = -position.z; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: `uniform vec3 uColor; varying float vT; void main() { gl_FragColor = vec4(uColor, mix(0.9, 0.2, vT)); }`,
-    uniforms: { uColor: { value: v3(color) } },
+    fragmentShader: 'uniform vec3 uColor; uniform float uBoost; varying float vT; void main() { gl_FragColor = vec4(mix(uColor, vec3(1.0), uBoost * 0.4), mix(0.9, 0.2, vT)); }',
+    uniforms: { uColor: { value: v3(color) }, uBoost: { value: 0 } },
     transparent: true,
     depthWrite: false,
   });
@@ -1839,17 +2328,18 @@ function makeLaser(color) {
   laser.renderOrder = 8;
   return laser;
 }
-function makeCursor() {
-  const g = new THREE.CircleGeometry(0.011, 24);
+function makeCursor(size = 1) {
   const m = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95, depthTest: false, depthWrite: false });
-  const dot = new THREE.Mesh(g, m);
-  const ring = new THREE.Mesh(new THREE.RingGeometry(0.016, 0.021, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, depthTest: false, depthWrite: false }));
+  const dot = new THREE.Mesh(new THREE.CircleGeometry(0.011 * size, 24), m);
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.016 * size, 0.021 * size, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, depthTest: false, depthWrite: false }));
   dot.add(ring);
   dot.renderOrder = 9;
   ring.renderOrder = 9;
   dot.visible = false;
   return dot;
 }
+// A soft ring on the panel under the mouse, as on a headset
+const mouseCursor = makeCursor(0.9);
 
 function setupControllers() {
   for (let i = 0; i < 2; i++) {
@@ -1859,61 +2349,124 @@ function setupControllers() {
     c.add(laser);
     const cursor = makeCursor();
     scene.add(cursor);
-    const state = { c, laser, cursor, source: null, hit: null, down: null, pending: false, lastHover: null, bWas: false };
+    const state = {
+      c, laser, cursor, source: null, hit: newHit(), has: false, down: null, pending: false, lastHover: null,
+      b: { down: false, t: 0, fired: false }, stick: { x: false, y: false }, grab: null,
+    };
     c.addEventListener('connected', (e) => {
       state.source = e.data;
       laser.visible = e.data.targetRayMode === 'tracked-pointer';
     });
-    c.addEventListener('disconnected', () => { state.source = null; laser.visible = false; cursor.visible = false; state.hit = null; });
-    c.addEventListener('selectstart', () => { state.down = state.hit && state.hit.panel; state.pending = !state.down; });
+    c.addEventListener('disconnected', () => { endGrab(state); state.source = null; laser.visible = false; cursor.visible = false; state.has = false; });
+    c.addEventListener('selectstart', () => {
+      audio();
+      state.down = state.has ? state.hit.panel : null;
+      state.pending = !state.down;
+    });
     c.addEventListener('select', () => {
-      const target = state.down || (state.hit && state.hit.panel);
+      const target = state.down || (state.has && state.hit.panel);
       state.down = null;
       state.pending = false;
+      const hadHint = !!firstHint;
+      dismissHint();
       if (target) activate(target, state.source);
       else if (detail) closeDetail();
+      else if (hadHint) tick('click');
     });
     c.addEventListener('selectend', () => { state.pending = false; });
-    scene.add(c);
+    c.addEventListener('squeezestart', () => startGrab(state));
+    c.addEventListener('squeezeend', () => endGrab(state));
+    dolly.add(c);
     controllers.push(state);
   }
 }
 
-const _m = new THREE.Matrix4();
-const _ray = new THREE.Ray();
-function updateControllers() {
-  const hovered = [];
+// Grip on any panel moves its whole group around the viewer, on the cylinder
+function startGrab(s) {
+  if (detail || !s.has || !s.hit.surface || !s.hit.surface.group) return;
+  const g = s.hit.surface.group;
+  ui.updateMatrixWorld();
+  _v.copy(s.hit.point);
+  ui.worldToLocal(_v);
+  s.grab = { g, r: Math.hypot(_v.x, _v.z), a0: Math.atan2(_v.x, -_v.z), y0: _v.y, rot0: g.rotation.y, gy0: g.position.y };
+  for (const p of panels) if (p.group === g && !p.parentPanel) p.focusT = 1;
+  pulse(s.source, 0.6, 25);
+  tick('grab');
+}
+function updateGrab(s) {
+  const gr = s.grab;
+  if (!gr || !rayCylinder(_ray, gr.r, _v)) return;
+  let da = Math.atan2(_v.x, -_v.z) - gr.a0;
+  if (da > Math.PI) da -= Math.PI * 2;
+  if (da < -Math.PI) da += Math.PI * 2;
+  gr.g.rotation.y = clamp(gr.rot0 - da, -2.6, 2.6);
+  gr.g.position.y = clamp(gr.gy0 + (_v.y - gr.y0), -0.6, 0.6);
+}
+function endGrab(s) {
+  if (!s.grab) return;
+  const g = s.grab.g;
+  s.grab = null;
+  for (const p of panels) if (p.group === g && p !== focused) p.focusT = 0;
+  pulse(s.source, 0.3, 15);
+}
+
+function updateControllers(dt) {
   for (const s of controllers) {
-    if (!s.source || !renderer.xr.isPresenting) { s.cursor.visible = false; s.hit = null; continue; }
+    if (!s.source || !renderer.xr.isPresenting) { s.cursor.visible = false; s.has = false; continue; }
     _m.identity().extractRotation(s.c.matrixWorld);
     _ray.origin.setFromMatrixPosition(s.c.matrixWorld);
     _ray.direction.set(0, 0, -1).applyMatrix4(_m);
-    const h = hitTest(_ray);
-    s.hit = h;
-    if (s.pending && h && h.panel) { s.down = h.panel; s.pending = false; }
-    const len = h ? h.distance : 1.2;
-    s.laser.scale.set(1, 1, len);
-    if (h) {
+    updateGrab(s);
+    const has = hitTest(_ray, s.hit);
+    s.has = has;
+    const panel = has ? s.hit.panel : null;
+    if (s.pending && panel) { s.down = panel; s.pending = false; }
+    s.laser.scale.set(1, 1, has ? s.hit.distance : 1.2);
+    s.laser.material.uniforms.uBoost.value = panel || s.grab ? 1 : 0;
+    if (has) {
       s.cursor.visible = true;
-      s.cursor.position.copy(h.point).addScaledVector(_ray.direction, -0.006);
+      s.cursor.position.copy(s.hit.point).addScaledVector(_ray.direction, -0.006);
       s.cursor.lookAt(_ray.origin);
-      s.cursor.scale.setScalar(clamp(h.distance / 2, 0.4, 1.6) * (h.panel ? 1.15 : 0.8));
+      s.cursor.scale.setScalar(clamp(s.hit.distance / 2, 0.4, 1.6) * (panel ? 1.15 : 0.8));
     } else s.cursor.visible = false;
-    if (h && h.panel) hovered.push(h.panel);
-    if (h && h.panel && h.panel !== s.lastHover && s.source.gamepad && s.source.gamepad.hapticActuators && s.source.gamepad.hapticActuators[0]) {
-      try { s.source.gamepad.hapticActuators[0].pulse(0.15, 12); } catch { /* not supported */ }
+    if (panel) {
+      panel.hoverFrame = frameId;
+      if (panel !== s.lastHover) pulse(s.source, 0.15, 12);
     }
-    s.lastHover = h && h.panel;
-    // B or Y closes the detail panel
+    s.lastHover = panel;
+
     const gp = s.source.gamepad;
-    const b = !!(gp && gp.buttons && gp.buttons[5] && gp.buttons[5].pressed);
-    if (b && !s.bWas && detail) closeDetail();
-    s.bWas = b;
+    if (!gp) continue;
+    const ax = (gp.axes.length > 3 ? gp.axes[2] : gp.axes[0]) || 0;
+    const ay = (gp.axes.length > 3 ? gp.axes[3] : gp.axes[1]) || 0;
+    const right = s.source.handedness !== 'left';
+    // Thumbstick: right stick snap turns, left stick browses the cards.
+    // With a project open, left or right on either stick steps through projects.
+    if (!s.stick.x && Math.abs(ax) > 0.7) {
+      s.stick.x = true;
+      if (detail) stepDetail(ax > 0 ? 1 : -1);
+      else if (right) snapTurn(ax > 0 ? -1 : 1);
+      else pageCards(ax > 0 ? 1 : -1);
+    } else if (s.stick.x && Math.abs(ax) < 0.3) s.stick.x = false;
+    if (!s.stick.y && Math.abs(ay) > 0.7) {
+      s.stick.y = true;
+      if (!right && !detail) pageCards(ay > 0 ? 1 : -1);
+    } else if (s.stick.y && Math.abs(ay) < 0.3) s.stick.y = false;
+    // B or Y: tap closes the detail, hold recenters
+    const bp = !!(gp.buttons[5] && gp.buttons[5].pressed);
+    if (bp && !s.b.down) { s.b.down = true; s.b.t = 0; s.b.fired = false; }
+    else if (bp) {
+      s.b.t += dt;
+      if (!s.b.fired && s.b.t > 0.7) { s.b.fired = true; pulse(s.source, 0.6, 40); recenter(); }
+    } else if (s.b.down) {
+      s.b.down = false;
+      if (!s.b.fired && detail) closeDetail();
+    }
   }
-  return hovered;
 }
 
 async function enterVR() {
+  audio();
   if (!xrSupported || xrSession) return;
   try {
     const session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor', 'bounded-floor', 'hand-tracking', 'layers'] });
@@ -1927,6 +2480,11 @@ async function enterVR() {
     overlay.classList.add('is-hidden');
     hudTop.classList.add('is-hidden');
     hudBottom.classList.add('is-hidden');
+    mouseCursor.visible = false;
+    // Hide the layout until the real eye height is known, then play the intro
+    for (const p of panels) if (p.layer === 'main') { p.fade = 0; p.wait = 10; }
+    mascotIntro = REDUCE ? 0 : 1;
+    mascotWait = 10;
   } catch (err) {
     xrSession = null;
     setHint('Could not start VR here. Try again from the headset browser over HTTPS.');
@@ -1936,11 +2494,20 @@ let xrAlign = null;
 function onSessionEnd() {
   xrSession = null;
   xrAlign = null;
+  closeDetail(true);
+  finishClose();
   ui.position.set(0, 0, 0);
+  ui.rotation.set(0, 0, 0);
+  for (const k in groups) { groups[k].rotation.y = 0; groups[k].position.y = 0; }
+  dolly.position.set(0, 0, 0);
+  dolly.rotation.set(0, 0, 0);
   env.floor.position.y = 0;
   env.floor.material.uniforms.uCenter.value.set(0, 0);
   camera.position.set(0, EYE, 0);
-  controllers.forEach((s) => { s.cursor.visible = false; s.hit = null; });
+  controllers.forEach((s) => { endGrab(s); s.cursor.visible = false; s.has = false; });
+  if (firstHint) { firstHint.dispose(); firstHint = null; }
+  for (const p of panels) { if (p.wait > 5) p.wait = 0; }
+  mascotWait = 0;
   if (pendingNav) { const href = pendingNav; pendingNav = null; location.href = href; return; }
   overlay.classList.remove('is-hidden');
   resize();
@@ -1951,78 +2518,97 @@ function alignToViewer() {
   xrAlign.frames++;
   if (xrAlign.frames < 4) return;
   const cam = renderer.xr.getCamera();
-  const p = new THREE.Vector3().setFromMatrixPosition(cam.matrixWorld);
+  _v.setFromMatrixPosition(cam.matrixWorld);
+  cam.getWorldDirection(_d);
   // With 'local-floor' y is the real eye height (seated or standing). A plain
   // 'local' space puts the head near y = 0, so the floor goes one eye height down.
-  const offY = xrAlign.floor ? clamp(p.y - EYE, -0.7, 0.4) : p.y - EYE;
-  ui.position.set(p.x, offY, p.z);
-  env.floor.position.y = xrAlign.floor ? 0 : p.y - EYE;
-  env.floor.material.uniforms.uCenter.value.set(p.x, p.z);
+  const offY = xrAlign.floor ? clamp(_v.y - EYE, -0.7, 0.4) : _v.y - EYE;
+  ui.position.set(_v.x, offY, _v.z);
+  ui.rotation.set(0, Math.atan2(-_d.x, -_d.z), 0);
+  env.floor.position.y = xrAlign.floor ? 0 : _v.y - EYE;
+  env.floor.material.uniforms.uCenter.value.set(_v.x, _v.z);
   xrAlign.done = true;
+  playIntro(0.1);
+  showFirstHint();
 }
 
 // ---------------------------------------------------------------------------
-// Frame loop
+// Frame loop (no allocations in here)
 // ---------------------------------------------------------------------------
 let last = performance.now();
 const camPos = new THREE.Vector3();
-const _dir = new THREE.Vector3();
-const yawQ = new THREE.Quaternion();
-const up = new THREE.Vector3(0, 1, 0);
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
   const t = now / 1000;
+  frameId++;
   const xr = renderer.xr.isPresenting;
   if (!xr) {
     if (motion.on && motion.has) {
       if (!motion.calibrated) {
-        const e = new THREE.Euler().setFromQuaternion(motion.q, 'YXZ');
-        motion.offset = view.yaw - e.y;
+        _euler.setFromQuaternion(motion.q, 'YXZ');
+        motion.offset = view.yaw - _euler.y;
         motion.calibrated = true;
       }
-      yawQ.setFromAxisAngle(up, motion.offset);
-      camera.quaternion.copy(yawQ).multiply(motion.q);
-      const e = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ');
-      view.yaw = view.ty = e.y;
-      view.pitch = view.tp = e.x;
+      _yawQ.setFromAxisAngle(_up, motion.offset);
+      camera.quaternion.copy(_yawQ).multiply(motion.q);
+      _euler.setFromQuaternion(camera.quaternion, 'YXZ');
+      view.yaw = view.ty = _euler.y;
+      view.pitch = view.tp = _euler.x;
     } else {
-      const k = damp(REDUCE ? 30 : 9, dt);
+      // Glide after a drag, then ease toward the target
+      if (!mouse.dragging && (Math.abs(view.vy) > 1e-3 || Math.abs(view.vp) > 1e-3)) {
+        view.ty += view.vy * dt;
+        view.tp = clamp(view.tp + view.vp * dt, -1.2, 1.2);
+        const decay = Math.exp(-dt * 4.2);
+        view.vy *= decay;
+        view.vp *= decay;
+      }
+      const k = damp(REDUCE ? 30 : 10, dt);
       view.yaw += (view.ty - view.yaw) * k;
       view.pitch += (view.tp - view.pitch) * k;
       camera.rotation.set(view.pitch, view.yaw, 0, 'YXZ');
     }
   } else alignToViewer();
 
-  // Pointers
-  let hovered = [];
+  // Pointers mark what they hover with the frame number
   let pointPos = null;
   if (xr) {
-    hovered = updateControllers();
-    const h = controllers.find((s) => s.hit);
-    if (h) pointPos = h.hit.point;
+    updateControllers(dt);
+    for (const s of controllers) if (s.has) { pointPos = s.hit.point; break; }
   } else if (mouse.active && !mouse.dragging) {
-    const r = canvas.getBoundingClientRect();
-    ndc.set(((mouse.x - r.left) / r.width) * 2 - 1, -((mouse.y - r.top) / r.height) * 2 + 1);
-    camera.updateMatrixWorld();
-    raycaster.setFromCamera(ndc, camera);
-    const h = hitTest(raycaster.ray);
-    mouse.hit = h;
-    if (h && h.panel) hovered.push(h.panel);
-    if (h && performance.now() - mouse.lastMove < 4000) pointPos = h.point;
-    canvas.classList.toggle('is-pointing', !!(h && h.panel));
+    pointerHit();
+    const panel = mouse.has ? mouse.hit.panel : null;
+    if (panel) panel.hoverFrame = frameId;
+    if (mouse.has && now - mouse.lastMove < 4000) pointPos = mouse.hit.point;
+    canvas.classList.toggle('is-pointing', !!panel);
+    mouseCursor.visible = !!panel;
+    if (panel) {
+      mouseCursor.position.copy(mouse.hit.point).addScaledVector(raycaster.ray.direction, -0.006);
+      mouseCursor.lookAt(raycaster.ray.origin);
+    }
+  } else mouseCursor.visible = false;
+  let anyHover = false;
+  for (const p of interactives) {
+    const on = p.hoverFrame === frameId;
+    if (on && !p.hoverT) tick('hover');
+    p.hoverT = on ? 1 : 0;
+    anyHover = anyHover || on;
   }
-  for (const p of interactives) p.hoverT = hovered.includes(p) ? 1 : 0;
   if (focused && !pointPos) { focused.item.getWorldPosition(_wp); pointPos = _wp; }
 
   dim += (dimT - dim) * damp(REDUCE ? 40 : 8, dt);
-  if (detail) detailRoot.scale.lerp(new THREE.Vector3(1, 1, 1), damp(REDUCE ? 40 : 12, dt));
+  updateFly(dt);
   for (const p of panels) p.update(dt, dim);
+  updateBlink(dt);
+  if (mascotWait > 0) mascotWait -= dt;
+  else if (mascotIntro > 0.0005) mascotIntro -= mascotIntro * damp(4.5, dt);
+  else mascotIntro = 0;
 
   const cam = xr ? renderer.xr.getCamera() : camera;
   cam.getWorldPosition(camPos);
   env.update(t, camPos);
-  mascot.update(dt, t, camPos, pointPos, hovered.length || (focused ? 1 : 0) ? 1 : 0);
+  mascot.update(dt, t, camPos, pointPos, anyHover || focused ? 1 : 0, mascotIntro);
 
   renderer.render(scene, camera);
 }
@@ -2031,6 +2617,9 @@ function frame(now) {
 // Overlay and HUD
 // ---------------------------------------------------------------------------
 function startPreview() {
+  audio();
+  // Play the intro now that the overlay is out of the way
+  if (content && overlay && !overlay.classList.contains('is-hidden')) playIntro(0.05);
   overlay.classList.add('is-hidden');
   hudTop.classList.remove('is-hidden');
   hudBottom.classList.remove('is-hidden');
@@ -2051,6 +2640,7 @@ addEventListener('pagehide', (e) => {
   });
   if (env) env.dispose();
   if (mascot) mascot.dispose();
+  if (sound.ctx) sound.ctx.close();
   renderer.dispose();
 });
 
@@ -2060,6 +2650,7 @@ window.__vrLobby = {
   view(yawDeg, pitchDeg = -4) {
     view.yaw = view.ty = yawDeg * DEG;
     view.pitch = view.tp = pitchDeg * DEG;
+    view.vy = view.vp = 0;
   },
   screen(key) {
     const p = panels.find((x) => x.key === key);
@@ -2071,6 +2662,27 @@ window.__vrLobby = {
   },
   keys: () => panels.map((p) => p.key),
   detailOpen: () => !!detail,
+  opacity: (key) => { const p = panels.find((x) => x.key === key); return p && +p.mat.uniforms.uOpacity.value.toFixed(3); },
+  state: () => ({ page: gallery && gallery.page, detail: detail && detail.index, closing: !!closing, sound: sound.on, yaw: view.yaw / DEG, dollyYaw: dolly.rotation.y / DEG, groups: Object.fromEntries(Object.entries(groups).map(([k, g]) => [k, [+(g.rotation.y / DEG).toFixed(2), +g.position.y.toFixed(3)]])) }),
+  // Exercises the headset code paths with the mouse ray (there is no headset in CI)
+  test: {
+    snapTurn: (sign) => snapTurn(sign),
+    recenter: () => recenter(),
+    grab(x0, y0, x1, y1) {
+      const s = { hit: newHit(), has: false, grab: null, source: null };
+      mouse.x = x0; mouse.y = y0;
+      s.has = pointerHit();
+      if (s.has) { s.hit.surface = mouse.hit.surface; s.hit.point.copy(mouse.hit.point); }
+      startGrab(s);
+      if (!s.grab) return false;
+      mouse.x = x1; mouse.y = y1;
+      pointerHit();
+      _ray.copy(raycaster.ray);
+      updateGrab(s);
+      endGrab(s);
+      return true;
+    },
+  },
 };
 
 boot();

@@ -41,7 +41,7 @@
       {
         "id": "visionpro-wrist-haptics",
         "title": "Wrist Haptics",
-        "line": "Apple Watch haptics for Vision Pro"
+        "line": "Watch haptics for Vision Pro"
       },
       {
         "id": "amazon-music-capstone",
@@ -122,7 +122,7 @@
   "labs": [
     {
       "title": "The Lab",
-      "line": "Open ML models you can try in the browser",
+      "line": "Try open ML models in your browser",
       "image": "lab/previews/robot.jpg",
       "href": "lab/"
     },
