@@ -1009,12 +1009,12 @@ document.addEventListener('DOMContentLoaded', () => {
     pupilRight.style.transform = 'translate(-50%, -50%)';
   });
 
-  // Make VR headset clickable to open daily planner
+  // Put the headset on: opens the 3D portfolio. The 3D headset (vr-headset.js) plays a zoom first.
   vrEye.style.cursor = 'pointer';
   vrEye.style.pointerEvents = 'auto';
-  vrEye.setAttribute('title', 'Click to open HQ Daily Planner');
+  vrEye.setAttribute('title', 'Put it on: step into the 3D portfolio');
   vrEye.addEventListener('click', () => {
-    window.location.href = 'hq-daily-planner.html';
+    window.location.href = 'vr.html';
   });
 })();
 
