@@ -173,4 +173,5 @@ Study Lab subjects (except Muscle Lab and Elements Lab, which came first) share 
 
 1. Copy `lab/ml-lab/index.html` into `lab/<name>-lab/index.html`, change the `id`, `title`, intro and chapter list.
 2. Write each chapter as `lab/<name>-lab/chapters/<id>.js` exporting `{ mount(ctx) }`. The comment at the top of `lab/study/kit/kit.js` lists everything `ctx` offers (stage, panel, canvas, loop, sliders, quiz, storage).
-3. Add a card to `lab/study/index.html` with a 1200x800 JPG preview, and add the lab id to the progress list in its script.
+3. Embeds come free: every chapter has an Embed button that copies an iframe, and `?embed=1` shows a single chapter with a link back to the full lab.
+4. Add a card to `lab/study/index.html` with a 1200x800 JPG preview, and add the lab id to the progress list in its script.
