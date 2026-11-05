@@ -1,0 +1,191 @@
+/* Ask my portfolio: the results, answer card and question chips.
+   Used by /ask/ and by any page that mounts ask/ask.js. Colours come from the
+   site tokens in assets/style.css, so light, dark and the palette button all
+   apply; the fallbacks keep it readable on a page without them. */
+
+.ask-results {
+  --ask-text: var(--text, #1a1a1a);
+  --ask-muted: var(--text-muted, #6b7280);
+  --ask-border: var(--border, rgba(127, 127, 127, 0.25));
+  --ask-card: var(--glass-bg, var(--bg-elevated, #fff));
+  --ask-link: var(--primary-readable, var(--primary, #7c3aed));
+  --ask-mark: color-mix(in srgb, var(--primary, #7c3aed) 24%, transparent);
+  color: var(--ask-text);
+}
+
+.ask-status {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--ask-muted);
+  min-height: 1.4em;
+}
+.ask-results:not(.has-results) .ask-status { margin: 0; min-height: 0; }
+
+/* ---------- the curated answer ---------- */
+.ask-answer {
+  position: relative;
+  padding: 22px 24px 18px;
+  margin: 0 0 28px;
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--primary, #7c3aed) 14%, transparent), color-mix(in srgb, var(--accent, #ec4899) 10%, transparent)),
+    var(--ask-card);
+  border: 1px solid color-mix(in srgb, var(--primary, #7c3aed) 30%, var(--ask-border));
+  box-shadow: inset 0 1px 0 var(--glass-shine-soft, rgba(255, 255, 255, 0.2)), 0 10px 30px var(--glass-shadow, rgba(0, 0, 0, 0.08));
+}
+.ask-label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ask-link);
+}
+.ask-answer-text {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--ask-text);
+  max-width: 70ch;
+}
+.ask-source {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--ask-muted);
+}
+.ask-source a { color: var(--ask-link); font-weight: 600; text-underline-offset: 3px; }
+
+/* ---------- passages from the site ---------- */
+.ask-sub {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ask-muted);
+}
+.ask-hits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.ask-hit {
+  position: relative;
+  padding: 18px 20px 16px;
+  border-radius: 16px;
+  background: var(--ask-card);
+  border: 1px solid var(--glass-border, var(--ask-border));
+  box-shadow: inset 0 1px 0 var(--glass-shine-soft, rgba(255, 255, 255, 0.2)), 0 4px 18px var(--glass-shadow, rgba(0, 0, 0, 0.06));
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  animation: ask-in 0.35s ease-out backwards;
+}
+.ask-hit:nth-child(2) { animation-delay: 40ms; }
+.ask-hit:nth-child(3) { animation-delay: 80ms; }
+@keyframes ask-in { from { opacity: 0; transform: translateY(6px); } }
+.ask-hit:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--primary, #7c3aed) 45%, var(--ask-border)); }
+.ask-hit:focus-within { border-color: var(--primary, #7c3aed); }
+.ask-kind {
+  margin: 0 0 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ask-link);
+}
+.ask-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--ask-text);
+}
+.ask-snip {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ask-muted);
+  overflow-wrap: anywhere;
+}
+.ask-snip mark {
+  background: var(--ask-mark);
+  color: var(--ask-text);
+  border-radius: 4px;
+  padding: 0 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.ask-more {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ask-link);
+  text-decoration: none;
+}
+/* The whole card is the link; the visible "Read more" is the only tab stop. */
+.ask-more::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+.ask-more:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ask-more:focus-visible { outline: none; }
+.ask-more:focus-visible::after { outline: 2px solid var(--primary, #7c3aed); outline-offset: 2px; }
+
+/* ---------- nothing found ---------- */
+.ask-none {
+  padding: 20px 22px;
+  border-radius: 16px;
+  border: 1px dashed var(--ask-border);
+  background: var(--ask-card);
+}
+.ask-none-title { margin: 0 0 6px; font-size: 17px; font-weight: 600; color: var(--ask-text); }
+.ask-none-text { margin: 0 0 12px; font-size: 15px; line-height: 1.6; color: var(--ask-muted); }
+.ask-none-text:last-child { margin-bottom: 0; }
+.ask-none-text a { color: var(--ask-link); font-weight: 600; }
+.ask-none .ask-chips { margin-bottom: 12px; }
+.ask-none + .ask-sub { margin-top: 24px; }
+.ask-hits--loose .ask-hit { opacity: 0.85; }
+
+/* ---------- question chips ---------- */
+.ask-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ask-chip {
+  appearance: none;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--text, #1a1a1a);
+  background: color-mix(in srgb, var(--primary, #7c3aed) 9%, var(--bg-elevated, #fff));
+  border: 1px solid color-mix(in srgb, var(--primary, #7c3aed) 22%, var(--border, #e5e7eb));
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  text-align: left;
+}
+.ask-chip:hover { transform: translateY(-2px); background: color-mix(in srgb, var(--primary, #7c3aed) 16%, var(--bg-elevated, #fff)); }
+.ask-chip:focus-visible { outline: 2px solid var(--primary, #7c3aed); outline-offset: 2px; }
+
+/* ---------- compact: inside a small panel such as the "Talk to AI me" chat ---------- */
+.ask--compact .ask-answer { padding: 14px 16px 12px; margin-bottom: 16px; border-radius: 14px; }
+.ask--compact .ask-answer-text { font-size: 15px; line-height: 1.55; }
+.ask--compact .ask-hits { gap: 10px; }
+.ask--compact .ask-hit { padding: 12px 14px; border-radius: 12px; }
+.ask--compact .ask-title { font-size: 15.5px; }
+.ask--compact .ask-snip { font-size: 13.5px; }
+.ask--compact .ask-more { margin-top: 6px; font-size: 13px; }
+
+@media (max-width: 600px) {
+  .ask-answer { padding: 18px 18px 14px; }
+  .ask-answer-text { font-size: 16px; line-height: 1.6; }
+  .ask-hit { padding: 16px 16px 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-hit, .ask-chip { animation: none; transition: none; }
+  .ask-hit:hover, .ask-chip:hover { transform: none; }
+}
+
+/* Minimalist mode: plain black on white, like the rest of the site. */
+html.plain-mode:not(.plain-mode--rabiat) .ask-answer,
+html.plain-mode:not(.plain-mode--rabiat) .ask-hit,
+html.plain-mode:not(.plain-mode--rabiat) .ask-none { background: #fff; box-shadow: none; border-color: #000; }
+html.plain-mode:not(.plain-mode--rabiat) .ask-snip mark { background: #ff0; color: #000; }

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+<script>/* Storage guard: if this browser blocks storage, use an in-memory stand-in so the site still works */(function(){function m(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}['localStorage','sessionStorage'].forEach(function(n){try{var s=window[n];s.setItem('__t','1');s.removeItem('__t')}catch(e){try{Object.defineProperty(window,n,{configurable:true,value:m()})}catch(_){}}})})();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Demo Check | Rabiat Sadiq</title>
   <meta name="description" content="Run a Claude demo ten times before you show it once. Code checks every answer." />
@@ -39,6 +40,9 @@
       if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
     })();
   </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&amp;family=Rajdhani:wght@500;600;700&amp;family=DM+Mono:wght@400;500&amp;display=swap" />
   <link rel="stylesheet" href="../../assets/style.css" />
   <script src="../../assets/script.js" defer></script>
   <style>
@@ -81,6 +85,8 @@
     .dc-raw { white-space: pre-wrap; word-break: break-word; font: 13px/1.55 ui-monospace, Menlo, Consolas, monospace; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; max-height: 280px; overflow: auto; margin: 8px 0 0; }
     @media (max-width: 640px) { .dc-opt { flex-wrap: nowrap; } }
   </style>
+  <!-- Privacy friendly visit counts (no cookies): https://rabiatsadiq.goatcounter.com -->
+  <script data-goatcounter="https://rabiatsadiq.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
   <header class="header">

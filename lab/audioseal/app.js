@@ -387,14 +387,14 @@ wave.addEventListener('click', (e) => {
 });
 
 // ---------- ways in: the sample, or your own voice ----------
-let sample = null;
+let sampleClip = null;
 $('stampSample').addEventListener('click', async () => {
   unlock();
   stopPlay();
   try {
-    sample ??= await decode16k(await (await fetch(sampleUrl(SAMPLE))).arrayBuffer());
+    sampleClip ??= await decode16k(await (await fetch(sampleUrl(SAMPLE))).arrayBuffer());
   } catch { window.rkToast?.('Could not load the sample'); return; }
-  await useClip(sample, `Sample · ${SAMPLE.label}`);
+  await useClip(sampleClip, `Sample · ${SAMPLE.label}`);
 });
 
 // Your own file: decoded here, never uploaded.

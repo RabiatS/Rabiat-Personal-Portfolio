@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+<script>/* Storage guard: if this browser blocks storage, use an in-memory stand-in so the site still works */(function(){function m(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}['localStorage','sessionStorage'].forEach(function(n){try{var s=window[n];s.setItem('__t','1');s.removeItem('__t')}catch(e){try{Object.defineProperty(window,n,{configurable:true,value:m()})}catch(_){}}})})();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>ME-rPPG · Rabiat's Lab</title>
   <meta name="description" content="Look at your webcam for ten seconds and see your pulse. ME-rPPG reads it from tiny colour changes in your skin, right in your browser. Nothing is recorded or uploaded.">
@@ -68,6 +69,8 @@
       .wave { height: 104px; margin-top: 14px; }
     }
   </style>
+  <!-- Privacy friendly visit counts (no cookies): https://rabiatsadiq.goatcounter.com -->
+  <script data-goatcounter="https://rabiatsadiq.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
   <header class="top float">

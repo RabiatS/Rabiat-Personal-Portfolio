@@ -33,6 +33,9 @@
   let items = [];
   let index = 0;
   let timer = null;
+  // Rotate (and so fetch new images) only while the card is on screen, the tab is visible and nobody is hovering it.
+  let onScreen = false;
+  let paused = false;
 
   function destinationFor(p) {
     return p.caseStudy || p.demo || p.github || 'projects.html#' + p.id;
@@ -68,7 +71,7 @@
   }
 
   function start() {
-    if (reduceMotion || items.length < 2 || timer) return;
+    if (reduceMotion || items.length < 2 || timer || !onScreen || paused || document.hidden) return;
     timer = setInterval(advance, INTERVAL);
   }
 
@@ -98,16 +101,26 @@
 
     root.hidden = false;
     render(0, false);
-    start();
 
     // Pause while the visitor is reading or interacting with it.
-    root.addEventListener('mouseenter', stop);
-    root.addEventListener('mouseleave', start);
-    root.addEventListener('focus', stop);
-    root.addEventListener('blur', start);
+    const pause = () => { paused = true; stop(); };
+    const resume = () => { paused = false; start(); };
+    root.addEventListener('mouseenter', pause);
+    root.addEventListener('mouseleave', resume);
+    root.addEventListener('focus', pause);
+    root.addEventListener('blur', resume);
     document.addEventListener('visibilitychange', () => {
       document.hidden ? stop() : start();
     });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        onScreen = entries[entries.length - 1].isIntersecting;
+        onScreen ? start() : stop();
+      }).observe(root);
+    } else {
+      onScreen = true;
+      start();
+    }
   }
 
   fetch('assets/projects.json', { cache: 'no-cache' })

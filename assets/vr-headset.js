@@ -76,13 +76,15 @@ function init() {
   head.add(new THREE.Mesh(wrap(shellGeo, 0.12), shellMat));
 
   const visorGeo = new THREE.ExtrudeGeometry(rrect(2.78, 1.36, 0.55), { depth: 0.04, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.05, bevelSegments: 6, curveSegments: 20 });
-  head.add(new THREE.Mesh(wrap(visorGeo, 0.12, 0.2), new THREE.MeshPhysicalMaterial({ color: 0x05030c, roughness: 0.06, clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 1.6, transparent: true, opacity: 0.88 })));
+  head.add(new THREE.Mesh(wrap(visorGeo, 0.12, 0.2), new THREE.MeshPhysicalMaterial({ color: 0x05030c, roughness: 0.06, clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 1.6, transparent: true, opacity: 0.88, depthWrite: false })));
 
   // Outward eye display behind the glass, redrawn each frame
   const eyeC = document.createElement('canvas'); eyeC.width = 512; eyeC.height = 256;
   const eg = eyeC.getContext('2d');
   const eyeTex = new THREE.CanvasTexture(eyeC); eyeTex.colorSpace = THREE.SRGBColorSpace;
-  const screen = new THREE.Mesh(wrap(new THREE.PlaneGeometry(2.5, 1.25, 32, 1), 0.12, 0.17), new THREE.MeshBasicMaterial({ map: eyeTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+  // The eye screen sits just in front of the visor glass (front face at z 0.29), so the shell never cuts it off
+  const screen = new THREE.Mesh(wrap(new THREE.PlaneGeometry(2.5, 1.2, 32, 1), 0.12, 0.305), new THREE.MeshBasicMaterial({ map: eyeTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+  screen.renderOrder = 2;
   head.add(screen);
 
   const strapMat = new THREE.MeshStandardMaterial({ color: 0x3a2a55, roughness: 0.85 });
@@ -137,7 +139,7 @@ function init() {
   }
 
   // ---------- Input ----------
-  const target = { x: 0.3, y: -0.15 }; const cur = { x: 0, y: 0 }; const vel = { x: 0, y: 0 };
+  const target = { x: 0.3, y: -0.15 }; const cur = { x: 0, y: 0 };
   const clamp = (v) => Math.max(-1, Math.min(1, v));
   addEventListener('pointermove', (e) => {
     const r = canvas.getBoundingClientRect();
@@ -158,6 +160,7 @@ function init() {
   let zoom = 0;
   host.addEventListener('click', (e) => {
     e.preventDefault(); e.stopImmediatePropagation();
+    window.rkEgg?.('headset');
     if (zoom || reduce) { location.href = 'vr.html'; return; }
     zoom = 0.0001;
   }, true);
@@ -180,9 +183,11 @@ function init() {
     const dt = Math.min(0.05, (now - last) / 1000); last = now; const t = now / 1000;
     themeTick -= dt; if (themeTick <= 0) { readTheme(); themeTick = 0.5; }
     applyTheme(t);
-    for (const k of ['x', 'y']) { vel[k] += (target[k] - cur[k]) * 60 * dt; vel[k] *= Math.pow(0.0009, dt); cur[k] += vel[k] * dt * 4; }
+    // Smooth ease toward the pointer: no spring, so no bounce or overshoot
+    const ease = 1 - Math.exp(-dt * 7);
+    for (const k of ['x', 'y']) cur[k] += (target[k] - cur[k]) * ease;
     head.rotation.set(cur.y * 0.45, cur.x * 0.6, -cur.x * 0.06);
-    head.position.y = reduce ? 0 : Math.sin(t * 1.4) * 0.05;
+    head.position.y = reduce ? 0 : Math.sin(t * 1.1) * 0.025;
     look.x = cur.x; look.y = cur.y;
     if (t > nextBlink && blinkT < 0) blinkT = 0;
     if (blinkT >= 0) { blinkT += dt; lid = blinkT < 0.07 ? blinkT / 0.07 : Math.max(0, 1 - (blinkT - 0.07) / 0.08); if (blinkT > 0.15) { blinkT = -1; lid = 0; nextBlink = t + 2 + Math.random() * 3; } }

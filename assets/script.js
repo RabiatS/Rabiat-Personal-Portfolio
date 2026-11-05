@@ -189,6 +189,7 @@ window.applyGlassLevel = function (value) {
       if (secretTooltip && secretTooltip.style.opacity === '1') {
         e.stopPropagation();
         setTheme('rainbow');
+        window.rkEgg?.('rainbow');
         hideSecretTooltip();
         // Fun animation
         btn.style.transform = 'scale(1.3) rotate(360deg)';
@@ -679,13 +680,23 @@ document.addEventListener('DOMContentLoaded', () => {
     return null;
   }
 
+  // Theme colours are read once and cached; refreshed when the theme or the root
+  // inline style / class changes (scheme setters write --primary on <html>), not every frame.
+  let themeColors = null;
   function getThemeColors() {
+    if (themeColors) return themeColors;
     const style = getComputedStyle(document.documentElement);
-    return {
+    themeColors = {
       primary: parseCssColor(style.getPropertyValue('--primary')) || { r: 124, g: 58, b: 237 },
       accent: parseCssColor(style.getPropertyValue('--accent')) || { r: 236, g: 72, b: 153 }
     };
+    return themeColors;
   }
+  const invalidateThemeColors = () => { themeColors = null; };
+  window.addEventListener('themechange', invalidateThemeColors);
+  new MutationObserver(invalidateThemeColors).observe(document.documentElement, { attributes: true, attributeFilter: ['style', 'class'] });
+  document.addEventListener('DOMContentLoaded', invalidateThemeColors);
+  window.addEventListener('load', invalidateThemeColors);
 
   const canvasOrbs = [
     { nx: 0.2, ny: 0.3, r: 0.38, role: 'primary', phase: 0, speed: 0.11 },
@@ -935,7 +946,23 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.fill();
     }
 
-    requestAnimationFrame(draw);
+    scheduleDraw();
+  }
+
+  // Run the loop only while the canvas is on screen and the tab is visible.
+  let rafId = 0; let canvasOnScreen = true;
+  function scheduleDraw(){
+    rafId = 0;
+    if (!canvasOnScreen || document.hidden) return;
+    rafId = requestAnimationFrame(draw);
+  }
+  function resumeDraw(){ if (!rafId && canvasOnScreen && !document.hidden) rafId = requestAnimationFrame(draw); }
+  document.addEventListener('visibilitychange', resumeDraw);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      canvasOnScreen = entries[entries.length - 1].isIntersecting;
+      resumeDraw();
+    }).observe(canvas);
   }
 
   function setTargetFrom(e){
@@ -965,7 +992,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('resize', resize);
   window.addEventListener('orientationchange', resize);
-  resize(); requestAnimationFrame(draw);
+  resize(); resumeDraw();
 })();
 
 // VR EYE THAT FOLLOWS CURSOR
@@ -1425,6 +1452,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints>0);
     if (mode==='off'){ destroy(); return; }
     if (mode==='desktop' && !canHover){ destroy(); return; }
+    // No tilt targets on this page (yet): skip downloading vanilla-tilt. renderProjects calls enableTilt() after it adds cards.
+    if (!nodes().length) return;
     loadTilt(()=> init(mode==='all' && isTouch));
   }
 
@@ -1504,6 +1533,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // AI chat placeholder, double-click footer tagline to open
 (function initAiChatPlaceholder() {
+  // "Talk to AI me": the Ask my portfolio search (ask/ask.js), quoting the site only, never generating text
+  const scriptSrc = (document.currentScript && document.currentScript.src) || new URL('assets/script.js', location.href).href;
   const tagline = document.querySelector('.footer-tagline');
   if (!tagline) return;
 
@@ -1527,21 +1558,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <button type="button" class="ai-chat-close" data-ai-close aria-label="Close">×</button>
       </header>
       <div class="ai-chat-body">
-        <div class="ai-chat-bubble ai-chat-bubble--user">What XR projects have you built?</div>
-        <div class="ai-chat-bubble ai-chat-bubble--assistant">
-          I will learn from this portfolio and answer soon.
-          <div class="ai-chat-coming-soon" role="status">
-            <span class="ai-chat-coming-soon-dot" aria-hidden="true"></span>
-            <span class="ai-chat-coming-soon-dot" aria-hidden="true"></span>
-            <span class="ai-chat-coming-soon-dot" aria-hidden="true"></span>
-            Coming soon
-          </div>
-        </div>
+        <div class="ai-chat-chips"></div>
+        <div class="ai-chat-results"></div>
       </div>
       <footer class="ai-chat-footer">
         <div class="ai-chat-input-wrap">
-          <input class="ai-chat-input" type="text" disabled placeholder="Ask about my work…" aria-disabled="true" tabindex="-1" />
-          <button type="button" class="ai-chat-send" disabled aria-label="Send (coming soon)" tabindex="-1">↑</button>
+          <input class="ai-chat-input" type="text" placeholder="Ask about my work…" aria-label="Ask about my work" />
+          <button type="button" class="ai-chat-send" aria-label="Ask">↑</button>
         </div>
       </footer>
     </div>
@@ -1551,13 +1574,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeEls = portal.querySelectorAll('[data-ai-close]');
   let lastFocus = null;
 
+  let asker = null;
+  function mountAsk() {
+    if (asker) return;
+    asker = import(new URL('../ask/ask.js', scriptSrc).href).then(({ createAsk }) => {
+      const input = portal.querySelector('.ai-chat-input');
+      const ask = createAsk({
+        input, results: portal.querySelector('.ai-chat-results'), chips: portal.querySelector('.ai-chat-chips'),
+        compact: true, limit: 2,
+        suggestions: ['What does Rabiat work on?', 'What XR projects has she built?', 'How is this site built?', 'What is the Study Lab?'],
+      });
+      portal.querySelector('.ai-chat-send').addEventListener('click', () => ask.ask(input.value));
+      return ask;
+    }).catch(() => {
+      portal.querySelector('.ai-chat-results').innerHTML = '<p class="muted">Search did not load. Try <a href="/ask/">the Ask page</a>.</p>';
+    });
+  }
+
   function openPanel() {
+    window.rkEgg?.('ai-me');
+    mountAsk();
     lastFocus = document.activeElement;
     portal.classList.add('is-open');
     portal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-    const closeBtn = portal.querySelector('.ai-chat-close');
-    if (closeBtn) closeBtn.focus();
+    const field = portal.querySelector('.ai-chat-input');
+    if (field) setTimeout(() => field.focus(), 60);
   }
 
   function closePanel() {
@@ -1813,7 +1855,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const u = new URL(path, window.location.origin);
     const parts = u.pathname.split('/').filter(Boolean);
     const file = parts.pop();
-    if (!file || u.pathname.endsWith('/')) return 'index.html';
+    if (!file) return 'index.html';
+    // Folder pages (lab/, ask/) are their own page, not the homepage
+    if (u.pathname.endsWith('/')) return `${file}/`;
     return file;
   }
 
@@ -2018,4 +2062,93 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   load();
   wide.addEventListener('change', load);
+})();
+
+// ============================================
+// EASTER EGG TRACKER
+// Each egg calls window.rkEgg(id) the first time it is found. A toast says so, and the
+// Settings popover shows "Easter eggs" with a dot per egg and hints for the ones left.
+// Pages without this script (404, planner) write the same storage key directly.
+// ============================================
+(function () {
+  const KEY = 'eggs:found';
+  const EGGS = [
+    { id: 'signal', name: 'Signal Lab', hint: 'Type the word for making things.' },
+    { id: 'rainbow', name: 'Rainbow mode', hint: 'Some buttons reward patience.' },
+    { id: 'ai-me', name: 'AI me', hint: 'The footer has a double life.' },
+    { id: 'quake', name: 'Earthquake', hint: 'Say my name, again and again.' },
+    { id: 'konami', name: 'Konami code', hint: 'Up, up, down, down...' },
+    { id: 'headset', name: 'Put it on', hint: 'Someone in the hero is watching you.' },
+    { id: 'planner', name: 'Agent codes', hint: 'The planner knows a few passwords.' },
+    { id: 'lost', name: 'Lost in space', hint: 'Go somewhere that does not exist.' },
+    { id: 'dont-click', name: 'Do not click', hint: 'Do the one thing you are told not to.' },
+  ];
+  const read = () => { try { const v = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
+  const write = (v) => { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* private window */ } };
+
+  const css = document.createElement('style');
+  css.textContent = `
+    .egg-toast { position: fixed; z-index: 10000; left: 50%; bottom: max(22px, env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 16px); opacity: 0;
+      display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; color: #fff; font: 600 14px/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
+      background: rgba(20, 16, 30, .7); border: 1px solid rgba(255,255,255,.2); -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+      box-shadow: 0 12px 34px rgba(0,0,0,.35); transition: opacity .35s ease, transform .5s cubic-bezier(.2,1.4,.4,1); pointer-events: none; }
+    .egg-toast.in { opacity: 1; transform: translate(-50%, 0); }
+    .egg-toast small { font-weight: 500; opacity: .7; }
+    .egg-toast i, .egg-dots i { width: 9px; height: 12px; border-radius: 50% 50% 46% 46% / 60% 60% 40% 40%; display: inline-block; background: rgba(255,255,255,.22); }
+    .egg-toast i { width: 12px; height: 16px; background: linear-gradient(160deg, #fff, var(--accent, #ec4899)); }
+    .egg-dots { display: flex; gap: 5px; align-items: center; margin-top: 6px; }
+    .egg-dots i.on { background: linear-gradient(160deg, #fff, var(--accent, #ec4899)); }
+    .egg-list { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 12.5px; }
+    .egg-list li { display: flex; gap: 6px; align-items: baseline; }
+    .egg-list li.off { opacity: .65; font-style: italic; }
+    .egg-open { all: unset; cursor: pointer; display: block; width: 100%; }
+    .egg-open:focus-visible { outline: 2px solid var(--accent, #ec4899); outline-offset: 3px; border-radius: 6px; }
+    @media (prefers-reduced-motion: reduce) { .egg-toast { transition: opacity .2s; transform: translate(-50%, 0); } }
+  `;
+  document.head.appendChild(css);
+
+  let toastTimer = 0;
+  function toast(egg, count) {
+    let t = document.querySelector('.egg-toast');
+    if (!t) { t = document.createElement('div'); t.className = 'egg-toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+    t.innerHTML = '';
+    const i = document.createElement('i'); i.setAttribute('aria-hidden', 'true');
+    const b = document.createElement('span'); b.textContent = `Easter egg found: ${egg.name}`;
+    const s = document.createElement('small'); s.textContent = `${count} of ${EGGS.length}`;
+    t.append(i, b, s);
+    // While the earthquake is running the page is locked; pop in without a fade so it always shows
+    t.style.transition = document.documentElement.style.overflow === 'hidden' ? 'none' : '';
+    void t.offsetWidth;
+    t.classList.add('in');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('in'), 3600);
+  }
+
+  window.rkEgg = function (id) {
+    const egg = EGGS.find((e) => e.id === id); if (!egg) return;
+    const found = read(); if (found.includes(id)) return;
+    found.push(id); write(found); toast(egg, found.filter((x) => EGGS.some((e) => e.id === x)).length); paintPanel();
+  };
+
+  // "Do not click" on the contact page
+  document.addEventListener('click', (e) => { if (e.target.closest && e.target.closest('.contact-joke')) window.rkEgg('dont-click'); }, true);
+  // Visiting the 404 page or finding planner codes is recorded there; show the toast here next time
+  function paintPanel() {
+    const box = document.getElementById('eggGroup'); if (!box) return;
+    const found = read(); const n = EGGS.filter((e) => found.includes(e.id)).length;
+    box.querySelector('.egg-count').textContent = `${n} of ${EGGS.length}`;
+    box.querySelector('.egg-dots').innerHTML = EGGS.map((e) => `<i class="${found.includes(e.id) ? 'on' : ''}"></i>`).join('');
+    box.querySelector('.egg-list').innerHTML = EGGS.map((e) => found.includes(e.id)
+      ? `<li><span aria-hidden="true">●</span><span>${e.name}</span></li>`
+      : `<li class="off"><span aria-hidden="true">○</span><span>${e.hint}</span></li>`).join('');
+  }
+  function mountPanel() {
+    const panel = document.querySelector('.settings-panel'); if (!panel || document.getElementById('eggGroup')) return !!panel;
+    const g = document.createElement('div'); g.className = 'settings-group'; g.id = 'eggGroup';
+    g.innerHTML = `<button type="button" class="egg-open" aria-expanded="false"><span class="settings-label">Easter eggs <span class="egg-count"></span></span><span class="egg-dots" aria-hidden="true"></span></button><ul class="egg-list" hidden></ul>`;
+    panel.appendChild(g);
+    const btn = g.querySelector('.egg-open'); const list = g.querySelector('.egg-list');
+    btn.addEventListener('click', () => { list.hidden = !list.hidden; btn.setAttribute('aria-expanded', String(!list.hidden)); });
+    paintPanel(); return true;
+  }
+  if (!mountPanel()) { let tries = 0; const iv = setInterval(() => { if (mountPanel() || ++tries > 20) clearInterval(iv); }, 250); }
 })();

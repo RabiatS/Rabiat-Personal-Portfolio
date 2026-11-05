@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+<script>/* Storage guard: if this browser blocks storage, use an in-memory stand-in so the site still works */(function(){function m(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}['localStorage','sessionStorage'].forEach(function(n){try{var s=window[n];s.setItem('__t','1');s.removeItem('__t')}catch(e){try{Object.defineProperty(window,n,{configurable:true,value:m()})}catch(_){}}})})();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Lab | Rabiat Sadiq</title>
   <meta name="description" content="New openly licensed ML models, running in your browser. See what they can and can't do before building them into anything. Nothing to install, nothing uploaded." />
@@ -47,6 +48,9 @@
     })();
   </script>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&amp;family=Rajdhani:wght@500;600;700&amp;family=DM+Mono:wght@400;500&amp;display=swap" />
   <link rel="stylesheet" href="../assets/style.css" />
   <script src="../assets/script.js" defer></script>
   <script src="../assets/previews.js" defer></script>
@@ -69,6 +73,8 @@
     .lab-fit { margin: 12px 0 0; font-size: 12.5px; font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
     .lab-card.blocked .lab-fit, .lab-watch .lab-fit { color: var(--text); }
   </style>
+  <!-- Privacy friendly visit counts (no cookies): https://rabiatsadiq.goatcounter.com -->
+  <script data-goatcounter="https://rabiatsadiq.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body data-tilt-mode="desktop">
   <header class="header">
@@ -154,8 +160,8 @@
           <a class="preview-media" href="study/" tabindex="-1" aria-hidden="true"><video data-preview muted loop playsinline preload="none" poster="previews/study.jpg"><source src="previews/study.mp4" type="video/mp4"></video></a>
           <p class="lab-meta"><span class="kind">Science</span> · Study tools</p>
           <h3><a href="study/" style="color:inherit">Study Lab</a></h3>
-          <p class="lab-by muted">ML · Audio · Circuits · VR · Design · Physics · Biology · Muscles · Elements</p>
-          <p class="muted">Nine hands on subjects: machine learning from regression to LLMs and agents, sound and audio, live circuits, how VR works, UI design and UX laws, physics simulations, biology for pre-med, muscles on a 3D body and the periodic table. Runs in your browser.</p>
+          <p class="lab-by muted">ML · Audio · Circuits · VR · Design · Physics · Biology · Anatomy · Muscles · Elements</p>
+          <p class="muted">Ten hands on subjects: machine learning from regression to LLMs and agents, sound and audio, live circuits, how VR works, UI design and UX laws, physics simulations, biology for pre-med, full body anatomy in 3D, muscles on a 3D body and the periodic table. Runs in your browser.</p>
           <div style="margin-top: 10px;">
             <a href="study/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
           </div>
@@ -584,7 +590,7 @@
     }
   </script>
   <script type="module">
-    import { createRipple } from '../assets/ripple.js?v=2';
+    import { createRipple } from '../assets/ripple.js?v=3';
     const band = document.getElementById('labHero');
     const canvas = document.getElementById('labRipple');
     const root = document.documentElement;

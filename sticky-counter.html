@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>/* Storage guard: if this browser blocks storage, use an in-memory stand-in so the site still works */(function(){function m(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}['localStorage','sessionStorage'].forEach(function(n){try{var s=window[n];s.setItem('__t','1');s.removeItem('__t')}catch(e){try{Object.defineProperty(window,n,{configurable:true,value:m()})}catch(_){}}})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CMU MHCI Sticky Note Counter</title>
   <meta name="description" content="A live observatory estimating every sticky note used by CMU MHCI cohorts since 2012 · physics pile, per-year breakdowns, running total." />
@@ -17,7 +18,7 @@
   <meta name="twitter:description" content="A live observatory estimating every sticky note used by CMU MHCI cohorts since 2012 · physics pile, per-year breakdowns, running total." />
   <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/stickyobservatory.png" />
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<script src="assets/vendor/matter.min.js" defer></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -633,6 +634,8 @@
     50% { color: var(--cmu-red); }
   }
 </style>
+  <!-- Privacy friendly visit counts (no cookies): https://rabiatsadiq.goatcounter.com -->
+  <script data-goatcounter="https://rabiatsadiq.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
 
@@ -731,6 +734,8 @@
 </footer>
 
 <script>
+// Runs after the deferred matter.min.js has loaded.
+document.addEventListener('DOMContentLoaded', () => {
 // ─── CURSOR ───────────────────────────────────────────────────────────────────
 const cursor = document.getElementById('cursor');
 document.addEventListener('mousemove', e => {
@@ -1470,6 +1475,7 @@ window.addEventListener('resize', () => {
     // update ground
     Matter.Body.setPosition(mainGround, { x: W/2, y: H+25 });
   }
+});
 });
 </script>
 </body>
