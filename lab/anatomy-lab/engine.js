@@ -179,7 +179,7 @@ const _a = new THREE.Vector3(); const _b = new THREE.Vector3(); const _c = new T
 
 export class Viewer {
   constructor(ctx, opts = {}) {
-    this.ctx = ctx; this.opts = opts; window.__anatViewer = this;
+    this.ctx = ctx; this.opts = opts;
     const host = document.createElement('div');
     host.style.cssText = 'position:absolute;inset:0;touch-action:none;';
     ctx.stage.append(host); this.host = host;
@@ -378,6 +378,7 @@ export class Viewer {
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
       down = null;
       if (moved > 6 || !this.onPick) return;
+      this.tip.style.display = 'none';
       this.onPick(this.pick(e.clientX, e.clientY), e);
     }, { signal });
     el.addEventListener('pointermove', (e) => {

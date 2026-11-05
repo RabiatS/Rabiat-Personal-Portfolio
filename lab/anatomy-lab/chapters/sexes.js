@@ -101,7 +101,7 @@ export default {
       Mg.position.set(-0.18 - mc.x, -mc.y, -mc.z); Fg.position.set(0.18 - fc.x, -fc.y, -fc.z);
       Mg.updateMatrixWorld(true); Fg.updateMatrixWorld(true);
       apply();
-      v.labels = [{ pos: new THREE.Vector3(-0.18, 0.15, 0), text: 'Male (BodyParts3D)', fixed: true, color: C.c5 }, { pos: new THREE.Vector3(0.18, 0.15, 0), text: 'Female (Human Reference Atlas)', fixed: true, color: C.c4 }];
+      v.labels = [{ pos: new THREE.Vector3(-0.18, 0.15, 0), text: 'Male', fixed: true, color: C.c5 }, { pos: new THREE.Vector3(0.18, 0.15, 0), text: 'Female', fixed: true, color: C.c4 }];
     }).catch((e) => { console.error(e); note.fail(); });
 
     // subpubic gauges, drawn from each pubic symphysis in the front view

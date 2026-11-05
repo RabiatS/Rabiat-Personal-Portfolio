@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<script>/* Storage guard: if this browser blocks storage, use an in-memory stand-in so the site still works */(function(){function m(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}['localStorage','sessionStorage'].forEach(function(n){try{var s=window[n];s.setItem('__t','1');s.removeItem('__t')}catch(e){try{Object.defineProperty(window,n,{configurable:true,value:m()})}catch(_){}}})})();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ask my portfolio | Rabiat Sadiq</title>
+  <meta name="description" content="Ask about Rabiat Sadiq's work, study and projects. Every answer is a passage quoted from this site with a link to its source. Nothing is generated." />
+  <link rel="canonical" href="https://www.rabiatsadiq.com/ask/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Rabiat Sadiq" />
+  <meta property="og:title" content="Ask my portfolio | Rabiat Sadiq" />
+  <meta property="og:description" content="Ask about Rabiat's work, study and projects. Every answer is quoted from the site, with a link to where it came from." />
+  <meta property="og:url" content="https://www.rabiatsadiq.com/ask/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Ask my portfolio | Rabiat Sadiq" />
+  <meta name="twitter:description" content="Ask about Rabiat's work, study and projects. Every answer is quoted from the site, with a link to where it came from." />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+
+  <!-- Prevent theme flash & minimalist Rabiat -->
+  <script>
+    (function(){
+      var g = localStorage.getItem('glassLevel');
+      var legacy = { clear: 0, 'default': 50, frosted: 100 };
+      var t = (g in legacy ? legacy[g] : parseInt(g, 10));
+      if (!isFinite(t)) t = 0;
+      t = Math.min(100, Math.max(0, t)) / 100;
+      var st = document.documentElement.style;
+      st.setProperty('--glass-blur', (40 * Math.pow(t, 3.75)).toFixed(2) + 'px');
+      st.setProperty('--glass-saturate', (1.05 + t * 1.05).toFixed(3));
+      st.setProperty('--glass-alpha-boost', (-0.055 + t * 0.2).toFixed(4));
+      st.setProperty('--glass-lens', (1 - t).toFixed(3));
+      var plain = localStorage.getItem('plainMode') === 'true';
+      var rabiat = localStorage.getItem('plainModeVariant') === 'rabiat';
+      if (plain && rabiat) {
+        document.documentElement.classList.add('plain-mode', 'plain-mode--rabiat', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        return;
+      }
+      if (plain) {
+        document.documentElement.classList.add('plain-mode');
+        document.documentElement.style.colorScheme = 'light';
+        return;
+      }
+      var saved = localStorage.getItem('theme');
+      var dark = !saved || saved === 'dark';
+      if (dark) { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme='dark'; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+  <link rel="stylesheet" href="ask.css" data-ask-css />
+  <script src="../assets/script.js" defer></script>
+  <script src="../assets/music.js" defer></script>
+  <!-- Privacy friendly visit counts (no cookies): https://rabiatsadiq.goatcounter.com -->
+  <script data-goatcounter="https://rabiatsadiq.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <style>
+    /* The hero: the home page's night sky, shorter, with the question box in it. */
+    .ask-hero.hero--fullscreen {
+      min-height: auto;
+      padding: calc(var(--header-height) + 64px) 16px 72px;
+      background: linear-gradient(155deg, var(--hero-base) 0%, var(--hero-wash) 38%, var(--hero-wash-2) 62%, transparent 100%);
+      background-size: 220% 220%;
+      animation: heroBreath 24s ease-in-out infinite;
+    }
+    .ask-hero .hero-inner { position: relative; z-index: 3; width: 100%; max-width: 760px; margin: 0 auto; }
+    .ask-hero h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1.08; margin: 0 0 16px; }
+    .ask-hero .lead { margin: 0 auto 28px; font-size: clamp(16px, 2.2vw, 19px); }
+
+    /* The question box: a liquid-glass pill on the dark sky. */
+    .ask-form { width: 100%; }
+    .ask-field {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 6px 6px 18px;
+      border-radius: 999px;
+      background-color: rgba(255, 255, 255, calc(0.1 + var(--glass-alpha-boost, 0)));
+      background-image: var(--lg-rim, none);
+      background-size: 100% 100%;
+      backdrop-filter: blur(max(14px, var(--glass-blur, 0px))) var(--lg-filter,) saturate(1.5);
+      -webkit-backdrop-filter: blur(max(14px, var(--glass-blur, 0px))) saturate(1.5);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 12px 40px rgba(0, 0, 0, 0.28);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .ask-field:focus-within {
+      border-color: color-mix(in srgb, var(--primary) 70%, #fff);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 0 0 4px color-mix(in srgb, var(--primary) 35%, transparent), 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+    .ask-field .ico { flex: none; width: 18px; height: 18px; color: rgba(255, 255, 255, 0.8); }
+    .ask-field input {
+      flex: 1; min-width: 0; appearance: none; -webkit-appearance: none;
+      border: 0; outline: none; background: transparent;
+      color: #fff; font: inherit; font-size: 17px; padding: 12px 4px;
+    }
+    .ask-field input::placeholder { color: rgba(255, 255, 255, 0.62); }
+    .ask-field input::-webkit-search-cancel-button { filter: invert(1); opacity: .7; }
+    .ask-field .btn { flex: none; padding: 12px 22px; border-radius: 999px; }
+
+    .ask-suggest { margin-top: 22px; }
+    .ask-suggest-label { margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.7); }
+    .ask-hero .ask-chips { justify-content: center; }
+    .ask-hero .ask-chip {
+      color: rgba(255, 255, 255, 0.95);
+      background: var(--glass-pill, rgba(255, 255, 255, 0.06));
+      backdrop-filter: blur(12px) saturate(1.45);
+      -webkit-backdrop-filter: blur(12px) saturate(1.45);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 14px rgba(0, 0, 0, 0.12);
+      text-align: center;
+    }
+    .ask-hero .ask-chip:hover { background: rgba(255, 255, 255, 0.16); border-color: color-mix(in srgb, var(--primary) 45%, rgba(255, 255, 255, 0.3)); }
+    .ask-hero .ask-chip:focus-visible { outline-color: #fff; }
+
+    /* Results and the notes under them. */
+    .ask-main { max-width: 820px; padding-top: 8px; padding-bottom: 72px; }
+    .ask-main #askResults { min-height: 40px; scroll-margin-top: calc(var(--header-height) + 16px); }
+    .ask-tools {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+      margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .ask-smart-btn {
+      appearance: none; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 8px 14px 8px 10px; border-radius: 999px;
+      color: var(--text); background: var(--glass-bg, var(--surface)); border: 1px solid var(--border-strong);
+    }
+    .ask-smart-btn .knob { position: relative; width: 34px; height: 20px; border-radius: 999px; background: var(--border-strong); transition: background .2s; }
+    .ask-smart-btn .knob::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s; }
+    .ask-smart-btn[aria-pressed="true"] .knob { background: linear-gradient(135deg, var(--primary), var(--accent)); }
+    .ask-smart-btn[aria-pressed="true"] .knob::after { transform: translateX(14px); }
+    .ask-smart-btn[aria-busy="true"] { cursor: progress; opacity: .8; }
+    .ask-smart-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+    .ask-smart-status { margin: 0; font-size: 13.5px; flex: 1 1 260px; }
+    .ask-howto { margin: 18px 0 0; font-size: 14px; line-height: 1.65; }
+    .ask-howto a { color: var(--primary-readable); }
+
+    @media (max-width: 600px) {
+      .ask-hero.hero--fullscreen { padding: calc(var(--header-height) + 36px) 16px 48px; }
+      .ask-field { padding-left: 14px; }
+      .ask-field input { font-size: 16px; padding: 10px 2px; }
+      .ask-field .btn { padding: 10px 16px; }
+      .ask-hero .ask-chip { font-size: 13px; padding: 7px 12px; }
+      .ask-main { padding-left: 16px; padding-right: 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .ask-hero.hero--fullscreen { animation: none; } }
+  </style>
+</head>
+<body data-tilt-mode="off">
+  <header class="header">
+    <a class="brand" href="../index.html">Rabiat Sadiq</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html" class="nav-pill">
+        <span class="nav-icon ico" data-icon="home" aria-hidden="true"></span>
+        <span class="nav-text">Home</span>
+      </a>
+      <a href="../projects.html" class="nav-pill">
+        <span class="nav-icon ico" data-icon="rocket" aria-hidden="true"></span>
+        <span class="nav-text">Projects</span>
+      </a>
+      <a href="../coursework.html" class="nav-pill">
+        <span class="nav-icon ico" data-icon="cap" aria-hidden="true"></span>
+        <span class="nav-text">Coursework</span>
+      </a>
+      <a href="../lab/" class="nav-pill">
+        <span class="nav-icon ico" data-icon="flask" aria-hidden="true"></span>
+        <span class="nav-text">Lab</span>
+      </a>
+      <a href="../cool.html" class="nav-pill">
+        <span class="nav-icon ico" data-icon="sparkle" aria-hidden="true"></span>
+        <span class="nav-text">Cool</span>
+      </a>
+      <a href="../contact.html" class="nav-pill">
+        <span class="nav-icon ico" data-icon="mail" aria-hidden="true"></span>
+        <span class="nav-text">Contact</span>
+      </a>
+    </nav>
+
+    <div class="header-controls">
+      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn">in</a>
+      <button class="toggle" id="funToggle" title="Fun colors" aria-label="Fun colors"><span class="ico" data-icon="palette" aria-hidden="true"></span></button>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme"><span class="ico" data-icon="theme" aria-hidden="true"></span></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero hero--fullscreen ask-hero" aria-labelledby="askTitle">
+      <div class="hero-ambient" aria-hidden="true">
+        <span class="hero-orb hero-orb--1"></span>
+        <span class="hero-orb hero-orb--2"></span>
+        <span class="hero-orb hero-orb--3"></span>
+        <span class="hero-streak hero-streak--1"></span>
+        <span class="hero-streak hero-streak--2"></span>
+      </div>
+      <canvas id="nebula" aria-hidden="true"></canvas>
+      <div class="hero-inner hero-centered">
+        <p class="eyebrow">Ask my portfolio</p>
+        <h1 id="askTitle">Ask about my work.<br><span class="grad">Answers come from the site.</span></h1>
+        <p class="lead">Every answer is a passage from this site, with a link to where it came from. Nothing is generated, so nothing is made up.</p>
+        <form class="ask-form" id="askForm" role="search" action="./" method="get">
+          <label for="askInput" class="sr-only">Ask a question about Rabiat or this site</label>
+          <div class="ask-field">
+            <span class="ico" data-icon="sparkle" aria-hidden="true"></span>
+            <input id="askInput" name="q" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search"
+                   placeholder="Ask about my projects, study or this site" aria-controls="askResults">
+            <button class="btn" type="submit">Ask</button>
+          </div>
+        </form>
+        <div class="ask-suggest">
+          <p class="ask-suggest-label" id="askChipsLabel">Try one</p>
+          <div id="askChips" role="group" aria-labelledby="askChipsLabel"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container ask-main" aria-label="Answers">
+      <div id="askResults"></div>
+
+      <div class="ask-tools">
+        <button type="button" class="ask-smart-btn" id="askSmart">
+          <span class="knob" aria-hidden="true"></span>
+          Smarter search
+        </button>
+        <p class="ask-smart-status muted" id="askSmartStatus">Off. Keyword search, instant and nothing to download.</p>
+      </div>
+      <p class="ask-howto muted">
+        How it works: keyword search (BM25, with a few synonyms) over the text of every page, project, case study, piece of writing and
+        <a href="../lab/">Lab</a> card on this site, plus answers I wrote myself. It runs in your browser and only ever quotes.
+        Smarter search downloads a small model from the Lab, <a href="../lab/leaf-search/">mdbr-leaf-ir</a> (about 23 MB, once),
+        to also match by meaning, on your own device. Questions are never sent anywhere.
+      </p>
+    </section>
+  </main>
+
+    <footer class="footer container">
+    <p>© <span id="year"></span> Rabiat Sadiq</p>
+    <p class="footer-tagline">Can't believe this is not a portfolio.</p>
+    <div class="footer-links">
+      <a href="mailto:robbiahsadiq@gmail.com">Email</a>
+      <a href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { createAsk } from './ask.js';
+    const results = document.getElementById('askResults');
+    const ask = createAsk({
+      input: document.getElementById('askInput'),
+      form: document.getElementById('askForm'),
+      results,
+      chips: document.getElementById('askChips'),
+      smartToggle: document.getElementById('askSmart'),
+      smartStatus: document.getElementById('askSmartStatus'),
+      syncUrl: true,
+    });
+    // A chip or Enter on a phone: bring the answer into view.
+    const narrow = matchMedia('(max-width: 900px)');
+    document.getElementById('askChips').addEventListener('click', (e) => {
+      if (e.target.closest('.ask-chip') && narrow.matches) {
+        setTimeout(() => results.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }), 60);
+      }
+    });
+    document.getElementById('askForm').addEventListener('submit', () => {
+      if (narrow.matches) document.getElementById('askInput').blur();
+    });
+    // The site's liquid glass (desktop only) also bends the edge of the question box.
+    addEventListener('load', () => {
+      let tries = 0;
+      const t = setInterval(() => {
+        if (window.LiquidGlass) { window.LiquidGlass.attach(document.querySelector('.ask-field')); clearInterval(t); }
+        else if (++tries > 20) clearInterval(t);
+      }, 250);
+    });
+    window.rabiatAsk = ask;
+  </script>
+</body>
+</html>
