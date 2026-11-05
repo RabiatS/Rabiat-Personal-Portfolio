@@ -19,7 +19,16 @@ Rabiat-Personal-Portfolio/
 ├── hq-daily-planner.html    # Standalone tool: terminal-style daily planner
 ├── audio-playground/       # Tool: cut songs + split stems in the browser (Music Sandbox project)
 ├── lab/                     # Lab tab: new openly licensed ML models, running in the browser
-│   ├── study/               # Study Lab: pick a subject (muscle-lab/, elements-lab/)
+│   ├── study/               # Study Lab chooser; study/kit/ is the shared chapter frame (kit.js, kit.css, three.min.js)
+│   ├── ml-lab/              # Study Lab: machine learning, regression to LLMs, agents and multimodal
+│   ├── audio-lab/           # Study Lab: sound and digital audio (Web Audio)
+│   ├── circuits-lab/        # Study Lab: circuit simulator with live current flow
+│   ├── vr-lab/              # Study Lab: how VR, AR and MR work
+│   ├── design-lab/          # Study Lab: UI styles, design principles and UX laws
+│   ├── physics-lab/         # Study Lab: mechanics, waves, light and gases
+│   ├── bio-lab/             # Study Lab: cells, DNA, genetics and body systems
+│   ├── muscle-lab/          # Study Lab: 63 muscles on a 3D body
+│   ├── elements-lab/        # Study Lab: atoms and the periodic table
 │   ├── models.json            # Source of truth: sizes, variants per device, licence, mirror sha
 │   ├── index.html             # The Lab tab, newest first (cards regenerated from models.json)
 │   ├── frame/                 # Shared frame: device check, gate, loader, worker, (i) stats
@@ -157,3 +166,11 @@ The **View in VR** button appears in the site header when the browser reports su
 ## License
 
 Personal portfolio website - All rights reserved.
+
+## Adding a Study Lab subject
+
+Study Lab subjects (except Muscle Lab and Elements Lab, which came first) share one frame in `lab/study/kit/`.
+
+1. Copy `lab/ml-lab/index.html` into `lab/<name>-lab/index.html`, change the `id`, `title`, intro and chapter list.
+2. Write each chapter as `lab/<name>-lab/chapters/<id>.js` exporting `{ mount(ctx) }`. The comment at the top of `lab/study/kit/kit.js` lists everything `ctx` offers (stage, panel, canvas, loop, sliders, quiz, storage).
+3. Add a card to `lab/study/index.html` with a 1200x800 JPG preview, and add the lab id to the progress list in its script.
