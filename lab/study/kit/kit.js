@@ -52,6 +52,9 @@ function h(html) {
 const CHEV = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
 
 export function createLab(cfg) {
+  // Embed mode (?embed=1): a single chapter for a class page, Notion or Canvas, with a link back to the full lab
+  const embed = new URLSearchParams(location.search).has('embed');
+  if (embed) document.documentElement.classList.add('k-embed');
   const store = makeStore(cfg.id);
   const done = new Set(store.get('done', []));
   const chapters = cfg.chapters;
@@ -60,7 +63,9 @@ export function createLab(cfg) {
   document.body.innerHTML = `
   <div class="k-app">
     <header class="k-top">
-      <a class="brand" href="../study/"><span class="b1">Study Lab</span><span class="b2">${esc(cfg.title)}</span></a>
+      ${embed
+        ? `<a class="brand" href="${esc(location.pathname)}" target="_blank" rel="noopener"><span class="b1">Study Lab · rabiatsadiq.com</span><span class="b2">${esc(cfg.title)}</span></a>`
+        : `<a class="brand" href="../study/"><span class="b1">Study Lab</span><span class="b2">${esc(cfg.title)}</span></a>`}
       <nav class="k-chap glass" aria-label="Chapters">
         <button class="k-prev" aria-label="Previous chapter">‹</button>
         <button class="k-cur" aria-haspopup="dialog"><span class="n"></span><span class="t"></span>${CHEV}</button>
@@ -158,7 +163,7 @@ export function createLab(cfg) {
     const c = chapters[i];
     $('.k-cur .n').textContent = i < 0 ? '00' : String(i + 1).padStart(2, '0');
     $('.k-cur .t').textContent = i < 0 ? 'Overview' : c.title;
-    history.replaceState(null, '', i < 0 ? location.pathname : `#${c.id}`);
+    history.replaceState(null, '', location.pathname + location.search + (i < 0 ? '' : `#${c.id}`));
     window.scrollTo(0, 0);
     if (i < 0) {
       stageEl.hidden = true; side.hidden = true; over.hidden = false;
@@ -178,8 +183,11 @@ export function createLab(cfg) {
     inner.innerHTML = '';
     ac = new AbortController();
     const ctx = makeCtx(c, ac.signal);
-    const head = h(`<div><p class="eyebrow">${esc(c.group || cfg.title)} · Chapter ${i + 1} of ${chapters.length}</p></div>`);
+    const head = h(`<div class="k-head"><p class="eyebrow">${esc(c.group || cfg.title)} · Chapter ${i + 1} of ${chapters.length}</p>${embed
+      ? `<a class="k-embed-btn" href="${esc(location.pathname)}#${esc(c.id)}" target="_blank" rel="noopener">Open full lab ↗</a>`
+      : '<button class="k-embed-btn" type="button" aria-haspopup="dialog">Embed</button>'}</div>`);
     panelHost.append(head);
+    if (!embed) head.querySelector('.k-embed-btn').addEventListener('click', () => openEmbed(c));
     const body = document.createElement('div');
     body.style.cssText = 'display:flex;flex-direction:column;gap:14px';
     panelHost.append(body);
@@ -194,7 +202,7 @@ export function createLab(cfg) {
     }
     // Next chapter footer
     const nav = h(`<div class="k-nav">${i > 0 ? '<button class="btn ghost k-b">‹ Back</button>' : ''}${i < chapters.length - 1 ? `<button class="btn k-f">Next: ${esc(chapters[i + 1].title)} ›</button>` : '<button class="btn k-o">All chapters</button>'}</div>`);
-    panelHost.append(nav);
+    if (!embed) panelHost.append(nav);
     nav.querySelector('.k-b')?.addEventListener('click', () => show(i - 1));
     nav.querySelector('.k-f')?.addEventListener('click', () => { markDone(c.id); show(i + 1); });
     nav.querySelector('.k-o')?.addEventListener('click', () => { markDone(c.id); show(-1); });
@@ -292,6 +300,30 @@ export function createLab(cfg) {
       },
     };
     return ctx;
+  }
+
+  // Embed dialog: copy an iframe for this chapter
+  function openEmbed(c) {
+    const url = `https://www.rabiatsadiq.com${location.pathname}?embed=1#${c.id}`;
+    const code = `<iframe src="${url}" title="${c.title} · ${cfg.title}" width="100%" height="680" style="border:0;border-radius:12px;max-width:1100px" allow="fullscreen; microphone; camera; xr-spatial-tracking; accelerometer; gyroscope" loading="lazy"></iframe>`;
+    const d = h(`<div class="k-drawer k-embed-dlg" role="dialog" aria-label="Embed this chapter"><div class="scrim"></div><div class="sheet">
+      <div class="hd"><b>Embed</b><button class="k-x" aria-label="Close">×</button></div>
+      <p class="muted small" style="margin:10px 0 12px">Put <b>${esc(c.title)}</b> on a class page, Notion, Canvas or a blog. Paste this where the site accepts HTML or an embed link. It shows just this chapter, with a link back to the full lab.</p>
+      <textarea class="txt" rows="6" readonly>${esc(code)}</textarea>
+      <div class="row" style="margin-top:10px"><button class="btn k-copy">Copy embed code</button><button class="btn ghost k-copy-link">Copy link only</button></div>
+      <p class="hint" style="margin-top:12px">Tip: most tools that take an embed link (Notion, Canvas, Google Sites) accept the link only.</p>
+    </div></div>`);
+    document.body.append(d);
+    const close = () => d.remove();
+    d.querySelector('.scrim').onclick = close; d.querySelector('.k-x').onclick = close;
+    d.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    const copy = async (text, btn) => {
+      try { await navigator.clipboard.writeText(text); } catch { const ta = d.querySelector('textarea'); ta.select(); document.execCommand && document.execCommand('copy'); }
+      const old = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = old; }, 1400);
+    };
+    d.querySelector('.k-copy').onclick = (e) => copy(code, e.currentTarget);
+    d.querySelector('.k-copy-link').onclick = (e) => copy(url, e.currentTarget);
+    d.querySelector('.k-copy').focus();
   }
 
   // Keyboard: [ and ] step chapters

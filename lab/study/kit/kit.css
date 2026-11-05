@@ -197,6 +197,18 @@ textarea.txt { font: 14px/1.5 var(--f-mono); resize: vertical; }
 .k-tile span.d { font-size: 13.5px; color: var(--muted); line-height: 1.4; }
 .k-path { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 
+/* Embed button and embed mode */
+.k-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.k-embed-btn { border: 1px solid var(--border-strong); background: transparent; border-radius: 6px; padding: 4px 8px 3px; font: 600 11px/1.1 var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); text-decoration: none; white-space: nowrap; }
+.k-embed-btn:hover { color: var(--text); border-color: var(--text-2); }
+.k-embed-dlg { justify-content: center; align-items: center; }
+.k-embed-dlg .sheet { height: auto; max-height: 90vh; width: min(560px, 92vw); border: 1px solid var(--border-strong); border-radius: 14px; padding: 18px; animation: rise .28s var(--spring); }
+.k-embed .k-top { padding-top: max(10px, env(safe-area-inset-top, 0px)); padding-bottom: 8px; }
+.k-embed .brand .b2 { font-size: 20px; }
+.k-embed .k-chap, .k-embed .site-link, .k-embed .info { display: none; }
+.k-embed .k-stage .k-inner { top: 58px; }
+.k-embed .k-side { top: 58px; }
+
 @media (max-width: 1100px) { :root { --side-w: 360px; } .k-chap .k-cur { max-width: 30vw; } }
 @media (max-width: 860px) {
   html, body { height: auto; }
