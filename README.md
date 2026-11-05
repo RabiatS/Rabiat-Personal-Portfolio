@@ -27,6 +27,7 @@ Rabiat-Personal-Portfolio/
 │   ├── design-lab/          # Study Lab: UI styles, design principles and UX laws
 │   ├── physics-lab/         # Study Lab: mechanics, waves, light and gases
 │   ├── bio-lab/             # Study Lab: cells, DNA, genetics and body systems
+│   ├── anatomy-lab/         # Study Lab: full body 3D anatomy (BodyParts3D, Human Reference Atlas)
 │   ├── muscle-lab/          # Study Lab: 63 muscles on a 3D body
 │   ├── elements-lab/        # Study Lab: atoms and the periodic table
 │   ├── models.json            # Source of truth: sizes, variants per device, licence, mirror sha

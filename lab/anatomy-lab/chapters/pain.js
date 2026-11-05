@@ -7,7 +7,7 @@ const LEVELS = ['V1', 'V2', 'V3', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'T1'
 function levelColor(lv) {
   const i = LEVELS.indexOf(lv); if (i < 0) return new THREE.Color(0x777777);
   // neighbouring levels get far apart hues so each strip stands out
-  return new THREE.Color().setHSL((i * 0.381966 + 0.08) % 1, 0.58, i % 2 ? 0.6 : 0.47);
+  return new THREE.Color().setHSL((i * 0.381966 + 0.08) % 1, 0.72, i % 2 ? 0.68 : 0.55);
 }
 
 const REFERRED = {
@@ -189,7 +189,7 @@ export default {
       const base = new THREE.Color(0xE8C4A8);
       for (let i = 0; i < pos.length / 3; i++) {
         const d = skinDerm[i]; let c;
-        if (mode === 'derm') { c = levelColor(d); if (dSel && d !== dSel) c = c.clone().lerp(new THREE.Color(0x2A2A2A), 0.82); }
+        if (mode === 'derm') { c = levelColor(d); if (dSel && d !== dSel) c = c.clone().lerp(new THREE.Color(0x202020), 0.95); }
         else if (mode === 'ref' && refKey) {
           const p = { x: pos[i * 3], y: pos[i * 3 + 1], z: pos[i * 3 + 2] };
           const k = REFERRED[refKey].paint(p, d, refStage) || 0;
