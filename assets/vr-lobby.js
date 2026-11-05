@@ -1075,7 +1075,8 @@ function buildMascot(renderer, pal) {
       uIris: { value: v3(pal.a) }, uGlow: { value: v3(mixRgb(pal.p, pal.a, 0.5)) },
     },
   });
-  const screen = new THREE.Mesh(bend(new THREE.PlaneGeometry(2.5, 1.25, 24, 1), 0.12, 0.17), eyeMat);
+  // In front of the visor glass (front face at z 0.29) so the shell never cuts the eyes off
+  const screen = new THREE.Mesh(bend(new THREE.PlaneGeometry(2.5, 1.2, 24, 1), 0.12, 0.305), eyeMat);
   screen.renderOrder = 2;
   head.add(screen);
   const strapMat = new THREE.MeshStandardMaterial({ color: c3(pal.dark ? mixRgb([0.227, 0.165, 0.333], pal.p, 0.15) : mixRgb([0.81, 0.776, 0.878], pal.p, 0.1)), roughness: 0.85 });
@@ -1131,8 +1132,8 @@ function buildMascot(renderer, pal) {
       root.worldToLocal(local.copy(headPos));
       const ty = clamp(Math.atan2(local.x, local.z), -0.6, 0.6);
       const tp = clamp(-Math.atan2(local.y, Math.hypot(local.x, local.z)), -0.5, 0.5);
-      state.vy += (ty - state.yaw) * 40 * dt; state.vy *= Math.pow(0.002, dt); state.yaw += state.vy * dt * 3;
-      state.vp += (tp - state.pitch) * 40 * dt; state.vp *= Math.pow(0.002, dt); state.pitch += state.vp * dt * 3;
+      state.yaw += (ty - state.yaw) * damp(5, dt);
+      state.pitch += (tp - state.pitch) * damp(5, dt);
       head.rotation.set(state.pitch, state.yaw, -state.yaw * 0.08);
       let lx = 0;
       let ly = 0;
