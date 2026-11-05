@@ -302,6 +302,9 @@ export function createLab(cfg) {
     if (e.key === '[') show(cur - 1);
   });
 
+  // Links to another chapter on the same page (#id) only change the hash
+  window.addEventListener('hashchange', () => { const j = idx(location.hash.slice(1)); if (j >= 0 && j !== cur) show(j); });
+
   const start = idx(location.hash.slice(1));
   show(start >= 0 ? start : -1);
   return { show };
