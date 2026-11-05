@@ -1,0 +1,103 @@
+/* CRNA Lab: styles on top of the shared study kit */
+.pop { max-height: min(70vh, 560px); overflow-y: auto; }
+.pop .fine a { color: var(--muted); }
+.card.crna-warn { border-color: rgba(251, 191, 36, .4); background: rgba(251, 191, 36, .06); }
+.card.crna-warn b { font: 700 13px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--c2); }
+
+/* Source links under every label fact */
+a.src, span.src { display: inline-block; font: 500 10.5px/1.4 var(--f-mono); color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--border-strong); margin-top: 3px; }
+a.src:hover { color: var(--teal); border-bottom-color: var(--teal); }
+span.src.none { border-bottom: 0; color: var(--subtle); }
+.ns { color: var(--subtle); font-style: italic; }
+
+/* Stage scroller used by text heavy chapters */
+.cx-scroll { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; padding: 4px 4px 24px; scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+.cx-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.cx-bar input.txt { max-width: 260px; }
+.cx-count { font: 500 12px var(--f-mono); color: var(--muted); }
+
+/* Drug grid and cards */
+.dgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+.dtile { text-align: left; border: 1px solid var(--border); background: var(--surface); border-radius: 10px; padding: 10px 12px; display: grid; gap: 3px; color: var(--text); transition: border-color .15s, transform .2s var(--spring); }
+.dtile:hover { border-color: var(--text-2); transform: translateY(-1px); }
+.dtile.on { border-color: var(--teal); }
+.dtile b { font: 700 18px/1.05 var(--f-display); text-transform: uppercase; letter-spacing: .02em; }
+.dtile .g { font: 500 11px var(--f-mono); color: var(--muted); }
+.dtile .c { font-size: 13px; color: var(--text-2); line-height: 1.35; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+
+.dcard { border: 1px solid var(--border-strong); background: var(--surface); border-radius: 12px; padding: 16px 18px; display: grid; gap: 12px; }
+.dcard h3 { margin: 0; font: 700 30px/1 var(--f-display); text-transform: uppercase; letter-spacing: .01em; }
+.dcard .meta { font: 500 11.5px/1.5 var(--f-mono); color: var(--muted); }
+.dcard .meta a { color: var(--text-2); }
+.dfield { border-top: 1px solid var(--border); padding-top: 9px; display: grid; gap: 4px; }
+.dfield > h4 { margin: 0; font: 600 11.5px var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--teal); }
+.dfield p { margin: 0; font-size: 14px; line-height: 1.5; }
+.dfield ul { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 2px; }
+.dfield .trow { display: flex; flex-wrap: wrap; gap: 2px 10px; font: 500 12px/1.45 var(--f-mono); color: var(--text-2); border-bottom: 1px solid var(--border); padding: 2px 0; }
+.dfield .trow span:not(:last-child)::after { content: ''; }
+.dose { background: rgba(10,10,10,.45); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; display: grid; gap: 4px; }
+.dose b { font: 600 13.5px var(--f-display); letter-spacing: .04em; }
+.dcard .back { justify-self: start; }
+.notes-box { min-height: 54px; }
+.xnote { font: 500 11px var(--f-mono); color: var(--subtle); }
+
+/* Compare table */
+.ctable-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+table.ctable { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13px; }
+table.ctable th, table.ctable td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+table.ctable thead th { position: sticky; top: 0; background: var(--surface-2); font: 700 15px var(--f-display); text-transform: uppercase; letter-spacing: .03em; }
+table.ctable tbody th { font: 600 11px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--teal); width: 110px; background: rgba(20,20,20,.6); }
+table.ctable td p { margin: 0 0 3px; line-height: 1.45; }
+table.ctable td .clip { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+table.ctable td.open .clip { -webkit-line-clamp: unset; }
+
+/* Flashcards */
+.fc-wrap { position: absolute; inset: 0; display: grid; grid-template-rows: auto 1fr auto; gap: 12px; }
+.fc-scene { perspective: 1400px; display: grid; place-items: center; min-height: 0; }
+.fc { position: relative; width: min(620px, 100%); height: min(380px, 100%); transform-style: preserve-3d; transition: transform .6s var(--spring); cursor: pointer; }
+.fc.flip { transform: rotateY(180deg); }
+.fc .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 1px solid var(--border-strong); border-radius: 16px; background: linear-gradient(160deg, #181818, #101010); padding: 22px 24px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+.fc .back { transform: rotateY(180deg); overflow-y: auto; }
+.fc .kind { font: 600 11px var(--f-display); letter-spacing: .16em; text-transform: uppercase; color: var(--teal); }
+.fc .q { font: 700 clamp(26px, 4vw, 40px)/1.02 var(--f-display); text-transform: uppercase; letter-spacing: .01em; margin: auto 0; }
+.fc .a { font-size: 16px; line-height: 1.5; }
+.fc .hintline { font: 500 11.5px var(--f-mono); color: var(--muted); margin-top: auto; }
+.fc-rate { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.boxes { display: flex; gap: 6px; align-items: flex-end; height: 64px; }
+.boxes .bx { flex: 1; display: grid; gap: 3px; align-content: end; text-align: center; font: 500 10.5px var(--f-mono); color: var(--muted); }
+.boxes .bx i { display: block; border-radius: 4px 4px 0 0; background: var(--c1); min-height: 2px; transition: height .4s var(--spring); }
+
+/* Quiz board */
+.qboard { display: grid; gap: 14px; max-width: 760px; margin: 0 auto; width: 100%; }
+.qcard { border: 1px solid var(--border-strong); background: var(--surface); border-radius: 14px; padding: 18px 20px; display: grid; gap: 12px; }
+.qcard .quote { font-size: 15.5px; line-height: 1.55; border-left: 3px solid var(--c3); padding-left: 12px; color: var(--text-2); }
+.qcard .prompt { font-size: 22px; }
+.missrow { display: grid; grid-template-columns: 120px 1fr 32px; gap: 8px; align-items: center; font: 500 12px var(--f-mono); color: var(--text-2); }
+.missrow i { display: block; height: 8px; border-radius: 4px; background: var(--c4); }
+
+/* Airway SVG */
+.svgwrap { position: absolute; inset: 0; display: grid; place-items: center; }
+.svgwrap svg { width: 100%; height: 100%; display: block; touch-action: manipulation; }
+.hot { cursor: pointer; }
+.hot:hover path, .hot:hover ellipse, .hot:hover circle, .hot:hover rect, .hot:hover polygon { filter: brightness(1.25); }
+.lbl { font: 500 11px "DM Mono", monospace; fill: #F5F5F0; pointer-events: none; }
+.lblbox { fill: rgba(10,10,10,.8); stroke: #3A3A38; }
+.lbl-on .lblbox { stroke: #5EEAD4; }
+
+/* Laryngoscopy game */
+.lg-wrap { position: absolute; inset: 0; display: grid; grid-template-rows: 1fr auto; gap: 10px; }
+.lg-media { position: relative; min-height: 0; display: grid; place-items: center; background: #050505; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+.lg-media img, .lg-media video { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.lg-cap { font: 500 10.5px/1.4 var(--f-mono); color: var(--muted); }
+.lg-cap a { color: var(--text-2); }
+.lg-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.lg-hot { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: 2px solid var(--c2); background: rgba(251,191,36,.12); }
+
+@media (max-width: 860px) {
+  .dgrid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .dcard h3 { font-size: 25px; }
+  .cx-scroll { position: relative; inset: auto; overflow: visible; }
+  .fc .q { font-size: 28px; }
+  .lg-choices { grid-template-columns: 1fr; }
+}

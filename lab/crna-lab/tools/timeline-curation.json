@@ -1,0 +1,554 @@
+{
+  "_readme": "Timeline numbers in minutes, read by hand from the chosen FDA label. Every entry carries a verbatim quote; build-drugs.py drops any entry whose quote is not found in the label. qual: within (upper bound only), about, range, upto, lt (less than). context says route or setting when it is not an IV bolus in adults.",
+  "propofol": {
+    "onset": {
+      "min": 0,
+      "max": 0.67,
+      "qual": "within",
+      "quote": "usually within 40 seconds from the start of injection"
+    },
+    "peak": {
+      "min": 2,
+      "qual": "about",
+      "quote": "allow approximately 2 minutes for onset of peak drug effect",
+      "context": "when titrating"
+    }
+  },
+  "etomidate": {
+    "onset": {
+      "min": 0,
+      "max": 1,
+      "qual": "within",
+      "quote": "rapid onset of action, usually within one minute"
+    }
+  },
+  "ketamine": {
+    "onset": {
+      "min": 0,
+      "max": 0.5,
+      "qual": "within",
+      "quote": "The average amount required to produce 5 to 10 minutes of surgical anesthesia within 30 seconds following injection is 2 mg/kg."
+    },
+    "duration": {
+      "min": 5,
+      "max": 10,
+      "qual": "range",
+      "quote": "The average amount required to produce 5 to 10 minutes of surgical anesthesia within 30 seconds following injection is 2 mg/kg.",
+      "context": "2 mg/kg IV"
+    }
+  },
+  "methohexital": {
+    "onset": {
+      "min": 0,
+      "max": 0.5,
+      "qual": "within",
+      "quote": "rapid uptake by the brain (within 30 seconds) and rapid induction of sleep"
+    },
+    "class": {
+      "text": "Rapid, ultrashort-acting barbiturate anesthetic",
+      "quote": "Methohexital sodium is a rapid, ultrashort-acting barbiturate anesthetic."
+    }
+  },
+  "midazolam": {
+    "peak": {
+      "min": 3,
+      "max": 5,
+      "qual": "range",
+      "quote": "adequate time to achieve peak central nervous system effect (3 to 5 minutes) for midazolam should be allowed between doses"
+    },
+    "class": {
+      "text": "Short-acting benzodiazepine central nervous system (CNS) depressant",
+      "quote": "Midazolam is a short-acting benzodiazepine central nervous system (CNS) depressant."
+    }
+  },
+  "fentanyl": {
+    "peak": {
+      "min": 5,
+      "max": 15,
+      "qual": "range",
+      "quote": "The peak respiratory depressant effect of a single intravenous dose of Fentanyl Citrate Injection is noted 5 to 15 minutes following injection",
+      "context": "peak respiratory depression"
+    },
+    "duration": {
+      "min": 30,
+      "max": 60,
+      "qual": "range",
+      "quote": "The usual duration of action of the analgesic effect is 30 to 60 minutes after a single intravenous dose of up to 100 mcg (0.1 mg) (2 mL).",
+      "context": "analgesia, up to 100 mcg IV"
+    }
+  },
+  "sufentanil": {
+    "onset": {
+      "min": 0,
+      "max": 10,
+      "qual": "within",
+      "quote": "Onset was rapid (within 10 minutes).",
+      "context": "epidural with bupivacaine, labor"
+    },
+    "duration": {
+      "min": 95,
+      "qual": "about",
+      "quote": "The duration of initial doses of sufentanil plus bupivacaine with epinephrine is approximately 95 minutes",
+      "context": "epidural with bupivacaine, labor"
+    }
+  },
+  "remifentanil": {
+    "peak": {
+      "min": 3,
+      "max": 5,
+      "qual": "range",
+      "quote": "Peak hemodynamic effects occur within 3 to 5 minutes of a single dose of ULTIVA or an infusion rate increase.",
+      "context": "hemodynamic effects"
+    },
+    "offset": {
+      "min": 5,
+      "max": 10,
+      "qual": "range",
+      "quote": "Recovery from the effects of ULTIVA occurs rapidly (within 5 to 10 minutes).",
+      "context": "after stopping"
+    }
+  },
+  "morphine": {
+    "onset": {
+      "min": 5,
+      "max": 20,
+      "qual": "range",
+      "quote": "Onset of analgesia occurs with 5-20 minutes following intramuscular administration of morphine",
+      "context": "IM"
+    },
+    "peak": {
+      "min": 60,
+      "qual": "about",
+      "quote": "rising to peak analgesia sixty minutes after a single intramuscular injection",
+      "context": "IM"
+    }
+  },
+  "succinylcholine": {
+    "onset": {
+      "min": 0,
+      "max": 1,
+      "qual": "lt",
+      "quote": "Onset of flaccid paralysis is rapid (less than one minute after intravenous administration)"
+    },
+    "duration": {
+      "min": 4,
+      "max": 6,
+      "qual": "range",
+      "quote": "with single administration lasts approximately 4 to 6 minutes"
+    }
+  },
+  "rocuronium": {
+    "onset": {
+      "min": 0.4,
+      "max": 6,
+      "mid": 1,
+      "qual": "range",
+      "quote": "Neuromuscular block sufficient for intubation (80% block or greater) is attained in a median (range) time of 1 (0.4-6) minute(s)",
+      "context": "0.6 mg/kg, 80% block"
+    },
+    "peak": {
+      "min": 0,
+      "max": 3,
+      "qual": "lt",
+      "quote": "Maximum blockade is achieved in most patients in less than 3 minutes."
+    },
+    "duration": {
+      "min": 34,
+      "max": 42,
+      "qual": "range",
+      "quote": "The median clinical duration of a dose of 0.57 mg/kg to 0.85 mg/kg was 34, 38, and 42 minutes",
+      "context": "clinical duration (to 25% recovery)"
+    }
+  },
+  "vecuronium": {
+    "onset": {
+      "min": 1,
+      "qual": "about",
+      "quote": "generally produces first depression of twitch in approximately 1 minute",
+      "context": "0.08 to 0.1 mg/kg"
+    },
+    "peak": {
+      "min": 3,
+      "max": 5,
+      "qual": "range",
+      "quote": "maximum neuromuscular blockade within 3 to 5 minutes of injection in most patients"
+    },
+    "duration": {
+      "min": 25,
+      "max": 40,
+      "qual": "range",
+      "quote": "the time to recovery to 25% of control (clinical duration) is approximately 25 to 40 minutes after injection",
+      "context": "clinical duration (to 25% recovery)"
+    }
+  },
+  "cisatracurium": {
+    "peak": {
+      "min": 0,
+      "max": 4,
+      "qual": "within",
+      "quote": "Maximum neuromuscular blockade generally occurred in within 4 minutes for this dose range."
+    }
+  },
+  "glycopyrrolate": {
+    "onset": {
+      "min": 0,
+      "max": 1,
+      "qual": "within",
+      "quote": "With intravenous injection, the onset of action is generally evident within one minute."
+    },
+    "duration": {
+      "min": 120,
+      "max": 180,
+      "qual": "range",
+      "quote": "The vagal blocking effects persist for 2 to 3 hours",
+      "context": "vagal blocking effect"
+    },
+    "class": {
+      "text": "Synthetic anticholinergic agent",
+      "quote": "is a synthetic anticholinergic agent."
+    }
+  },
+  "sugammadex": {
+    "onset": {
+      "min": 2.2,
+      "qual": "about",
+      "quote": "The median time to recovery of the TOF (T4/T1) ratio to 0.9 in 18-64 year-olds was 2.2 minutes",
+      "context": "median time to TOF ratio 0.9"
+    }
+  },
+  "bupivacaine": {
+    "onset": {
+      "min": 2,
+      "max": 10,
+      "qual": "range",
+      "quote": "The onset of action following dental injections is usually 2 to 10 minutes",
+      "context": "dental injection"
+    },
+    "duration": {
+      "min": 0,
+      "max": 420,
+      "qual": "upto",
+      "quote": "may last up to 7 hours",
+      "context": "dental injection"
+    },
+    "class": {
+      "text": "Amide local anesthetic",
+      "quote": "bupivacaine hydrochloride, an amide local anesthetic"
+    }
+  },
+  "ropivacaine": {
+    "onset": {
+      "min": 10,
+      "max": 13,
+      "qual": "range",
+      "quote": "extended to the T10 level in 10 to 13 minutes",
+      "context": "epidural, to T10"
+    },
+    "duration": {
+      "min": 120,
+      "qual": "about",
+      "quote": "lasted for approximately 2 hours",
+      "context": "epidural"
+    }
+  },
+  "chloroprocaine": {
+    "onset": {
+      "min": 6,
+      "max": 12,
+      "qual": "range",
+      "quote": "The onset of action with chloroprocaine is rapid (usually within 6 to 12 minutes)"
+    },
+    "duration": {
+      "min": 0,
+      "max": 60,
+      "qual": "upto",
+      "quote": "may be up to 60 minutes"
+    },
+    "class": {
+      "text": "Local anesthetic",
+      "quote": "Injections are sterile non-pyrogenic local anesthetics."
+    }
+  },
+  "desflurane": {
+    "onset": {
+      "min": 2,
+      "max": 4,
+      "qual": "range",
+      "quote": "produced anesthesia within 2 to 4 minutes",
+      "context": "induction, end-tidal 4 to 11%"
+    }
+  },
+  "norepinephrine": {
+    "peak": {
+      "min": 0,
+      "max": 5,
+      "qual": "within",
+      "quote": "a pressor response occurs rapidly and reaches steady state within 5 minutes",
+      "context": "infusion, steady state"
+    },
+    "offset": {
+      "min": 1,
+      "max": 2,
+      "qual": "range",
+      "quote": "The pressor action stops within 1 minutes-2 minutes after the infusion is discontinued.",
+      "context": "after stopping"
+    }
+  },
+  "epinephrine": {
+    "onset": {
+      "min": 0,
+      "max": 5,
+      "qual": "lt",
+      "quote": "The onset of blood pressure increase following an intravenous dose of epinephrine is < 5 minutes"
+    },
+    "duration": {
+      "min": 0,
+      "max": 15,
+      "qual": "within",
+      "quote": "the time to offset blood pressure response occurs within 15 minutes"
+    }
+  },
+  "vasopressin": {
+    "peak": {
+      "min": 0,
+      "max": 15,
+      "qual": "within",
+      "quote": "The pressor effect reaches its peak within 15 minutes."
+    },
+    "offset": {
+      "min": 0,
+      "max": 20,
+      "qual": "within",
+      "quote": "After stopping the infusion the pressor effect fades within 20 minutes.",
+      "context": "after stopping"
+    }
+  },
+  "dobutamine": {
+    "onset": {
+      "min": 1,
+      "max": 2,
+      "qual": "range",
+      "quote": "The onset of action of dobutamine is within one to two minutes"
+    },
+    "peak": {
+      "min": 0,
+      "max": 10,
+      "qual": "upto",
+      "quote": "as much as ten minutes may be required to obtain the peak effect of a particular infusion rate"
+    }
+  },
+  "milrinone": {
+    "onset": {
+      "min": 5,
+      "max": 15,
+      "qual": "range",
+      "quote": "The great majority of patients experience improvements in hemodynamic function within 5 to 15 minutes of the initiation of therapy."
+    }
+  },
+  "esmolol": {
+    "offset": {
+      "min": 10,
+      "max": 20,
+      "qual": "range",
+      "quote": "After termination of infusion, substantial recovery from beta blockade is observed in 10-20 minutes.",
+      "context": "after stopping"
+    }
+  },
+  "labetalol": {
+    "peak": {
+      "min": 0,
+      "max": 5,
+      "qual": "within",
+      "quote": "The maximum effect usually occurs within 5 minutes of each injection."
+    },
+    "class": {
+      "text": "Alpha/beta blocker",
+      "quote": "labetalol is an alpha/beta blocker"
+    }
+  },
+  "hydralazine": {
+    "peak": {
+      "min": 10,
+      "max": 80,
+      "qual": "range",
+      "quote": "The average maximal decrease in blood pressure usually occurs 10 to 80 minutes after administration of hydralazine hydrochloride injection."
+    },
+    "class": {
+      "text": "Antihypertensive",
+      "quote": "is an antihypertensive available in a 1 mL vial"
+    }
+  },
+  "clevidipine": {
+    "onset": {
+      "min": 2,
+      "max": 4,
+      "qual": "range",
+      "quote": "Cleviprex produces a 4-5% reduction in systolic blood pressure within 2-4 minutes after starting a 0.4 mcg/kg/min infusion"
+    },
+    "offset": {
+      "min": 5,
+      "max": 15,
+      "qual": "range",
+      "quote": "In most patients, full recovery of blood pressure is achieved in 5-15 minutes after the infusion is stopped.",
+      "context": "after stopping"
+    }
+  },
+  "nitroprusside": {
+    "offset": {
+      "min": 1,
+      "max": 10,
+      "qual": "range",
+      "quote": "Hypotension should resolve within 1-10 minutes after discontinuation of the nitroprusside infusion",
+      "context": "after stopping"
+    },
+    "class": {
+      "text": "Arterial and venous vasodilator",
+      "quote": "resulting in relaxation of vascular smooth muscle and consequent dilatation of peripheral arteries and veins"
+    }
+  },
+  "diltiazem": {
+    "peak": {
+      "min": 2,
+      "max": 5,
+      "qual": "range",
+      "quote": "Maximal hemodynamic effects usually occurred within 2 to 5 minutes of an injection."
+    }
+  },
+  "atropine": {
+    "peak": {
+      "min": 7,
+      "max": 8,
+      "qual": "range",
+      "quote": "are delayed by 7 to 8 minutes after drug administration",
+      "context": "heart rate and saliva effects"
+    },
+    "class": {
+      "text": "Antimuscarinic agent",
+      "quote": "Atropine is an antimuscarinic agent"
+    }
+  },
+  "metoclopramide": {
+    "onset": {
+      "min": 1,
+      "max": 3,
+      "qual": "range",
+      "quote": "The onset of pharmacological action of metoclopramide is 1 to 3 minutes following an intravenous dose"
+    },
+    "duration": {
+      "min": 60,
+      "max": 120,
+      "qual": "range",
+      "quote": "pharmacological effects persist for 1 to 2 hours"
+    },
+    "class": {
+      "text": "Dopamine receptor antagonist (antiemetic)",
+      "quote": "The antiemetic properties of metoclopramide appear to be a result of its antagonism of central and peripheral dopamine receptors."
+    }
+  },
+  "naloxone": {
+    "onset": {
+      "min": 0,
+      "max": 2,
+      "qual": "within",
+      "quote": "When naloxone hydrochloride is administered intravenously (I.V.), the onset of action is generally apparent within two minutes."
+    }
+  },
+  "flumazenil": {
+    "onset": {
+      "min": 1,
+      "max": 2,
+      "qual": "range",
+      "quote": "The onset of reversal is usually evident within 1 to 2 minutes after the injection is completed."
+    },
+    "peak": {
+      "min": 6,
+      "max": 10,
+      "qual": "range",
+      "quote": "with the peak effect occurring at 6 to 10 minutes"
+    }
+  },
+  "ketorolac": {
+    "onset": {
+      "min": 30,
+      "qual": "about",
+      "quote": "The analgesic effect begins in ~30 minutes with maximum effect in 1 to 2 hours after dosing intravenous or intramuscular."
+    },
+    "peak": {
+      "min": 60,
+      "max": 120,
+      "qual": "range",
+      "quote": "The analgesic effect begins in ~30 minutes with maximum effect in 1 to 2 hours after dosing intravenous or intramuscular."
+    },
+    "duration": {
+      "min": 240,
+      "max": 360,
+      "qual": "range",
+      "quote": "Duration of analgesic effect is usually 4 to 6 hours."
+    }
+  },
+  "famotidine": {
+    "peak": {
+      "min": 0,
+      "max": 30,
+      "qual": "within",
+      "quote": "After intravenous administration, the maximum effect was achieved within 30 minutes.",
+      "context": "acid suppression"
+    },
+    "duration": {
+      "min": 600,
+      "max": 720,
+      "qual": "range",
+      "quote": "Duration of inhibition of secretion by doses of 20 mg and 40 mg was 10 to 12 hours.",
+      "context": "acid suppression (route not given in that sentence)"
+    }
+  },
+  "alfentanil": {
+    "class": {
+      "text": "Opioid analgesic",
+      "quote": "is an opioid analgesic with a rapid onset of action"
+    }
+  },
+  "lidocaine": {
+    "class": {
+      "text": "Local anesthetic agent",
+      "quote": "contain a local anesthetic agent"
+    }
+  },
+  "amiodarone": {
+    "class": {
+      "text": "Class III antiarrhythmic drug",
+      "quote": "a class III antiarrhythmic drug."
+    }
+  },
+  "protamine": {
+    "class": {
+      "text": "Heparin antagonist",
+      "quote": "It acts as a heparin antagonist."
+    },
+    "onset": {
+      "min": 0,
+      "max": 5,
+      "qual": "within",
+      "quote": "Neutralization of heparin occurs within five minutes after intravenous administration of an appropriate dose of protamine sulfate.",
+      "context": "heparin neutralization"
+    }
+  },
+  "dexamethasone": {
+    "class": {
+      "text": "Synthetic adrenocortical steroid (glucocorticoid)",
+      "quote": "a synthetic adrenocortical steroid"
+    }
+  },
+  "dantrolene": {
+    "class": {
+      "text": "Skeletal muscle relaxant",
+      "quote": "RYANODEX is a skeletal muscle relaxant."
+    }
+  },
+  "heparin": {
+    "class": {
+      "text": "Anticoagulant (glycosaminoglycan)",
+      "quote": "called glycosaminoglycans, possessing anticoagulant properties"
+    }
+  }
+}

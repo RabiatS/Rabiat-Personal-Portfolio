@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<title>CRNA Lab · Rabiat's Lab</title>
+<meta name="description" content="A study aid for nurse anesthesia students: anesthesia, cardiac and supporting drugs read straight from FDA labels, airway anatomy and assessment, respiratory physiology, pathophysiology and a laryngoscopy naming game with real, openly licensed images.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../study/kit/kit.css">
+<link rel="stylesheet" href="crna.css">
+  <!-- Privacy friendly visit counts (no cookies): https://rabiatsadiq.goatcounter.com -->
+  <script data-goatcounter="https://rabiatsadiq.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/og-card.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/og-card.jpg" />
+</head>
+<body>
+<script type="module">
+import { createLab } from '../study/kit/kit.js';
+import { ABOUT_HTML } from './shared.js';
+const ch = (id, title, group, blurb) => ({ id, title, group, blurb, load: () => import(`./chapters/${id}.js`) });
+createLab({
+  id: 'crna',
+  title: 'CRNA Lab',
+  intro: 'Anesthesia, cardiac and supporting drugs from their FDA labels, plus airway anatomy from nose to carina.',
+  overview: 'A study aid for nurse anesthesia school. The drug chapters read every fact straight from the FDA label, with a link to the exact label and section, and say plainly when a label does not state something. The airway chapter lets you explore the anatomy in a labelled section and in 3D. This is an educational study aid, not clinical guidance: always check the current full prescribing information and your program\'s references.',
+  about: ABOUT_HTML,
+  chapters: [
+    ch('drug-cards', 'Drug cards', 'Drugs', 'Every drug, every field, each with its FDA label source.'),
+    ch('timelines', 'Onset and duration', 'Drugs', 'Label numbers on one time axis. Compare up to four drugs.'),
+    ch('compare', 'Compare drugs', 'Drugs', 'Side by side tables: NMBs, induction agents, pressors and more.'),
+    ch('flashcards', 'Flashcards', 'Drugs', 'Spaced repetition on class, mechanism, reversal and category.'),
+    ch('drug-quiz', 'Mock quiz', 'Drugs', 'Label based questions, with your misses tracked by drug and field.'),
+    ch('airway-anatomy', 'Airway anatomy', 'Airway', 'A labelled sagittal view and the larynx in 3D.'),
+  ],
+});
+</script>
+</body>
+</html>

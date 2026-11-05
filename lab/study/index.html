@@ -106,6 +106,10 @@
       <img src="anatomy.jpg" alt="A 3D human skull with cranial and facial bones coloured" width="1200" height="800" loading="lazy">
       <div class="copy"><span class="tag">New</span><h2>Anatomy</h2><p>The whole body in 3D: skeleton and skull, circulation with blood flow, brain and nerves, pain pathways, organs and female and male anatomy.</p><span class="prog" id="prog-anatomy"></span></div>
     </a>
+    <a class="subject" href="../crna-lab/" style="--focus:40% 50%">
+      <img src="crna.jpg" alt="Onset and duration bars for four neuromuscular blockers, read from their FDA labels" width="1200" height="800" loading="lazy">
+      <div class="copy"><span class="tag">New</span><h2>CRNA</h2><p>Anesthesia, cardiac and supporting drugs straight from their FDA labels, with flashcards, a mock quiz and airway anatomy in 3D. A study aid, not clinical guidance.</p><span class="prog" id="prog-crna"></span></div>
+    </a>
     <a class="subject" href="../muscle-lab/" style="--focus:50% 30%">
       <img src="muscles.jpg" alt="A 3D human body with its muscles labelled" width="1200" height="800" loading="lazy">
       <div class="copy"><h2>Muscles</h2><p>63 muscles on a 3D body, with origin, insertion and action.</p><span class="prog" id="prog-muscles"></span></div>
@@ -126,7 +130,7 @@
     const elements = Object.keys(read('elements:stats')).filter((k) => /^z\d+$/.test(k)).length;
     if (elements) set('elements', `${elements} elements tried`);
     // Kit based labs keep a list of finished chapters under <id>:done
-    for (const id of ['ml', 'audio', 'circuits', 'vr', 'design', 'physics', 'bio', 'anatomy', 'light']) {
+    for (const id of ['ml', 'audio', 'circuits', 'vr', 'design', 'physics', 'bio', 'anatomy', 'light', 'crna']) {
       const d = read(`${id}:done`);
       const n = Array.isArray(d) ? d.length : 0;
       if (n) set(id, `${n} chapter${n === 1 ? '' : 's'} done`);
