@@ -64,6 +64,21 @@
     if (clicks >= NEEDED) { clicks = 0; quake(); }
   });
 
+  // The Konami code does it too: up up down down left right left right B A (or the short up up down down left right B A)
+  const CODES = [
+    ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'],
+    ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'b', 'a'],
+  ];
+  const keys = [];
+  addEventListener('keydown', (e) => {
+    if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable]')) return;
+    keys.push(e.key.length === 1 ? e.key.toLowerCase() : e.key);
+    if (keys.length > 10) keys.shift();
+    if (keys.length >= 4 && keys.slice(-4).join() === 'ArrowUp,ArrowUp,ArrowDown,ArrowDown' && !reduce) loadMatter().catch(() => {});
+    const hit = CODES.some((c) => keys.length >= c.length && keys.slice(-c.length).join() === c.join());
+    if (hit && !busy && !fallen) { keys.length = 0; quake(); }
+  });
+
   // ---------- Which pieces fall ----------
   const PIECES = [
     '.header .brand', '.header .nav', '.header-controls > *',
