@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<title>Circuits Lab · Rabiat's Lab</title>
+<meta name="description" content="Learn electricity by building circuits: current, voltage, Ohm's law, series and parallel, power, fuses, switches, capacitors, LEDs and meters, all in a live circuit simulator that runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../study/kit/kit.css">
+</head>
+<body>
+<script type="module">
+import { createLab } from '../study/kit/kit.js';
+const ch = (id, title, group, blurb) => ({ id, title, group, blurb, load: () => import(`./chapters/${id}.js`) });
+createLab({
+  id: 'circuits',
+  title: 'Circuits Lab',
+  intro: 'Electricity from the first spark of an idea to building your own circuits, in a live simulator.',
+  overview: 'Every chapter here runs the same real circuit simulator. The little moving dots are the current: they speed up when more current flows and stop when the path is broken. Drag parts in, draw wires, flip switches and watch what happens. Start at the top if electricity is new to you, or jump straight to the sandbox.',
+  about: '<p>The simulator solves the circuit many times a second with modified nodal analysis, the same method professional circuit simulators use. Capacitors and inductors are stepped through time, and LEDs follow the real diode equation.</p><p>Every chapter has a live circuit, a plain words explanation, tasks to try, a going deeper section and a short check at the end.</p>',
+  chapters: [
+    ch('what-is-electricity', 'What electricity is', 'Start here', 'Charge, current and voltage, next to a water circuit.'),
+    ch('ohms-law', "Ohm's law", 'Start here', 'One battery, one resistor, and V = I R.'),
+    ch('series', 'Series circuits', 'Building circuits', 'One path: bulbs share the voltage and dim.'),
+    ch('parallel', 'Parallel circuits', 'Building circuits', 'Many paths: every bulb gets the full voltage.'),
+    ch('power', 'Power and energy', 'Building circuits', 'P = V I, brightness, and what a kWh costs.'),
+    ch('short-circuits', 'Short circuits and fuses', 'Safety', 'Why a short is dangerous and how a fuse saves you.'),
+    ch('switches', 'Switches and logic', 'Control', 'AND, OR, and the two way staircase switch.'),
+    ch('capacitors', 'Capacitors', 'Components', 'Charging and discharging, and the time constant RC.'),
+    ch('leds', 'LEDs and diodes', 'Components', 'One way current, forward voltage, and the resistor you need.'),
+    ch('measure', 'Measure it', 'Components', "Ammeters, voltmeters, and Kirchhoff's laws checked live."),
+    ch('sandbox', 'Sandbox', 'Build', 'Free build with presets, save and load.'),
+  ],
+});
+</script>
+</body>
+</html>
