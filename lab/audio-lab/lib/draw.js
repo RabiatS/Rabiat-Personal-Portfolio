@@ -10,10 +10,12 @@ export const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-
 export function txt(g, s, x, y, { color = C.muted, align = 'left', base = 'alphabetic', font = MONO } = {}) {
   g.font = font; g.fillStyle = color; g.textAlign = align; g.textBaseline = base; g.fillText(s, x, y);
 }
-export function title(g, s, x, y, color = C.muted) {
+export function title(g, s, x, y, color = C.muted, maxW = Infinity) {
   g.save(); g.font = '600 11px "Rajdhani", system-ui, sans-serif'; g.fillStyle = color; g.textAlign = 'left'; g.textBaseline = 'top';
   if ('letterSpacing' in g) g.letterSpacing = '1.6px';
-  g.fillText(s.toUpperCase(), x, y); g.restore();
+  let t = s.toUpperCase();
+  if (g.measureText(t).width > maxW) { while (t.length > 4 && g.measureText(`${t}...`).width > maxW) t = t.slice(0, -1); t = `${t.trimEnd()}...`; }
+  g.fillText(t, x, y); g.restore();
 }
 
 export function rr(g, x, y, w, h, r = 8) {
@@ -22,7 +24,7 @@ export function rr(g, x, y, w, h, r = 8) {
 }
 export function box(g, x, y, w, h, label) {
   g.save(); rr(g, x + 0.5, y + 0.5, w - 1, h - 1, 10); g.fillStyle = 'rgba(20,20,20,.55)'; g.fill(); g.strokeStyle = C.border; g.lineWidth = 1; g.stroke(); g.restore();
-  if (label) title(g, label, x + 12, y + 10);
+  if (label) title(g, label, x + 12, y + 10, C.muted, w - 24);
 }
 
 export function fmtHz(f) {

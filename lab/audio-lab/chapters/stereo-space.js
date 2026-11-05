@@ -104,8 +104,8 @@ export default {
         stem(0.004, 1, C.c1);
         let a = dMix; for (let k = 1; k * dTime <= T && a > 0.01; k++) { stem(k * dTime, a, C.c2); a *= fb; }
         g.strokeStyle = 'rgba(255,255,255,.2)'; g.beginPath(); g.moveTo(x0, yb + 0.5); g.lineTo(x0 + w, yb + 0.5); g.stroke();
-        let lx = 20; for (const [col, nm] of [[C.c1, 'direct sound'], [C.c2, 'echoes (delay + feedback)'], [C.c3, 'reverb (dense reflections)']]) { g.fillStyle = col; g.fillRect(lx, 33, 10, 3); txt(g, nm, lx + 14, 38, { font: '500 10px "DM Mono", monospace' }); lx += g.measureText(nm).width + 34; }
-        txt(g, `an echo after ${(dTime * 1000).toFixed(0)} ms = a wall about ${((dTime * SOUND) / 2).toFixed(1)} m away`, W - 20, 60, { align: 'right', color: C.text2 });
+        let lx = 20; for (const [col, nm] of (W < 600 ? [[C.c1, 'direct'], [C.c2, 'echoes'], [C.c3, 'reverb']] : [[C.c1, 'direct sound'], [C.c2, 'echoes (delay + feedback)'], [C.c3, 'reverb (dense reflections)']])) { g.fillStyle = col; g.fillRect(lx, 33, 10, 3); txt(g, nm, lx + 14, 38, { font: '500 10px "DM Mono", monospace' }); lx += g.measureText(nm).width + 34; }
+        txt(g, W < 600 ? `echo ${(dTime * 1000).toFixed(0)} ms = wall ${((dTime * SOUND) / 2).toFixed(1)} m away` : `an echo after ${(dTime * 1000).toFixed(0)} ms = a wall about ${((dTime * SOUND) / 2).toFixed(1)} m away`, W - 20, 60, { align: 'right', color: C.text2 });
       } else {
         box(g, 0, 0, W, H, 'Binaural cues: drag the sound around your head');
         const b = binGeom();

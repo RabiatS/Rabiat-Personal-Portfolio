@@ -38,8 +38,8 @@ export default {
     scene.add(ball, shadow);
 
     // detected planes
-    const planeTex = tex.grid(C.c1, 'rgba(0,0,0,0)');
-    const pmat = () => basic('#ffffff', { map: planeTex, transparent: true, opacity: 0.55, depthWrite: false, side: 2 });
+    const planeTex = tex.grid(C.c1, 'rgba(94,234,212,0.16)');
+    const pmat = () => basic('#ffffff', { map: planeTex, transparent: true, opacity: 0.8, depthWrite: false, side: 2 });
     const S = room.size / 2;
     const planes = [
       { name: 'floor', y: 0, kind: 'h', x0: -S, x1: S, z0: -S, z1: S, m: mesh(floorGeo(room.size, room.size, room.size), pmat(), 0, 0.01, 0), at: 0 },
@@ -142,7 +142,7 @@ export default {
           const k = clamp((scanT - p.at) / 1.4, 0, 1);
           p.m.visible = k > 0 && mr; p.m.scale.set(Math.max(0.001, k), 1, Math.max(0.001, k));
           if (p.kind === 'v') p.m.scale.set(Math.max(0.001, k), Math.max(0.001, k), 1);
-          p.m.material.opacity = 0.25 + 0.3 * (1 - k) + 0.1;
+          p.m.material.opacity = 0.6 + 0.4 * (1 - k);
         });
         if (scanT > 4.5) scanT = -2;
       } else if (scanT === -2) planes.forEach((p) => { p.m.visible = mr; });

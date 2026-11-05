@@ -44,7 +44,7 @@ export default {
 
     ctx.loop(() => {
       const l = L(); g.clearRect(0, 0, l.W, l.H);
-      const r = l.a; box(g, r.x, r.y, r.w, r.h, 'Masking: a loud tone hides quiet ones near it (level in dB)');
+      const r = l.a; box(g, r.x, r.y, r.w, r.h, r.w < 500 ? 'Masking (level in dB)' : 'Masking: a loud tone hides quiet ones near it (level in dB)');
       const p = P(r);
       for (const f of [100, 200, 500, 1000, 2000, 5000, 10000]) { const x = Math.round(X(p, f)) + 0.5; g.strokeStyle = 'rgba(255,255,255,.05)'; g.beginPath(); g.moveTo(x, p.y); g.lineTo(x, p.y + p.h); g.stroke(); txt(g, f >= 1000 ? `${f / 1000}k` : `${f}`, x, p.y + p.h + 13, { align: 'center', font: '500 10px "DM Mono", monospace', color: C.subtle }); }
       for (let d = 0; d <= 100; d += 20) { const y = Math.round(Y(p, d)) + 0.5; g.strokeStyle = 'rgba(255,255,255,.05)'; g.beginPath(); g.moveTo(p.x, y); g.lineTo(p.x + p.w, y); g.stroke(); txt(g, `${d}`, p.x - 6, y + 4, { align: 'right', font: '500 10px "DM Mono", monospace', color: C.subtle }); }
@@ -62,7 +62,7 @@ export default {
       g.strokeStyle = col; g.lineWidth = 3; g.beginPath(); g.moveTo(px, p.y + p.h); g.lineTo(px, Y(p, Lp)); g.stroke();
       g.fillStyle = C.bg; g.strokeStyle = col; g.lineWidth = 2; g.beginPath(); g.arc(px, Y(p, Lp), 7, 0, Math.PI * 2); g.fill(); g.stroke();
       const right = px > p.x + p.w * 0.66;
-      txt(g, ok ? 'quiet tone: audible, must be kept' : 'quiet tone: masked, can be dropped', right ? px - 12 : px + 12, Y(p, Lp) + 4, { align: right ? 'right' : 'left', color: col });
+      txt(g, p.w < 500 ? (ok ? 'audible' : 'masked') : (ok ? 'quiet tone: audible, must be kept' : 'quiet tone: masked, can be dropped'), right ? px - 12 : px + 12, Y(p, Lp) + 4, { align: right ? 'right' : 'left', color: col });
 
       // sizes
       const q = l.b; const secs = minutes * 60;
