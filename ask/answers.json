@@ -1,0 +1,221 @@
+{
+  "_howto": [
+    "Curated answers for Ask my portfolio (/ask/). The page reads this file directly, so there is nothing to rebuild after editing it.",
+    "Each entry: q is a list of ways someone might ask (the first one is shown as a suggestion), a is the answer exactly as it should appear, link is where Read more goes (a path from the site root, or a full URL), status is published or draft.",
+    "Only published entries are shown. Drafts are a to-do list: write the answer in your own words, then change status to published.",
+    "Answers are shown word for word and never rewritten. The page also always shows the top passages from the site under an answer, so keep answers short.",
+    "Optional: source says where the facts came from, for your own reference. It is not shown.",
+    "No long dashes please: the page and its tests reject them."
+  ],
+  "answers": [
+    {
+      "id": "what-she-works-on",
+      "q": ["What does Rabiat work on?", "What do you do?", "What is Rabiat's focus?", "Who is Rabiat?", "What kind of work does she do?"],
+      "a": "In her own words on the home page: \"I work in the space between engineering, research, and design, building things that sense and respond to people. The discipline changes, the curiosity doesn't.\" Her focus areas there are applied ML, XR and spatial computing, HCI research, computer vision, data pipelines, human-centered design, and product design and prototyping.",
+      "link": "index.html",
+      "source": "index.html hero",
+      "status": "published"
+    },
+    {
+      "id": "education",
+      "q": ["Where did Rabiat study?", "Where did she go to school?", "What degrees does Rabiat have?", "What is her education?", "Which university did she attend?"],
+      "a": "Carnegie Mellon University, Master of Human-Computer Interaction (graduated Aug 2026). University of Texas, San Antonio, B.S. in Computer Engineering with a minor in Computer Science. She also completed the Apple NACME AIML Intensive at the University of Southern California, an 8-week program in 2024 with 35 projects, and went to Alief Early College High School.",
+      "link": "index.html#education",
+      "source": "index.html #education",
+      "status": "published"
+    },
+    {
+      "id": "xr-projects",
+      "q": ["What XR projects has she built?", "What VR projects has Rabiat made?", "Show me her XR work", "Has she built anything in AR or VR?", "What spatial computing work has she done?"],
+      "a": "XR projects on the site: VisionPro Wrist Spatial Feedback (Vision Pro events felt on the Apple Watch, 2026), XR Pain Augmentation Research at CMU (2025 to 2026), GazeFlow (2025), Magic Mitts (a haptic VR glove that took 1st place at the UTSA Tech Symposium, 2024), VR Music Visualizer, Weeping Angel VR, AR Guided Journeys, VR Interactive Data Visualization and Hand-Controlled Visuals (2024), and VR Content Analysis research at UTSA (2023 to 2024). The whole site also has a WebXR version you can step into.",
+      "link": "projects.html",
+      "source": "assets/projects.json, projects tagged XR",
+      "status": "published"
+    },
+    {
+      "id": "how-site-is-built",
+      "q": ["How is this site built?", "What is this website made with?", "What tech stack does the portfolio use?", "How did she build her website?", "Is this site built with React?"],
+      "a": "It is a static site: hand-written HTML, CSS and plain JavaScript with no framework and no build step, hosted on GitHub Pages. The projects page reads assets/projects.json when it loads. The 3D VR headset in the home hero and the builder cube are three.js, scroll reveals use GSAP, and the physics in the hidden easter eggs (the 404 page, for one) is Matter.js. vr.html is an immersive WebXR version of the hero and featured work, also built with three.js. Lab models run on your own device with Transformers.js 4.3.0 or ONNX Runtime Web, on the GPU through WebGPU or on the CPU through WebAssembly, and stay cached after the first visit. The Study Lab subjects share one kit in lab/study/kit (kit.js, kit.css and a bundled three.js), where every chapter is a small module with a live demo, an explanation and a short check.",
+      "link": "https://github.com/RabiatS/Rabiat-Personal-Portfolio",
+      "source": "Verified in the repo: CNAME, no package.json, assets/vr-headset.js and builder-cube.js (three@0.160.0), assets/timeline-scroll.js (gsap@3.12.5), assets/quake.js, 404.html and sticky-counter.html (matter-js@0.19.0), assets/vr-lobby.js (renderer.xr, immersive-vr), lab/models.json runtime (Transformers.js 4.3.0), lab/frame/engine.js (onnxruntime-web 1.30.0), lab/frame/device.js (WebGPU or WebAssembly), lab/study/kit/kit.js",
+      "status": "published"
+    },
+    {
+      "id": "the-lab",
+      "q": ["What is the Lab?", "What is Rabiat's Lab?", "What models are in the Lab?", "What is the Lab tab?"],
+      "a": "The Lab is where Rabiat tries new openly licensed ML models before building them into anything: what they can and can't do, and how they run on your own device. Nothing to install, nothing uploaded. The models that run in the browser say how big they are and where they will run before anything downloads, and stay on your device after the first visit. The ones too big for a browser link to a demo instead.",
+      "link": "lab/",
+      "source": "lab/index.html intro",
+      "status": "published"
+    },
+    {
+      "id": "study-lab",
+      "q": ["What is the Study Lab?", "What can I learn on this site?", "What subjects are in the Study Lab?"],
+      "a": "The Study Lab is a set of hands on study labs, each built around one subject: machine learning (from regression to LLMs and agents), audio, circuits, VR and XR, design, physics, biology for pre-med, muscles on a 3D body, and the elements. Every chapter has a live demo, a plain words explanation, a going deeper part and a short check. Everything runs on your device and your scores stay in your browser.",
+      "link": "lab/study/",
+      "source": "lab/study/index.html, lab/index.html Study Lab card",
+      "status": "published"
+    },
+    {
+      "id": "experience",
+      "q": ["Where has Rabiat worked?", "What is her work experience?", "Where did she intern?", "What jobs has Rabiat had?", "What companies has she worked with?"],
+      "a": "From the experience timeline: Project Manager and Engineer on the Amazon Music capstone (Jan to Jul 2026), AI Research Engineer with Xbox on the Xbox x CMU Measuring Social collaboration (spring 2026), Research Assistant at the CMU Augmented Perception Lab (Sep 2025 to Aug 2026), Applied ML Intern at PlayStation (SIE, summer 2025), co-founder and AI and full-stack engineer at Applied STEM (2024), AI/VR Research Assistant at UTSA (Aug 2023 to Dec 2024), the Apple NACME AIML Intensive at USC, and Google's Software Product Sprint (summer 2022).",
+      "link": "index.html#experience",
+      "source": "index.html #experience",
+      "status": "published"
+    },
+    {
+      "id": "awards",
+      "q": ["What awards has Rabiat won?", "Has she won any awards?", "What scholarships does she have?"],
+      "a": "1st place at the UTSA Tech Symposium out of 89 teams for Magic Mitts, the haptic VR glove. Selected for the Apple NACME AIML Intensive at USC. Scholarships: Michael and Susan Dell Scholar, Horatio Alger Association Texas Scholarship, Apple Scholar Program, and UTSA ECE scholarships.",
+      "link": "index.html#awards",
+      "source": "index.html #awards",
+      "status": "published"
+    },
+    {
+      "id": "contact",
+      "q": ["How can I contact Rabiat?", "What is her email?", "How do I get in touch?", "Is she on LinkedIn?"],
+      "a": "Email robbiahsadiq@gmail.com, or use the form on the contact page. She is also on LinkedIn (linkedin.com/in/rabiat-sadiq) and GitHub (github.com/RabiatS).",
+      "link": "contact.html",
+      "source": "contact.html, site footer",
+      "status": "published"
+    },
+    {
+      "id": "skills",
+      "q": ["What skills does Rabiat have?", "What technologies does she use?", "What programming languages does she know?", "What is her tech stack?"],
+      "a": "From the skills section: Python, PyTorch, scikit-learn, OpenCV and TensorFlow for ML and computer vision; Ray, Databricks, PySpark, MLflow and FFmpeg for data pipelines; Unity (C#), the Meta XR SDK, VR prototyping and AR; Swift for iOS, Core ML, HealthKit, AWS and GCP; React, TypeScript, FastAPI and JavaScript on the web; microcontrollers, ESP32 and sensor and signal processing in hardware; and research methods from user-centered research and UX evaluation to experimental design and qualitative analysis.",
+      "link": "index.html#skills",
+      "source": "index.html #skills",
+      "status": "published"
+    },
+    {
+      "id": "writing",
+      "q": ["What does Rabiat write about?", "Does she have a blog?", "Where are her essays?", "What are Field Notes?"],
+      "a": "Field Notes are her longer reads: why she started something, what the research says and what she got wrong, or a thought with no project attached. Recent pieces include The Point Was to Learn (on rewarding learning instead of finished tasks, in AI and in people), Hands in Your Pockets (the Apple Watch as a touch surface), If AI Goes Dark (a language model that lives entirely on the phone) and Nobody Knows What The Last One Did (the AI deployment gap).",
+      "link": "writing.html",
+      "source": "writing.html, assets/writing.json",
+      "status": "published"
+    },
+    {
+      "id": "tools",
+      "q": ["What tools has Rabiat built?", "Are there any free tools on the site?", "What is on the Cool page?"],
+      "a": "Tools she built so she could stop using ones full of ads, all running in your browser: HQ Daily Planner, an em-dash editor for AI-generated text, Audio Playground (cut songs and split them into stems), Background Remover, PDF Merger, and Noise (white, pink and brown noise mixed with rain, wind and more). The Cool page also has a playground of effects and small games, and Brain Gym.",
+      "link": "cool.html",
+      "source": "cool.html",
+      "status": "published"
+    },
+    {
+      "id": "resume",
+      "q": ["Can I see Rabiat's resume?", "Where is her CV?", "Download resume"],
+      "a": "Her resume is a PDF linked from the Resume button on the home page.",
+      "link": "assets/Rabiat_Sadiq_Resume.pdf",
+      "source": "index.html hero buttons",
+      "status": "published"
+    },
+    {
+      "id": "vr-site",
+      "q": ["Can I see this site in VR?", "Is there a VR version of the portfolio?", "How do I view the site in a headset?"],
+      "a": "Yes. vr.html is an immersive WebXR version of the home hero and featured work. Open it in a headset browser that supports WebXR, such as the Quest Browser, and tap Enter VR. On a laptop it opens as a 3D preview you can look around with the mouse.",
+      "link": "vr.html",
+      "source": "vr.html, cool.html VR card, README",
+      "status": "published"
+    },
+    {
+      "id": "this-page",
+      "q": ["How does this page work?", "Is this an AI chatbot?", "How does Ask my portfolio work?", "Does this use AI?"],
+      "a": "It is search, not a chatbot. Every answer is either one Rabiat wrote herself or a passage quoted from the site, always with a link to where it came from, so it cannot make things up. Matching is BM25 keyword search with some synonyms, and it runs instantly in your browser. Smarter search optionally downloads a small search model from the Lab (mdbr-leaf-ir, about 23 MB) to rerank results by meaning, on your own device.",
+      "link": "ask/",
+      "source": "ask/ (this feature)",
+      "status": "published"
+    },
+
+    {
+      "id": "open-to-work",
+      "q": ["Is Rabiat open to work?", "Is she looking for a job?", "Is Rabiat hiring or available?"],
+      "a": "",
+      "link": "contact.html",
+      "todo": "Not stated anywhere on the site, so it stays hidden until you write it. What roles, where, and from when?",
+      "status": "draft"
+    },
+    {
+      "id": "roles",
+      "q": ["What roles is Rabiat looking for?", "What kind of team does she want to join?"],
+      "a": "",
+      "link": "contact.html",
+      "todo": "Titles you would answer to (research engineer, applied ML, XR prototyper, design engineer?), and what makes a team a good fit.",
+      "status": "draft"
+    },
+    {
+      "id": "whats-next",
+      "q": ["What is Rabiat doing now?", "What is she working on next?", "What is she doing after CMU?"],
+      "a": "",
+      "link": "index.html",
+      "todo": "A now line: what you are building or studying this month.",
+      "status": "draft"
+    },
+    {
+      "id": "location",
+      "q": ["Where is Rabiat based?", "Where does she live?", "Is she open to relocating or remote work?"],
+      "a": "",
+      "link": "contact.html",
+      "todo": "City or region, and remote, hybrid or relocation preferences, only if you want them public.",
+      "status": "draft"
+    },
+    {
+      "id": "origin-xr",
+      "q": ["How did Rabiat get into XR?", "Why does she work on VR?"],
+      "a": "",
+      "link": "projects.html",
+      "todo": "The story, in your words.",
+      "status": "draft"
+    },
+    {
+      "id": "why-hci",
+      "q": ["Why did she move from computer engineering to HCI?", "Why HCI?"],
+      "a": "",
+      "link": "index.html#education",
+      "todo": "Why the MHCI after a computer engineering degree.",
+      "status": "draft"
+    },
+    {
+      "id": "favorite-project",
+      "q": ["What is Rabiat's favorite project?", "Which project is she proudest of?"],
+      "a": "",
+      "link": "projects.html",
+      "todo": "One project and why.",
+      "status": "draft"
+    },
+    {
+      "id": "mad-scientist",
+      "q": ["Why 'professional mad scientist'?", "What does professional mad scientist mean?"],
+      "a": "",
+      "link": "index.html",
+      "todo": "The hero line, explained.",
+      "status": "draft"
+    },
+    {
+      "id": "how-she-works",
+      "q": ["What is Rabiat like to work with?", "What is her working style?", "What role does she usually take on a team?"],
+      "a": "",
+      "link": "contact.html",
+      "todo": "How you like to work: prototype first, research first, what you usually own on a team.",
+      "status": "draft"
+    },
+    {
+      "id": "outside-work",
+      "q": ["What does Rabiat do for fun?", "What are her hobbies?"],
+      "a": "",
+      "link": "cool.html",
+      "todo": "Anything you are happy to share.",
+      "status": "draft"
+    },
+    {
+      "id": "speaking",
+      "q": ["Does Rabiat give talks or mentor?", "Can I invite her to speak?"],
+      "a": "",
+      "link": "contact.html",
+      "todo": "Talks, mentoring, collaborations you are open to.",
+      "status": "draft"
+    }
+  ]
+}

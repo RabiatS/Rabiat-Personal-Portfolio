@@ -118,7 +118,7 @@ const GROUPS = [
   ['tool', 'app', 'utility'],
   ['game', 'gaming', 'xbox', 'playstation'],
   ['skill', 'technology', 'stack', 'language', 'framework'],
-  ['research', 'researcher', 'study'],
+  ['research', 'researcher'],
   ['resume', 'cv'],
   ['hobby', 'fun', 'free', 'playground', 'cool'],
   ['learn', 'teach', 'lesson', 'chapter', 'course', 'studylab'],
