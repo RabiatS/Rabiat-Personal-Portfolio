@@ -61,7 +61,7 @@
       brand.classList.remove('qk-wobble'); void brand.offsetWidth; brand.classList.add('qk-wobble');
       if (clicks >= 7 && !reduce) { const m = document.querySelector('main'); m.classList.remove('qk-tremor'); void m.offsetWidth; m.classList.add('qk-tremor'); }
     }
-    if (clicks >= NEEDED) { clicks = 0; quake(); }
+    if (clicks >= NEEDED) { clicks = 0; setTimeout(() => window.rkEgg?.('quake'), 2600); quake(); }
   });
 
   // The Konami code does it too: up up down down left right left right B A (or the short up up down down left right B A)
@@ -76,7 +76,7 @@
     if (keys.length > 10) keys.shift();
     if (keys.length >= 4 && keys.slice(-4).join() === 'ArrowUp,ArrowUp,ArrowDown,ArrowDown' && !reduce) loadMatter().catch(() => {});
     const hit = CODES.some((c) => keys.length >= c.length && keys.slice(-c.length).join() === c.join());
-    if (hit && !busy && !fallen) { keys.length = 0; quake(); }
+    if (hit && !busy && !fallen) { keys.length = 0; setTimeout(() => window.rkEgg?.('konami'), 2600); quake(); }
   });
 
   // ---------- Which pieces fall ----------
@@ -235,11 +235,12 @@
     // Matter listens for wheel on the element; let the page ignore it while fallen
     grab.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
 
-    let last = performance.now();
+    let last = performance.now(); let acc = 0;
     const step = (now) => {
       if (!fallen) return;
-      const dt = Math.min(1000 / 30, now - last); last = now;
-      Engine.update(engine, dt);
+      // Fixed 60 Hz steps, up to 4 per frame, so slow devices stay in real time instead of slow motion
+      acc = Math.min(acc + (now - last), 1000 / 15); last = now;
+      while (acc >= 1000 / 60) { Engine.update(engine, 1000 / 60); acc -= 1000 / 60; }
       for (const it of items) {
         const b = it.body;
         it.el.style.transform = `translate(${(b.position.x - it.cx).toFixed(2)}px, ${(b.position.y - it.cy).toFixed(2)}px) rotate(${b.angle.toFixed(4)}rad) ${it.base}`;

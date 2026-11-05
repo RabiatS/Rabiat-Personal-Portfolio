@@ -1787,6 +1787,7 @@ function logout() {
 
 // ── Friend Easter Egg trigger ──────────────────────────────
 function triggerFriendEgg(egg) {
+  try { var f = JSON.parse(localStorage.getItem('eggs:found') || '[]'); if (f.indexOf('planner') < 0) { f.push('planner'); localStorage.setItem('eggs:found', JSON.stringify(f)); } } catch (e) { /* private window */ }
   const overlay = document.createElement('div');
   overlay.style.cssText = `
     position:fixed;top:0;left:0;right:0;bottom:0;

@@ -72,6 +72,7 @@
 <script>
 (function () {
   'use strict';
+  try { var f = JSON.parse(localStorage.getItem('eggs:found') || '[]'); if (f.indexOf('lost') < 0) { f.push('lost'); localStorage.setItem('eggs:found', JSON.stringify(f)); } } catch (e) { /* private window */ }
   try { document.getElementById('path').textContent = decodeURIComponent(location.pathname); } catch (e) { /* keep default */ }
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -162,9 +163,10 @@
     document.body.removeEventListener('wheel', mouse.mousewheel);
     var mc = M.MouseConstraint.create(engine, { mouse: mouse, constraint: { stiffness: .25, render: { visible: false } } });
     C.add(engine.world, mc);
-    var last = performance.now();
+    var last = performance.now(); var acc = 0;
     function step(now) {
-      E.update(engine, Math.min(1000 / 30, now - last)); last = now;
+      acc = Math.min(acc + (now - last), 1000 / 15); last = now;
+      while (acc >= 1000 / 60) { E.update(engine, 1000 / 60); acc -= 1000 / 60; }
       for (var i = 0; i < pieces.length; i++) {
         var p = pieces[i]; var b = p.body;
         p.el.style.transformOrigin = '50% ' + (50 + p.oy / p.h * 100).toFixed(2) + '%';

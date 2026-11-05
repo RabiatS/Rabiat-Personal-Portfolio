@@ -158,6 +158,7 @@ function init() {
   let zoom = 0;
   host.addEventListener('click', (e) => {
     e.preventDefault(); e.stopImmediatePropagation();
+    window.rkEgg?.('headset');
     if (zoom || reduce) { location.href = 'vr.html'; return; }
     zoom = 0.0001;
   }, true);
