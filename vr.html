@@ -18,6 +18,9 @@
   <meta name="twitter:description" content="Step inside the portfolio: an immersive WebXR version of the hero and featured work, built with three.js." />
   <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/projects/VR Mussic Viz.webp" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&amp;family=Rajdhani:wght@500;600;700&amp;family=DM+Mono:wght@400;500&amp;display=swap" />
   <link rel="stylesheet" href="assets/style.css" />
   <script>
     (function () {
@@ -39,14 +42,24 @@
       }
     }
   </script>
+  <link rel="preload" href="assets/vr/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
   <style>
+    /* Inter (OFL, assets/vr/fonts/OFL.txt), self hosted so the canvas text in the
+       3D scene looks the same on every headset instead of falling back to Roboto */
+    @font-face {
+      font-family: 'InterVR';
+      src: url('assets/vr/fonts/inter-latin-wght-normal.woff2') format('woff2');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
     html, body {
       margin: 0;
       height: 100%;
       overflow: hidden;
       background: #151416;
       color: #f4f2f8;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
+      font-family: 'InterVR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
     html:not(.dark) body { background: #f4f1f9; color: #1b1726; }
@@ -115,18 +128,18 @@
     html:not(.dark) .vr-card__badge { color: #be185d; background: rgba(236, 72, 153, 0.08); }
     .vr-card h1 {
       margin: 0 0 10px;
-      font-size: clamp(24px, 5vw, 30px);
-      line-height: 1.15;
-      font-weight: 700;
-      letter-spacing: -0.01em;
+      font-size: clamp(26px, 5.5vw, 32px);
+      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: -0.04em;
     }
     .vr-card h1 span {
-      background: linear-gradient(90deg, #a78bfa, #f472b6);
+      background: linear-gradient(135deg, #ffffff, #e0e7ff);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
-    html:not(.dark) .vr-card h1 span { background-image: linear-gradient(90deg, #7c3aed, #db2777); }
+    html:not(.dark) .vr-card h1 span { background-image: linear-gradient(135deg, #1b1726, #5b3a9e); }
     .vr-card p {
       margin: 0 auto 22px;
       max-width: 34ch;
@@ -143,7 +156,7 @@
       gap: 8px;
       min-height: 48px;
       padding: 0 22px;
-      border-radius: 14px;
+      border-radius: 999px;
       font: inherit;
       font-size: 15px;
       font-weight: 600;
@@ -159,11 +172,11 @@
     .vr-btn:focus-visible { outline: 2px solid #f472b6; outline-offset: 3px; }
     .vr-btn--primary {
       border: 0;
-      color: #fff;
-      background: linear-gradient(90deg, var(--primary, #7c3aed), var(--accent, #ec4899));
+      color: #111;
+      background: linear-gradient(135deg, var(--primary, #7c3aed), var(--accent, #ec4899));
       box-shadow: 0 8px 26px rgba(124, 58, 237, 0.4);
     }
-    .vr-btn--primary:hover { background: linear-gradient(90deg, var(--primary, #7c3aed), var(--accent, #ec4899)); box-shadow: 0 10px 32px rgba(236, 72, 153, 0.42); }
+    .vr-btn--primary:hover { background: linear-gradient(135deg, var(--primary, #7c3aed), var(--accent, #ec4899)); box-shadow: 0 10px 32px rgba(236, 72, 153, 0.42); }
     .vr-btn--ghost { border-color: transparent; background: transparent; font-weight: 500; opacity: 0.85; }
     .vr-btn[hidden] { display: none !important; }
     .vr-hint { margin: 16px 0 0; font-size: 12.5px; color: #8a849a; }
@@ -180,7 +193,8 @@
       transition: opacity 0.4s ease;
     }
     .vr-hud--top { top: max(16px, env(safe-area-inset-top)); left: 16px; right: 16px; justify-content: space-between; }
-    .vr-hud--bottom { bottom: max(16px, env(safe-area-inset-bottom)); left: 16px; right: 16px; justify-content: flex-start; }
+    .vr-hud--bottom { top: max(16px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); justify-content: center; }
+    @media (max-width: 720px) { .vr-hud--bottom { top: calc(max(16px, env(safe-area-inset-top)) + 52px); width: calc(100% - 32px); } }
     .vr-hud.is-hidden { opacity: 0; }
     .vr-pill {
       pointer-events: auto;
@@ -203,7 +217,7 @@
     }
     html:not(.dark) .vr-pill { background: rgba(255, 255, 255, 0.72); border-color: rgba(27, 23, 38, 0.12); }
     .vr-pill:focus-visible { outline: 2px solid #f472b6; outline-offset: 2px; }
-    .vr-pill--accent { border: 0; color: #fff; background: linear-gradient(90deg, var(--primary, #7c3aed), var(--accent, #ec4899)); }
+    .vr-pill--accent { border: 0; color: #111; background: linear-gradient(135deg, var(--primary, #7c3aed), var(--accent, #ec4899)); }
     .vr-pill[hidden] { display: none !important; }
     .vr-tip {
       pointer-events: none;
@@ -270,7 +284,7 @@
     </div>
   </div>
   <div class="vr-hud vr-hud--bottom is-hidden" id="vrHudBottom">
-    <p class="vr-tip" id="vrTip">Drag to look around. Click a card to open it. Arrow keys turn.</p>
+    <p class="vr-tip" id="vrTip">Drag to look around. Click a card to open it. Scroll to browse projects.</p>
   </div>
 
   <nav class="vr-a11y" id="vrA11y" aria-label="Everything in the 3D space"></nav>
@@ -279,7 +293,7 @@
     <div class="vr-card">
       <span class="vr-card__badge">WebXR portfolio</span>
       <h1 id="vrOverlayTitle">Step inside <span>the site</span></h1>
-      <p id="vrOverlayDesc">The hero, featured work and experience, arranged around you in 3D. Point with a controller or pinch with your hands.</p>
+      <p id="vrOverlayDesc">The hero, featured work and experience, arranged around you in 3D. Point with a controller or pinch with your hands, grip to move panels.</p>
       <div class="vr-card__actions">
         <button type="button" class="vr-btn vr-btn--primary" id="enterVrBtn" hidden>Enter VR</button>
         <button type="button" class="vr-btn" id="previewBtn">Look around in 3D</button>
