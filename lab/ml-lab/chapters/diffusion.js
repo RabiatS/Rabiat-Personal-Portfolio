@@ -86,7 +86,7 @@ export default {
         const xx = noisy(TARGETS[prompt], t);
         blit(TARGETS[prompt], 0, imgTop, s, 'Clean image x0', 'a training image');
         blit(eps, gap + s, imgTop, s, 'Noise ε', 'random, fixed here');
-        blit(xx, 2 * (gap + s), imgTop, s, `Noisy x_t, t = ${t}`, `${(Math.sqrt(S.abar[t]) * 100).toFixed(0)}% signal`);
+        blit(xx, 2 * (gap + s), imgTop, s, `Noisy x_t, t = ${t}`, `signal weight ${Math.sqrt(S.abar[t]).toFixed(2)}`);
         drawPlot(0, imgTop + s + 40, w - 4, plotH, t);
       } else {
         const s = Math.min(avail, (w - 30) / 2); const gap = w - 2 * s;
@@ -147,7 +147,8 @@ export default {
     );
     draw();
 
-    ctx.quiz([
+    ctx.quiz
+    document.fonts && document.fonts.ready.then(() => { if (!ctx.signal.aborted) draw(); });([
       { q: 'What does a diffusion model learn to do during training?', choices: ['Draw images stroke by stroke', 'Predict the noise that was added to a noisy image', 'Copy images from the training set', 'Sort images by style'], answer: 1, why: 'The network is trained to predict (and so remove) the added noise at many noise levels.' },
       { q: 'Where does generation start?', choices: ['From a blank white canvas', 'From pure random noise', 'From the closest training image', 'From a sketch by the user'], answer: 1, why: 'Sampling starts from Gaussian noise and denoises step by step.' },
       { q: 'What does raising guidance strength do?', choices: ['Adds more noise', 'Pushes the result harder toward the prompt, at some cost to variety and realism', 'Makes generation faster', 'Removes the text encoder'], answer: 1, why: 'Guidance amplifies the difference between the prompted and unprompted predictions.' },

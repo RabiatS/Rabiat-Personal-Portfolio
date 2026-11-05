@@ -193,6 +193,7 @@ export default {
       }
     }
     render();
+    document.fonts && document.fonts.ready.then(() => { if (!ctx.signal.aborted) drawLoss(); });
 
     const P = ctx.panel;
     P.append(ctx.h('<h2 class="k-h">How LLMs are trained</h2>'), ctx.h('<p class="lede">A chat model is built in stages. First it learns language by predicting the next token in an enormous amount of text. Then it is taught to be a helpful assistant.</p>'));

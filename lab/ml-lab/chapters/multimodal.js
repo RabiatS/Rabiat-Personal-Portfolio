@@ -251,6 +251,7 @@ export default {
     const spBox = ctx.h('<div class="card"><b class="mono small">Shared space (CLIP style)</b><p class="small">Click a picture or a caption. Its best match is highlighted. Pictures sit near their captions, and related things (sun and moon, cat and fish) sit near each other. The grid shows every picture against every caption: training makes the diagonal (true pairs) bright and everything else dim.</p></div>');
     const sync = () => { imgBox.hidden = mode !== 'image'; audBox.hidden = mode !== 'audio'; spBox.hidden = mode !== 'space'; };
     P.append(imgBox, audBox, spBox); sync();
+    document.fonts && document.fonts.ready.then(() => { if (!ctx.signal.aborted) draw(); });
     P.append(
       ctx.h(`<div class="card tip"><p>Text becomes tokens, then vectors. Images are cut into a grid of small square patches and each patch becomes a vector. Audio is turned into a spectrogram (which frequencies are loud at each moment) and short slices become vectors. Video is a series of images over time, usually sampled a few frames per second, often with neighbouring frames merged to save tokens. Put all those vectors in one sequence and the transformer can attend across them: the word "roof" can attend to the patches that show a roof.</p></div>`),
       ctx.h(`<div class="card try"><ol>
