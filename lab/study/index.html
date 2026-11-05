@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
 <title>Study Lab · Rabiat's Lab</title>
-<meta name="description" content="Pick what you want to learn and study it hands on: machine learning, audio, circuits, VR, design, physics, biology, muscles and the elements.">
+<meta name="description" content="Pick what you want to learn and study it hands on: machine learning, audio, circuits, VR, design, physics, biology, anatomy, muscles and the elements.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
@@ -49,6 +49,8 @@
   @media (max-width:440px) { .brand .b2 { font-size:21px; } .site-link { font-size:11px; letter-spacing:.05em; } }
   @media (prefers-reduced-motion:reduce) { *, *::before, *::after { transition-duration:.001ms !important; } }
 </style>
+  <!-- Privacy friendly visit counts (no cookies): https://rabiatsadiq.goatcounter.com -->
+  <script data-goatcounter="https://rabiatsadiq.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
 <header>
@@ -91,6 +93,10 @@
       <img src="bio.jpg" alt="A 3D DNA double helix" width="1200" height="800" loading="lazy">
       <div class="copy"><span class="tag">New</span><h2>Biology</h2><p>Cells, DNA, protein synthesis, genetics, the heart, neurons and homeostasis. Built for pre-med study.</p><span class="prog" id="prog-bio"></span></div>
     </a>
+    <a class="subject" href="../anatomy-lab/" style="--focus:50% 45%">
+      <img src="anatomy.jpg" alt="A 3D human skull with cranial and facial bones coloured" width="1200" height="800" loading="lazy">
+      <div class="copy"><span class="tag">New</span><h2>Anatomy</h2><p>The whole body in 3D: skeleton and skull, circulation with blood flow, brain and nerves, pain pathways, organs and female and male anatomy.</p><span class="prog" id="prog-anatomy"></span></div>
+    </a>
     <a class="subject" href="../muscle-lab/" style="--focus:50% 30%">
       <img src="muscles.jpg" alt="A 3D human body with its muscles labelled" width="1200" height="800" loading="lazy">
       <div class="copy"><h2>Muscles</h2><p>63 muscles on a 3D body, with origin, insertion and action.</p><span class="prog" id="prog-muscles"></span></div>
@@ -111,7 +117,7 @@
     const elements = Object.keys(read('elements:stats')).filter((k) => /^z\d+$/.test(k)).length;
     if (elements) set('elements', `${elements} elements tried`);
     // Kit based labs keep a list of finished chapters under <id>:done
-    for (const id of ['ml', 'audio', 'circuits', 'vr', 'design', 'physics', 'bio']) {
+    for (const id of ['ml', 'audio', 'circuits', 'vr', 'design', 'physics', 'bio', 'anatomy']) {
       const d = read(`${id}:done`);
       const n = Array.isArray(d) ? d.length : 0;
       if (n) set(id, `${n} chapter${n === 1 ? '' : 's'} done`);
