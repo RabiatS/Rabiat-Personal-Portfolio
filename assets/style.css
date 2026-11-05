@@ -5556,6 +5556,8 @@ html.builder-cube-fallen .builder-cube-host {
 
   /* The hero is always dark, whatever the theme. */
   html:not(.plain-mode):not(.rainbow-mode) body .hero :is(.btn.secondary, .scroll-cue) {
+    /* Light text on the dark hero, in light mode too */
+    color: #fff;
     --glass-bg: rgba(255, 255, 255, calc(0.1 + var(--glass-alpha-boost)));
     --glass-rim: 0.24;
     --glass-edge: rgba(255, 255, 255, 0.12);

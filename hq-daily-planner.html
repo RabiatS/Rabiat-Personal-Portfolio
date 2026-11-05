@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>/* Storage guard: if this browser blocks storage, use an in-memory stand-in so the site still works */(function(){function m(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}['localStorage','sessionStorage'].forEach(function(n){try{var s=window[n];s.setItem('__t','1');s.removeItem('__t')}catch(e){try{Object.defineProperty(window,n,{configurable:true,value:m()})}catch(_){}}})})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RABIAT HQ://DAILY_PLANNER</title>
   <meta name="description" content="A terminal-styled daily planner: missions, a four-column board, and a focus timer. Runs entirely in your browser." />
@@ -1300,6 +1301,8 @@
     .timer-btn { font-size: 10px; padding: 10px 14px; letter-spacing: 1px; }
   }
 </style>
+  <!-- Privacy friendly visit counts (no cookies): https://rabiatsadiq.goatcounter.com -->
+  <script data-goatcounter="https://rabiatsadiq.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
 
@@ -1476,9 +1479,23 @@
 
 <script>
 // ── Auth & Session ─────────────────────────────────────────
-// The PIN shows 4 dots but is actually 5 digits · security through misdirection
-const OWNER_PIN = '51275';   // Your 5-digit PIN
+// The PIN shows 4 dots but is actually 5 digits. Only a salted PBKDF2 hash of it lives here,
+// so the PIN is not readable in the source. This is a privacy curtain, not security:
+// everything stays in this browser's localStorage either way.
+const OWNER_PIN_SALT = '238ee55a084d81296ad1ce8a21f198b6';
+const OWNER_PIN_HASH = '4155ad1e0ff94129999e38dc43bea2d8d6c913a074fe36c100ab0d6d33da4730';
+const OWNER_PIN_ROUNDS = 200000;
 const OWNER_KEY = 'rabiat';  // localStorage namespace for owner
+async function pinMatches(pin) {
+  try {
+    const enc = new TextEncoder();
+    const salt = new Uint8Array(OWNER_PIN_SALT.match(/../g).map((b) => parseInt(b, 16)));
+    const key = await crypto.subtle.importKey('raw', enc.encode(pin), 'PBKDF2', false, ['deriveBits']);
+    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: OWNER_PIN_ROUNDS }, key, 256);
+    const hex = [...new Uint8Array(bits)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    return hex === OWNER_PIN_HASH;
+  } catch { return false; }
+}
 
 // Extra easter egg codes for friends (shareable)
 const EGG_CODES = {
@@ -1520,7 +1537,10 @@ function loadState() {
     if (m) {
       const parsed = JSON.parse(m);
       if (Array.isArray(parsed))
-        parsedMissions = parsed.filter(x => x && x.id && x.name && x.color);
+        parsedMissions = parsed
+          .filter(x => x && x.id && x.name && x.color)
+          // Clean anything that ends up inside HTML: only real hex colours and known sigils
+          .map(x => ({ ...x, name: String(x.name).slice(0, 80), color: safeHex(x.color), sigil: SIGILS.includes(x.sigil) ? x.sigil : SIGILS[0] }));
     }
     if (t) {
       const parsed = JSON.parse(t);
@@ -1667,14 +1687,16 @@ function authKeyPress(key) {
   setHint('// RECEIVING...', '');
 
   // Check after 5 digits (the real length)
-  if (pinBuffer.length >= 5) {
+  if (pinBuffer.length === 5) {
     const entered = pinBuffer.slice(0, 5);
-    if (entered === OWNER_PIN) {
-      authSuccess('owner');
-    } else if (pinBuffer.length >= 5) {
-      playSound('error');
-      authFail();
-    }
+    setHint('// VERIFYING...', '');
+    pinMatches(entered).then((ok) => {
+      if (pinBuffer.slice(0, 5) !== entered) return; // input changed while checking
+      if (ok) { authSuccess('owner'); }
+      else { playSound('error'); authFail(); }
+    });
+  } else if (pinBuffer.length > 5) {
+    // already checking or failed; ignore extra digits
   } else {
     playSound('pin');
   }
@@ -1767,6 +1789,7 @@ function logout() {
 
 // ── Friend Easter Egg trigger ──────────────────────────────
 function triggerFriendEgg(egg) {
+  try { var f = JSON.parse(localStorage.getItem('eggs:found') || '[]'); if (f.indexOf('planner') < 0) { f.push('planner'); localStorage.setItem('eggs:found', JSON.stringify(f)); } } catch (e) { /* private window */ }
   const overlay = document.createElement('div');
   overlay.style.cssText = `
     position:fixed;top:0;left:0;right:0;bottom:0;
@@ -1839,7 +1862,7 @@ function renderSidebar() {
     el.innerHTML = `
       <div class="mission-top">
         <span class="mission-sigil" style="color:${m.color}">${m.sigil}</span>
-        <span class="mission-name" style="color:${m.color}">${m.name}</span>
+        <span class="mission-name" style="color:${safeHex(m.color)}">${escHtml(m.name)}</span>
         <span class="mission-count">${mDone}/${mTasks.length}</span>
         <button class="mission-delete-btn" onclick="deleteMission('${m.id}')" title="Delete mission">✕</button>
       </div>
@@ -2061,7 +2084,7 @@ function renderOverview() {
       <div class="overview-mission-card">
         <div class="omc-top">
           <span style="color:${m.color};font-size:16px">${m.sigil}</span>
-          <span class="omc-name" style="color:${m.color}">${m.name}</span>
+          <span class="omc-name" style="color:${safeHex(m.color)}">${escHtml(m.name)}</span>
         </div>
         <div class="omc-stats">${mDone} / ${mTasks.length} TASKS COMPLETED</div>
         <div style="font-size:10px;color:${m.color};opacity:0.6">${bar}</div>
@@ -2254,6 +2277,9 @@ function openNewMissionModal() {
   setTimeout(() => document.getElementById('mi-name').focus(), 50);
 }
 
+// Colours come back from localStorage, so only ever paint a real hex colour
+function safeHex(h) { return isValidHex(h) ? h : COLORS[0]; }
+
 function isValidHex(h) {
   return /^#[0-9A-Fa-f]{6}$/.test(h);
 }
@@ -2301,7 +2327,7 @@ function selectColor(color, el) {
 
 function openAddTaskModal(col) {
   const missionOptions = missions.map(m =>
-    `<option value="${m.id}">${m.sigil} ${m.name}</option>`
+    `<option value="${escHtml(m.id)}">${escHtml(m.sigil)} ${escHtml(m.name)}</option>`
   ).join('');
 
   const body = `
@@ -2477,7 +2503,7 @@ document.addEventListener('keydown', e => {
 });
 
 function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 // ── Mobile ─────────────────────────────────────────────────
