@@ -4,8 +4,8 @@ import { MONO, DISP, rgba, clamp, injectStyle, pointer } from './_shared.js';
 
 const R = 8.314;
 const TEMP_E = {
-  human: { name: 'Human enzyme', Ea: 50000, Tm: 47, w: 2.4 },
-  taq: { name: 'Taq polymerase', Ea: 50000, Tm: 90, w: 2.8 },
+  human: { name: 'Human enzyme', Ea: 50000, Tm: 43, w: 2 },
+  taq: { name: 'Taq polymerase', Ea: 50000, Tm: 84, w: 2.5 },
 };
 const PH_E = {
   pepsin: { name: 'Pepsin (stomach)', p1: 1.0, p2: 3.0 },
@@ -108,14 +108,14 @@ export default {
         const [Km2, Vm2] = mode === 'inhib' ? inhibited() : [P.Km, P.Vmax];
         if (P.lb) {
           // Lineweaver Burk: 1/v against 1/[S]
-          const xmin = -1 / Math.min(P.Km, Km2) * 1.3; const xmax = 4; const ymax = Math.max(1 / Vm2 + (Km2 / Vm2) * xmax, 1 / P.Vmax + (P.Km / P.Vmax) * xmax) * 1.08;
+          const xmin = -1 / Math.min(P.Km, Km2) * 1.3; const xmax = 1.6 / Math.min(P.Km, Km2); const ymax = Math.max(1 / Vm2 + (Km2 / Vm2) * xmax, 1 / P.Vmax + (P.Km / P.Vmax) * xmax) * 1.08;
           const X = (a) => gx + ((a - xmin) / (xmax - xmin)) * gw; const Y = (b) => gy + gh - (b / ymax) * gh;
           g.strokeStyle = 'rgba(255,255,255,.25)'; g.beginPath(); g.moveTo(X(0), gy); g.lineTo(X(0), gy + gh); g.stroke();
           const line = (Km, Vm, col, dash) => curve((u) => X(-1 / Km + u * (xmax + 1 / Km)), (u) => Y(Math.max(0, (Km / Vm) * (-1 / Km + u * (xmax + 1 / Km)) + 1 / Vm)), col, 2, dash);
           if (mode === 'inhib') line(P.Km, P.Vmax, 'rgba(245,245,240,.45)', [5, 5]);
           line(Km2, Vm2, '#5EEAD4');
           g.fillStyle = '#F5F5F0'; g.beginPath(); g.arc(X(-1 / Km2), Y(0), 4, 0, 7); g.fill(); g.beginPath(); g.arc(X(0), Y(1 / Vm2), 4, 0, 7); g.fill();
-          g.textAlign = 'left'; g.fillText(`-1/Km = ${(-1 / Km2).toFixed(2)}`, X(-1 / Km2) + 4, Y(0) - 12); g.fillText(`1/Vmax = ${(1 / Vm2).toFixed(3)}`, X(0) + 8, Y(1 / Vm2) - 10);
+          g.textAlign = 'center'; g.fillText(`-1/Km = ${(-1 / Km2).toFixed(2)}`, X(-1 / Km2), Y(0) + 14); g.textAlign = 'left'; g.fillText(`1/Vmax = ${(1 / Vm2).toFixed(3)}`, X(0) + 8, Y(1 / Vm2) - 10);
           g.textAlign = 'center'; g.fillText('1 / [S]', gx + gw / 2, gy + gh + 22);
           g.save(); g.translate(gx - 32, gy + gh / 2); g.rotate(-Math.PI / 2); g.fillText('1 / v', 0, 0); g.restore();
           return;
@@ -223,7 +223,7 @@ export default {
         <tr><td>Non-competitive</td><td>Elsewhere, E or ES</td><td>Same</td><td>Down</td><td>Lines cross on the x-axis</td></tr>
         <tr><td>Uncompetitive</td><td>ES only</td><td>Down</td><td>Down</td><td>Parallel lines</td></tr></table>
         <p><b>Drugs are often inhibitors.</b> Statins competitively inhibit HMG-CoA reductase. Methotrexate competes with folate for dihydrofolate reductase. Aspirin irreversibly acetylates cyclooxygenase, so platelets (which cannot make new protein) stay inhibited for their whole life. In methanol poisoning, ethanol or fomepizole compete for alcohol dehydrogenase.</p>
-        <p><b>About the curves.</b> The temperature curve is the Arrhenius speed up (rate roughly doubles every 10 °C here) multiplied by the fraction of enzyme still folded. The pH curves use a two ionisable group model. The optimum values are typical textbook figures: pepsin about pH 2, salivary amylase about pH 7, trypsin about pH 8.</p></div></details>`),
+        <p><b>About the curves.</b> The temperature curve is the Arrhenius speed up (rate roughly doubles every 10 °C here) multiplied by the fraction of enzyme still folded. The pH curves use a two ionisable group model. The optimum values are typical textbook figures: pepsin about pH 2, salivary amylase about pH 7, trypsin about pH 8. Human enzymes peak a little above body temperature and fall apart above about 45 °C. Taq polymerase works best at about 75 to 80 °C and survives the brief 95 °C steps of PCR.</p></div></details>`),
     );
     ctx.quiz([
       { q: 'An enzyme has a Km of 2 mM. What is the rate at [S] = 2 mM?', choices: ['Vmax', 'Half of Vmax', 'A quarter of Vmax', 'Zero'], answer: 1, why: 'By definition Km is the substrate concentration that gives half the maximum rate.' },
