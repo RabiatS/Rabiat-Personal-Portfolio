@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<title>Physics Lab · Rabiat's Lab</title>
+<meta name="description" content="Learn mechanics, waves and light by playing with live simulations: motion graphs, vectors, projectiles, Newton's laws, energy, collisions, orbits, oscillations, waves, optics and gases. Runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../study/kit/kit.css">
+</head>
+<body>
+<script type="module">
+import { createLab } from '../study/kit/kit.js';
+const ch = (id, title, group, blurb) => ({ id, title, group, blurb, load: () => import(`./chapters/${id}.js`) });
+createLab({
+  id: 'physics',
+  title: 'Physics Lab',
+  intro: 'Mechanics, waves and light, each one a live simulation you can push, drag and break.',
+  overview: 'Physics is a small set of rules that predicts how things move, swing, ripple and shine. Every chapter here is a real simulation: the computer applies those rules many times a second, so what you see is the physics working, not a canned animation. Start at the top if physics is new to you, or jump to whatever you are curious about.',
+  about: '<p>Every chapter has a live simulation with graphs, a plain words explanation, a going deeper section with the formulas, and a short check at the end.</p><p>Motion is stepped forward in small fixed time steps (semi-implicit Euler, leapfrog or RK4), the same way physics engines and research codes do it.</p><p>Electricity and circuits have their own lab.</p>',
+  chapters: [
+    ch('motion', 'Motion graphs', 'Describing motion', 'Drag a runner and watch position, velocity and acceleration draw themselves.'),
+    ch('vectors', 'Vectors', 'Describing motion', 'Arrows with size and direction. Add them, subtract them, split them.'),
+    ch('projectile', 'Projectile motion', 'Describing motion', 'Fire a cannon on Earth, the Moon or Mars, with or without air.'),
+    ch('newton', "Newton's laws", 'Forces', 'Push a box against friction and watch the forces balance or not.'),
+    ch('energy', 'Energy', 'Forces', 'A skate track you can reshape. Kinetic, potential and thermal energy.'),
+    ch('momentum', 'Momentum and collisions', 'Forces', 'Carts on an air track, from bouncy to sticky.'),
+    ch('orbits', 'Circular motion and orbits', 'Gravity and oscillation', 'Launch a satellite: circle, ellipse or escape.'),
+    ch('oscillations', 'Pendulums and springs', 'Gravity and oscillation', 'Simple harmonic motion, damping, phase space and chaos.'),
+    ch('waves', 'Waves', 'Waves and light', 'Rope waves, sound-like waves and a two source ripple tank.'),
+    ch('optics', 'Light and optics', 'Waves and light', 'Lenses, mirrors, images, Snell\'s law and total internal reflection.'),
+    ch('gas', 'Gas laws and particles', 'Heat and matter', 'Particles in a box: pressure, temperature and PV = NkT.'),
+  ],
+});
+</script>
+</body>
+</html>

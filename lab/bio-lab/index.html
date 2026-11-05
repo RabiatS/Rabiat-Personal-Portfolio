@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<title>Bio Lab · Rabiat's Lab</title>
+<meta name="description" content="Learn biology by playing with it: the cell, DNA, replication, protein synthesis, mutations, cell division, genetics, the heart, blood and immunity, neurons, enzymes and blood glucose. Built for pre-med study. Runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../study/kit/kit.css">
+</head>
+<body>
+<script type="module">
+import { createLab } from '../study/kit/kit.js';
+const ch = (id, title, group, blurb) => ({ id, title, group, blurb, load: () => import(`./chapters/${id}.js`) });
+createLab({
+  id: 'bio',
+  title: 'Bio Lab',
+  intro: 'Cells, DNA and the body\'s systems, one hands on model at a time. Built for pre-med study.',
+  overview: 'Biology is chemistry that keeps itself going. Each chapter here is one mechanism you can run: tap the parts of a cell, read a gene into a protein, break a base and watch the protein change, fire a neuron, beat a heart and keep blood sugar steady. Start at the top if this is new, or jump to what you are revising.',
+  about: '<p>Every chapter has a live model, a plain words explanation, a going deeper section with the numbers and terms you meet in medical courses, and a short check at the end.</p><p>Normal ranges are typical adult textbook values. Labs differ a little. This is for learning, not medical advice.</p><p>Muscles have their own lab: Muscle Lab.</p>',
+  chapters: [
+    ch('cell', 'The cell', 'Cells', 'Tap the organelles of animal, plant and bacterial cells.'),
+    ch('dna', 'DNA structure', 'Molecular biology', 'A 3D double helix, base pairing and antiparallel strands.'),
+    ch('replication', 'Replication', 'Molecular biology', 'Helicase, leading and lagging strands, Okazaki fragments.'),
+    ch('expression', 'Gene to protein', 'Molecular biology', 'Transcribe to mRNA, then a ribosome reads the codons.'),
+    ch('mutations', 'Mutations', 'Molecular biology', 'Edit one base and watch the protein change. Sickle cell.'),
+    ch('division', 'Cell division', 'Inheritance', 'Mitosis and meiosis, step by step, with chromosome counts.'),
+    ch('genetics', 'Genetics', 'Inheritance', 'Punnett squares, X-linked traits and simulated offspring.'),
+    ch('heart', 'The heart', 'Physiology', 'Chambers, valves, the cardiac cycle and a synced ECG.'),
+    ch('blood', 'Blood and immunity', 'Physiology', 'Blood cells, ABO and Rh matching, innate and adaptive defence.'),
+    ch('neuron', 'The action potential', 'Physiology', 'A live Hodgkin Huxley neuron, ion channels and the synapse.'),
+    ch('enzymes', 'Enzymes', 'Physiology', 'Michaelis Menten, temperature, pH and inhibitors.'),
+    ch('homeostasis', 'Blood glucose', 'Physiology', 'Insulin and glucagon feedback. Eat, exercise, compare diabetes.'),
+  ],
+});
+</script>
+</body>
+</html>

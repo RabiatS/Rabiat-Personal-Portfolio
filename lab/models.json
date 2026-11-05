@@ -1001,6 +1001,7 @@
     {
       "slug": "webcam-pulse",
       "name": "ME-rPPG",
+      "preview": { "video": "previews/pulse.mp4", "poster": "previews/pulse.jpg" },
       "maker": "Tsinghua University",
       "kind": "Body",
       "task": "Heart rate",

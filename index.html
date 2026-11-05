@@ -119,6 +119,7 @@
       <div class="hero-inner hero-centered">
         <!-- VR Eye that follows cursor -->
         <div id="vrEye" class="vr-eye" aria-hidden="true">
+          <canvas id="vrHeadset" class="vr-headset-3d" width="360" height="200"></canvas>
           <div class="vr-headset">
             <div class="vr-strap-left"></div>
             <div class="vr-strap-right"></div>
@@ -331,7 +332,7 @@
           <div class="t-dot"></div>
           <div class="t-card">
             <h3>AI Research Engineer · Xbox</h3>
-            <p class="muted"><strong>Spring 2026 – Present</strong></p>
+            <p class="muted"><strong>Spring 2026 – Apr 2026</strong></p>
             <p class="muted" style="margin-top: 8px;">Xbox x CMU Measuring Social: Research collaboration with Xbox exploring AI-driven approaches to measure and understand social interactions in gaming environments.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
               <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">AI</span>
@@ -344,7 +345,7 @@
           <div class="t-dot"></div>
           <div class="t-card">
             <h3>Research Assistant · CMU Augmented Perception Lab</h3>
-            <p class="muted"><strong>Sep 2025 – Present</strong></p>
+            <p class="muted"><strong>Sep 2025 – Aug 2026</strong></p>
             <p class="muted" style="margin-top: 8px;">Building multimodal XR prototypes to study pain perception. Unity/C# development with structured logging for future ML-driven personalization.</p>
             <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
               <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">XR</span>
@@ -432,7 +433,7 @@
         <article class="card">
           <h3>Carnegie Mellon University</h3>
           <p class="muted" style="margin-top: 8px;">Master of Human-Computer Interaction</p>
-          <p style="margin-top: 4px;"><strong>Current</strong></p>
+          <p class="muted">Graduated Aug 2026</p>
           <div class="badges" style="margin-top: 16px; justify-content: flex-start;">
             <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">HCI</span>
             <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">XR</span>
@@ -584,5 +585,7 @@
   <!-- Builder cube stays here until sandbox.html exists; it moves there later so
        the landing page stops paying for Three.js + GSAP. -->
   <script type="module" src="assets/builder-cube.js"></script>
+  <script type="module" src="assets/vr-headset.js"></script>
+  <script src="assets/quake.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<title>VR Lab · Rabiat's Lab</title>
+<meta name="description" content="How virtual and mixed reality actually work: stereo vision, headset lenses, field of view, tracking, latency, foveated rendering, the vergence accommodation conflict, comfort, interaction, passthrough and WebXR. Live 3D demos in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../study/kit/kit.css">
+</head>
+<body>
+<script type="module">
+import { createLab } from '../study/kit/kit.js';
+const ch = (id, title, group, blurb) => ({ id, title, group, blurb, load: () => import(`./chapters/${id}.js`) });
+createLab({
+  id: 'vr',
+  title: 'VR Lab',
+  intro: 'How virtual and mixed reality actually work, from your two eyes to the WebXR API.',
+  overview: 'A headset is a pair of tiny screens, two lenses, a set of sensors and a computer racing a deadline. Each chapter here takes one piece apart with a live 3D demo: see depth with red and cyan glasses, warp a grid the way a lens does, feel latency make the world swim, then fix it with reprojection. Start at the top if XR is new to you, or jump to what you are curious about.',
+  about: '<p>Every chapter has a live demo, a plain words explanation, a going deeper section with the real numbers, and a short check at the end.</p><p>Everything is rendered in your browser with WebGL. The last chapter lets you enter VR if your device supports WebXR.</p>',
+  chapters: [
+    ch('continuum', 'VR, AR, MR and XR', 'Start here', 'The reality to virtuality continuum, as a slider.'),
+    ch('stereo', 'Two eyes, depth', 'Eyes and optics', 'Stereo rendering, IPD, disparity and an anaglyph you can view with red and cyan glasses.'),
+    ch('optics', 'Lenses and the headset', 'Eyes and optics', 'Magnifier optics, virtual image distance, distortion pre-warp and colour fringes.'),
+    ch('fov', 'Field of view', 'Eyes and optics', 'Your visual field versus a headset, and what a narrow window feels like.'),
+    ch('tracking', 'Tracking: 3DoF and 6DoF', 'Tracking and time', 'Rotation versus position, inside-out cameras, IMU drift and SLAM.'),
+    ch('latency', 'Motion to photon', 'Tracking and time', 'Make the world swim with latency, then fix it with prediction and timewarp.'),
+    ch('rendering', 'The rendering pipeline', 'Rendering', 'Two eyes, a frame budget, pixels per degree and foveated rendering.'),
+    ch('vac', 'Vergence and focus', 'Comfort', 'Why your eyes disagree with themselves in a headset.'),
+    ch('comfort', 'Motion sickness and comfort', 'Comfort', 'Vection, vignettes, snap turns and teleporting.'),
+    ch('interaction', 'Interaction', 'Interaction and MR', 'Rays, gaze and pinch, direct touch and Fitts\'s law in 3D.'),
+    ch('passthrough', 'Passthrough and mixed reality', 'Interaction and MR', 'Camera passthrough, occlusion, planes and anchors.'),
+    ch('webxr', 'Build for VR on the web', 'Build', 'WebXR in a few lines, and a live Enter VR button.'),
+  ],
+});
+</script>
+</body>
+</html>

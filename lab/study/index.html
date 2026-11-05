@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
 <title>Study Lab · Rabiat's Lab</title>
-<meta name="description" content="Pick what you want to learn and study it hands on: muscles on a 3D body, or atoms and the periodic table.">
+<meta name="description" content="Pick what you want to learn and study it hands on: machine learning, audio, circuits, VR, design, physics, biology, muscles and the elements.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
@@ -33,8 +33,9 @@
   .pop p { margin:0; }
   main { flex:1; display:flex; flex-direction:column; padding:6px max(24px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px)); gap:18px; min-height:0; }
   h1 { margin:0; font:700 clamp(32px,5vw,56px)/1 var(--f-display); letter-spacing:.005em; }
-  .subjects { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:14px; min-height:0; }
-  .subject { position:relative; display:flex; flex-direction:column; justify-content:flex-end; min-height:320px; border-radius:14px; overflow:hidden; text-decoration:none; background:var(--obsidian); outline:1px solid var(--midnight); outline-offset:-1px; transition:outline-color .2s; }
+  .subjects { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr)); gap:14px; }
+  .subject.hero { grid-column:1 / -1; min-height:min(52vh,460px); }
+  .subject { position:relative; display:flex; flex-direction:column; justify-content:flex-end; min-height:300px; border-radius:14px; overflow:hidden; text-decoration:none; background:var(--obsidian); outline:1px solid var(--midnight); outline-offset:-1px; transition:outline-color .2s; }
   .subject img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:var(--focus,center); transition:transform .9s cubic-bezier(.16,1,.3,1); }
   .subject::after { content:''; position:absolute; inset:0; background:linear-gradient(to top, rgba(10,10,10,.95) 8%, rgba(10,10,10,.25) 46%, transparent 72%); }
   .subject:hover { outline-color:var(--bone); }
@@ -42,8 +43,9 @@
   .copy { position:relative; z-index:1; padding:20px 22px; display:grid; gap:4px; }
   .copy h2 { margin:0; font:700 clamp(30px,3.6vw,44px)/1 var(--f-display); text-transform:uppercase; letter-spacing:.01em; }
   .copy p { margin:0; color:var(--pearl); max-width:44ch; }
+  .copy .tag { font:600 11px var(--f-display); letter-spacing:.16em; text-transform:uppercase; color:var(--teal); }
   .copy .prog { font:500 12px var(--f-mono); color:var(--ash); font-variant-numeric:tabular-nums; min-height:18px; }
-  @media (max-width:760px) { .subjects { grid-template-columns:1fr; } .subject { min-height:62vw; } main { padding-left:16px; padding-right:16px; } header { padding-left:16px; padding-right:16px; } }
+  @media (max-width:760px) { .subject, .subject.hero { min-height:62vw; } main { padding-left:16px; padding-right:16px; } header { padding-left:16px; padding-right:16px; } }
   @media (max-width:440px) { .brand .b2 { font-size:21px; } .site-link { font-size:11px; letter-spacing:.05em; } }
   @media (prefers-reduced-motion:reduce) { *, *::before, *::after { transition-duration:.001ms !important; } }
 </style>
@@ -54,20 +56,48 @@
   <div class="spacer"></div>
   <div class="info">
     <button class="info-btn" id="infoBtn" aria-controls="about" aria-expanded="false" aria-label="About Study Lab">i</button>
-    <div class="pop" id="about" hidden><p>Hands on study labs, each built around one subject. Everything runs on your device and your scores stay in this browser.</p></div>
+    <div class="pop" id="about" hidden><p>Hands on study labs, each built around one subject. Every chapter has a live demo, a plain words explanation, a going deeper part and a short check. Everything runs on your device and your scores stay in this browser.</p></div>
   </div>
   <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
 </header>
 <main>
   <h1>What do you want to learn?</h1>
   <div class="subjects">
+    <a class="subject hero" href="../ml-lab/" style="--focus:50% 45%">
+      <img src="ml.jpg" alt="A small neural network learning to separate two spirals of points" width="1200" height="800" loading="lazy">
+      <div class="copy"><span class="tag">New</span><h2>Machine learning</h2><p>From fitting a line to neural networks, convolutions, how LLMs write and how agents use tools. 27 hands on chapters.</p><span class="prog" id="prog-ml"></span></div>
+    </a>
+    <a class="subject" href="../audio-lab/" style="--focus:50% 40%">
+      <img src="audio.jpg" alt="A live waveform and frequency spectrum" width="1200" height="800" loading="lazy">
+      <div class="copy"><span class="tag">New</span><h2>Audio</h2><p>Sound from air pressure to bits: frequency, harmonics, the spectrum, sampling, filters, EQ and compression.</p><span class="prog" id="prog-audio"></span></div>
+    </a>
+    <a class="subject" href="../circuits-lab/" style="--focus:50% 40%">
+      <img src="circuits.jpg" alt="A battery, switch and bulbs with current flowing as dots" width="1200" height="800" loading="lazy">
+      <div class="copy"><span class="tag">New</span><h2>Circuits</h2><p>Build circuits and watch current flow. Ohm's law, series and parallel, capacitors, LEDs and fuses.</p><span class="prog" id="prog-circuits"></span></div>
+    </a>
+    <a class="subject" href="../vr-lab/" style="--focus:50% 40%">
+      <img src="vr.jpg" alt="Left and right eye views of a 3D scene" width="1200" height="800" loading="lazy">
+      <div class="copy"><span class="tag">New</span><h2>VR and XR</h2><p>How headsets trick your eyes: stereo depth, lenses, tracking, latency, foveated rendering and comfort.</p><span class="prog" id="prog-vr"></span></div>
+    </a>
+    <a class="subject" href="../design-lab/" style="--focus:50% 40%">
+      <img src="design.jpg" alt="The same interface card shown in several design styles" width="1200" height="800" loading="lazy">
+      <div class="copy"><span class="tag">New</span><h2>Design</h2><p>UI styles from skeuomorphism to glass, plus white space, hierarchy, colour, type and the UX laws you can measure.</p><span class="prog" id="prog-design"></span></div>
+    </a>
+    <a class="subject" href="../physics-lab/" style="--focus:50% 40%">
+      <img src="physics.jpg" alt="A projectile arc and motion graphs" width="1200" height="800" loading="lazy">
+      <div class="copy"><span class="tag">New</span><h2>Physics</h2><p>Motion, forces, energy, orbits, waves, light and gases as live simulations with graphs.</p><span class="prog" id="prog-physics"></span></div>
+    </a>
+    <a class="subject" href="../bio-lab/" style="--focus:50% 40%">
+      <img src="bio.jpg" alt="A 3D DNA double helix" width="1200" height="800" loading="lazy">
+      <div class="copy"><span class="tag">New</span><h2>Biology</h2><p>Cells, DNA, protein synthesis, genetics, the heart, neurons and homeostasis. Built for pre-med study.</p><span class="prog" id="prog-bio"></span></div>
+    </a>
     <a class="subject" href="../muscle-lab/" style="--focus:50% 30%">
-      <img src="muscles.jpg" alt="A 3D human body with its muscles labelled" width="1200" height="800">
-      <div class="copy"><h2>Muscles</h2><p>63 muscles on a 3D body, with origin, insertion and action.</p><span class="prog" id="progMuscles"></span></div>
+      <img src="muscles.jpg" alt="A 3D human body with its muscles labelled" width="1200" height="800" loading="lazy">
+      <div class="copy"><h2>Muscles</h2><p>63 muscles on a 3D body, with origin, insertion and action.</p><span class="prog" id="prog-muscles"></span></div>
     </a>
     <a class="subject" href="../elements-lab/" style="--focus:22% 40%">
-      <img src="elements.jpg" alt="A 3D atom above the periodic table" width="1200" height="800">
-      <div class="copy"><h2>Elements</h2><p>Atoms and the periodic table, with the math, electrons, Lewis dots and a mock exam.</p><span class="prog" id="progElements"></span></div>
+      <img src="elements.jpg" alt="A 3D atom above the periodic table" width="1200" height="800" loading="lazy">
+      <div class="copy"><h2>Elements</h2><p>Atoms and the periodic table, with the math, electrons, Lewis dots and a mock exam.</p><span class="prog" id="prog-elements"></span></div>
     </a>
   </div>
 </main>
@@ -75,10 +105,17 @@
   // Show how far you got in each subject. Both labs keep their scores in this browser.
   (() => {
     const read = (k) => { try { return JSON.parse(localStorage.getItem(k) || '{}'); } catch { return {}; } };
+    const set = (id, text) => { const el = document.getElementById(`prog-${id}`); if (el && text) el.textContent = text; };
     const tested = Object.keys(read('myo:stats')).length;
-    if (tested) document.getElementById('progMuscles').textContent = `${tested} of 63 muscles tried`;
+    if (tested) set('muscles', `${tested} of 63 muscles tried`);
     const elements = Object.keys(read('elements:stats')).filter((k) => /^z\d+$/.test(k)).length;
-    if (elements) document.getElementById('progElements').textContent = `${elements} elements tried`;
+    if (elements) set('elements', `${elements} elements tried`);
+    // Kit based labs keep a list of finished chapters under <id>:done
+    for (const id of ['ml', 'audio', 'circuits', 'vr', 'design', 'physics', 'bio']) {
+      const d = read(`${id}:done`);
+      const n = Array.isArray(d) ? d.length : 0;
+      if (n) set(id, `${n} chapter${n === 1 ? '' : 's'} done`);
+    }
     const btn = document.getElementById('infoBtn'); const pop = document.getElementById('about');
     btn.addEventListener('click', (e) => { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); });
     document.addEventListener('click', (e) => { if (!pop.hidden && !pop.contains(e.target)) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });

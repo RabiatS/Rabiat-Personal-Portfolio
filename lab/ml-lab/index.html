@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<title>ML Lab · Rabiat's Lab</title>
+<meta name="description" content="Learn machine learning by playing with it: regression, nearest neighbours, k-means, neural networks, convolutions, tokens, attention, how LLMs write, agents and multimodal models. Runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../study/kit/kit.css">
+</head>
+<body>
+<script type="module">
+import { createLab } from '../study/kit/kit.js';
+const ch = (id, title, group, blurb) => ({ id, title, group, blurb, load: () => import(`./chapters/${id}.js`) });
+createLab({
+  id: 'ml',
+  title: 'ML Lab',
+  intro: 'Machine learning from the first idea to how chatbots and agents work, one hands on demo at a time.',
+  overview: 'Machine learning is teaching a computer by example instead of by rules. Each chapter here is one idea you can poke at: drag points, train a tiny network, slide a filter across an image, watch a model pick its next word. Start at the top if ML is new to you, or jump to what you are curious about.',
+  about: '<p>Every chapter has a live demo, a plain words explanation, a going deeper section for people who already know the basics, and a short check at the end.</p><p>All models here are small and train or run right in your browser, so you can see what happens inside.</p>',
+  chapters: [
+    ch('what-is-ml', 'What is machine learning', 'Start here', 'Rules versus examples. Data, features, labels and a model.'),
+    ch('regression', 'Fitting a line', 'Supervised learning', 'Linear regression and the loss you are trying to shrink.'),
+    ch('gradient-descent', 'Gradient descent', 'Supervised learning', 'How a model learns: roll downhill on the loss.'),
+    ch('classification', 'Drawing a boundary', 'Supervised learning', 'Logistic regression and probabilities.'),
+    ch('knn', 'Nearest neighbours', 'Supervised learning', 'Vote with the k closest examples.'),
+    ch('decision-tree', 'Decision trees', 'Supervised learning', 'Twenty questions, learned from data.'),
+    ch('overfitting', 'Overfitting', 'Supervised learning', 'Memorising versus learning, train versus test.'),
+    ch('evaluation', 'Is it any good?', 'Supervised learning', 'Accuracy, precision, recall and the confusion matrix.'),
+    ch('kmeans', 'K-means clustering', 'Unsupervised learning', 'Find groups nobody labelled.'),
+    ch('pca', 'Squashing dimensions', 'Unsupervised learning', 'PCA: keep the directions that matter most.'),
+    ch('reinforcement', 'Learning by reward', 'Reinforcement learning', 'An agent learns a maze from trial and error.'),
+    ch('neuron', 'A single neuron', 'Neural networks', 'Weights, bias and an activation.'),
+    ch('neural-net', 'Neural network playground', 'Neural networks', 'Stack neurons, train live, watch the boundary bend.'),
+    ch('backprop', 'Backpropagation', 'Neural networks', 'How blame flows backwards through a network.'),
+    ch('images-as-numbers', 'Images are numbers', 'Computer vision', 'Pixels, channels and grids of values.'),
+    ch('convolution', 'Convolution', 'Computer vision', 'Slide a small filter over an image and find edges.'),
+    ch('cnn', 'Inside a CNN', 'Computer vision', 'Layers of feature maps, in 3D, from edges to objects.'),
+    ch('tokens', 'Tokens', 'Language models', 'How text becomes pieces a model can read.'),
+    ch('embeddings', 'Embeddings', 'Language models', 'Meaning as a place in space.'),
+    ch('attention', 'Attention', 'Language models', 'Each word looks at the others to understand itself.'),
+    ch('transformer', 'The transformer', 'Language models', 'One block at a time, the architecture behind LLMs.'),
+    ch('next-token', 'How an LLM writes', 'Language models', 'Next word odds, temperature and sampling.'),
+    ch('training-llms', 'How LLMs are trained', 'Language models', 'Pretraining, fine tuning and feedback.'),
+    ch('rag', 'Retrieval (RAG)', 'Language models', 'Look things up before answering.'),
+    ch('agents', 'Agents', 'Agents and multimodal', 'A model in a loop with tools. Step through one.'),
+    ch('multimodal', 'Multimodal models', 'Agents and multimodal', 'Images, audio and text in one shared space.'),
+    ch('diffusion', 'Diffusion', 'Agents and multimodal', 'Make images by removing noise, step by step.'),
+  ],
+});
+</script>
+</body>
+</html>
