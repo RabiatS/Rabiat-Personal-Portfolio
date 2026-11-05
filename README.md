@@ -19,6 +19,7 @@ Rabiat-Personal-Portfolio/
 ├── hq-daily-planner.html    # Standalone tool: terminal-style daily planner
 ├── audio-playground/       # Tool: cut songs + split stems in the browser (Music Sandbox project)
 ├── lab/                     # Lab tab: new openly licensed ML models, running in the browser
+│   ├── study/               # Study Lab: pick a subject (muscle-lab/, elements-lab/)
 │   ├── models.json            # Source of truth: sizes, variants per device, licence, mirror sha
 │   ├── index.html             # The Lab tab, newest first (cards regenerated from models.json)
 │   ├── frame/                 # Shared frame: device check, gate, loader, worker, (i) stats

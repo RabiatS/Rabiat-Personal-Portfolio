@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<title>Elements Lab · Rabiat's Lab</title>
+<meta name="description" content="Study atoms and the periodic table: a 3D atom for every element, the math, electron configurations, Lewis dots and a mock exam. Runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <a class="brand" href="../study/"><span class="b1">Study Lab</span><span class="b2">Elements Lab</span></a>
+    <nav class="tabs glass" role="tablist" aria-label="Study modes"></nav>
+    <div class="spacer"></div>
+    <div class="info">
+      <button class="info-btn" id="infoBtn" aria-controls="about" aria-expanded="false" aria-label="About Elements Lab">i</button>
+      <div class="pop" id="about" hidden>
+        <h4>Elements Lab</h4>
+        <p>Tap any element to see its atom and everything you can read from its square. Drag the atom to turn it, scroll to zoom.</p>
+        <p><b>Find it</b> and <b>Name it</b> drill the table. <b>Math</b> is protons, neutrons, electrons and weighted averages. <b>Electrons</b> fills subshells in order. <b>Lewis</b> has you place the dots. <b>Trends</b> compares size and electronegativity. <b>Exam</b> is a mock test that ticks off the study guide as you go.</p>
+        <p><b>Cloud</b> shows where electrons are likely to be, from real orbital math. Tap a subshell like 2p to see its orbitals one at a time. Each orbital holds 2 electrons, so p, with 3, holds 6. Distances are compressed so you can read them, and the shells view is a simple model, also not to scale.</p>
+        <p class="fine">Element data from <a href="https://github.com/lmmentel/mendeleev" target="_blank" rel="noopener">mendeleev</a> and <a href="https://pubchem.ncbi.nlm.nih.gov/periodic-table/" target="_blank" rel="noopener">PubChem</a>. Drawing: three.js (MIT). Your scores stay in this browser.</p>
+      </div>
+    </div>
+    <a class="site-link" href="https://www.rabiatsadiq.com/lab/">rabiatsadiq.com</a>
+  </header>
+  <main>
+    <div id="stage">
+      <canvas id="gl" aria-label="3D atom. Drag to rotate, scroll to zoom."></canvas>
+      <div id="labels"></div>
+      <div id="tableWrap"><div id="ptable" role="group" aria-label="Periodic table"></div></div>
+      <div id="tip" hidden></div>
+      <div class="dock">
+        <div class="grp glass" role="group" aria-label="Atom view"><span>Atom</span><button data-mode="shells" class="on">Shells</button><button data-mode="cloud">Cloud</button></div>
+        <div class="grp glass" role="group" aria-label="Table"><button id="tableBtn" class="on" aria-pressed="true">Table</button></div>
+        <div class="grp glass" role="group" aria-label="Shade the table by"><span>Shade</span><button data-color="type" class="on">Type</button><button data-color="valence">Valence</button><button data-color="size">Size</button><button data-color="en">EN</button><button data-color="score">Score</button></div>
+        <div class="grp glass"><button id="labelsBtn" class="on" aria-pressed="true">Labels</button></div>
+      </div>
+    </div>
+    <aside id="side" class="glass"><div id="panel" aria-live="polite"></div>
+      <footer class="foot"><div class="legend"><span><i class="mdot good"></i>80%+</span><span><i class="mdot mid"></i>50–79%</span><span><i class="mdot low"></i>&lt;50%</span><span><i class="mdot"></i>untested</span></div><button id="resetStats">Reset progress</button></footer></aside>
+  </main>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
