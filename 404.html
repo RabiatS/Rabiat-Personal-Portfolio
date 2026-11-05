@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>/* Storage guard: if this browser blocks storage, use an in-memory stand-in so the site still works */(function(){function m(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}['localStorage','sessionStorage'].forEach(function(n){try{var s=window[n];s.setItem('__t','1');s.removeItem('__t')}catch(e){try{Object.defineProperty(window,n,{configurable:true,value:m()})}catch(_){}}})})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Page not found · Rabiat Sadiq</title>
+<meta name="description" content="This page fell off the website. Throw the pieces around, then head home.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<style>
+  /* Root-absolute paths only: GitHub Pages serves this file at whatever URL was missing. */
+  :root { --primary: #7c3aed; --accent: #ec4899; --bg: #151416; --text: #f5f3fa; --muted: #b9b2c9; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text); background: var(--bg);
+    background:
+      radial-gradient(900px 600px at 82% 30%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 70%),
+      radial-gradient(1000px 700px at 15% 25%, color-mix(in srgb, var(--primary) 34%, transparent), transparent 70%),
+      linear-gradient(180deg, #1f1236 0%, #211026 55%, #120a1a 100%);
+    -webkit-font-smoothing: antialiased; touch-action: none; user-select: none; -webkit-user-select: none;
+  }
+  #stars { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .top { position: fixed; z-index: 10; inset: 0 0 auto 0; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: max(28px, env(safe-area-inset-top, 0px)) 16px 0; text-align: center; pointer-events: none; }
+  .top > * { pointer-events: auto; }
+  .eyebrow { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+  h1 { margin: 0; font-size: clamp(30px, 5.4vw, 58px); line-height: 1.04; letter-spacing: -.03em; font-weight: 800; }
+  h1 span { background: linear-gradient(90deg, #d9c8ff, #fff 45%, #ffc4e4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { margin: 0; max-width: 46ch; color: var(--muted); font-size: 16px; line-height: 1.55; }
+  .lead code { font: 500 13px ui-monospace, Menlo, monospace; color: #fff; background: rgba(255,255,255,.08); padding: 2px 6px; border-radius: 6px; word-break: break-all; }
+  .btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+  .btns a { text-decoration: none; color: #fff; font-weight: 650; font-size: 15px; padding: 12px 20px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.07); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: transform .15s, background .15s; }
+  .btns a:hover { transform: translateY(-2px); background: rgba(255,255,255,.14); }
+  .btns a.p { background: linear-gradient(135deg, var(--primary), var(--accent)); border-color: transparent; }
+  .btns a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .hint { margin: 2px 0 0; font: 500 12px ui-monospace, Menlo, monospace; color: rgba(255,255,255,.5); }
+  /* Falling pieces */
+  .piece { position: fixed; left: 0; top: 0; will-change: transform; cursor: grab; display: grid; place-items: center; }
+  .piece:active { cursor: grabbing; }
+  .digit { font-weight: 900; letter-spacing: -.04em; line-height: 1; color: transparent; background: linear-gradient(160deg, #fff 10%, #d8c6ff 45%, var(--accent) 110%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 14px 30px rgba(0,0,0,.45)); }
+  .chip { padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: 14px; font-weight: 600; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+  .chip.grad { background: linear-gradient(135deg, var(--primary), var(--accent)); border-color: transparent; }
+  .card { width: 190px; padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,.16); background: rgba(20,16,32,.7); box-shadow: 0 12px 32px rgba(0,0,0,.4); display: grid; gap: 8px; }
+  .card i { display: block; height: 64px; border-radius: 10px; background: linear-gradient(135deg, #3b2370, #8a2a62); }
+  .card b { font-size: 14px; } .card s { height: 8px; border-radius: 4px; background: rgba(255,255,255,.14); text-decoration: none; display: block; }
+  .card s:last-child { width: 60%; }
+  .visor { width: 120px; height: 66px; border-radius: 22px; background: linear-gradient(180deg, #2c2240, #17112a); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.1), 0 14px 30px rgba(0,0,0,.45); position: relative; }
+  .visor::before { content: ''; position: absolute; inset: 7px 8px 9px; border-radius: 18px; background: radial-gradient(120% 120% at 50% 10%, #2b1f55, #07040f 70%); }
+  .visor .eye { position: absolute; top: 24px; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle, #fff 0 18%, var(--accent) 22%, rgba(124,58,237,.3) 70%, transparent 72%); }
+  .visor .eye.l { left: 34px; } .visor .eye.r { right: 34px; }
+  .visor .eye::after { content: '×'; position: absolute; inset: -6px 0 0; display: grid; place-items: center; font: 800 14px/1 sans-serif; color: #09040f; }
+  @media (prefers-reduced-motion: reduce) { .btns a { transition: none; } }
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="top">
+  <p class="eyebrow">Error 404</p>
+  <h1>This page <span>fell off the website.</span></h1>
+  <p class="lead">There is nothing at <code id="path">this address</code>. Maybe it moved, maybe it never existed, maybe the earthquake got it.</p>
+  <div class="btns">
+    <a class="p" href="/">Take me home</a>
+    <a href="/projects.html">Projects</a>
+    <a href="/lab/">Lab</a>
+    <a href="/lab/study/">Study Lab</a>
+  </div>
+  <p class="hint" id="hint">Grab the pieces and throw them</p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  try { document.getElementById('path').textContent = decodeURIComponent(location.pathname); } catch (e) { /* keep default */ }
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Stars
+  var sc = document.getElementById('stars'); var sg = sc.getContext('2d'); var stars = [];
+  function fitStars() {
+    var d = Math.min(2, devicePixelRatio || 1); sc.width = innerWidth * d; sc.height = innerHeight * d; sg.setTransform(d, 0, 0, d, 0, 0);
+    stars = []; for (var i = 0; i < Math.round(innerWidth * innerHeight / 5200); i++) stars.push({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: Math.random() * 1.2 + .2, p: Math.random() * 6 });
+  }
+  function drawStars(t) {
+    sg.clearRect(0, 0, innerWidth, innerHeight);
+    for (var i = 0; i < stars.length; i++) { var s = stars[i]; sg.globalAlpha = reduce ? .6 : .35 + .35 * Math.sin(t / 900 + s.p); sg.fillStyle = '#fff'; sg.beginPath(); sg.arc(s.x, s.y, s.r, 0, 7); sg.fill(); }
+  }
+  fitStars(); addEventListener('resize', fitStars);
+
+  // Pieces
+  var vw = innerWidth; var vh = innerHeight; var big = Math.max(90, Math.min(240, vw * 0.2));
+  var defs = [
+    { html: '4', cls: 'digit', style: 'font-size:' + big + 'px' },
+    { html: '0', cls: 'digit', style: 'font-size:' + big + 'px' },
+    { html: '4', cls: 'digit', style: 'font-size:' + big + 'px' },
+    { html: '<span class="eye l"></span><span class="eye r"></span>', cls: 'visor' },
+    { html: 'Home', cls: 'chip grad' }, { html: 'Projects', cls: 'chip' }, { html: 'Coursework', cls: 'chip' }, { html: 'Lab', cls: 'chip' },
+    { html: 'Cool', cls: 'chip' }, { html: 'Contact', cls: 'chip' }, { html: 'Professional mad scientist.', cls: 'chip' },
+    { html: '<i></i><b>A missing page</b><s></s><s></s>', cls: 'card' },
+    { html: 'Applied ML', cls: 'chip' }, { html: 'XR', cls: 'chip' }, { html: 'HCI Research', cls: 'chip' },
+  ];
+  var pieces = defs.map(function (d, i) {
+    var el = document.createElement('div'); el.className = 'piece ' + d.cls; el.innerHTML = d.html; el.setAttribute('aria-hidden', 'true');
+    if (d.style) el.setAttribute('style', d.style);
+    document.body.appendChild(el);
+    var r = el.getBoundingClientRect();
+    var o = { el: el, w: r.width, h: r.height, i: i, oy: 0, gh: r.height };
+    if (d.cls === 'digit') {
+      // Measure the real glyph, since the line box is taller than the digit itself
+      var cs = getComputedStyle(el); var cv = document.createElement('canvas').getContext('2d');
+      cv.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var mt = cv.measureText(d.html);
+      var fa = mt.fontBoundingBoxAscent, fd = mt.fontBoundingBoxDescent;
+      if (fa != null && fd != null && mt.actualBoundingBoxAscent != null) {
+        var base = (r.height - (fa + fd)) / 2 + fa;
+        var top = base - mt.actualBoundingBoxAscent; var bottom = base + mt.actualBoundingBoxDescent;
+        o.gh = Math.max(10, bottom - top); o.oy = (top + bottom) / 2 - r.height / 2;
+      } else { o.gh = r.height * .74; }
+    }
+    return o;
+  });
+
+  function staticLayout() {
+    // No physics (reduced motion, or the library could not load): lay the pieces on the floor
+    var x = 16; var row = vh - 12; var rowH = 0;
+    pieces.slice().sort(function (a, b) { return b.h - a.h; }).forEach(function (p) {
+      if (x + p.w > vw - 16) { x = 16; row -= rowH + 8; rowH = 0; }
+      p.el.style.transform = 'translate(' + x + 'px,' + (row - p.h) + 'px)';
+      x += p.w + 10; rowH = Math.max(rowH, p.h);
+    });
+    document.getElementById('hint').textContent = '';
+  }
+
+  function loop(t) { drawStars(t); requestAnimationFrame(loop); }
+  if (reduce) { drawStars(0); staticLayout(); return; }
+  requestAnimationFrame(loop);
+
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js';
+  s.onerror = staticLayout;
+  s.onload = function () { physics(window.Matter); };
+  document.head.appendChild(s);
+
+  function physics(M) {
+    var E = M.Engine, B = M.Bodies, Bd = M.Body, C = M.Composite;
+    var engine = E.create(); engine.gravity.y = 1.6;
+    var T = 300;
+    var floor = B.rectangle(vw / 2, vh - 14 + T / 2, vw * 4, T, { isStatic: true, friction: .9 });
+    var left = B.rectangle(-T / 2, vh / 2, T, vh * 6, { isStatic: true });
+    var right = B.rectangle(vw + T / 2, vh / 2, T, vh * 6, { isStatic: true });
+    C.add(engine.world, [floor, left, right]);
+    pieces.forEach(function (p, n) {
+      var digit = p.el.classList.contains('digit');
+      var w = digit ? p.w * .84 : p.w; var h = digit ? p.gh : p.h;
+      var x = digit ? vw / 2 + (p.i - 1) * big * .78 : 40 + Math.random() * (vw - 80);
+      p.body = B.rectangle(x, -h - n * 70 - Math.random() * 60, w, h, { chamfer: { radius: Math.min(h / 2, digit ? 10 : 22) }, restitution: digit ? .25 : .35, friction: .6, density: digit ? .004 : .0015 });
+      Bd.setAngularVelocity(p.body, (Math.random() - .5) * .12);
+      C.add(engine.world, p.body);
+    });
+    var mouse = M.Mouse.create(document.body); mouse.pixelRatio = 1;
+    // Let the real links and buttons keep working: only grab when the pointer is on a piece
+    document.body.removeEventListener('wheel', mouse.mousewheel);
+    var mc = M.MouseConstraint.create(engine, { mouse: mouse, constraint: { stiffness: .25, render: { visible: false } } });
+    C.add(engine.world, mc);
+    var last = performance.now();
+    function step(now) {
+      E.update(engine, Math.min(1000 / 30, now - last)); last = now;
+      for (var i = 0; i < pieces.length; i++) {
+        var p = pieces[i]; var b = p.body;
+        p.el.style.transformOrigin = '50% ' + (50 + p.oy / p.h * 100).toFixed(2) + '%';
+        p.el.style.transform = 'translate(' + (b.position.x - p.w / 2).toFixed(1) + 'px,' + (b.position.y - p.h / 2 - p.oy).toFixed(1) + 'px) rotate(' + b.angle.toFixed(3) + 'rad)';
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+    // Tap the empty sky for a little aftershock
+    addEventListener('dblclick', function () { pieces.forEach(function (p) { Bd.setVelocity(p.body, { x: (Math.random() - .5) * 18, y: -10 - Math.random() * 14 }); }); });
+    document.getElementById('hint').textContent = 'Grab the pieces and throw them. Double click for an aftershock.';
+    addEventListener('resize', function () { location.reload(); });
+  }
+})();
+</script>
+</body>
+</html>
