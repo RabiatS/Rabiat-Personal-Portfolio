@@ -119,6 +119,7 @@
       <div class="hero-inner hero-centered">
         <!-- VR Eye that follows cursor -->
         <div id="vrEye" class="vr-eye" aria-hidden="true">
+          <canvas id="vrHeadset" class="vr-headset-3d" width="360" height="200"></canvas>
           <div class="vr-headset">
             <div class="vr-strap-left"></div>
             <div class="vr-strap-right"></div>
@@ -584,5 +585,6 @@
   <!-- Builder cube stays here until sandbox.html exists; it moves there later so
        the landing page stops paying for Three.js + GSAP. -->
   <script type="module" src="assets/builder-cube.js"></script>
+  <script type="module" src="assets/vr-headset.js"></script>
 </body>
 </html>

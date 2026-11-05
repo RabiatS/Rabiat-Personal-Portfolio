@@ -2702,6 +2702,12 @@ h3 {
   pointer-events: none;
 }
 
+/* 3D headset (assets/vr-headset.js). Same footprint as the CSS headset box: 180 x 100. */
+.vr-headset-3d { display: none; width: 180px; height: 100px; }
+.vr-eye.vr-eye--3d, .vr-eye.vr-eye--3d:hover { transform: none; }
+.vr-eye--3d .vr-headset-3d { display: block; }
+.vr-eye--3d .vr-headset { display: none; }
+
 /* Responsive VR eye */
 @media (max-width: 1024px) {
   .vr-eye {
@@ -2714,6 +2720,8 @@ h3 {
     transform: scale(0.5);
     margin-bottom: 10px;
   }
+  .vr-eye.vr-eye--3d { transform: none; }
+  .vr-headset-3d { width: 150px; height: 84px; }
 }
 
 .hero-inner {
