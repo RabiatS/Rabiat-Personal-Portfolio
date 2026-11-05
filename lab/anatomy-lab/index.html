@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<title>Anatomy Lab · Rabiat's Lab</title>
+<meta name="description" content="Study the whole human body in 3D: skeleton and skull, joints, muscles, heart and blood flow, brain and nerves, pain pathways and dermatomes, organs, and female and male anatomy. Runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../study/kit/kit.css">
+<link rel="stylesheet" href="anatomy.css">
+<link rel="modulepreload" href="vendor/three-bundle.js">
+</head>
+<body>
+<script type="module">
+import { createLab } from '../study/kit/kit.js';
+const ch = (id, title, group, blurb) => ({ id, title, group, blurb, load: () => import(`./chapters/${id}.js`) });
+createLab({
+  id: 'anatomy',
+  title: 'Anatomy Lab',
+  intro: 'The whole human body in 3D: bones, joints, muscles, blood, nerves, pain, organs and the differences between bodies.',
+  overview: 'Anatomy is the map of the body: what is where, what it is called, and what it connects to. Every chapter here is built on a real 3D model of an adult body that you can turn, peel and click. Start with the body map if the words anterior and medial are new to you. If you are revising for an exam, jump straight to a system or to the mock exam at the end.',
+  about: '<p>Each chapter has a live 3D model, a plain words explanation, a going deeper section and a short check. Tap anything on a model to name it.</p><p>Muscle detail (origins, insertions, actions, flashcards) lives in <a href="../muscle-lab/">Muscle Lab</a>. Cells, the cardiac cycle and the action potential live in <a href="../bio-lab/">Bio Lab</a>.</p><p class="fine">3D anatomy: <a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/" target="_blank" rel="noopener">BodyParts3D</a> 4.0, © The Database Center for Life Science, CC BY 4.0, from the simplified set published as <a href="https://www.npmjs.com/package/@dagno/anatomy-model" target="_blank" rel="noopener">@dagno/anatomy-model</a> (CC BY 4.0, prepared by the Human Atlas project). Lungs and liver: BodyParts3D 3.0 (CC BY-SA 2.1 JP) via <a href="https://github.com/Kevin-Mattheus-Moerman/BodyParts3D" target="_blank" rel="noopener">Kevin Moerman\'s mirror</a>, moved into the same frame. Female pelvis and reproductive organs: Human Reference Atlas, 3D Reference Organ Set for Female v1.10, K. Browne and H. Schlehlein, HuBMAP, CC BY 4.0, built on the NLM Visible Human data, via <a href="https://github.com/slorksmo/Human-Atlas" target="_blank" rel="noopener">Human Atlas</a>. All meshes were simplified and repacked for this page. Nerves, the spinal cord, dermatomes and pain pathways are drawn as schematic paths on that skeleton, not scanned shapes.</p>',
+  chapters: [
+    ch('body-map', 'The body map', 'Start here', 'Layers, anatomical position, the three planes and direction words.'),
+    ch('skeleton', 'The skeleton', 'Frame and movement', '206 bones, axial and appendicular. Tap bones and find them.'),
+    ch('skull', 'The skull', 'Frame and movement', 'Cranial and facial bones, sutures, foramina and an exploded view.'),
+    ch('joints', 'Joints and movement', 'Frame and movement', 'Six synovial joint types, each moving on real bones.'),
+    ch('muscles', 'The muscular layer', 'Frame and movement', 'Muscle groups on the full body, with a door into Muscle Lab.'),
+    ch('heart', 'Heart and circulation', 'Transport and control', 'Chambers, valves and two circuits of moving blood.'),
+    ch('nervous', 'Brain and nerves', 'Transport and control', 'Lobes and their jobs, the spinal cord, major nerves and a reflex arc.'),
+    ch('pain', 'Pain', 'Transport and control', 'How a pain signal travels, dermatomes and referred pain.'),
+    ch('organs', 'Organs and systems', 'Organs', 'Where the respiratory, digestive, urinary and endocrine organs sit.'),
+    ch('sexes', 'Female and male anatomy', 'Organs', 'The pelvis, reproductive organs and average differences.'),
+    ch('exam', 'Mock exam', 'Test yourself', 'Mixed find it and name it questions across every system.'),
+  ],
+});
+</script>
+</body>
+</html>

@@ -2,28 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#14121f" />
   <title>View in VR | Rabiat Sadiq</title>
-  <meta name="description" content="Step inside the portfolio: an immersive WebXR version of the hero and featured work, built with A-Frame." />
+  <meta name="description" content="Step inside the portfolio: an immersive WebXR version of the hero and featured work, built with three.js." />
   <link rel="canonical" href="https://www.rabiatsadiq.com/vr.html" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Rabiat Sadiq" />
   <meta property="og:title" content="View in VR | Rabiat Sadiq" />
-  <meta property="og:description" content="Step inside the portfolio: an immersive WebXR version of the hero and featured work, built with A-Frame." />
+  <meta property="og:description" content="Step inside the portfolio: an immersive WebXR version of the hero and featured work, built with three.js." />
   <meta property="og:url" content="https://www.rabiatsadiq.com/vr.html" />
   <meta property="og:image" content="https://www.rabiatsadiq.com/assets/img/projects/VR Mussic Viz.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="View in VR | Rabiat Sadiq" />
-  <meta name="twitter:description" content="Step inside the portfolio: an immersive WebXR version of the hero and featured work, built with A-Frame." />
+  <meta name="twitter:description" content="Step inside the portfolio: an immersive WebXR version of the hero and featured work, built with three.js." />
   <meta name="twitter:image" content="https://www.rabiatsadiq.com/assets/img/projects/VR Mussic Viz.webp" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="stylesheet" href="assets/style.css" />
   <script>
     (function () {
-      var plain = localStorage.getItem('plainMode') === 'true';
+      var plain = false, saved = null;
+      try { plain = localStorage.getItem('plainMode') === 'true'; saved = localStorage.getItem('theme'); } catch (e) {}
       if (plain) return;
-      var saved = localStorage.getItem('theme');
       var dark = !saved || saved === 'dark';
       if (dark) {
         document.documentElement.classList.add('dark');
@@ -31,144 +31,262 @@
       }
     })();
   </script>
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
+      margin: 0;
       height: 100%;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #151416;
-      color: #f1f5f9;
+      color: #f4f2f8;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
+    html:not(.dark) body { background: #f4f1f9; color: #1b1726; }
+    body::before { display: none !important; }
+    #vrCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      cursor: grab;
+      outline: none;
+    }
+    #vrCanvas.is-dragging { cursor: grabbing; }
+    #vrCanvas.is-pointing { cursor: pointer; }
+
+    /* Entry overlay */
     .vr-overlay {
       position: fixed;
       inset: 0;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 24px;
-      background: linear-gradient(160deg, rgba(20, 18, 31, 0.92), rgba(10, 14, 26, 0.88));
-      pointer-events: none;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 24px 16px;
+      background: radial-gradient(120% 90% at 50% 20%, rgba(124, 58, 237, 0.20), transparent 60%),
+        rgba(12, 10, 18, 0.55);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      transition: opacity 0.35s ease, visibility 0.35s ease;
     }
-    .vr-overlay.is-hidden {
-      opacity: 0;
-      visibility: hidden;
+    html:not(.dark) .vr-overlay {
+      background: radial-gradient(120% 90% at 50% 20%, rgba(124, 58, 237, 0.14), transparent 60%),
+        rgba(244, 241, 249, 0.55);
     }
-    .vr-overlay__panel {
-      pointer-events: auto;
+    .vr-overlay.is-hidden { opacity: 0; visibility: hidden; }
+    .vr-card {
+      position: relative;
+      width: min(440px, 100%);
+      padding: 30px 28px 24px;
+      border-radius: 24px;
       text-align: center;
-      max-width: 420px;
+      background: linear-gradient(180deg, rgba(38, 32, 56, 0.82), rgba(22, 19, 32, 0.86));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(124, 58, 237, 0.18), 0 0 60px rgba(124, 58, 237, 0.18);
     }
-    .vr-overlay h1 {
-      font-size: clamp(22px, 4vw, 28px);
+    html:not(.dark) .vr-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(250, 248, 253, 0.9));
+      border-color: rgba(124, 58, 237, 0.16);
+      box-shadow: 0 24px 60px rgba(60, 30, 110, 0.16), 0 0 50px rgba(124, 58, 237, 0.12);
+    }
+    .vr-card__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #f9a8d4;
+      background: rgba(236, 72, 153, 0.12);
+      border: 1px solid rgba(236, 72, 153, 0.28);
+    }
+    html:not(.dark) .vr-card__badge { color: #be185d; background: rgba(236, 72, 153, 0.08); }
+    .vr-card h1 {
+      margin: 0 0 10px;
+      font-size: clamp(24px, 5vw, 30px);
+      line-height: 1.15;
       font-weight: 700;
-      margin-bottom: 8px;
-      background: linear-gradient(135deg, #fff, #e0e7ff);
+      letter-spacing: -0.01em;
+    }
+    .vr-card h1 span {
+      background: linear-gradient(90deg, #a78bfa, #f472b6);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
-    .vr-overlay p {
+    html:not(.dark) .vr-card h1 span { background-image: linear-gradient(90deg, #7c3aed, #db2777); }
+    .vr-card p {
+      margin: 0 auto 22px;
+      max-width: 34ch;
       font-size: 15px;
-      line-height: 1.5;
-      color: #94a3b8;
-      margin-bottom: 20px;
+      line-height: 1.55;
+      color: #b9b4c7;
     }
-    .vr-overlay__actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-    }
+    html:not(.dark) .vr-card p { color: #575266; }
+    .vr-card__actions { display: grid; gap: 10px; }
     .vr-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 14px 24px;
-      border-radius: 12px;
+      gap: 8px;
+      min-height: 48px;
+      padding: 0 22px;
+      border-radius: 14px;
+      font: inherit;
       font-size: 15px;
       font-weight: 600;
       text-decoration: none;
-      border: none;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.06);
+      color: inherit;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
     }
+    html:not(.dark) .vr-btn { border-color: rgba(27, 23, 38, 0.14); background: rgba(27, 23, 38, 0.03); }
+    .vr-btn:hover { transform: translateY(-1px); background: rgba(255, 255, 255, 0.1); }
+    .vr-btn:focus-visible { outline: 2px solid #f472b6; outline-offset: 3px; }
     .vr-btn--primary {
-      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      border: 0;
       color: #fff;
-      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.45);
+      background: linear-gradient(90deg, var(--primary, #7c3aed), var(--accent, #ec4899));
+      box-shadow: 0 8px 26px rgba(124, 58, 237, 0.4);
     }
-    .vr-btn--primary:hover { transform: translateY(-2px); }
-    .vr-btn--secondary {
-      background: rgba(255, 255, 255, 0.08);
-      color: #f1f5f9;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .vr-btn--secondary:hover { background: rgba(255, 255, 255, 0.14); }
+    .vr-btn--primary:hover { background: linear-gradient(90deg, var(--primary, #7c3aed), var(--accent, #ec4899)); box-shadow: 0 10px 32px rgba(236, 72, 153, 0.42); }
+    .vr-btn--ghost { border-color: transparent; background: transparent; font-weight: 500; opacity: 0.85; }
     .vr-btn[hidden] { display: none !important; }
-    .vr-hint {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 8px;
+    .vr-hint { margin: 16px 0 0; font-size: 12.5px; color: #8a849a; }
+    html:not(.dark) .vr-hint { color: #6f6a7e; }
+
+    /* Small HUD for the desktop and phone preview */
+    .vr-hud {
+      position: fixed;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
     }
-    a-scene { width: 100%; height: 100%; }
+    .vr-hud--top { top: max(16px, env(safe-area-inset-top)); left: 16px; right: 16px; justify-content: space-between; }
+    .vr-hud--bottom { bottom: max(16px, env(safe-area-inset-bottom)); left: 16px; right: 16px; justify-content: center; }
+    .vr-hud.is-hidden { opacity: 0; }
+    .vr-pill {
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(24, 20, 34, 0.62);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+    html:not(.dark) .vr-pill { background: rgba(255, 255, 255, 0.72); border-color: rgba(27, 23, 38, 0.12); }
+    .vr-pill:focus-visible { outline: 2px solid #f472b6; outline-offset: 2px; }
+    .vr-pill--accent { border: 0; color: #fff; background: linear-gradient(90deg, var(--primary, #7c3aed), var(--accent, #ec4899)); }
+    .vr-pill[hidden] { display: none !important; }
+    .vr-tip {
+      pointer-events: none;
+      padding: 9px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: #d8d3e4;
+      background: rgba(24, 20, 34, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+    html:not(.dark) .vr-tip { color: #403a52; background: rgba(255, 255, 255, 0.7); border-color: rgba(27, 23, 38, 0.1); }
+    .vr-hud__right { display: flex; gap: 8px; }
+
+    /* Screen reader and keyboard mirror of every 3D control. Focusing one
+       highlights the matching panel and turns the view toward it. */
+    .vr-a11y a, .vr-a11y button {
+      position: fixed;
+      left: 50%;
+      bottom: 76px;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      padding: 0;
+      border: 0;
+      background: none;
+      font: inherit;
+      color: inherit;
+    }
+    .vr-a11y a:focus, .vr-a11y button:focus {
+      z-index: 12;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip-path: none;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      color: #fff;
+      background: rgba(24, 20, 34, 0.82);
+      outline: 2px solid #f472b6;
+      outline-offset: 2px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .vr-overlay, .vr-hud, .vr-btn { transition: none; }
+    }
   </style>
 </head>
 <body>
-  <div id="vrOverlay" class="vr-overlay" role="dialog" aria-labelledby="vrOverlayTitle">
-    <div class="vr-overlay__panel">
-      <h1 id="vrOverlayTitle">Step inside the site</h1>
-      <p id="vrOverlayDesc">Enter the portfolio hero in immersive VR. Use your hands (Quest hand tracking), controllers, or mouse. Point, pinch, or grab project cards to interact.</p>
-      <div class="vr-overlay__actions">
-        <button type="button" class="vr-btn vr-btn--primary" id="enterVrBtn">Enter VR</button>
-        <a href="index.html" class="vr-btn vr-btn--secondary">Back to 2D site</a>
+  <canvas id="vrCanvas" tabindex="-1" aria-label="3D portfolio space"></canvas>
+
+  <div class="vr-hud vr-hud--top is-hidden" id="vrHudTop">
+    <a class="vr-pill" href="index.html">Back to 2D site</a>
+    <div class="vr-hud__right">
+      <button type="button" class="vr-pill" id="motionBtn" hidden>Use motion</button>
+      <button type="button" class="vr-pill vr-pill--accent" id="hudVrBtn" hidden>Enter VR</button>
+    </div>
+  </div>
+  <div class="vr-hud vr-hud--bottom is-hidden" id="vrHudBottom">
+    <p class="vr-tip" id="vrTip">Drag to look around. Click a card to open it. Arrow keys turn.</p>
+  </div>
+
+  <nav class="vr-a11y" id="vrA11y" aria-label="Everything in the 3D space"></nav>
+
+  <div id="vrOverlay" class="vr-overlay" role="dialog" aria-modal="true" aria-labelledby="vrOverlayTitle" aria-describedby="vrOverlayDesc">
+    <div class="vr-card">
+      <span class="vr-card__badge">WebXR portfolio</span>
+      <h1 id="vrOverlayTitle">Step inside <span>the site</span></h1>
+      <p id="vrOverlayDesc">The hero, featured work and experience, arranged around you in 3D. Point with a controller or pinch with your hands.</p>
+      <div class="vr-card__actions">
+        <button type="button" class="vr-btn vr-btn--primary" id="enterVrBtn" hidden>Enter VR</button>
+        <button type="button" class="vr-btn" id="previewBtn">Look around in 3D</button>
+        <a href="index.html" class="vr-btn vr-btn--ghost">Back to 2D site</a>
       </div>
-      <p class="vr-hint" id="vrOverlayHint">Requires a VR headset browser over HTTPS</p>
+      <p class="vr-hint" id="vrOverlayHint">Checking for a VR headset...</p>
     </div>
   </div>
 
-  <a-scene
-    id="vrScene"
-    embedded
-    renderer="antialias: true; colorManagement: true; physicallyCorrectLights: false; alpha: false; precision: mediump"
-    webxr="requiredFeatures: local-floor; optionalFeatures: bounded-floor, hand-tracking"
-    vr-mode-ui="enabled: true"
-    loading-screen="dotsColor: #7c3aed; backgroundColor: #151416"
-    background="color: #151416"
-  >
-    <a-assets id="vrAssets" timeout="120000">
-      <a-asset-item id="vrFont" src="https://cdn.aframe.io/fonts/Exo2Bold.fnt"></a-asset-item>
-    </a-assets>
-
-    <a-light type="ambient" color="#c4b5fd" intensity="0.55"></a-light>
-    <a-light type="directional" color="#ffffff" intensity="0.35" position="2 4 3"></a-light>
-    <a-light type="directional" color="#f9a8d4" intensity="0.2" position="-2 2 -2"></a-light>
-
-    <a-entity id="vrAtmosphere"></a-entity>
-    <a-entity id="vrHero"></a-entity>
-    <a-entity id="vrGallery"></a-entity>
-    <a-entity id="vrNav"></a-entity>
-
-    <a-entity id="rig" position="0 0 0">
-      <a-camera
-        id="camera"
-        look-controls="pointerLockEnabled: false"
-        wasd-controls="enabled: false"
-        position="0 1.6 0"
-        cursor="fuse: false; rayOrigin: mouse"
-        raycaster="objects: .clickable; far: 12"
-      ></a-camera>
-    </a-entity>
-
-    <a-entity id="leftHand"></a-entity>
-    <a-entity id="rightHand"></a-entity>
-  </a-scene>
-
-  <script src="assets/vr-lobby.js"></script>
+  <script type="module" src="assets/vr-lobby.js"></script>
 </body>
 </html>
