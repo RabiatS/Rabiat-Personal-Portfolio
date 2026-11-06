@@ -88,11 +88,24 @@ table.ctable td.open .clip { -webkit-line-clamp: unset; }
 /* Laryngoscopy game */
 .lg-wrap { position: absolute; inset: 0; display: grid; grid-template-rows: 1fr auto; gap: 10px; }
 .lg-media { position: relative; min-height: 0; display: grid; place-items: center; background: #050505; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
-.lg-media img, .lg-media video { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.lg-media img, .lg-media video { position: absolute; inset: 0; margin: auto; width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
 .lg-cap { font: 500 10.5px/1.4 var(--f-mono); color: var(--muted); }
 .lg-cap a { color: var(--text-2); }
 .lg-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .lg-hot { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: 2px solid var(--c2); background: rgba(251,191,36,.12); }
+
+/* Airway assessment */
+.aa-stage { grid-template-rows: 1fr auto; gap: 6px; }
+.aa-pic { position: relative; min-height: 0; width: 100%; height: 100%; display: grid; place-items: center; }
+.aa-pic svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.aa-cap { font: 500 11px var(--f-mono); color: var(--muted); text-align: center; padding-bottom: 6px; }
+.aa-list { display: grid; gap: 6px; }
+.aa-list h4 { margin: 8px 0 2px; font: 600 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--teal); }
+.aa-ck { display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: start; cursor: pointer; font-size: 14px; line-height: 1.35; padding: 4px 0; border-bottom: 1px solid var(--border); }
+.aa-ck input { margin-top: 3px; accent-color: #5EEAD4; }
+.aa-ck small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.aa-ck:has(input:checked) b, .aa-ck:has(input:checked) > span { color: var(--text); }
+.aa-sum { margin-top: 6px; }
 
 @media (max-width: 860px) {
   .dgrid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
@@ -100,4 +113,8 @@ table.ctable td.open .clip { -webkit-line-clamp: unset; }
   .cx-scroll { position: relative; inset: auto; overflow: visible; }
   .fc .q { font-size: 28px; }
   .lg-choices { grid-template-columns: 1fr; }
+  .lg-wrap { position: relative; inset: auto; grid-template-rows: auto auto; }
+  .lg-media { height: 44vh; }
+  /* the kit anchors the about popover to the info button, which sits mid header on phones */
+  .pop { position: fixed; left: 12px; right: 12px; top: 64px; width: auto; }
 }

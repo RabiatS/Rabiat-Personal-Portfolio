@@ -1,0 +1,179 @@
+{
+ "note": "Coverage is limited to what has a verified open licence on Wikimedia Commons; no openly licensed laryngoscopic views of papillomatosis, laryngeal cancer, laryngeal web or graded Cormack-Lehane views were found, so they are not in the game (the Cormack-Lehane grades are drawn in Airway assessment).",
+ "items": [
+  {
+   "file": "normal-endoscopy.jpg",
+   "kind": "image",
+   "title": "Larynx endo 2.jpg",
+   "diagnosis": "Normal larynx",
+   "note": "Two pale, smooth, straight vocal folds meeting at the anterior commissure, with the arytenoids at the back and an open, symmetric glottis. Learn this picture first: every other diagnosis is a change from it. Seen through a gastroscope.",
+   "license": "CC BY-SA 3.0",
+   "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "author": "Samir (English Wikipedia)",
+   "source": "https://commons.wikimedia.org/wiki/File:Larynx_endo_2.jpg"
+  },
+  {
+   "file": "normal-stroboscopy.mp4",
+   "kind": "video",
+   "title": "Stroboscopy Normal Female Vocal Cords.webm",
+   "diagnosis": "Normal larynx",
+   "note": "Two pale, smooth, straight vocal folds meeting at the anterior commissure, with the arytenoids at the back and an open, symmetric glottis. Learn this picture first: every other diagnosis is a change from it.",
+   "license": "CC BY 3.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+   "author": "James P. Thomas",
+   "source": "https://commons.wikimedia.org/wiki/File:Stroboscopy_Normal_Female_Vocal_Cords.webm",
+   "modified": "Clip from 0:18 to 0:26, re-encoded without audio"
+  },
+  {
+   "file": "nodules.jpg",
+   "kind": "image",
+   "title": "V nod.jpg",
+   "diagnosis": "Vocal fold nodules",
+   "note": "Small, symmetric, usually bilateral swellings at the junction of the anterior and middle thirds of the folds, from repeated voice strain (singers, teachers, children). Treated mainly with voice therapy.",
+   "license": "Public domain",
+   "licenseUrl": null,
+   "author": "Drtbalu (English Wikipedia)",
+   "source": "https://commons.wikimedia.org/wiki/File:V_nod.jpg"
+  },
+  {
+   "file": "polyp.jpg",
+   "kind": "image",
+   "title": "Stimmbandpolyp1.jpg",
+   "diagnosis": "Vocal fold polyp",
+   "note": "Usually a single, one sided soft lesion on the free edge of a fold, often after voice strain or a small bleed, and sometimes vascular. Usually removed by microlaryngoscopy, with the anesthesia team sharing the airway. Vascular (telangiectatic) polyp on the left fold, seen through an operating laryngoscope with the tube behind it.",
+   "license": "CC BY-SA 3.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "author": "Welleschik",
+   "source": "https://commons.wikimedia.org/wiki/File:Stimmbandpolyp1.jpg",
+   "modified": "Resized"
+  },
+  {
+   "file": "cyst.jpg",
+   "kind": "image",
+   "title": "Vocal Folds.jpg",
+   "diagnosis": "Vocal fold cyst",
+   "note": "A one sided, smooth, round swelling under the mucosa of the fold (a mucous retention or epidermoid cyst), sometimes with a reactive swelling on the opposite fold. Removed by microsurgery.",
+   "license": "CC BY 3.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+   "author": "Jörg Bohlender",
+   "source": "https://commons.wikimedia.org/wiki/File:Vocal_Folds.jpg",
+   "modified": "Cropped to the first of three panels"
+  },
+  {
+   "file": "paralysis-unilateral.mp4",
+   "kind": "video",
+   "title": "Laryngeal-Reinnervation-Using-Ansa-Cervicalis-for-Thyroid-Surgery-Related-Unilateral-Vocal-Fold-pone.0019128.s001.ogv",
+   "diagnosis": "Vocal fold paralysis",
+   "note": "The fold does not move with breathing. One sided paralysis (for example recurrent laryngeal nerve injury after thyroid, neck or chest surgery) gives a weak, breathy voice and aspiration risk. Both folds paralysed near the midline cause stridor and may need a tracheostomy. Stroboscopy of one sided paralysis after thyroid surgery: incomplete closure.",
+   "license": "CC BY 2.5",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.5",
+   "author": "Wang W, Chen D, Chen S, Li D, Li M, Xia S, Zheng H",
+   "source": "https://commons.wikimedia.org/wiki/File:Laryngeal-Reinnervation-Using-Ansa-Cervicalis-for-Thyroid-Surgery-Related-Unilateral-Vocal-Fold-pone.0019128.s001.ogv",
+   "modified": "Re-encoded without audio"
+  },
+  {
+   "file": "paralysis-bilateral.mp4",
+   "kind": "video",
+   "title": "Reinnervation-of-Bilateral-Posterior-Cricoarytenoid-Muscles-Using-the-Left-Phrenic-Nerve-in-pone.0077233.s001.ogv",
+   "diagnosis": "Vocal fold paralysis",
+   "note": "The fold does not move with breathing. One sided paralysis (for example recurrent laryngeal nerve injury after thyroid, neck or chest surgery) gives a weak, breathy voice and aspiration risk. Both folds paralysed near the midline cause stridor and may need a tracheostomy. Both folds fixed near the midline with a small glottic gap.",
+   "license": "CC BY 2.5",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.5",
+   "author": "Li M, Chen S, Zheng H, Chen D, Zhu M, Wang W, Liu F, Zhang C",
+   "source": "https://commons.wikimedia.org/wiki/File:Reinnervation-of-Bilateral-Posterior-Cricoarytenoid-Muscles-Using-the-Left-Phrenic-Nerve-in-pone.0077233.s001.ogv",
+   "modified": "First 8 seconds, re-encoded without audio"
+  },
+  {
+   "file": "reinke-1.jpg",
+   "kind": "image",
+   "title": "Reinke-Oedem.jpg",
+   "diagnosis": "Reinke's edema",
+   "note": "Diffuse, floppy, fluid filled swelling of both folds in the superficial layer (Reinke's space), strongly linked to smoking. The voice drops in pitch, and large swellings can narrow the glottis.",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "author": "Phoni",
+   "source": "https://commons.wikimedia.org/wiki/File:Reinke-Oedem.jpg"
+  },
+  {
+   "file": "reinke-2.jpg",
+   "kind": "image",
+   "title": "Reinke Oedem.jpg",
+   "diagnosis": "Reinke's edema",
+   "note": "Diffuse, floppy, fluid filled swelling of both folds in the superficial layer (Reinke's space), strongly linked to smoking. The voice drops in pitch, and large swellings can narrow the glottis.",
+   "license": "CC BY-SA 3.0",
+   "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "author": "Welleschik",
+   "source": "https://commons.wikimedia.org/wiki/File:Reinke_Oedem.jpg",
+   "modified": "Resized"
+  },
+  {
+   "file": "granuloma-1.jpg",
+   "kind": "image",
+   "title": "Vocal cord granuloma.jpg",
+   "diagnosis": "Laryngeal granuloma",
+   "note": "A smooth, often yellowish mass at the back of the glottis over the vocal process of the arytenoid. Linked to intubation trauma, reflux and throat clearing. Gentle intubation and a correctly sized tube help prevent it.",
+   "license": "CC BY-SA 3.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "author": "James P. Thomas",
+   "source": "https://commons.wikimedia.org/wiki/File:Vocal_cord_granuloma.jpg"
+  },
+  {
+   "file": "granuloma-2.jpg",
+   "kind": "image",
+   "title": "Stimmlippengranulom1.jpg",
+   "diagnosis": "Laryngeal granuloma",
+   "note": "A smooth, often yellowish mass at the back of the glottis over the vocal process of the arytenoid. Linked to intubation trauma, reflux and throat clearing. Gentle intubation and a correctly sized tube help prevent it. Intubation granuloma on the left fold, seen through an operating laryngoscope.",
+   "license": "CC BY-SA 3.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "author": "Welleschik",
+   "source": "https://commons.wikimedia.org/wiki/File:Stimmlippengranulom1.jpg",
+   "modified": "Resized"
+  },
+  {
+   "file": "laryngomalacia.jpg",
+   "kind": "image",
+   "title": "Laryngomalacia.jpg",
+   "diagnosis": "Laryngomalacia",
+   "note": "The commonest cause of stridor in infants: floppy supraglottic tissue, short aryepiglottic folds and an omega shaped epiglottis that are drawn inward on inspiration. Most cases resolve by 18 to 24 months.",
+   "license": "Public domain",
+   "licenseUrl": null,
+   "author": "Doctormichael",
+   "source": "https://commons.wikimedia.org/wiki/File:Laryngomalacia.jpg"
+  },
+  {
+   "file": "epiglottitis.jpg",
+   "kind": "image",
+   "title": "Epiglottitis endoscopy.jpg",
+   "diagnosis": "Epiglottitis",
+   "note": "A swollen, red epiglottis and supraglottis from infection. Now seen more in adults since Hib vaccination. Keep the patient calm and upright, do not examine the throat with a tongue depressor, and secure the airway in a controlled setting with surgical backup ready.",
+   "license": "CC BY-SA 3.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+   "author": "藤澤孝志",
+   "source": "https://commons.wikimedia.org/wiki/File:Epiglottitis_endoscopy.jpg"
+  },
+  {
+   "file": "subglottic-stenosis-1.jpg",
+   "kind": "image",
+   "title": "Wideolaryngoskopia 2015-05-06b.jpg",
+   "diagnosis": "Subglottic stenosis",
+   "note": "Narrowing below the vocal folds, often scar after prolonged intubation or tracheostomy, sometimes idiopathic. The glottis may look normal while a tube will not pass beyond it. Graded by Myer-Cotton I to IV by percent obstruction.",
+   "license": "CC BY-SA 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+   "author": "Salicyna",
+   "source": "https://commons.wikimedia.org/wiki/File:Wideolaryngoskopia_2015-05-06b.jpg",
+   "modified": "Resized"
+  },
+  {
+   "file": "subglottic-stenosis-2.jpg",
+   "kind": "image",
+   "title": "Subglottic stenosis 03.png",
+   "diagnosis": "Subglottic stenosis",
+   "note": "Narrowing below the vocal folds, often scar after prolonged intubation or tracheostomy, sometimes idiopathic. The glottis may look normal while a tube will not pass beyond it. Graded by Myer-Cotton I to IV by percent obstruction. Myer-Cotton grade II.",
+   "license": "CC BY 2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+   "author": "Essam A Eid",
+   "source": "https://commons.wikimedia.org/wiki/File:Subglottic_stenosis_03.png",
+   "modified": "Converted to JPEG"
+  }
+ ]
+}

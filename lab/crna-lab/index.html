@@ -22,13 +22,13 @@
 <body>
 <script type="module">
 import { createLab } from '../study/kit/kit.js';
-import { ABOUT_HTML } from './shared.js';
+import { ABOUT_HTML, fillCredits } from './shared.js';
 const ch = (id, title, group, blurb) => ({ id, title, group, blurb, load: () => import(`./chapters/${id}.js`) });
 createLab({
   id: 'crna',
   title: 'CRNA Lab',
-  intro: 'Anesthesia, cardiac and supporting drugs from their FDA labels, plus airway anatomy from nose to carina.',
-  overview: 'A study aid for nurse anesthesia school. The drug chapters read every fact straight from the FDA label, with a link to the exact label and section, and say plainly when a label does not state something. The airway chapter lets you explore the anatomy in a labelled section and in 3D. This is an educational study aid, not clinical guidance: always check the current full prescribing information and your program\'s references.',
+  intro: 'Anesthesia, cardiac and supporting drugs from their FDA labels, plus the airway and respiratory physiology.',
+  overview: 'A study aid for nurse anesthesia school. The drug chapters read every fact straight from the FDA label, with a link to the exact label and section, and say plainly when a label does not state something. The airway chapters let you explore the anatomy in a labelled section and in 3D, practise airway assessment, and play with live models of respiratory physiology and pathophysiology. This is an educational study aid, not clinical guidance: always check the current full prescribing information and your program\'s references.',
   about: ABOUT_HTML,
   chapters: [
     ch('drug-cards', 'Drug cards', 'Drugs', 'Every drug, every field, each with its FDA label source.'),
@@ -37,8 +37,13 @@ createLab({
     ch('flashcards', 'Flashcards', 'Drugs', 'Spaced repetition on class, mechanism, reversal and category.'),
     ch('drug-quiz', 'Mock quiz', 'Drugs', 'Label based questions, with your misses tracked by drug and field.'),
     ch('airway-anatomy', 'Airway anatomy', 'Airway', 'A labelled sagittal view and the larynx in 3D.'),
+    ch('airway-assessment', 'Airway assessment', 'Airway', 'Mallampati, Cormack-Lehane, LEMON and a drill.'),
+    ch('resp-physiology', 'Respiratory physiology', 'Breathing', 'Mechanics, volumes, dead space, shunt and the O2 curve.'),
+    ch('pathophysiology', 'Pathophysiology', 'Breathing', 'Bronchospasm, COPD, laryngospasm, aspiration, obstruction, OSA.'),
+    ch('name-that-view', 'Name that view', 'Practice', 'Real laryngoscopy images and clips. Name the diagnosis.'),
   ],
 });
+fillCredits();
 </script>
 </body>
 </html>
