@@ -2,6 +2,8 @@
 import { esc } from '../study/kit/kit.js';
 
 export { esc };
+// Respiratory models and curve drawing, shared by the physiology and pathophysiology chapters
+export * from './physio.js';
 export const NOT_STATED = 'Not stated in the FDA label';
 
 export const DISCLAIMER = 'Educational study aid only. It is not clinical guidance and not a substitute for the current full prescribing information, your program\'s references or clinical judgment. Labels change: verify every dose and fact against the current label before use.';
@@ -9,6 +11,8 @@ export const DISCLAIMER = 'Educational study aid only. It is not clinical guidan
 export const ABOUT_HTML = `<p><b>${DISCLAIMER}</b></p>
 <p>Drug facts are read from FDA drug labels (structured product labeling via openFDA and DailyMed, U.S. National Library of Medicine, public domain). Each field links to the exact label, version and section it came from. Where a label does not state something, the card says "${NOT_STATED}" instead of filling it in.</p>
 <p>The difficult airway approach points to the 2022 American Society of Anesthesiologists Practice Guidelines for Management of the Difficult Airway. Read the guideline itself for the algorithm.</p>
+<p>The Mallampati, Cormack-Lehane and 3-3-2 drawings are original schematics made for this lab. The physiology curves are computed live from textbook equations.</p>
+<div class="fine" id="crna-credits"></div>
 `;
 
 const DATA = new URL('./data/', import.meta.url).href;
