@@ -89,7 +89,7 @@
       </a>
     </nav>
     <div class="header-controls">
-      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn">in</a>
+      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn"><span class="ico" data-icon="linkedin" aria-hidden="true"></span></a>
       <button class="toggle" id="funToggle" title="Fun colors" aria-label="Fun colors"><span class="ico" data-icon="palette" aria-hidden="true"></span></button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme"><span class="ico" data-icon="theme" aria-hidden="true"></span></button>
     </div>
@@ -101,7 +101,7 @@
         <div>
           <h1>Projects</h1>
           <p class="lead" style="margin-top: 16px;">
-            <strong id="projectCount" style="color: var(--primary-readable);">Loading...</strong> projects across multiple disciplines
+            <strong id="projectCount" style="color: var(--primary-readable);"><span class="skeleton sk-num" aria-hidden="true"></span></strong> projects across multiple disciplines
           </p>
         </div>
       </div>
@@ -123,9 +123,13 @@
       </div>
 
       <div id="projectsContainer">
-        <div id="projectsLoading" style="text-align:center;padding:60px 20px;color:var(--text-muted)">
-          <div style="font-size:18px;margin-bottom:12px">Loading projects...</div>
-          <div style="font-size:14px;color:var(--text-light)">Fetching from projects.json</div>
+        <div id="projectsLoading" class="grid cards-3" role="status" aria-label="Loading projects">
+          <div class="sk-card"><div class="sk-img skeleton"></div><div class="sk-line skeleton"></div><div class="sk-line skeleton short"></div></div>
+          <div class="sk-card"><div class="sk-img skeleton"></div><div class="sk-line skeleton"></div><div class="sk-line skeleton short"></div></div>
+          <div class="sk-card"><div class="sk-img skeleton"></div><div class="sk-line skeleton"></div><div class="sk-line skeleton short"></div></div>
+          <div class="sk-card"><div class="sk-img skeleton"></div><div class="sk-line skeleton"></div><div class="sk-line skeleton short"></div></div>
+          <div class="sk-card"><div class="sk-img skeleton"></div><div class="sk-line skeleton"></div><div class="sk-line skeleton short"></div></div>
+          <div class="sk-card"><div class="sk-img skeleton"></div><div class="sk-line skeleton"></div><div class="sk-line skeleton short"></div></div>
         </div>
         <section class="grid cards-3" id="projectsGrid" style="display:none">
           <!-- Projects loaded dynamically -->

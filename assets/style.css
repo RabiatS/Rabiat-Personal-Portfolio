@@ -23,6 +23,10 @@
   --primary-readable: #6d28d9;
   --accent-readable: #be185d;
   --on-primary: #ffffff;
+  /* Brand gradient stops for fills that carry text. script.js nudges them
+     (--js-fill-*) so --on-primary reads at both ends of the gradient. */
+  --fill-from: var(--primary);
+  --fill-to: var(--accent);
   
   /* Light mode - warmer, more personal */
   --bg: #fefefe;
@@ -66,6 +70,11 @@
   --glass-shine-soft: rgba(255, 255, 255, 0.2);
   --glass-shadow: rgba(0, 0, 0, 0.07);
   --glass-pill: rgba(255, 255, 255, 0.45);
+}
+
+html:not(.plain-mode) {
+  --fill-from: var(--js-fill-from, var(--primary));
+  --fill-to: var(--js-fill-to, var(--accent));
 }
 
 /* Dark mode: warm neutral charcoal, not blue-purple */
@@ -1671,7 +1680,7 @@ img {
   font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--fill-from), var(--fill-to));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1836,6 +1845,7 @@ img {
 .ico[data-icon="settings"] { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h9'/%3E%3Cpath d='M17 7h3'/%3E%3Cpath d='M4 17h3'/%3E%3Cpath d='M11 17h9'/%3E%3Ccircle cx='15' cy='7' r='2'/%3E%3Ccircle cx='9' cy='17' r='2'/%3E%3C/svg%3E"); }
 .ico[data-icon="theme"] { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 3.5a8.5 8.5 0 0 1 0 17Z' fill='%23000' stroke='none'/%3E%3C/svg%3E"); }
 .ico[data-icon="document"] { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3.25h7l4.5 4.5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.25a1 1 0 0 1 1-1Z'/%3E%3Cpath d='M13.75 3.5V8h4.5'/%3E%3Cpath d='M9 13h6'/%3E%3Cpath d='M9 16.5h6'/%3E%3C/svg%3E"); }
+.ico[data-icon="linkedin"] { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.25' y='3.25' width='17.5' height='17.5' rx='3'/%3E%3Cpath d='M8 10.75v5.75'/%3E%3Ccircle cx='8' cy='7.75' r='1.1' fill='%23000' stroke='none'/%3E%3Cpath d='M11.75 16.5v-5.75'/%3E%3Cpath d='M11.75 13.5c0-1.7 1.05-2.85 2.5-2.85s2.25 1.05 2.25 2.75v3.1'/%3E%3C/svg%3E"); }
 
 .nav-text {
   position: relative;
@@ -1931,7 +1941,7 @@ body.nav-menu-open {
   text-decoration: none;
   white-space: nowrap;
   color: #ffffff;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--fill-from), var(--fill-to));
   border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
   box-shadow: 0 2px 12px color-mix(in srgb, var(--primary) 45%, transparent);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -1949,7 +1959,7 @@ body:not(.on-hero) .btn-view-vr {
 }
 
 .on-hero .btn-view-vr {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--fill-from), var(--fill-to));
   border-color: rgba(255, 255, 255, 0.25);
 }
 
@@ -2136,7 +2146,7 @@ body:not(.on-hero) .btn-view-vr {
 }
 
 .settings-seg button[aria-pressed='true'] {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--fill-from), var(--fill-to));
   color: var(--on-primary);
 }
 
@@ -2907,7 +2917,7 @@ h3 {
 }
 
 .btn:not(.secondary) {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--fill-from), var(--fill-to));
   color: var(--on-primary);
   box-shadow: var(--shadow-lg);
 }
@@ -3818,7 +3828,7 @@ body:not(.on-hero) main .btn.secondary:hover {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--fill-from), var(--fill-to));
   box-shadow: 0 0 0 4px var(--bg), 0 4px 12px rgba(99, 102, 241, 0.3);
   border: 2px solid var(--surface);
 }
@@ -3915,7 +3925,7 @@ body:not(.on-hero) main .btn.secondary:hover {
 }
 
 .pill.is-active {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--fill-from), var(--fill-to));
   color: var(--on-primary);
   border: none;
   box-shadow: var(--shadow-md);
@@ -3975,8 +3985,27 @@ body:not(.on-hero) main .btn.secondary:hover {
   flex-wrap: wrap;
 }
 
+/* The easter egg stays, but as a quiet link so it never competes with Send. */
 .contact-joke {
-  opacity: 0.7;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-left: 4px;
+}
+.contact-joke:hover { color: var(--text); }
+
+/* Copy confirmation: a quick press-and-settle so the change is noticed. */
+#copyEmail.is-done {
+  animation: copy-pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+  border-color: var(--success);
+  color: var(--success);
+}
+#formStatus:not(:empty) { animation: status-in 0.3s ease-out; }
+@keyframes copy-pop { 0% { transform: scale(1); } 35% { transform: scale(0.94); } 100% { transform: scale(1); } }
+@keyframes status-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  #copyEmail.is-done, #formStatus:not(:empty) { animation: none; }
 }
 
 @media (max-width: 640px) {
@@ -3999,7 +4028,7 @@ body:not(.on-hero) main .btn.secondary:hover {
 }
 
 .cs-hero {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--fill-from), var(--fill-to));
   color: #ffffff;
   padding: clamp(24px, 5vw, 64px);
   border-radius: var(--radius-lg);
@@ -4503,7 +4532,7 @@ input[type="search"]:focus {
   }
 
   .on-hero .brand {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--fill-from), var(--fill-to));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent !important;
@@ -5075,7 +5104,7 @@ input[type="search"]:focus {
   place-items: center;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--fill-from), var(--fill-to));
   color: #fff;
   font-size: 18px;
   cursor: not-allowed;
@@ -5589,7 +5618,7 @@ html.builder-cube-fallen .builder-cube-host {
   html:not(.plain-mode):not(.rainbow-mode) body .btn:not(.secondary),
   html:not(.plain-mode):not(.rainbow-mode) body .filters .pill.is-active {
     background-color: transparent;
-    background-image: var(--lg-rim, none), linear-gradient(135deg, var(--primary), var(--accent));
+    background-image: var(--lg-rim, none), linear-gradient(135deg, var(--fill-from), var(--fill-to));
     background-size: 100% 100%;
     border: 0;
   }
@@ -5863,3 +5892,53 @@ html.plain-mode:not(.plain-mode--rabiat) body .header .nav-pill.active {
     padding: 104px 20px 56px;
   }
 }
+
+
+/* ===== Polish pass =====
+   Headlines balance across lines instead of leaving one word behind, body
+   copy avoids orphans, and numbers that sit in columns or change (dates,
+   counts, scores) use tabular figures so they line up and don't jitter. */
+h1, h2, h3, .lead { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+time, .t-card .muted strong, #projectCount, .course-grade, .fn-meta, .lab-meta, .stat, .score, .num {
+  font-variant-numeric: tabular-nums;
+}
+.footer .footer-tagline { font-style: normal; }
+
+/* The lead project gets the room: full row, image beside the text. */
+.cards-3 > .img-card.feature { grid-column: 1 / -1; }
+@media (min-width: 1025px) {
+  .cards-3 > .img-card.feature { flex-direction: row; }
+  .cards-3 > .img-card.feature::before { flex: 0 0 58%; aspect-ratio: 16 / 9; }
+  .cards-3 > .img-card.feature .card-body {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    margin-top: 0; padding: 40px !important;
+  }
+  .cards-3 > .img-card.feature .card-body::before { display: none; }
+  .cards-3 > .img-card.feature .card-body h3 { font-size: 28px; }
+}
+
+/* Skills read as lists, not a stack of pills. */
+.skill-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.skill-list li { color: var(--text-muted); font-size: 15px; line-height: 1.4; }
+
+/* Loading states: skeletons hold the real layout's shape so nothing jumps
+   when content arrives. */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, color-mix(in srgb, var(--text) 8%, var(--surface)) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+@keyframes sk-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
+.sk-card { border-radius: var(--radius); overflow: hidden; background: var(--bg-elevated); padding-bottom: 20px; }
+.sk-img { aspect-ratio: 16 / 9; border-radius: 0; }
+.sk-line { height: 14px; margin: 18px 20px 0; }
+.sk-line.short { width: 55%; margin-top: 10px; }
+.sk-num { display: inline-block; width: 1.4em; height: 0.9em; vertical-align: -0.05em; }
+.music-now img { background: var(--surface); border-radius: 12px; }
+
+/* Section heads with just a title: the link sits on the title's baseline. */
+.section-head > div > h2:only-child { margin-bottom: 0; }
+.section-head:has(> div > h2:only-child) { align-items: baseline; }

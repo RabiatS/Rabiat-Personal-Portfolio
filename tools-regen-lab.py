@@ -85,7 +85,7 @@ def card(m):
           <p class="muted">{e(m['blurb'])}</p>{note}
           <p class="lab-fit muted">Too big to run here: {e(m['why'])}</p>
           <div style="margin-top: 10px;">
-            <a href="{url}" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ {e(m['watch'].get('label', 'Watch the demo'))} ↗</a>
+            <a href="{url}" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">{e(m['watch'].get('label', 'Watch the demo'))} ↗</a>
           </div>
         </article>'''
     clip = ''
@@ -101,7 +101,7 @@ def card(m):
           <p class="muted">{e(m['blurb'])}</p>{note}
           <p class="lab-fit muted" data-fit>{sizes(m)}</p>
           <div style="margin-top: 10px;">
-            <a href="{m['slug']}/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="{m['slug']}/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>'''
 

@@ -90,7 +90,7 @@
     </nav>
 
     <div class="header-controls">
-      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn">in</a>
+      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn"><span class="ico" data-icon="linkedin" aria-hidden="true"></span></a>
       <button class="toggle" id="funToggle" title="Fun colors" aria-label="Fun colors"><span class="ico" data-icon="palette" aria-hidden="true"></span></button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme"><span class="ico" data-icon="theme" aria-hidden="true"></span></button>
     </div>
@@ -130,7 +130,7 @@
                Copying the address is the genuinely different option. -->
           <button class="btn secondary" type="button" id="copyEmail"
                   data-email="robbiahsadiq@gmail.com">Copy my email</button>
-          <a class="btn secondary contact-joke" href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank" rel="noopener">🎁 Don't click</a>
+          <a class="contact-joke" href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank" rel="noopener">Don't click</a>
           <span id="formStatus" class="muted" aria-live="polite"></span>
         </div>
       </form>
@@ -173,10 +173,13 @@
         copyBtn.addEventListener('click', async () => {
           const address = copyBtn.dataset.email;
           const done = () => {
-            const original = copyBtn.textContent;
+            // Keep the real label even if it is clicked again mid-confirmation.
+            copyBtn.dataset.label = copyBtn.dataset.label || copyBtn.textContent;
             copyBtn.textContent = 'Copied ✓';
+            copyBtn.classList.remove('is-done'); void copyBtn.offsetWidth; copyBtn.classList.add('is-done');
             if (status) status.textContent = address;
-            setTimeout(() => { copyBtn.textContent = original; }, 1800);
+            clearTimeout(copyBtn._t);
+            copyBtn._t = setTimeout(() => { copyBtn.textContent = copyBtn.dataset.label; copyBtn.classList.remove('is-done'); }, 1800);
           };
           try {
             await navigator.clipboard.writeText(address);

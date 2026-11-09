@@ -10,7 +10,7 @@
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
 <style>
   /* Root-absolute paths only: GitHub Pages serves this file at whatever URL was missing. */
-  :root { --primary: #7c3aed; --accent: #ec4899; --bg: #151416; --text: #f5f3fa; --muted: #b9b2c9; color-scheme: dark; }
+  :root { --primary: #7c3aed; --accent: #ec4899; --fill-from: #7c3aed; --fill-to: #c63c81; --bg: #151416; --text: #f5f3fa; --muted: #b9b2c9; color-scheme: dark; }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; overflow: hidden; }
   body {
@@ -33,7 +33,7 @@
   .btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
   .btns a { text-decoration: none; color: #fff; font-weight: 650; font-size: 15px; padding: 12px 20px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.07); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: transform .15s, background .15s; }
   .btns a:hover { transform: translateY(-2px); background: rgba(255,255,255,.14); }
-  .btns a.p { background: linear-gradient(135deg, var(--primary), var(--accent)); border-color: transparent; }
+  .btns a.p { background: linear-gradient(135deg, var(--fill-from, var(--primary)), var(--fill-to, var(--accent))); border-color: transparent; }
   .btns a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
   .hint { margin: 2px 0 0; font: 500 12px ui-monospace, Menlo, monospace; color: rgba(255,255,255,.5); }
   /* Falling pieces */
@@ -41,7 +41,7 @@
   .piece:active { cursor: grabbing; }
   .digit { font-weight: 900; letter-spacing: -.04em; line-height: 1; color: transparent; background: linear-gradient(160deg, #fff 10%, #d8c6ff 45%, var(--accent) 110%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 14px 30px rgba(0,0,0,.45)); }
   .chip { padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: 14px; font-weight: 600; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.3); }
-  .chip.grad { background: linear-gradient(135deg, var(--primary), var(--accent)); border-color: transparent; }
+  .chip.grad { background: linear-gradient(135deg, var(--fill-from, var(--primary)), var(--fill-to, var(--accent))); border-color: transparent; }
   .card { width: 190px; padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,.16); background: rgba(20,16,32,.7); box-shadow: 0 12px 32px rgba(0,0,0,.4); display: grid; gap: 8px; }
   .card i { display: block; height: 64px; border-radius: 10px; background: linear-gradient(135deg, #3b2370, #8a2a62); }
   .card b { font-size: 14px; } .card s { height: 8px; border-radius: 4px; background: rgba(255,255,255,.14); text-decoration: none; display: block; }

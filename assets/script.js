@@ -329,25 +329,39 @@ window.applyGlassLevel = function (value) {
     return rgbToHex(color);
   }
 
-  // Foreground for a brand-colored fill. Checks the lighter of primary/accent
-  // so it stays legible across the primary→accent gradients (.btn, .cs-hero).
-  function foregroundFor(primaryHex, accentHex) {
-    const white = { r: 255, g: 255, b: 255 };
-    const black = { r: 17, g: 17, b: 17 };
-    const lighter =
-      relLuminance(hexToRgb(primaryHex)) > relLuminance(hexToRgb(accentHex))
-        ? hexToRgb(primaryHex)
-        : hexToRgb(accentHex);
-    return contrast(white, lighter) >= contrast(black, lighter) ? '#ffffff' : '#111111';
+  // Text on a primary→accent gradient has to read at BOTH ends. Picking black
+  // or white from the lighter stop alone left one end under 4.5:1 (purple→pink
+  // gave #111 on #7c3aed, 3.4:1). Try each foreground, nudge each stop just
+  // enough for it, and keep whichever needs the smaller change.
+  function gradientFill(primaryHex, accentHex) {
+    const options = [
+      { fg: { r: 255, g: 255, b: 255 }, hex: '#ffffff', toward: { r: 0, g: 0, b: 0 } },
+      { fg: { r: 17, g: 17, b: 17 }, hex: '#111111', toward: { r: 255, g: 255, b: 255 } },
+    ].map((o) => {
+      let cost = 0;
+      const stops = [primaryHex, accentHex].map((hex) => {
+        let c = hexToRgb(hex);
+        for (let step = 0; step <= 20; step++) {
+          c = mix(hexToRgb(hex), o.toward, step * 0.04);
+          if (contrast(o.fg, c) >= 4.5) { cost += step; break; }
+        }
+        return rgbToHex(c);
+      });
+      return { fg: o.hex, stops, cost };
+    });
+    return options[0].cost <= options[1].cost ? options[0] : options[1];
   }
 
   function applyReadableTokens(primaryHex, accentHex) {
     const root = document.documentElement;
+    const fill = gradientFill(primaryHex, accentHex);
+    root.style.setProperty('--js-fill-from', fill.stops[0]);
+    root.style.setProperty('--js-fill-to', fill.stops[1]);
     const dark = root.classList.contains('dark');
     const pageBg = dark ? '#111011' : '#fefefe';
     root.style.setProperty('--primary-readable', readableOn(primaryHex, pageBg));
     root.style.setProperty('--accent-readable', readableOn(accentHex, pageBg));
-    root.style.setProperty('--on-primary', foregroundFor(primaryHex, accentHex));
+    root.style.setProperty('--on-primary', fill.fg);
   }
 
   // Re-derive when the light/dark toggle flips the page background.

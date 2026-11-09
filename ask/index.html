@@ -132,7 +132,7 @@
     }
     .ask-smart-btn .knob { position: relative; width: 34px; height: 20px; border-radius: 999px; background: var(--border-strong); transition: background .2s; }
     .ask-smart-btn .knob::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s; }
-    .ask-smart-btn[aria-pressed="true"] .knob { background: linear-gradient(135deg, var(--primary), var(--accent)); }
+    .ask-smart-btn[aria-pressed="true"] .knob { background: linear-gradient(135deg, var(--fill-from), var(--fill-to)); }
     .ask-smart-btn[aria-pressed="true"] .knob::after { transform: translateX(14px); }
     .ask-smart-btn[aria-busy="true"] { cursor: progress; opacity: .8; }
     .ask-smart-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
@@ -188,7 +188,7 @@
     </nav>
 
     <div class="header-controls">
-      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn">in</a>
+      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn"><span class="ico" data-icon="linkedin" aria-hidden="true"></span></a>
       <button class="toggle" id="funToggle" title="Fun colors" aria-label="Fun colors"><span class="ico" data-icon="palette" aria-hidden="true"></span></button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme"><span class="ico" data-icon="theme" aria-hidden="true"></span></button>
     </div>

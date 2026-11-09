@@ -90,7 +90,7 @@
       </a>
     </nav>
     <div class="header-controls">
-      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn">in</a>
+      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn"><span class="ico" data-icon="linkedin" aria-hidden="true"></span></a>
       <!-- Now-playing peek. The Spotify image is only requested on first hover
            or tap, so an ordinary page load never calls the third party. -->
       <div class="np" id="nowPlaying">
@@ -155,25 +155,9 @@
           I work in the space between engineering, research, and design, building things that sense and respond to people. The discipline changes, the curiosity doesn't.
         </p>
 
-
-        <div class="badges">
-          <span class="tag">Applied ML</span>
-          <span class="tag">XR & Spatial Computing</span>
-          <span class="tag">HCI Research</span>
-          <span class="tag">Computer Vision</span>
-          <span class="tag">ML & AI</span>  
-          <!-- <span class="tag">iOS / Swift</span> -->
-          <span class="tag">Data Pipelines</span>
-          <span class="tag">Human-Centered Design</span> 
-          <span class="tag">Product design & development</span>
-          <span class="tag">Prototyping</span>
-        </div>
-
         <div class="cta-row">
           <a class="btn" href="projects.html">Explore Projects</a>
           <a class="btn secondary" href="assets/Rabiat_Sadiq_Resume.pdf" target="_blank" rel="noopener"><span class="ico" data-icon="document" aria-hidden="true"></span> Resume</a>
-          <a class="btn secondary" href="https://github.com/RabiatS" target="_blank" rel="noopener">GitHub</a>
-          <a class="btn secondary" href="contact.html">Get in Touch</a>
         </div>
 
         <a href="#work" class="scroll-cue" aria-label="Scroll to work">↓</a>
@@ -185,13 +169,12 @@
       <div class="section-head">
         <div>
           <h2>Featured Projects</h2>
-          <p class="muted" style="margin-top: 8px;">A selection of my most impactful work</p>
         </div>
         <a class="link" href="projects.html">View All →</a>
       </div>
 
       <div class="grid cards-3">
-        <article class="card img-card" data-tags="XR HCI UX Research Software"
+        <article class="card img-card feature" data-tags="XR HCI UX Research Software"
                  style="--img:url('/assets/img/projects/visionpro/hero-pinch.jpg')">
           <div class="card-body">
             <h3><a href="case-studies/visionpro-wrist-haptics.html" style="color:inherit">VisionPro Wrist Spatial Feedback</a></h3>
@@ -209,7 +192,7 @@
           </div>
         </article>
         <article class="card img-card" data-font="ember" data-tags="HCI UX Research Product Industry"
-                 style="--img:url('/assets/img/projects/amazon-music.png')">
+                 style="--img:url('/assets/img/projects/amazon-music-superfan.jpg')">
           <div class="card-body">
             <h3><a href="case-studies/case-study-amazon-music.html" style="color:inherit">Amazon Music Adaptive UI</a></h3>
             <p class="muted">CMU MHCI capstone with Amazon Music: Adaptive UI that recognizes listening loyalty across three fan tiers, without asking fans to broadcast.</p>
@@ -313,7 +296,6 @@
       <div class="section-head">
         <div>
           <h2>Experience</h2>
-          <p class="muted" style="margin-top: 8px;">My journey in tech and research</p>
         </div>
       </div>
       <ol class="timeline">
@@ -323,12 +305,6 @@
             <h3><a href="case-studies/case-study-amazon-music.html" style="color:inherit;text-decoration:none">Project Manager &amp; Engineer · Amazon Music Capstone</a></h3>
             <p class="muted"><strong>Jan 2026 – Jul 2026</strong></p>
             <p class="muted" style="margin-top: 8px;">Led Adaptive UI research and product vision for Amazon Music: recognizing long-term fan loyalty across three listening tiers without requiring public performance.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">UX</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Research</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Product</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">HCI</span>
-            </div>
             <div style="margin-top: 10px;">
               <a href="case-studies/case-study-amazon-music.html" style="font-size: 13px; color: inherit; opacity: 0.9; font-weight: 600;">Case Study ↗</a>
             </div>
@@ -340,11 +316,6 @@
             <h3>AI Research Engineer · Xbox</h3>
             <p class="muted"><strong>Spring 2026 – Apr 2026</strong></p>
             <p class="muted" style="margin-top: 8px;">Xbox x CMU Measuring Social: Research collaboration with Xbox exploring AI-driven approaches to measure and understand social interactions in gaming environments.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">AI</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Research</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Gaming</span>
-            </div>
           </div>
         </li>
         <li class="t-item">
@@ -353,11 +324,6 @@
             <h3>Research Assistant · CMU Augmented Perception Lab</h3>
             <p class="muted"><strong>Sep 2025 – Aug 2026</strong></p>
             <p class="muted" style="margin-top: 8px;">Building multimodal XR prototypes to study pain perception. Unity/C# development with structured logging for future ML-driven personalization.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">XR</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Research</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">HCI</span>
-            </div>
           </div>
         </li>
         <li class="t-item">
@@ -366,11 +332,6 @@
             <h3>Applied ML Intern · PlayStation (SIE)</h3>
             <p class="muted"><strong>Summer 2025</strong></p>
             <p class="muted" style="margin-top: 8px;">Built end-to-end pipeline for gameplay score extraction from streaming videos. Parallel cloud ingestion (Ray), FFmpeg clipping, OpenCV processing, Databricks workflows (PySpark, MLflow). 60%+ faster processing.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">ML</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Data</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Industry</span>
-            </div>
           </div>
         </li>
         <li class="t-item">
@@ -379,11 +340,6 @@
             <h3>Co-founder / AI & Full-Stack Engineer · Applied STEM</h3>
             <p class="muted"><strong>2024</strong></p>
             <p class="muted" style="margin-top: 8px;">Built AI-powered technical interview platform with React/TypeScript canvas and FastAPI backend. Integrated LLMs with circuit topology for adaptive technical interviewer.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">ML</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Hardware</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Product</span>
-            </div>
           </div>
         </li>
         <li class="t-item">
@@ -392,11 +348,6 @@
             <h3>AI/VR Research Assistant · UTSA</h3>
             <p class="muted"><strong>Aug 2023 – Dec 2024</strong></p>
             <p class="muted" style="margin-top: 8px;">Research on AI-empowered VR content analysis addressing harassment and safety issues. Built Unity/C# prototypes and explored supervised learning/LLM methods for behavior classification.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Research</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">XR</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">ML</span>
-            </div>
           </div>
         </li>
         <li class="t-item">
@@ -405,11 +356,6 @@
             <h3>Apple NACME AIML Intensive · USC</h3>
             <p class="muted"><strong>Jun – Aug 2024</strong></p>
             <p class="muted" style="margin-top: 8px;">8-week intensive covering EDA, feature engineering, model training/evaluation, deployment. Completed 35 projects including Health ML (Assuage), image classification, and CoreML deployment.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">ML</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">iOS</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Health</span>
-            </div>
           </div>
         </li>
         <li class="t-item">
@@ -418,10 +364,6 @@
             <h3>Google Software Product Sprint</h3>
             <p class="muted"><strong>Summer 2022</strong></p>
             <p class="muted" style="margin-top: 8px;">Co-built Talky Talky, an audio-responsive web app supporting non-verbal children. Integrated Google Cloud Text-to-Speech APIs.</p>
-            <div class="badges" style="margin-top: 12px; justify-content: flex-start;">
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Product</span>
-              <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Web</span>
-            </div>
           </div>
         </li>
       </ol>
@@ -432,7 +374,6 @@
       <div class="section-head">
         <div>
           <h2>Education</h2>
-          <p class="muted" style="margin-top: 8px;">Academic background</p>
         </div>
       </div>
       <div class="grid cards-3">
@@ -440,33 +381,14 @@
           <h3>Carnegie Mellon University</h3>
           <p class="muted" style="margin-top: 8px;">Master of Human-Computer Interaction</p>
           <p class="muted">Graduated Aug 2026</p>
-          <div class="badges" style="margin-top: 16px; justify-content: flex-start;">
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">HCI</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">XR</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">ML</span>
-          </div>
         </article>
         <article class="card">
           <h3>University of Texas, San Antonio</h3>
           <p class="muted" style="margin-top: 8px;">B.S. Computer Engineering</p>
           <p class="muted">Minor in Computer Science</p>
-          <div class="badges" style="margin-top: 16px; justify-content: flex-start;">
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Software</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Hardware</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">AI</span>
-          </div>
         </article>
         <article class="card">
-          <h3>University of Southern California</h3>
-          <p class="muted" style="margin-top: 8px;">Apple NACME AIML Intensive</p>
-          <p class="muted">8-week bootcamp • 2024</p>
-          <div class="badges" style="margin-top: 16px; justify-content: flex-start;">
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">35 Projects</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Deep Learning</span>
-          </div>
-        </article>
-        <article class="card">
-          <h3>Alief Early College Highschool</h3>
+          <h3>Alief Early College High School</h3>
         </article>
       </div>
     </section>
@@ -476,77 +398,76 @@
       <div class="section-head">
         <div>
           <h2>Skills & Technologies</h2>
-          <p class="muted" style="margin-top: 8px;">Technologies I work with</p>
         </div>
       </div>
       <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
         <div class="card">
           <h3 style="font-size: 18px; margin-bottom: 16px;">Machine Learning / CV</h3>
-          <div class="badges" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Python</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">PyTorch</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">scikit-learn</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">OpenCV</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">TensorFlow</span>
-          </div>
+          <ul class="skill-list">
+            <li>Python</li>
+            <li>PyTorch</li>
+            <li>scikit-learn</li>
+            <li>OpenCV</li>
+            <li>TensorFlow</li>
+          </ul>
         </div>
         <div class="card">
           <h3 style="font-size: 18px; margin-bottom: 16px;">Data Pipelines</h3>
-          <div class="badges" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Ray</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Databricks</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">PySpark</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">MLflow</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">FFmpeg</span>
-          </div>
+          <ul class="skill-list">
+            <li>Ray</li>
+            <li>Databricks</li>
+            <li>PySpark</li>
+            <li>MLflow</li>
+            <li>FFmpeg</li>
+          </ul>
         </div>
         <div class="card">
           <h3 style="font-size: 18px; margin-bottom: 16px;">XR / Unity</h3>
-          <div class="badges" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Unity (C#)</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Meta XR SDK</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">VR Prototyping</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">AR</span>
-          </div>
+          <ul class="skill-list">
+            <li>Unity (C#)</li>
+            <li>Meta XR SDK</li>
+            <li>VR Prototyping</li>
+            <li>AR</li>
+          </ul>
         </div>
         <div class="card">
           <h3 style="font-size: 18px; margin-bottom: 16px;">Mobile / Cloud</h3>
-          <div class="badges" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Swift (iOS)</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Core ML</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">HealthKit</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">AWS</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">GCP</span>
-          </div>
+          <ul class="skill-list">
+            <li>Swift (iOS)</li>
+            <li>Core ML</li>
+            <li>HealthKit</li>
+            <li>AWS</li>
+            <li>GCP</li>
+          </ul>
         </div>
         <div class="card">
           <h3 style="font-size: 18px; margin-bottom: 16px;">Web / Full-Stack</h3>
-          <div class="badges" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">React</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">TypeScript</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">FastAPI</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">JavaScript</span>
-          </div>
+          <ul class="skill-list">
+            <li>React</li>
+            <li>TypeScript</li>
+            <li>FastAPI</li>
+            <li>JavaScript</li>
+          </ul>
         </div>
         <div class="card">
           <h3 style="font-size: 18px; margin-bottom: 16px;">Hardware / Embedded</h3>
-          <div class="badges" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Microcontroller</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Sensor & Signal Processing</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">ESP32</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Sensors</span>
-          </div>
+          <ul class="skill-list">
+            <li>Microcontroller</li>
+            <li>Sensor & Signal Processing</li>
+            <li>ESP32</li>
+            <li>Sensors</li>
+          </ul>
         </div>
         <div class="card">
           <h3 style="font-size: 18px; margin-bottom: 16px;">Research Methods</h3>
-          <div class="badges" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">User-Centered Research</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">UX Evaluation</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">HCI Research</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Experimental Design</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Data Collection</span>
-            <span class="tag" style="background: var(--bg-elevated); color: var(--text); border-color: var(--border);">Qualitative Analysis</span>
-          </div>
+          <ul class="skill-list">
+            <li>User-Centered Research</li>
+            <li>UX Evaluation</li>
+            <li>HCI Research</li>
+            <li>Experimental Design</li>
+            <li>Data Collection</li>
+            <li>Qualitative Analysis</li>
+          </ul>
         </div>
       </div>
     </section>
@@ -556,7 +477,6 @@
       <div class="section-head">
         <div>
           <h2>Awards & Recognition</h2>
-          <p class="muted" style="margin-top: 8px;">Achievements and honors</p>
         </div>
       </div>
       <div class="grid cards-3">

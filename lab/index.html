@@ -67,9 +67,9 @@
     .lab-month-h { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border, rgba(127,127,127,.25)); }
     .lab-card[hidden] { display: none; }
     .lab-meta { margin: 0 0 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-    .lab-meta .kind { color: var(--primary); font-weight: 600; }
+    .lab-meta .kind { color: var(--primary-readable); font-weight: 600; }
     .lab-by { margin: -4px 0 10px; font-size: 13px; }
-    .lab-note { font-size: 13px; font-style: italic; }
+    .lab-note { font-size: 13px; }
     .lab-fit { margin: 12px 0 0; font-size: 12.5px; font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
     .lab-card.blocked .lab-fit, .lab-watch .lab-fit { color: var(--text); }
   </style>
@@ -110,7 +110,7 @@
       </a>
     </nav>
     <div class="header-controls">
-      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn">in</a>
+      <a class="toggle social-link" href="https://www.linkedin.com/in/rabiat-sadiq/" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn"><span class="ico" data-icon="linkedin" aria-hidden="true"></span></a>
       <button class="toggle" id="funToggle" title="Fun colors" aria-label="Fun colors"><span class="ico" data-icon="palette" aria-hidden="true"></span></button>
       <button class="toggle" id="themeToggle" aria-label="Toggle theme"><span class="ico" data-icon="theme" aria-hidden="true"></span></button>
     </div>
@@ -151,7 +151,7 @@
           <p class="lab-by muted">Claude API · bring your own key</p>
           <p class="muted">Run a Claude demo 5 to 20 times before you show it once: pass rate, latency, every failure checked by code, and a recorded passing run to fall back on.</p>
           <div style="margin-top: 10px;">
-            <a href="demo-check/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="demo-check/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
@@ -167,7 +167,7 @@
           <p class="lab-by muted">ML · Audio · Circuits · VR · Design · Physics · Biology · Anatomy · Muscles · Elements</p>
           <p class="muted">Ten hands on subjects: machine learning from regression to LLMs and agents, sound and audio, live circuits, how VR works, UI design and UX laws, physics simulations, biology for pre-med, full body anatomy in 3D, muscles on a 3D body and the periodic table. Runs in your browser.</p>
           <div style="margin-top: 10px;">
-            <a href="study/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="study/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
@@ -185,7 +185,7 @@
           <p class="muted">A decision model: it does not write, it picks. Give it a situation and some options and it gives each one a calibrated probability in a single pass.</p>
           <p class="lab-fit muted" data-fit>1.1 GB</p>
           <div style="margin-top: 10px;">
-            <a href="strands-decider/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="strands-decider/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
@@ -200,7 +200,7 @@
           <p class="muted">A small vision language model that reads documents: printed pages, receipts, handwriting, tables and formulas. Point it at a photo and it writes out what it sees.</p>
           <p class="lab-fit muted" data-fit>1.8 GB</p>
           <div style="margin-top: 10px;">
-            <a href="teleocr/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="teleocr/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
@@ -215,7 +215,7 @@
           <p class="muted">A foundation model for EEG, the electrical signals of the brain. It can rebuild a missing electrode from the others and turn messy recordings into something models can learn from.</p>
           <p class="lab-fit muted">Too big to run here: 380 million parameters, about 1.5 GB.</p>
           <div style="margin-top: 10px;">
-            <a href="https://www.zyphra.com/our-work/zuna1.1" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Read and watch ↗</a>
+            <a href="https://www.zyphra.com/our-work/zuna1.1" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Read and watch ↗</a>
           </div>
         </article>
         </div>
@@ -230,7 +230,7 @@
           <p class="muted">A world model: instead of a game engine, a neural network imagines the next frame of a 3D world as you move through it with the keyboard and mouse.</p>
           <p class="lab-fit muted">Too big to run here: more than 5 billion parameters and a large GPU.</p>
           <div style="margin-top: 10px;">
-            <a href="https://matrix-game-v3.github.io/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Watch the demo ↗</a>
+            <a href="https://matrix-game-v3.github.io/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Watch the demo ↗</a>
           </div>
         </article>
         </div>
@@ -245,7 +245,7 @@
           <p class="muted">Speech to text that keeps up as you talk, in many languages. A WebGPU version exists, but it is a multi-gigabyte download, so here it is a demo instead.</p>
           <p class="lab-fit muted">Too big to run here: 4.4 billion parameters, several gigabytes.</p>
           <div style="margin-top: 10px;">
-            <a href="https://huggingface.co/spaces/mistralai/Voxtral-Mini-Realtime" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Watch the demo ↗</a>
+            <a href="https://huggingface.co/spaces/mistralai/Voxtral-Mini-Realtime" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Watch the demo ↗</a>
           </div>
         </article>
         </div>
@@ -260,7 +260,7 @@
           <p class="muted">A small, fast image generator and editor from the makers of FLUX. Only the 4B size is Apache licensed; the larger one is not.</p>
           <p class="lab-fit muted">Too big to run here: 4 billion parameters, about 8 GB.</p>
           <div style="margin-top: 10px;">
-            <a href="https://bfl.ai/blog/flux2-klein-towards-interactive-visual-intelligence" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Watch the demo ↗</a>
+            <a href="https://bfl.ai/blog/flux2-klein-towards-interactive-visual-intelligence" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Watch the demo ↗</a>
           </div>
         </article>
         <article class="card lab-card lab-watch" data-kind="Audio" data-watch>
@@ -270,7 +270,7 @@
           <p class="muted">Write a prompt and lyrics, get a full song with vocals in seconds on a good GPU.</p>
           <p class="lab-fit muted">Too big to run here: several gigabytes of weights.</p>
           <div style="margin-top: 10px;">
-            <a href="https://ace-step.github.io/ace-step-v1.5.github.io/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Watch the demo ↗</a>
+            <a href="https://ace-step.github.io/ace-step-v1.5.github.io/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Watch the demo ↗</a>
           </div>
         </article>
         <article class="card lab-card" data-slug="soprano" data-kind="Audio">
@@ -280,7 +280,7 @@
           <p class="muted">Type a sentence and hear it read aloud, in a clear and natural voice. It is small enough to run in a browser tab and starts talking before it has finished the sentence.</p>
           <p class="lab-fit muted" data-fit>115 MB to 206 MB</p>
           <div style="margin-top: 10px;">
-            <a href="soprano/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="soprano/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         <article class="card lab-card lab-watch" data-kind="Science" data-watch>
@@ -290,7 +290,7 @@
           <p class="muted">The machine-learning weather model from the European Centre for Medium-Range Weather Forecasts, released with open weights.</p>
           <p class="lab-fit muted">Too big to run here: about 1 GB of weights and global weather data as input.</p>
           <div style="margin-top: 10px;">
-            <a href="https://huggingface.co/ecmwf/aifs-single-2.0" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ See the model ↗</a>
+            <a href="https://huggingface.co/ecmwf/aifs-single-2.0" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">See the model ↗</a>
           </div>
         </article>
         </div>
@@ -305,7 +305,7 @@
           <p class="muted">One picture in, a textured 3D model out, ready for a game engine or a VR scene. The weights are MIT; the full pipeline also loads two helper models with their own licences.</p>
           <p class="lab-fit muted">Too big to run here: 4 billion parameters plus helper models, many gigabytes.</p>
           <div style="margin-top: 10px;">
-            <a href="https://microsoft.github.io/TRELLIS.2/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Watch the demo ↗</a>
+            <a href="https://microsoft.github.io/TRELLIS.2/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Watch the demo ↗</a>
           </div>
         </article>
         <article class="card lab-card" data-slug="dpdfnet" data-kind="Audio">
@@ -315,7 +315,7 @@
           <p class="muted">Takes the noise out of speech: cafe chatter, fans, rain. It is small and streaming, built for earbuds and calls, and here it cleans a whole clip several times faster than it takes to play.</p>
           <p class="lab-fit muted" data-fit>10 MB</p>
           <div style="margin-top: 10px;">
-            <a href="dpdfnet/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="dpdfnet/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         <article class="card lab-card" data-slug="teachable" data-kind="Vision">
@@ -326,7 +326,7 @@
           <p class="lab-note muted">I found the idea in December 2025. Released Feb 2025.</p>
           <p class="lab-fit muted" data-fit>55 MB to 186 MB</p>
           <div style="margin-top: 10px;">
-            <a href="teachable/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="teachable/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
@@ -341,7 +341,7 @@
           <p class="muted">A neural weather model that forecasts the whole planet days to weeks ahead in minutes on a single GPU, a job that takes physics models a supercomputer.</p>
           <p class="lab-fit muted">Too big to run here: gigabytes of weights and global weather data as input.</p>
           <div style="margin-top: 10px;">
-            <a href="https://huggingface.co/nvidia/fourcastnet3" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ See the model ↗</a>
+            <a href="https://huggingface.co/nvidia/fourcastnet3" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">See the model ↗</a>
           </div>
         </article>
         <article class="card lab-card lab-watch" data-kind="Space" data-watch>
@@ -351,7 +351,7 @@
           <p class="muted">One model that drives many different robots, from single arms to two-armed setups, by learning a small &quot;prompt&quot; per robot body.</p>
           <p class="lab-fit muted">Too big to run here: about 0.9 billion parameters plus a robot to drive.</p>
           <div style="margin-top: 10px;">
-            <a href="https://thu-air-dream.github.io/X-VLA/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Watch the demo ↗</a>
+            <a href="https://thu-air-dream.github.io/X-VLA/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Watch the demo ↗</a>
           </div>
         </article>
         </div>
@@ -366,7 +366,7 @@
           <p class="muted">Give it any series of numbers, steps, sales, power use, and it says what probably comes next, with a band for how sure it is. It has never seen your data and needs no training on it.</p>
           <p class="lab-fit muted" data-fit>479 MB</p>
           <div style="margin-top: 10px;">
-            <a href="chronos-2/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="chronos-2/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         <article class="card lab-card" data-slug="robot" data-kind="Space">
@@ -377,7 +377,7 @@
           <p class="muted">A humanoid robot that taught itself to walk in simulation, running live in your browser. Shove it and watch a small network catch its balance, fifty times a second.</p>
           <p class="lab-fit muted" data-fit>20 MB</p>
           <div style="margin-top: 10px;">
-            <a href="robot/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="robot/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
@@ -392,7 +392,7 @@
           <p class="muted">OpenAI&#x27;s first open-weight language model since GPT-2. It reasons step by step, uses tools, and runs on a laptop with 16 GB of memory, just not inside a browser tab.</p>
           <p class="lab-fit muted">Too big to run here: 21 billion parameters, about 13 GB.</p>
           <div style="margin-top: 10px;">
-            <a href="https://gpt-oss.com" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try the official playground ↗</a>
+            <a href="https://gpt-oss.com" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try the official playground ↗</a>
           </div>
         </article>
         <article class="card lab-card lab-watch" data-kind="Vision" data-watch>
@@ -402,7 +402,7 @@
           <p class="muted">Edit a photo by describing the change: swap the background, fix the words on a sign, turn a character to face the other way.</p>
           <p class="lab-fit muted">Too big to run here: 20 billion parameters, tens of gigabytes.</p>
           <div style="margin-top: 10px;">
-            <a href="https://qwenlm.github.io/blog/qwen-image-edit/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Watch the demo ↗</a>
+            <a href="https://qwenlm.github.io/blog/qwen-image-edit/" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Watch the demo ↗</a>
           </div>
         </article>
         <article class="card lab-card" data-slug="leaf-search" data-kind="Language">
@@ -412,7 +412,7 @@
           <p class="muted">A tiny search model that matches by meaning, not by keywords. Here it searches everything I have built and written, right in your browser.</p>
           <p class="lab-fit muted" data-fit>24 MB</p>
           <div style="margin-top: 10px;">
-            <a href="leaf-search/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="leaf-search/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
@@ -428,7 +428,7 @@
           <p class="muted">Point a camera and it boxes and names what it sees, many times a second. A detection transformer small enough for a phone, with no clean-up pass for overlapping boxes.</p>
           <p class="lab-fit muted" data-fit>25 MB to 29 MB</p>
           <div style="margin-top: 10px;">
-            <a href="rf-detr/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="rf-detr/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
@@ -443,7 +443,7 @@
           <p class="muted">Predicts the 3D shape of proteins and how strongly a drug-like molecule binds to them, an open alternative to AlphaFold 3 for that job.</p>
           <p class="lab-fit muted">Too big to run here: hundreds of millions of parameters and a big GPU.</p>
           <div style="margin-top: 10px;">
-            <a href="https://github.com/jwohlwend/boltz" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ See the project ↗</a>
+            <a href="https://github.com/jwohlwend/boltz" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">See the project ↗</a>
           </div>
         </article>
         <article class="card lab-card lab-watch" data-kind="Space" data-watch>
@@ -453,7 +453,7 @@
           <p class="muted">A small vision-language-action model: it looks through a robot&#x27;s cameras, reads an instruction like &quot;put the cube in the box&quot;, and outputs the arm&#x27;s next moves. Trained on community robot data and small enough for a gaming laptop.</p>
           <p class="lab-fit muted">Too big to run here: 450 million parameters, and it needs a robot or a simulator to drive.</p>
           <div style="margin-top: 10px;">
-            <a href="https://huggingface.co/blog/smolvla" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Read and watch ↗</a>
+            <a href="https://huggingface.co/blog/smolvla" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Read and watch ↗</a>
           </div>
         </article>
         </div>
@@ -469,7 +469,7 @@
           <p class="muted">Meta&#x27;s on-device take on Segment Anything 2. Tap anything in a photo and it lifts out as a clean cut-out, ready to drop into a game or a VR scene.</p>
           <p class="lab-fit muted" data-fit>21 MB to 41 MB</p>
           <div style="margin-top: 10px;">
-            <a href="edgetam/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="edgetam/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         <article class="card lab-card" data-slug="webcam-pulse" data-kind="Body">
@@ -480,7 +480,7 @@
           <p class="muted">Your pulse, from your webcam. Each heartbeat shifts the colour of your skin very slightly, and this tiny model turns those shifts into a pulse wave and a heart rate. The video never leaves your device.</p>
           <p class="lab-fit muted" data-fit>10 MB</p>
           <div style="margin-top: 10px;">
-            <a href="webcam-pulse/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="webcam-pulse/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
@@ -495,7 +495,7 @@
           <p class="muted">A language model for DNA across all of life. It can predict which mutations break a gene and even write new genetic sequences.</p>
           <p class="lab-fit muted">Too big to run here: 1 to 40 billion parameters.</p>
           <div style="margin-top: 10px;">
-            <a href="https://arcinstitute.org/tools/evo/evo-designer" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try the designer ↗</a>
+            <a href="https://arcinstitute.org/tools/evo/evo-designer" target="_blank" rel="noopener" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try the designer ↗</a>
           </div>
         </article>
         </div>
@@ -510,7 +510,7 @@
           <p class="muted">Speech to text made small enough for a phone. Talk and your words show up as you say them. Your voice never leaves your device.</p>
           <p class="lab-fit muted" data-fit>55 MB</p>
           <div style="margin-top: 10px;">
-            <a href="moonshine/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="moonshine/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
@@ -526,7 +526,7 @@
           <p class="muted">Give it any photo and it works out how far away every pixel is, so the photo tilts like a small 3D scene. Try it on your phone and move it around.</p>
           <p class="lab-fit muted" data-fit>19 MB to 50 MB</p>
           <div style="margin-top: 10px;">
-            <a href="depth-anything-v2/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="depth-anything-v2/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
@@ -541,7 +541,7 @@
           <p class="muted">Hides a short ID inside speech where you can&#x27;t hear it, then finds it again, down to which parts of a clip carry it. Noise, cuts and volume barely touch it; a small change of speed wipes it out.</p>
           <p class="lab-fit muted" data-fit>93 MB</p>
           <div style="margin-top: 10px;">
-            <a href="audioseal/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">▶ Try ↗</a>
+            <a href="audioseal/" style="font-size: 13px; color: inherit; opacity: 0.8; font-weight: 600;">Try ↗</a>
           </div>
         </article>
         </div>
